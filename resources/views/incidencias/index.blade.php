@@ -73,8 +73,7 @@
                                 <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="px-4 py-2">
                                     @if($incidencia->imagen)
-                                        <img src="{{ asset('storage/incidencias/' . $incidencia->imagen) }}" alt="Incidencia"
-                                            class="w-24 h-auto rounded">
+                                        <img src="{{ $incidencia->imagen }}" alt="Incidencia" class="w-24 h-auto rounded">
                                     @else
                                         <span class="text-sm text-gray-400 italic">Sin imagen</span>
                                     @endif
@@ -96,6 +95,16 @@
                                             Ver
                                         </a>
                                     @endif
+                                    <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST"
+                                        onsubmit="return confirm('¿Estás seguro de eliminar esta incidencia?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            Eliminar
+                                        </button>
+                                    </form>
+
                                 </td>
                             </tr>
                         @endforeach

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IncidentController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Incident;
+use App\Http\Controllers\CloudinaryTestController;
 
 // Página de inicio pública
 Route::get('/', function () {
@@ -33,5 +34,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])->name('incidencias.exportar.pdf');
     Route::resource('incidencias', IncidentController::class);
 });
+
+Route::get('/cloudinary-test', [CloudinaryTestController::class, 'form'])->name('cloudinary.form');
+Route::post('/cloudinary-test', [CloudinaryTestController::class, 'upload'])->name('cloudinary.upload');
 
 require __DIR__ . '/auth.php';
