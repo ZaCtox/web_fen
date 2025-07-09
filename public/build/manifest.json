@@ -1,4 +1,15 @@
 {
+  "resources/css/app.css": {
+    "file": "assets/app-B6vTDS8h.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DUVak8gI.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
   "resources/js/asignaturas_autofill.js": {
     "file": "assets/asignaturas_autofill-DSRCxC3R.js",
     "name": "asignaturas_autofill",
