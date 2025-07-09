@@ -5,6 +5,8 @@ use App\Http\Controllers\IncidentController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Incident;
 use App\Http\Controllers\CloudinaryTestController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\RoomController;
 
 // Página de inicio pública
 Route::get('/', function () {
@@ -33,6 +35,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/incidencias/estadisticas', [IncidentController::class, 'estadisticas'])->name('incidencias.estadisticas');
     Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])->name('incidencias.exportar.pdf');
     Route::resource('incidencias', IncidentController::class);
+
+    // Eventos
+    Route::resource('events', EventController::class)->except(['create', 'edit', 'show']);
+
+    // Calendario
+    Route::view('/calendario', 'calendario.index')->name('calendario');
+
+    // Salas
+    Route::resource('rooms', RoomController::class);
+
 });
 
 Route::get('/cloudinary-test', [CloudinaryTestController::class, 'form'])->name('cloudinary.form');

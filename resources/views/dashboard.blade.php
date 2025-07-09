@@ -18,6 +18,16 @@
                     class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-block">
                     Ir a Bitácora de Incidencias
                 </a>
+                <a href="{{ route('calendario') }}"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded inline-block ml-2">
+                    Ver Calendario Académico
+                </a>
+
+                <a href="{{ route('rooms.index') }}"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded inline-block ml-2">
+                    Ver Salas
+                </a>
+
 
                 <form method="POST" action="{{ route('logout') }}" class="inline-block mt-2">
                     @csrf

@@ -66,5 +66,10 @@
             localStorage.setItem('theme', newTheme);
         });
     </script>
+    @yield('scripts')
+    @vite('resources/js/asignaturas_autofill.js')
+    @vite('resources/js/app.js')
+
+
 </body>
 </html>
