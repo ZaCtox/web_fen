@@ -30,13 +30,31 @@
 <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Usos Académicos</h3>
 
 <div id="usos-container" class="space-y-4">
-    <div class="grid grid-cols-7 gap-2">
-        <input type="number" name="usos[0][year]" placeholder="Año" min="1" max="5"
+    <div class="grid grid-cols-6 gap-2">
+        {{-- Trimestre --}}
+        <select name="usos[0][trimestre_id]" required class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+            <option value="">Trimestre</option>
+            @foreach($trimestres as $t)
+                <option value="{{ $t->id }}">{{ $t->nombre }} - {{ $t->año }}</option>
+            @endforeach
+        </select>
+
+        {{-- Día --}}
+        <select name="usos[0][dia]" required class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+            <option value="">Día</option>
+            <option value="Viernes">Viernes</option>
+            <option value="Sábado">Sábado</option>
+        </select>
+
+        {{-- Hora inicio --}}
+        <input type="time" name="usos[0][hora_inicio]" required
             class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
 
-        <input type="number" name="usos[0][trimestre]" placeholder="Trimestre" min="1" max="6"
+        {{-- Hora fin --}}
+        <input type="time" name="usos[0][hora_fin]" required
             class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
 
+        {{-- Magíster --}}
         <select name="usos[0][magister]" class="magister-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
             <option value="">Magíster</option>
             <option value="Economía">Economía</option>
@@ -45,22 +63,14 @@
             <option value="Dirección y Planificación Tributaria">Dirección y Planificación Tributaria</option>
         </select>
 
+        {{-- Asignatura --}}
         <select name="usos[0][subject]" class="asignatura-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
             <option value="">Asignatura</option>
         </select>
-
-        <select name="usos[0][dia]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-            <option value="">Día</option>
-            <option value="Viernes">Viernes</option>
-            <option value="Sábado">Sábado</option>
-        </select>
-
-        <input type="text" name="usos[0][horario]" placeholder="08:30-10:50"
-            class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
     </div>
 </div>
 
-{{-- Botón para añadir usos --}}
+{{-- Botón para añadir más usos --}}
 <button type="button" id="add-uso" class="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded">
     + Añadir uso
 </button>
@@ -72,18 +82,32 @@
     {{ $submitText ?? 'Guardar' }}
 </button>
 
-{{-- Script para clonar nuevas filas --}}
+{{-- Script para clonar --}}
 <script>
-    let usoIndex = {{ isset($room) ? $room->usages->count() : 1 }};
+    let usoIndex = 1;
+
+    const trimestreOptions = `
+        <option value="">Trimestre</option>
+        @foreach($trimestres as $t)
+            <option value="{{ $t->id }}">{{ $t->nombre }} - {{ $t->año }}</option>
+        @endforeach
+    `;
+
     document.getElementById('add-uso').addEventListener('click', () => {
         const container = document.getElementById('usos-container');
         const div = document.createElement('div');
-        div.classList.add('grid', 'grid-cols-7', 'gap-2', 'mt-2');
+        div.classList.add('grid', 'grid-cols-6', 'gap-2', 'mt-2');
         div.innerHTML = `
-            <input type="number" name="usos[${usoIndex}][year]" placeholder="Año" min="1" max="5"
-                class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-            <input type="number" name="usos[${usoIndex}][trimestre]" placeholder="Trimestre" min="1" max="6"
-                class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+            <select name="usos[${usoIndex}][trimestre_id]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
+                ${trimestreOptions}
+            </select>
+            <select name="usos[${usoIndex}][dia]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
+                <option value="">Día</option>
+                <option value="Viernes">Viernes</option>
+                <option value="Sábado">Sábado</option>
+            </select>
+            <input type="time" name="usos[${usoIndex}][hora_inicio]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
+            <input type="time" name="usos[${usoIndex}][hora_fin]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
             <select name="usos[${usoIndex}][magister]" class="magister-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                 <option value="">Magíster</option>
                 <option value="Economía">Economía</option>
@@ -94,18 +118,10 @@
             <select name="usos[${usoIndex}][subject]" class="asignatura-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                 <option value="">Asignatura</option>
             </select>
-            <select name="usos[${usoIndex}][dia]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-                <option value="">Día</option>
-                <option value="Viernes">Viernes</option>
-                <option value="Sábado">Sábado</option>
-            </select>
-            <input type="text" name="usos[${usoIndex}][horario]" placeholder="08:30-10:50"
-                class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
         `;
         container.appendChild(div);
         usoIndex++;
 
-        // Reinicializa el comportamiento dinámico
         if (window.initAsignaturaAutofill) {
             window.initAsignaturaAutofill();
         }

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use App\Models\RoomUsage;
+use App\Models\Trimestre;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreRoomRequest;
+use Illuminate\Support\Collection;
 
 class RoomController extends Controller
 {
@@ -25,7 +27,8 @@ class RoomController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
-        return view('rooms.create');
+        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
+        return view('rooms.create', compact('trimestres'));
     }
 
     public function store(StoreRoomRequest $request)
@@ -37,7 +40,14 @@ class RoomController extends Controller
         $room = Room::create($request->validated());
 
         foreach ($request->input('usos', []) as $uso) {
-            $room->usages()->create($uso);
+            $room->usages()->create([
+                'trimestre_id' => $uso['trimestre_id'],
+                'dia' => $uso['dia'],
+                'hora_inicio' => $uso['hora_inicio'],
+                'hora_fin' => $uso['hora_fin'],
+                'magister' => $uso['magister'],
+                'subject' => $uso['subject'],
+            ]);
         }
 
         return redirect()->route('rooms.index')->with('success', 'Sala creada correctamente');
@@ -49,7 +59,8 @@ class RoomController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
-        return view('rooms.edit', compact('room'));
+        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
+        return view('rooms.edit', compact('room', 'trimestres'));
     }
 
     public function update(StoreRoomRequest $request, Room $room)
@@ -62,7 +73,12 @@ class RoomController extends Controller
         $room->usages()->delete();
 
         foreach ($request->input('usos', []) as $uso) {
-            $room->usages()->create($uso);
+            $room->usages()->create([
+                'trimestre_id' => $uso['trimestre_id'],
+                'dia' => $uso['dia'],
+                'hora_inicio' => $uso['hora_inicio'],
+                'hora_fin' => $uso['hora_fin'],
+            ]);
         }
 
         return redirect()->route('rooms.index')->with('success', 'Sala actualizada correctamente');
@@ -82,17 +98,13 @@ class RoomController extends Controller
     {
         $usosQuery = $room->usages();
 
-        if ($request->filled('year')) {
-            $usosQuery->where('year', $request->year);
+        if ($request->filled('trimestre_id')) {
+            $usosQuery->where('trimestre_id', $request->trimestre_id);
         }
 
-        if ($request->filled('trimestre')) {
-            $usosQuery->where('trimestre', $request->trimestre);
-        }
+        $usos = $usosQuery->with('trimestre')->orderBy('trimestre_id')->get();
+        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
 
-        $usos = $usosQuery->orderBy('year')->orderBy('trimestre')->get();
-
-        return view('rooms.show', compact('room', 'usos'));
+        return view('rooms.show', compact('room', 'usos', 'trimestres'));
     }
-
 }

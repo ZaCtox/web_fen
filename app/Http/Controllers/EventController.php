@@ -17,6 +17,7 @@ class EventController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
+        // Eventos manuales creados por usuarios
         $manualEvents = Event::with('room')->get()->map(function ($event) {
             return [
                 'id' => $event->id,
@@ -31,29 +32,64 @@ class EventController extends Controller
             ];
         });
 
-        $classEvents = RoomUsage::with('room')->get()->map(function ($uso, $index) {
-            $dias = ['Viernes' => 4, 'Sábado' => 5];
-            if (!isset($dias[$uso->dia]) || !$uso->horario) return null;
+        // Eventos automáticos por uso de sala
+        $classEvents = collect();
 
-            [$horaInicio, $horaFin] = explode('-', $uso->horario);
-            $start = now()->startOfWeek()->addDays($dias[$uso->dia])->setTimeFromTimeString(trim($horaInicio));
-            $end = now()->startOfWeek()->addDays($dias[$uso->dia])->setTimeFromTimeString(trim($horaFin));
+        $dias = [
+            'Domingo' => 0,
+            'Lunes' => 1,
+            'Martes' => 2,
+            'Miércoles' => 3,
+            'Jueves' => 4,
+            'Viernes' => 5,
+            'Sábado' => 6,
+        ];
 
-            return [
-                'id' => 'roomusage-' . $index,
-                'title' => $uso->subject,
-                'start' => $start->toDateTimeString(),
-                'end' => $end->toDateTimeString(),
-                'room_id' => $uso->room_id,
-                'room' => $uso->room ? ['name' => $uso->room->name] : null,
-                'editable' => false,
-                'backgroundColor' => '#10b981',
-                'borderColor' => '#10b981',
-            ];
-        })->filter();
+        RoomUsage::with(['room', 'trimestre'])->get()->each(function ($uso) use (&$classEvents, $dias) {
+            if (
+                !$uso->trimestre ||
+                !$uso->hora_inicio ||
+                !$uso->hora_fin ||
+                !isset($dias[$uso->dia])
+            )
+                return;
 
-        return response()->json($manualEvents->toBase()->merge($classEvents->toBase())->values());
+            $dayNumber = $dias[$uso->dia];
+            $fechaInicio = \Carbon\Carbon::parse($uso->trimestre->fecha_inicio);
+            $fechaFin = \Carbon\Carbon::parse($uso->trimestre->fecha_fin);
+
+            // Mover fechaInicio hasta el primer día coincidente
+            while ($fechaInicio->dayOfWeek !== $dayNumber) {
+                $fechaInicio->addDay();
+            }
+
+            while ($fechaInicio->lte($fechaFin)) {
+                $start = $fechaInicio->copy()->setTimeFromTimeString($uso->hora_inicio);
+                $end = $fechaInicio->copy()->setTimeFromTimeString($uso->hora_fin);
+
+                $classEvents->push([
+                    'id' => 'roomusage-' . $uso->id . '-' . $start->format('Ymd'),
+                    'title' => $uso->subject ?? 'Clase',
+                    'start' => $start->toDateTimeString(),
+                    'end' => $end->toDateTimeString(),
+                    'room_id' => $uso->room_id,
+                    'room' => $uso->room ? ['name' => $uso->room->name] : null,
+                    'editable' => false,
+                    'backgroundColor' => '#10b981',
+                    'borderColor' => '#10b981',
+                ]);
+
+                $fechaInicio->addWeek();
+            }
+        });
+
+        // Unimos eventos manuales y de uso de sala
+        return response()->json(
+            $manualEvents->toBase()->merge($classEvents->toBase())->values()
+        );
     }
+
+
 
     public function store(Request $request)
     {

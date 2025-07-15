@@ -29,13 +29,6 @@ window.initAsignaturaAutofill = function () {
                     const asignatura = this.value;
                     const usoContainer = this.closest('.grid');
 
-                    const yearInput = usoContainer.querySelector(`input[name^="usos"][name$="[year]"]`);
-                    const trimestreInput = usoContainer.querySelector(`input[name^="usos"][name$="[trimestre]"]`);
-
-                    if (detalles[asignatura]) {
-                        yearInput.value = detalles[asignatura].año;
-                        trimestreInput.value = detalles[asignatura].trimestre;
-                    }
                 });
             });
         });

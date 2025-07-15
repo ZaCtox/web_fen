@@ -1,56 +1,67 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
-            Asignaciones de Sala: {{ $room->name }}
+            Detalles de la Sala: {{ $room->name }}
         </h2>
     </x-slot>
 
-    <div class="p-6">
-
-        {{-- Formulario de filtro --}}
-        <form method="GET" class="mb-6 flex flex-wrap gap-4">
-            <div>
-                <label class="text-sm text-gray-700 dark:text-gray-300">Año</label>
-                <input type="number" name="year" value="{{ request('year') }}"
-                    class="block w-full px-3 py-1 border rounded dark:bg-gray-700 dark:text-white">
-            </div>
-            <div>
-                <label class="text-sm text-gray-700 dark:text-gray-300">Trimestre</label>
-                <select name="trimestre" class="block w-full px-3 py-1 border rounded dark:bg-gray-700 dark:text-white">
-                    <option value="">Todos</option>
-                    @for ($i = 1; $i <= 6; $i++)
-                        <option value="{{ $i }}" @selected(request('trimestre') == $i)>Trimestre {{ $i }}</option>
-                    @endfor
-                </select>
-
-            </div>
-            <div class="flex items-end gap-2">
-                <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded">Filtrar</button>
-                <a href="{{ route('rooms.show', $room) }}"
-                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1 rounded">Limpiar</a>
-            </div>
-        </form>
-
-        {{-- Resultados --}}
-        <div class="bg-white dark:bg-gray-800 p-4 rounded shadow">
-            @forelse($usos as $uso)
-                <div class="border-b py-2">
-                    <div class="text-gray-800 dark:text-white font-semibold">
-                        Año {{ $uso->year }} - Trimestre {{ $uso->trimestre }}
-                    </div>
-                    <div class="text-sm flex flex-wrap items-center gap-2">
-                        <span class="inline-block px-2 py-1 rounded text-xs font-semibold bg-indigo-100 text-indigo-800">
-                            {{ $uso->dia ?? 'Día no asignado' }} {{ $uso->horario ?? '' }}
-                        </span>
-                        <span class="text-gray-600 dark:text-gray-300">
-                            {{ $uso->subject ?? 'Sin asignatura' }}
-                        </span>
-                    </div>
-                </div>
-            @empty
-                <p class="text-gray-500 dark:text-gray-400 italic">No hay asignaciones registradas.</p>
-            @endforelse
+    <div class="p-6 space-y-4">
+        <div class="bg-white dark:bg-gray-800 shadow rounded p-4">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">Información General</h3>
+            <p><strong>Ubicación:</strong> {{ $room->location }}</p>
+            <p><strong>Capacidad:</strong> {{ $room->capacity }}</p>
+            <p><strong>Descripción:</strong> {{ $room->description }}</p>
         </div>
+
+        <div class="bg-white dark:bg-gray-800 shadow rounded p-4">
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Usos Académicos</h3>
+
+            <form method="GET" class="mb-4">
+                <label for="trimestre_id" class="block text-sm text-gray-700 dark:text-gray-300 mb-1">Filtrar por Trimestre:</label>
+                <select name="trimestre_id" id="trimestre_id" onchange="this.form.submit()"
+                    class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+                    <option value="">Todos</option>
+                    @foreach($trimestres as $t)
+                        <option value="{{ $t->id }}" {{ request('trimestre_id') == $t->id ? 'selected' : '' }}>
+                            {{ $t->nombre }} - {{ $t->año }}
+                        </option>
+                    @endforeach
+                </select>
+            </form>
+
+            @if($usos->isEmpty())
+                <p class="text-gray-500 dark:text-gray-300">No hay usos registrados para esta sala.</p>
+            @else
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm mt-4">
+                    <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Trimestre</th>
+                            <th class="px-4 py-2 text-left">Día</th>
+                            <th class="px-4 py-2 text-left">Horario</th>
+                            <th class="px-4 py-2 text-left">Magíster</th>
+                            <th class="px-4 py-2 text-left">Asignatura</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                        @foreach($usos as $uso)
+                            <tr>
+                                <td class="px-4 py-2">
+                                    {{ $uso->trimestre->nombre }} - {{ $uso->trimestre->año }}
+                                </td>
+                                <td class="px-4 py-2">{{ $uso->dia }}</td>
+                                <td class="px-4 py-2">{{ $uso->hora_inicio }} - {{ $uso->hora_fin }}</td>
+                                <td class="px-4 py-2">{{ $uso->magister ?? '—' }}</td>
+                                <td class="px-4 py-2">{{ $uso->subject ?? '—' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+
+        <a href="{{ route('rooms.index') }}"
+           class="inline-block mt-4 bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+            ← Volver al listado
+        </a>
     </div>
 </x-app-layout>
