@@ -10,7 +10,7 @@ class Incident extends Model
     protected $fillable = [
         'titulo',
         'descripcion',
-        'sala',
+        'room_id',
         'estado',
         'imagen',
         'plublic_id',
@@ -28,6 +28,12 @@ class Incident extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
 
 
 }

@@ -10,9 +10,8 @@ class RoomUsage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'trimestre_id',
-        'subject',
-        'magister',
+        'period_id',
+        'course_id',
         'dia',
         'hora_inicio',
         'hora_fin',
@@ -24,9 +23,14 @@ class RoomUsage extends Model
         return $this->belongsTo(Room::class);
     }
 
-    public function trimestre()
+    public function period()
     {
-        return $this->belongsTo(Trimestre::class);
+        return $this->belongsTo(Period::class);
+    }
+
+        public function course()
+    {
+        return $this->belongsTo(Course::class);
     }
 
 }

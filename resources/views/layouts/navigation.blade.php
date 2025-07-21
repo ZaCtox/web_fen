@@ -27,6 +27,12 @@
                         <x-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">
                             Incidencias
                         </x-nav-link>
+                        <x-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">
+                            Periodos
+                        </x-nav-link>
+                        <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">
+                            Cursos
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -101,6 +107,12 @@
                 </x-nav-link>
                 <x-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">
                     Incidencias
+                </x-nav-link>
+                <x-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">
+                    Periodos
+                </x-nav-link>
+                <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">
+                    Cursos
                 </x-nav-link>
             @endif
         </div>

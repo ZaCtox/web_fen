@@ -7,7 +7,6 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
-
             <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
                 <a href="{{ route('incidencias.estadisticas') }}"
                     class="bg-indigo-500 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-600 text-center w-full sm:w-auto mb-2 sm:mb-0">
@@ -21,8 +20,9 @@
                     class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
                     Exportar PDF
                 </a>
-
             </div>
+
+            {{-- Filtros --}}
             <form method="GET" class="grid grid-cols-1 sm:grid-cols-6 gap-4">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar..."
                     class="rounded border-gray-300 shadow-sm">
@@ -33,23 +33,39 @@
                     <option value="resuelta" {{ request('estado') == 'resuelta' ? 'selected' : '' }}>Resuelta</option>
                 </select>
 
-                <input type="text" name="sala" value="{{ request('sala') }}" placeholder="Sala"
-                    class="rounded border-gray-300 shadow-sm">
-
-                <select name="semestre" class="rounded border-gray-300 shadow-sm">
-                    <option value="">-- Semestre --</option>
-                    <option value="1" {{ request('semestre') == '1' ? 'selected' : '' }}>1</option>
-                    <option value="2" {{ request('semestre') == '2' ? 'selected' : '' }}>2</option>
+                <select name="room_id" class="rounded border-gray-300 shadow-sm">
+                    <option value="">-- Sala --</option>
+                    @foreach($salas as $sala)
+                        <option value="{{ $sala->id }}" {{ request('room_id') == $sala->id ? 'selected' : '' }}>
+                            {{ $sala->name }}
+                        </option>
+                    @endforeach
                 </select>
 
-                <input type="number" name="anio" value="{{ request('anio') }}" placeholder="Año"
-                    class="rounded border-gray-300 shadow-sm">
+                <select name="trimestre_id" class="rounded border-gray-300 shadow-sm">
+                    <option value="">-- Trimestre --</option>
+                    @foreach($trimestres as $t)
+                        <option value="{{ $t->id }}" {{ request('trimestre_id') == $t->id ? 'selected' : '' }}>
+                            Trimestre {{ $t->numero }} - {{ $t->año }}
+                        </option>
+                    @endforeach
+                </select>
+                
+                <select name="anio" class="rounded border-gray-300 shadow-sm">
+                    <option value="">-- Año --</option>
+                    @foreach($anios as $anio)
+                        <option value="{{ $anio }}" {{ request('anio') == $anio ? 'selected' : '' }}>
+                            {{ $anio }}
+                        </option>
+                    @endforeach
+                </select>
 
                 <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
                     Filtrar
                 </button>
             </form>
 
+            {{-- Tabla de resultados --}}
             <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
@@ -59,6 +75,7 @@
                             <th class="px-4 py-2 text-left">Registrado por</th>
                             <th class="px-4 py-2 text-left">Estado</th>
                             <th class="px-4 py-2 text-left">Fecha</th>
+                            <th class="px-4 py-2 text-left">Trimestre</th>
                             <th class="px-4 py-2 text-left">Imagen</th>
                             <th class="px-4 py-2 text-left">Acciones</th>
                         </tr>
@@ -67,10 +84,24 @@
                         @foreach($incidencias as $incidencia)
                             <tr>
                                 <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
-                                <td class="px-4 py-2">{{ $incidencia->sala }}</td>
+                                <td class="px-4 py-2">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
                                 <td class="px-4 py-2">{{ $incidencia->user->name ?? 'N/D' }}</td>
-                                <td class="px-4 py-2">{{ ucfirst($incidencia->estado) }}</td>
+                                <td class="px-4 py-2">
+                                    @if($incidencia->estado === 'resuelta')
+                                        <span class="text-green-600 dark:text-green-400 font-semibold">Resuelta</span>
+                                    @else
+                                        <span class="text-yellow-600 dark:text-yellow-400 font-semibold">Pendiente</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
+                                <td class="px-4 py-2">
+                                    @php
+                                        $trimestre = $trimestres->first(function ($t) use ($incidencia) {
+                                            return $incidencia->created_at >= $t->fecha_inicio && $incidencia->created_at <= $t->fecha_fin;
+                                        });
+                                    @endphp
+                                    {{ $trimestre ? "Trimestre {$trimestre->numero} - {$trimestre->año}" : 'Fuera de rango' }}
+                                </td>
                                 <td class="px-4 py-2">
                                     @if($incidencia->imagen)
                                         <img src="{{ $incidencia->imagen }}" alt="Incidencia" class="w-24 h-auto rounded">
@@ -100,11 +131,10 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm">
                                             Eliminar
                                         </button>
                                     </form>
-
                                 </td>
                             </tr>
                         @endforeach
@@ -114,7 +144,6 @@
                     {{ $incidencias->links() }}
                 </div>
             </div>
-
         </div>
     </div>
 </x-app-layout>

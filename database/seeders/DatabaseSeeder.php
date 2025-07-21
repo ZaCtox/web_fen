@@ -10,12 +10,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Crea usuario de prueba
-        User::factory()->create([
+/*         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+ */
+        //$this->call(TrimestreSeeder::class);
+        //$this->call(CourseSeeder::class);
+        $this->call(PeriodSeeder::class);
 
-        // 👉 Aquí agregas el seeder de trimestres:
-        $this->call(TrimestreSeeder::class);
     }
 }

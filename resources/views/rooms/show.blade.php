@@ -17,13 +17,13 @@
             <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Usos Académicos</h3>
 
             <form method="GET" class="mb-4">
-                <label for="trimestre_id" class="block text-sm text-gray-700 dark:text-gray-300 mb-1">Filtrar por Trimestre:</label>
-                <select name="trimestre_id" id="trimestre_id" onchange="this.form.submit()"
+                <label for="period_id" class="block text-sm text-gray-700 dark:text-gray-300 mb-1">Filtrar por Periodo:</label>
+                <select name="period_id" id="period_id" onchange="this.form.submit()"
                     class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                     <option value="">Todos</option>
-                    @foreach($trimestres as $t)
-                        <option value="{{ $t->id }}" {{ request('trimestre_id') == $t->id ? 'selected' : '' }}>
-                            {{ $t->nombre }} - {{ $t->año }}
+                    @foreach($periodos as $p)
+                        <option value="{{ $p->id }}" {{ request('period_id') == $p->id ? 'selected' : '' }}>
+                            {{ $p->nombre_completo }}
                         </option>
                     @endforeach
                 </select>
@@ -35,23 +35,21 @@
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm mt-4">
                     <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
                         <tr>
-                            <th class="px-4 py-2 text-left">Trimestre</th>
+                            <th class="px-4 py-2 text-left">Periodo</th>
                             <th class="px-4 py-2 text-left">Día</th>
                             <th class="px-4 py-2 text-left">Horario</th>
-                            <th class="px-4 py-2 text-left">Magíster</th>
+                            <th class="px-4 py-2 text-left">Programa</th>
                             <th class="px-4 py-2 text-left">Asignatura</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
                         @foreach($usos as $uso)
                             <tr>
-                                <td class="px-4 py-2">
-                                    {{ $uso->trimestre->nombre }} - {{ $uso->trimestre->año }}
-                                </td>
+                                <td class="px-4 py-2">{{ $uso->period->nombre_completo }}</td>
                                 <td class="px-4 py-2">{{ $uso->dia }}</td>
                                 <td class="px-4 py-2">{{ $uso->hora_inicio }} - {{ $uso->hora_fin }}</td>
-                                <td class="px-4 py-2">{{ $uso->magister ?? '—' }}</td>
-                                <td class="px-4 py-2">{{ $uso->subject ?? '—' }}</td>
+                                <td class="px-4 py-2">{{ $uso->course->programa }}</td>
+                                <td class="px-4 py-2">{{ $uso->course->nombre }}</td>
                             </tr>
                         @endforeach
                     </tbody>

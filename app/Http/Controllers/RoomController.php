@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use App\Models\RoomUsage;
-use App\Models\Trimestre;
+use App\Models\Period;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreRoomRequest;
-use Illuminate\Support\Collection;
 
 class RoomController extends Controller
 {
@@ -27,8 +27,10 @@ class RoomController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
-        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
-        return view('rooms.create', compact('trimestres'));
+        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+        $cursos = Course::orderBy('programa')->orderBy('nombre')->get();
+
+        return view('rooms.create', compact('periodos', 'cursos'));
     }
 
     public function store(StoreRoomRequest $request)
@@ -41,12 +43,11 @@ class RoomController extends Controller
 
         foreach ($request->input('usos', []) as $uso) {
             $room->usages()->create([
-                'trimestre_id' => $uso['trimestre_id'],
+                'period_id' => $uso['period_id'],
+                'course_id' => $uso['course_id'],
                 'dia' => $uso['dia'],
                 'hora_inicio' => $uso['hora_inicio'],
                 'hora_fin' => $uso['hora_fin'],
-                'magister' => $uso['magister'],
-                'subject' => $uso['subject'],
             ]);
         }
 
@@ -59,8 +60,10 @@ class RoomController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
-        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
-        return view('rooms.edit', compact('room', 'trimestres'));
+        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+        $cursos = Course::orderBy('programa')->orderBy('nombre')->get();
+
+        return view('rooms.edit', compact('room', 'periodos', 'cursos'));
     }
 
     public function update(StoreRoomRequest $request, Room $room)
@@ -74,7 +77,8 @@ class RoomController extends Controller
 
         foreach ($request->input('usos', []) as $uso) {
             $room->usages()->create([
-                'trimestre_id' => $uso['trimestre_id'],
+                'period_id' => $uso['period_id'],
+                'course_id' => $uso['course_id'],
                 'dia' => $uso['dia'],
                 'hora_inicio' => $uso['hora_inicio'],
                 'hora_fin' => $uso['hora_fin'],
@@ -96,15 +100,15 @@ class RoomController extends Controller
 
     public function show(Request $request, Room $room)
     {
-        $usosQuery = $room->usages();
+        $usosQuery = $room->usages()->with(['period', 'course']);
 
-        if ($request->filled('trimestre_id')) {
-            $usosQuery->where('trimestre_id', $request->trimestre_id);
+        if ($request->filled('period_id')) {
+            $usosQuery->where('period_id', $request->period_id);
         }
 
-        $usos = $usosQuery->with('trimestre')->orderBy('trimestre_id')->get();
-        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
+        $usos = $usosQuery->orderBy('period_id')->get();
+        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
 
-        return view('rooms.show', compact('room', 'usos', 'trimestres'));
+        return view('rooms.show', compact('room', 'usos', 'periodos'));
     }
 }

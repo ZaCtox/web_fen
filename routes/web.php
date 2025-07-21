@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IncidentController;
 use Illuminate\Support\Facades\Route;
@@ -7,6 +8,7 @@ use App\Models\Incident;
 use App\Http\Controllers\CloudinaryTestController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\PeriodController;
 
 // Página de inicio pública
 Route::get('/', function () {
@@ -45,6 +47,10 @@ Route::middleware('auth')->group(function () {
     // Salas
     Route::resource('rooms', RoomController::class);
 
+    // Periodos
+    Route::resource('periods', PeriodController::class);
+
+    Route::resource('courses', CourseController::class);
 });
 
 Route::get('/cloudinary-test', [CloudinaryTestController::class, 'form'])->name('cloudinary.form');

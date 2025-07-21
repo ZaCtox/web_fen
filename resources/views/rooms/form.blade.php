@@ -25,17 +25,16 @@
         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:bg-gray-700 dark:text-white">{{ old('description', $room->description ?? '') }}</textarea>
 </div>
 
-{{-- Usos académicos --}}
 <hr class="my-6 border-gray-300 dark:border-gray-600">
 <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Usos Académicos</h3>
 
 <div id="usos-container" class="space-y-4">
     <div class="grid grid-cols-6 gap-2">
-        {{-- Trimestre --}}
-        <select name="usos[0][trimestre_id]" required class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-            <option value="">Trimestre</option>
-            @foreach($trimestres as $t)
-                <option value="{{ $t->id }}">{{ $t->nombre }} - {{ $t->año }}</option>
+        {{-- Periodo --}}
+        <select name="usos[0][period_id]" required class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+            <option value="">Periodo</option>
+            @foreach($periodos as $p)
+                <option value="{{ $p->id }}">{{ $p->nombre_completo }}</option>
             @endforeach
         </select>
 
@@ -47,30 +46,26 @@
         </select>
 
         {{-- Hora inicio --}}
-        <input type="time" name="usos[0][hora_inicio]" required
-            class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+        <input type="time" name="usos[0][hora_inicio]" required class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
 
         {{-- Hora fin --}}
-        <input type="time" name="usos[0][hora_fin]" required
-            class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+        <input type="time" name="usos[0][hora_fin]" required class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
 
         {{-- Magíster --}}
-        <select name="usos[0][magister]" class="magister-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+        <select class="magister-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
             <option value="">Magíster</option>
-            <option value="Economía">Economía</option>
-            <option value="Gestión de Sistemas de Salud">Gestión de Sistemas de Salud</option>
-            <option value="Gestión y Políticas Públicas">Gestión y Políticas Públicas</option>
-            <option value="Dirección y Planificación Tributaria">Dirección y Planificación Tributaria</option>
+            @foreach($cursos->groupBy('programa') as $programa => $asignaturas)
+                <option value="{{ $programa }}">{{ $programa }}</option>
+            @endforeach
         </select>
 
-        {{-- Asignatura --}}
-        <select name="usos[0][subject]" class="asignatura-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+        {{-- Curso (asignatura) --}}
+        <select name="usos[0][course_id]" required class="course-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
             <option value="">Asignatura</option>
         </select>
     </div>
 </div>
 
-{{-- Botón para añadir más usos --}}
 <button type="button" id="add-uso" class="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded">
     + Añadir uso
 </button>
@@ -84,22 +79,47 @@
 
 {{-- Script para clonar --}}
 <script>
-    let usoIndex = 1;
+    const cursosPorMagister = @json($cursos->groupBy('programa')->map(function ($items) {
+        return $items->map(fn($c) => ['id' => $c->id, 'nombre' => $c->nombre]);
+    }));
 
-    const trimestreOptions = `
-        <option value="">Trimestre</option>
-        @foreach($trimestres as $t)
-            <option value="{{ $t->id }}">{{ $t->nombre }} - {{ $t->año }}</option>
+    let usoIndex = 1;
+    const periodosOptions = `
+        <option value="">Periodo</option>
+        @foreach($periodos as $p)
+            <option value="{{ $p->id }}">{{ $p->nombre_completo }}</option>
         @endforeach
     `;
+
+    const magisterOptions = `
+        <option value="">Magíster</option>
+        @foreach($cursos->groupBy('programa') as $programa => $_)
+            <option value="{{ $programa }}">{{ $programa }}</option>
+        @endforeach
+    `;
+
+    function bindCourseFilter(magSelect, courseSelect) {
+        magSelect.addEventListener('change', function () {
+            const mag = this.value;
+            courseSelect.innerHTML = '<option value="">Asignatura</option>';
+            if (cursosPorMagister[mag]) {
+                cursosPorMagister[mag].forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = c.nombre;
+                    courseSelect.appendChild(opt);
+                });
+            }
+        });
+    }
 
     document.getElementById('add-uso').addEventListener('click', () => {
         const container = document.getElementById('usos-container');
         const div = document.createElement('div');
         div.classList.add('grid', 'grid-cols-6', 'gap-2', 'mt-2');
         div.innerHTML = `
-            <select name="usos[${usoIndex}][trimestre_id]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
-                ${trimestreOptions}
+            <select name="usos[${usoIndex}][period_id]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
+                ${periodosOptions}
             </select>
             <select name="usos[${usoIndex}][dia]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
                 <option value="">Día</option>
@@ -108,22 +128,19 @@
             </select>
             <input type="time" name="usos[${usoIndex}][hora_inicio]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
             <input type="time" name="usos[${usoIndex}][hora_fin]" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
-            <select name="usos[${usoIndex}][magister]" class="magister-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-                <option value="">Magíster</option>
-                <option value="Economía">Economía</option>
-                <option value="Gestión de Sistemas de Salud">Gestión de Sistemas de Salud</option>
-                <option value="Gestión y Políticas Públicas">Gestión y Políticas Públicas</option>
-                <option value="Dirección y Planificación Tributaria">Dirección y Planificación Tributaria</option>
+            <select class="magister-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+                ${magisterOptions}
             </select>
-            <select name="usos[${usoIndex}][subject]" class="asignatura-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+            <select name="usos[${usoIndex}][course_id]" class="course-select px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" required>
                 <option value="">Asignatura</option>
             </select>
         `;
         container.appendChild(div);
+        bindCourseFilter(div.querySelector('.magister-select'), div.querySelector('.course-select'));
         usoIndex++;
+    });
 
-        if (window.initAsignaturaAutofill) {
-            window.initAsignaturaAutofill();
-        }
+    document.querySelectorAll('.magister-select').forEach((mag, i) => {
+        bindCourseFilter(mag, document.querySelectorAll('.course-select')[i]);
     });
 </script>

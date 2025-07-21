@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Incident;
+use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Cloudinary\Api\Upload\UploadApi;
+use App\Models\Trimestre;
 
 class IncidentController extends Controller
 {
@@ -16,7 +18,7 @@ class IncidentController extends Controller
             abort(403);
         }
 
-        $query = Incident::query();
+        $query = Incident::with('room');
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -29,21 +31,29 @@ class IncidentController extends Controller
             $query->where('estado', $request->estado);
         }
 
-        if ($request->filled('sala')) {
-            $query->where('sala', 'like', '%' . $request->sala . '%');
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
         }
 
         if ($request->filled('anio')) {
             $query->whereYear('created_at', $request->anio);
         }
 
-        if ($request->filled('semestre')) {
-            $query->whereMonth('created_at', $request->semestre == 1 ? '<=' : '>=', 6);
+        if ($request->filled('trimestre_id')) {
+            $trimestre = Trimestre::find($request->trimestre_id);
+            if ($trimestre) {
+                $query->whereBetween('created_at', [$trimestre->fecha_inicio, $trimestre->fecha_fin]);
+            }
         }
+
 
         $incidencias = $query->latest()->paginate(10)->withQueryString();
 
-        return view('incidencias.index', compact('incidencias'));
+        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
+        $salas = Room::orderBy('name')->get();
+        $anios = Incident::selectRaw('YEAR(created_at) as anio')->distinct()->pluck('anio')->sortDesc();
+
+        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'trimestres'));
     }
 
     public function create()
@@ -52,7 +62,8 @@ class IncidentController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
-        return view('incidencias.create');
+        $salas = Room::orderBy('name')->get();
+        return view('incidencias.create', compact('salas'));
     }
 
     public function store(Request $request)
@@ -64,7 +75,7 @@ class IncidentController extends Controller
         $validated = $request->validate([
             'titulo' => 'required|string',
             'descripcion' => 'required|string',
-            'sala' => 'required|string',
+            'room_id' => 'required|exists:rooms,id',
             'imagen' => 'nullable|image|max:2048',
         ]);
 
@@ -89,7 +100,6 @@ class IncidentController extends Controller
         return redirect()->route('incidencias.index')->with('success', 'Incidencia registrada.');
     }
 
-
     public function update(Request $request, Incident $incidencia)
     {
         if (!in_array(Auth::user()->rol, ['docente', 'administrativo'])) {
@@ -110,6 +120,7 @@ class IncidentController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
+        $incidencia->load('room', 'user');
         return view('incidencias.show', compact('incidencia'));
     }
 
@@ -126,20 +137,18 @@ class IncidentController extends Controller
         }
 
         if ($request->filled('semestre')) {
-            if ($request->semestre == 1) {
-                $query->whereMonth('created_at', '<=', 6);
-            } else {
-                $query->whereMonth('created_at', '>=', 7);
-            }
+            $request->semestre == 1
+                ? $query->whereMonth('created_at', '<=', 6)
+                : $query->whereMonth('created_at', '>=', 7);
         }
 
-        if ($request->filled('sala')) {
-            $query->where('sala', 'like', '%' . $request->sala . '%');
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
         }
 
-        $incidenciasFiltradas = $query->get();
+        $incidenciasFiltradas = $query->with('room')->get();
 
-        $porSala = $incidenciasFiltradas->groupBy('sala')->map->count();
+        $porSala = $incidenciasFiltradas->groupBy(fn($i) => $i->room->name ?? 'Sin Sala')->map->count();
         $porEstado = $incidenciasFiltradas->groupBy('estado')->map->count();
         $porSemestre = $incidenciasFiltradas->groupBy(function ($item) {
             $semestre = ($item->created_at->month <= 6) ? '1' : '2';
@@ -156,14 +165,14 @@ class IncidentController extends Controller
 
     public function exportarPDF(Request $request)
     {
-        $query = Incident::query();
+        $query = Incident::with('room');
 
         if ($request->filled('estado')) {
             $query->where('estado', $request->estado);
         }
 
-        if ($request->filled('sala')) {
-            $query->where('sala', 'like', '%' . $request->sala . '%');
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
         }
 
         if ($request->filled('anio')) {
@@ -200,6 +209,4 @@ class IncidentController extends Controller
 
         return redirect()->route('incidencias.index')->with('success', 'Incidencia eliminada correctamente.');
     }
-
-
 }
