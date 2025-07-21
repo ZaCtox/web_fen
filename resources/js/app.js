@@ -1,4 +1,6 @@
 import './bootstrap';
+import './asignaturas_autofill.js';
+
 
 import Alpine from 'alpinejs';
 

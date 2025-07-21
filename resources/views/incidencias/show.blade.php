@@ -29,6 +29,7 @@
 
                 <p><strong>Registrado por:</strong> {{ $incidencia->user->name ?? 'N/D' }}</p>
                 <p><strong>Fecha:</strong> {{ $incidencia->created_at->format('d/m/Y H:i') }}</p>
+
                 @if($incidencia->resuelta_en)
                     <p><strong>Resuelta el:</strong> {{ $incidencia->resuelta_en->format('d/m/Y H:i') }}</p>
                 @endif
@@ -41,13 +42,14 @@
                 </div>
 
                 @if ($incidencia->imagen)
-                    <div>
-                        <p><strong>Imagen del problema:</strong></p>
-                        <img src="{{ asset('storage/incidencias/' . $incidencia->imagen) }}" alt="Incidencia">
-                        class="rounded shadow max-w-md">
+                    <div class="border-t border-gray-300 pt-4">
+                        <p class="font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                            Imagen del problema:
+                        </p>
+                        <img src="{{ $incidencia->imagen }}" alt="Incidencia" class="rounded shadow max-w-md" loading="lazy">
                     </div>
                 @endif
-
+                
                 <div class="mt-6">
                     <a href="{{ route('incidencias.index') }}"
                         class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">

@@ -6,6 +6,7 @@ use App\Models\Incident;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Cloudinary\Api\Upload\UploadApi;
 
 class IncidentController extends Controller
 {
@@ -42,7 +43,6 @@ class IncidentController extends Controller
 
         $incidencias = $query->latest()->paginate(10)->withQueryString();
 
-
         return view('incidencias.index', compact('incidencias'));
     }
 
@@ -65,13 +65,22 @@ class IncidentController extends Controller
             'titulo' => 'required|string',
             'descripcion' => 'required|string',
             'sala' => 'required|string',
+            'imagen' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('imagen')) {
-            $file = $request->file('imagen');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('incidencias', $filename, 'public');
-            $validated['imagen'] = $filename;
+            $uploadedFile = $request->file('imagen')->getRealPath();
+
+            try {
+                $cloudinaryUpload = (new UploadApi())->upload($uploadedFile, [
+                    'folder' => 'incidencias'
+                ]);
+
+                $validated['imagen'] = $cloudinaryUpload['secure_url'];
+                $validated['public_id'] = $cloudinaryUpload['public_id'];
+            } catch (\Exception $e) {
+                return redirect()->back()->withErrors(['imagen' => 'Error al subir a Cloudinary: ' . $e->getMessage()]);
+            }
         }
 
         $validated['user_id'] = Auth::id();
@@ -79,6 +88,7 @@ class IncidentController extends Controller
 
         return redirect()->route('incidencias.index')->with('success', 'Incidencia registrada.');
     }
+
 
     public function update(Request $request, Incident $incidencia)
     {
@@ -93,6 +103,7 @@ class IncidentController extends Controller
 
         return redirect()->back()->with('success', 'Incidencia marcada como resuelta.');
     }
+
     public function show(Incident $incidencia)
     {
         if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
@@ -110,7 +121,6 @@ class IncidentController extends Controller
 
         $query = Incident::query();
 
-        // Filtros
         if ($request->filled('anio')) {
             $query->whereYear('created_at', $request->anio);
         }
@@ -130,9 +140,7 @@ class IncidentController extends Controller
         $incidenciasFiltradas = $query->get();
 
         $porSala = $incidenciasFiltradas->groupBy('sala')->map->count();
-
         $porEstado = $incidenciasFiltradas->groupBy('estado')->map->count();
-
         $porSemestre = $incidenciasFiltradas->groupBy(function ($item) {
             $semestre = ($item->created_at->month <= 6) ? '1' : '2';
             $anio = $item->created_at->year;
@@ -173,4 +181,25 @@ class IncidentController extends Controller
         $pdf = Pdf::loadView('incidencias.pdf', compact('incidencias'));
         return $pdf->download('bitacora_incidencias.pdf');
     }
+
+    public function destroy(Incident $incidencia)
+    {
+        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
+        }
+
+        if ($incidencia->public_id) {
+            try {
+                (new UploadApi())->destroy($incidencia->public_id);
+            } catch (\Exception $e) {
+                return redirect()->back()->withErrors(['imagen' => 'Error al eliminar en Cloudinary: ' . $e->getMessage()]);
+            }
+        }
+
+        $incidencia->delete();
+
+        return redirect()->route('incidencias.index')->with('success', 'Incidencia eliminada correctamente.');
+    }
+
+
 }

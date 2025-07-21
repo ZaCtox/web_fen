@@ -23,13 +23,26 @@
         <!-- Page Heading -->
         @isset($header)
             <header class="bg-white dark:bg-gray-800 shadow">
+                @php $rol = Auth::user()->rol; @endphp
+
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                     {{ $header }}
-                    <button id="toggle-theme"
-                        class="text-sm px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                        <span id="theme-icon">🌙</span>
-                    </button>
+
+                    <div class="flex items-center gap-x-2">
+                        @if($rol === 'docente' || $rol === 'administrativo')
+                            <a href="{{ route('register') }}"
+                                class="text-sm px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium">
+                                👤➕ Registrar Usuario
+                            </a>
+                        @endif
+
+                        <button id="toggle-theme"
+                            class="text-sm px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            <span id="theme-icon">🌙</span>
+                        </button>
+                    </div>
                 </div>
+
             </header>
         @endisset
 
@@ -66,5 +79,11 @@
             localStorage.setItem('theme', newTheme);
         });
     </script>
+    @yield('scripts')
+    @vite('resources/js/asignaturas_autofill.js')
+    @vite('resources/js/app.js')
+
+
 </body>
+
 </html>
