@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\MagisterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\IncidentController;
 use Illuminate\Support\Facades\Route;
@@ -9,6 +10,7 @@ use App\Http\Controllers\CloudinaryTestController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\DashboardController;
 
 // Página de inicio pública
 Route::get('/', function () {
@@ -47,10 +49,18 @@ Route::middleware('auth')->group(function () {
     // Salas
     Route::resource('rooms', RoomController::class);
 
+    Route::get('/rooms/{room}/asignar-uso', [RoomController::class, 'asignarUso'])->name('rooms.asignar');
+    Route::post('/rooms/{room}/asignar-uso', [RoomController::class, 'guardarUso'])->name('rooms.guardar-uso');
+
+
     // Periodos
     Route::resource('periods', PeriodController::class);
 
     Route::resource('courses', CourseController::class);
+    Route::delete('/courses/programa/{programa}', [CourseController::class, 'destroyPrograma'])->name('courses.destroy-programa');
+
+
+    Route::resource('magisters', MagisterController::class);
 });
 
 Route::get('/cloudinary-test', [CloudinaryTestController::class, 'form'])->name('cloudinary.form');

@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Incident;
 use App\Models\Room;
+use App\Models\Period;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Cloudinary\Api\Upload\UploadApi;
-use App\Models\Trimestre;
 
 class IncidentController extends Controller
 {
@@ -39,28 +39,25 @@ class IncidentController extends Controller
             $query->whereYear('created_at', $request->anio);
         }
 
-        if ($request->filled('trimestre_id')) {
-            $trimestre = Trimestre::find($request->trimestre_id);
-            if ($trimestre) {
-                $query->whereBetween('created_at', [$trimestre->fecha_inicio, $trimestre->fecha_fin]);
+        if ($request->filled('period_id')) {
+            $periodo = Period::find($request->period_id);
+            if ($periodo) {
+                $query->whereBetween('created_at', [$periodo->fecha_inicio, $periodo->fecha_fin]);
             }
         }
 
-
         $incidencias = $query->latest()->paginate(10)->withQueryString();
 
-        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
+        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
         $salas = Room::orderBy('name')->get();
         $anios = Incident::selectRaw('YEAR(created_at) as anio')->distinct()->pluck('anio')->sortDesc();
 
-        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'trimestres'));
+        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'periodos'));
     }
 
     public function create()
     {
-        if (!in_array(Auth::user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $salas = Room::orderBy('name')->get();
         return view('incidencias.create', compact('salas'));
@@ -68,12 +65,10 @@ class IncidentController extends Controller
 
     public function store(Request $request)
     {
-        if (!in_array(Auth::user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $validated = $request->validate([
-            'titulo' => 'required|string',
+            'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'room_id' => 'required|exists:rooms,id',
             'imagen' => 'nullable|image|max:2048',
@@ -102,9 +97,7 @@ class IncidentController extends Controller
 
     public function update(Request $request, Incident $incidencia)
     {
-        if (!in_array(Auth::user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $incidencia->update([
             'estado' => 'resuelta',
@@ -116,9 +109,7 @@ class IncidentController extends Controller
 
     public function show(Incident $incidencia)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $incidencia->load('room', 'user');
         return view('incidencias.show', compact('incidencia'));
@@ -126,9 +117,7 @@ class IncidentController extends Controller
 
     public function estadisticas(Request $request)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403);
-        }
+        $this->authorizeAccess();
 
         $query = Incident::query();
 
@@ -156,16 +145,23 @@ class IncidentController extends Controller
             return "$anio - S$semestre";
         })->map->count();
 
+        $salas = Room::orderBy('name')->get(); // ✅ Incluido para el filtro
+        $anios = Incident::selectRaw('YEAR(created_at) as anio')->distinct()->pluck('anio')->sortDesc(); // opcional
+        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get(); // si quieres agregarlo después
+
         return view('incidencias.estadisticas', [
             'porSala' => $porSala,
             'porEstado' => $porEstado,
             'porSemestre' => $porSemestre,
+            'salas' => $salas,
+            'anios' => $anios,
         ]);
     }
 
+
     public function exportarPDF(Request $request)
     {
-        $query = Incident::with('room');
+        $query = Incident::with('room', 'user'); // 👈 importante incluir relaciones
 
         if ($request->filled('estado')) {
             $query->where('estado', $request->estado);
@@ -191,11 +187,10 @@ class IncidentController extends Controller
         return $pdf->download('bitacora_incidencias.pdf');
     }
 
+
     public function destroy(Incident $incidencia)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         if ($incidencia->public_id) {
             try {
@@ -208,5 +203,12 @@ class IncidentController extends Controller
         $incidencia->delete();
 
         return redirect()->route('incidencias.index')->with('success', 'Incidencia eliminada correctamente.');
+    }
+
+    private function authorizeAccess()
+    {
+        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
+        }
     }
 }

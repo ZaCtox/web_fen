@@ -28,10 +28,11 @@ class RoomController extends Controller
         }
 
         $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
-        $cursos = Course::orderBy('programa')->orderBy('nombre')->get();
+        $cursos = Course::with('magister')->orderBy('magister_id')->orderBy('nombre')->get();
 
         return view('rooms.create', compact('periodos', 'cursos'));
     }
+
 
     public function store(StoreRoomRequest $request)
     {
@@ -41,17 +42,7 @@ class RoomController extends Controller
 
         $room = Room::create($request->validated());
 
-        foreach ($request->input('usos', []) as $uso) {
-            $room->usages()->create([
-                'period_id' => $uso['period_id'],
-                'course_id' => $uso['course_id'],
-                'dia' => $uso['dia'],
-                'hora_inicio' => $uso['hora_inicio'],
-                'hora_fin' => $uso['hora_fin'],
-            ]);
-        }
-
-        return redirect()->route('rooms.index')->with('success', 'Sala creada correctamente');
+        return redirect()->route('rooms.asignar', $room)->with('success', 'Sala creada. Ahora asigna sus usos.');
     }
 
     public function edit(Room $room)
@@ -60,10 +51,7 @@ class RoomController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
 
-        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
-        $cursos = Course::orderBy('programa')->orderBy('nombre')->get();
-
-        return view('rooms.edit', compact('room', 'periodos', 'cursos'));
+        return view('rooms.edit', compact('room'));
     }
 
     public function update(StoreRoomRequest $request, Room $room)
@@ -73,18 +61,6 @@ class RoomController extends Controller
         }
 
         $room->update($request->validated());
-        $room->usages()->delete();
-
-        foreach ($request->input('usos', []) as $uso) {
-            $room->usages()->create([
-                'period_id' => $uso['period_id'],
-                'course_id' => $uso['course_id'],
-                'dia' => $uso['dia'],
-                'hora_inicio' => $uso['hora_inicio'],
-                'hora_fin' => $uso['hora_fin'],
-            ]);
-        }
-
         return redirect()->route('rooms.index')->with('success', 'Sala actualizada correctamente');
     }
 
@@ -98,17 +74,64 @@ class RoomController extends Controller
         return redirect()->route('rooms.index')->with('success', 'Sala eliminada');
     }
 
-    public function show(Request $request, Room $room)
-    {
-        $usosQuery = $room->usages()->with(['period', 'course']);
+public function show(Request $request, Room $room)
+{
+    $usosQuery = $room->usages()->with(['period', 'course.magister']);
 
-        if ($request->filled('period_id')) {
-            $usosQuery->where('period_id', $request->period_id);
+    if ($request->filled('period_id')) {
+        $usosQuery->where('period_id', $request->period_id);
+    }
+
+    if ($request->filled('magister_id')) {
+        $usosQuery->whereHas('course', fn($q) =>
+            $q->where('magister_id', $request->magister_id)
+        );
+    }
+
+    $usos = $usosQuery->orderBy('period_id')->get();
+    $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+
+    return view('rooms.show', compact('room', 'usos', 'periodos'));
+}
+
+
+    public function asignarUso(Room $room)
+    {
+        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
         }
 
-        $usos = $usosQuery->orderBy('period_id')->get();
         $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+        $cursos = Course::with('magister')->orderBy('magister_id')->orderBy('nombre')->get();
 
-        return view('rooms.show', compact('room', 'usos', 'periodos'));
+        return view('rooms.asignar', compact('room', 'periodos', 'cursos'));
+    }
+
+    public function guardarUso(Request $request, Room $room)
+    {
+        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
+        }
+
+        $request->validate([
+            'usos' => 'required|array',
+            'usos.*.period_id' => 'required|exists:periods,id',
+            'usos.*.course_id' => 'required|exists:courses,id',
+            'usos.*.dia' => 'required|string',
+            'usos.*.hora_inicio' => 'required',
+            'usos.*.hora_fin' => 'required',
+        ]);
+
+        foreach ($request->input('usos', []) as $uso) {
+            $room->usages()->create([
+                'period_id' => $uso['period_id'],
+                'course_id' => $uso['course_id'],
+                'dia' => $uso['dia'],
+                'hora_inicio' => $uso['hora_inicio'],
+                'hora_fin' => $uso['hora_fin'],
+            ]);
+        }
+
+        return redirect()->route('rooms.index', $room)->with('success', 'Usos académicos asignados.');
     }
 }

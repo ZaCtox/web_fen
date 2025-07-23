@@ -13,7 +13,7 @@ class Incident extends Model
         'room_id',
         'estado',
         'imagen',
-        'plublic_id',
+        'public_id',
         'user_id',
         'resuelta_en',
     ];

@@ -1,3 +1,63 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ================================
+   🎨 Variables institucionales UTalca - FEN
+================================ */
+:root {
+    --color-utalca-primary: #2f3e9e;       /* Azul institucional */
+    --color-utalca-secondary: #c8102e;     /* Rojo FEN */
+    --color-fen-gold: #ffcc00;             /* Amarillo dorado opcional */
+    --color-bg-light: #f9f9f9;
+    --color-bg-dark: #1e1e2f;
+    --color-text-light: #ffffff;
+    --color-text-dark: #1a1a1a;
+}
+
+/* ================================
+   🌞 Light Mode
+================================ */
+body {
+    background-color: var(--color-bg-light);
+    color: var(--color-text-dark);
+}
+
+.login-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+}
+
+.btn-primary {
+    background-color: var(--color-utalca-primary);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+.btn-primary:hover {
+    background-color: #1f2e7a;
+}
+
+/* ================================
+   🌙 Dark Mode
+================================ */
+.dark body {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-light);
+}
+.dark .login-card {
+    background-color: #2c2c3e;
+    color: var(--color-text-light);
+}
+.dark .btn-primary {
+    background-color: var(--color-utalca-secondary);
+}
+.dark .btn-primary:hover {
+    background-color: #9d0e23;
+}

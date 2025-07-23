@@ -13,7 +13,7 @@
                     {{ $incidencia->titulo }}
                 </h3>
 
-                <p><strong>Sala:</strong> {{ $incidencia->sala }}</p>
+                <p><strong>Sala:</strong> {{ $incidencia->room->name ?? 'Sin sala' }} ({{ $incidencia->room->location ?? 'N/D' }})</p>
 
                 <p><strong>Estado:</strong>
                     @if($incidencia->estado === 'resuelta')

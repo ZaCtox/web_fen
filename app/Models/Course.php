@@ -9,6 +9,19 @@ class Course extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'programa'];
+    protected $fillable = ['nombre', 'magister_id'];
+
+
+    public function magister()
+    {
+        return $this->belongsTo(Magister::class);
+    }
+
+    public function period()
+    {
+        return $this->belongsTo(Period::class);
+    }
+
+
 }
 

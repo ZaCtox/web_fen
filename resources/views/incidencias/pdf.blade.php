@@ -46,7 +46,7 @@
             @forelse($incidencias as $incidencia)
                 <tr>
                     <td>{{ $incidencia->titulo }}</td>
-                    <td>{{ $incidencia->sala }}</td>
+                    <td>{{ $incidencia->room->name ?? 'Sin sala' }}</td>
                     <td>{{ ucfirst($incidencia->estado) }}</td>
                     <td>{{ $incidencia->user->name ?? 'N/D' }}</td>
                     <td>{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>

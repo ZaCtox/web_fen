@@ -17,7 +17,7 @@ class Period extends Model
         'activo'
     ];
 
-        protected $casts = [
+    protected $casts = [
         'fecha_inicio' => 'date',
         'fecha_fin' => 'date',
     ];
@@ -25,7 +25,13 @@ class Period extends Model
     // Accessor para nombre completo generado dinámicamente
     public function getNombreCompletoAttribute()
     {
-        return "Trimestre {$this->numero} - {$this->anio}";
+        return 'Trimestre: ' . $this->numero . ' | año: ' . $this->anio;
     }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+
 
 }

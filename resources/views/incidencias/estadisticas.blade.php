@@ -6,19 +6,19 @@
     </x-slot>
 
     <div class="py-6 space-y-8">
+        {{-- Filtros --}}
         <form method="GET" class="max-w-6xl mx-auto sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
                 <div>
                     <label for="anio" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Año</label>
                     <input type="number" name="anio" id="anio" value="{{ request('anio') }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200">
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                 </div>
 
                 <div>
-                    <label for="semestre"
-                        class="block text-sm font-medium text-gray-700 dark:text-gray-200">Semestre</label>
+                    <label for="semestre" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Semestre</label>
                     <select name="semestre" id="semestre"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200">
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                         <option value="">Todos</option>
                         <option value="1" {{ request('semestre') == '1' ? 'selected' : '' }}>1</option>
                         <option value="2" {{ request('semestre') == '2' ? 'selected' : '' }}>2</option>
@@ -26,9 +26,16 @@
                 </div>
 
                 <div>
-                    <label for="sala" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sala</label>
-                    <input type="text" name="sala" id="sala" value="{{ request('sala') }}"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200">
+                    <label for="room_id" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Sala</label>
+                    <select name="room_id" id="room_id"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        <option value="">Todas</option>
+                        @foreach($salas as $sala)
+                            <option value="{{ $sala->id }}" {{ request('room_id') == $sala->id ? 'selected' : '' }}>
+                                {{ $sala->name }} ({{ $sala->location }})
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="flex items-end gap-2">
@@ -36,7 +43,6 @@
                         class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 w-full">
                         Aplicar Filtros
                     </button>
-
                     <a href="{{ route('incidencias.estadisticas') }}"
                         class="bg-gray-500 text-white font-bold py-2 px-4 rounded hover:bg-gray-600 w-full text-center">
                         Limpiar Filtros
@@ -45,25 +51,32 @@
             </div>
         </form>
 
+        {{-- Gráficos --}}
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-8">
+            {{-- Gráfico por sala --}}
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Incidencias por Sala</h3>
+                <h3 class="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Incidencias por Sala</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Este gráfico muestra cuántas incidencias se han registrado en cada sala.</p>
                 <canvas id="chartSala" height="100"></canvas>
             </div>
 
+            {{-- Gráfico por estado --}}
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Estado de Incidencias</h3>
+                <h3 class="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Estado de Incidencias</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Distribución de incidencias según su estado actual: pendientes o resueltas.</p>
                 <canvas id="chartEstado" height="100"></canvas>
             </div>
 
+            {{-- Gráfico por semestre y año --}}
             <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Incidencias por Semestre y Año
-                </h3>
+                <h3 class="text-lg font-semibold mb-1 text-gray-800 dark:text-gray-100">Incidencias por Semestre y Año</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Evolución de incidencias a lo largo de los semestres, útil para identificar patrones o aumentos por ciclo académico.</p>
                 <canvas id="chartSemestre" height="100"></canvas>
             </div>
         </div>
     </div>
 
+    {{-- Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         new Chart(document.getElementById('chartSala'), {
@@ -77,6 +90,11 @@
                     borderColor: 'rgba(59,130,246,1)',
                     borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
             }
         });
 
@@ -101,8 +119,15 @@
                     fill: false,
                     borderColor: 'rgba(37,99,235,1)',
                     backgroundColor: 'rgba(37,99,235,0.5)',
-                    tension: 0.3
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
             }
         });
     </script>
