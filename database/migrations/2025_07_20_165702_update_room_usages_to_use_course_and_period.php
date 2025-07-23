@@ -8,28 +8,48 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('room_usages', function (Blueprint $table) {
-            // 🔧 Eliminar primero la foreign key
-            $table->dropForeign('room_usages_trimestre_id_foreign');
+            // Solo eliminar columnas si existen
+            if (Schema::hasColumn('room_usages', 'subject')) {
+                $table->dropColumn('subject');
+            }
 
-            // Luego eliminar columnas
-            $table->dropColumn(['trimestre_id', 'subject', 'magister']);
+            if (Schema::hasColumn('room_usages', 'magister')) {
+                $table->dropColumn('magister');
+            }
 
-            // Agregar las nuevas columnas y relaciones
-            $table->foreignId('period_id')->constrained()->onDelete('cascade');
-            $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            // Agregar nuevas columnas si aún no existen
+            if (!Schema::hasColumn('room_usages', 'period_id')) {
+                $table->foreignId('period_id')->constrained()->onDelete('cascade');
+            }
+
+            if (!Schema::hasColumn('room_usages', 'course_id')) {
+                $table->foreignId('course_id')->constrained()->onDelete('cascade');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('room_usages', function (Blueprint $table) {
-            $table->dropForeign(['period_id']);
-            $table->dropForeign(['course_id']);
-            $table->dropColumn(['period_id', 'course_id']);
+            // Eliminar nuevas columnas si existen
+            if (Schema::hasColumn('room_usages', 'period_id')) {
+                $table->dropForeign(['period_id']);
+                $table->dropColumn('period_id');
+            }
 
-            $table->unsignedBigInteger('trimestre_id')->nullable();
-            $table->string('subject')->nullable();
-            $table->string('magister')->nullable();
+            if (Schema::hasColumn('room_usages', 'course_id')) {
+                $table->dropForeign(['course_id']);
+                $table->dropColumn('course_id');
+            }
+
+            // Restaurar columnas eliminadas
+            if (!Schema::hasColumn('room_usages', 'subject')) {
+                $table->string('subject')->nullable();
+            }
+
+            if (!Schema::hasColumn('room_usages', 'magister')) {
+                $table->string('magister')->nullable();
+            }
         });
     }
 };
