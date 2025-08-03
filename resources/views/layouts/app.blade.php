@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>@yield('title', config('app.name', 'Web FEN'))</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="icon" href="{{ asset('images/favicon.ico') }}" type="image/ico">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     <!-- Alpine.js -->
@@ -26,26 +26,26 @@
         <!-- Page Heading -->
         @isset($header)
             <header class="bg-white dark:bg-gray-800 shadow">
-                @php $rol = Auth::user()->rol; @endphp
+                @php $rol = Auth::check() ? Auth::user()->rol : null; @endphp
+
 
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                     {{ $header }}
 
-                    <div class="flex items-center gap-x-2">
+                    <div class="flex flex-wrap items-center">
                         @if($rol === 'docente' || $rol === 'administrativo')
-                            <a href="{{ route('register') }}"
-                                class="text-sm px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium">
+                            <a href="{{ route('register') }}" < href="{{ route('register') }}"
+                                class="text-sm px-3 py-2 mr-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium whitespace-nowrap">
                                 👤➕ Registrar Usuario
                             </a>
                         @endif
 
                         <button id="toggle-theme"
-                            class="text-sm px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            class="text-sm px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                             <span id="theme-icon">🌙</span>
                         </button>
                     </div>
                 </div>
-
             </header>
         @endisset
 
@@ -83,7 +83,6 @@
         });
     </script>
     @yield('scripts')
-    @vite('resources/js/asignaturas_autofill.js')
     @vite('resources/js/app.js')
 
 

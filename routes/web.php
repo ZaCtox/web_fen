@@ -10,12 +10,22 @@ use App\Http\Controllers\CloudinaryTestController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\PeriodController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GuestDashboardController;
+use Illuminate\Support\Facades\Auth;
 
 // Página de inicio pública
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', function (Request $request) {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return app(GuestDashboardController::class)->index($request);
+})->name('guest.dashboard');
+
+
+// Ruta pública SOLO para consultar eventos en el calendario
+Route::get('/events', [EventController::class, 'index'])->name('events.index');
+
 
 // Dashboard con datos
 Route::get('/dashboard', function () {
@@ -41,7 +51,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('incidencias', IncidentController::class);
 
     // Eventos
-    Route::resource('events', EventController::class)->except(['create', 'edit', 'show']);
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
     // Calendario
     Route::view('/calendario', 'calendario.index')->name('calendario');

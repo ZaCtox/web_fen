@@ -58,16 +58,6 @@
                     </div>
                 </div>
             </div>
-
-            {{-- Cierre de sesión --}}
-            <div class="text-center">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="mt-8 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                        Cerrar sesión
-                    </button>
-                </form>
-            </div>
         </div>
     </div>
 </x-app-layout>

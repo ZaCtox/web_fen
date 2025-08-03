@@ -49,12 +49,44 @@
                         <img src="{{ $incidencia->imagen }}" alt="Incidencia" class="rounded shadow max-w-md" loading="lazy">
                     </div>
                 @endif
-                
-                <div class="mt-6">
+
+                @php
+                    $dentroDePeriodo = \App\Models\Period::where('fecha_inicio', '<=', $incidencia->created_at)
+                        ->where('fecha_fin', '>=', $incidencia->created_at)
+                        ->exists();
+                @endphp
+
+                {{-- Botones --}}
+                <div class="mt-6 flex flex-wrap gap-2 items-center">
                     <a href="{{ route('incidencias.index') }}"
                         class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
                         Volver
                     </a>
+
+                    @if($dentroDePeriodo)
+                        @if($incidencia->estado === 'pendiente')
+                            <form action="{{ route('incidencias.update', $incidencia) }}" method="POST">
+                                @csrf @method('PUT')
+                                <button
+                                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                    ✔️ Marcar como resuelta
+                                </button>
+                            </form>
+                        @endif
+
+                        <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST"
+                            onsubmit="return confirm('¿Estás seguro de eliminar esta incidencia?')">
+                            @csrf @method('DELETE')
+                            <button type="submit"
+                                class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                🗑️ Eliminar
+                            </button>
+                        </form>
+                    @else
+                        <div class="text-sm text-red-600 dark:text-red-400 font-medium">
+                            🔒 Incidencia histórica - solo lectura
+                        </div>
+                    @endif
                 </div>
 
             </div>

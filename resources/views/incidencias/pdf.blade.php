@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Bitácora de Incidencias</title>
@@ -7,29 +8,83 @@
         body {
             font-family: sans-serif;
             font-size: 12px;
+            color: #333;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
         }
-        th, td {
-            border: 1px solid #ccc;
+
+        th,
+        td {
+            border: 1px solid #aaa;
             padding: 6px;
             text-align: left;
         }
+
         th {
-            background-color: #f3f3f3;
+            background-color: #f0f0f0;
         }
+
         h1 {
             text-align: center;
             margin-bottom: 10px;
         }
+
+        .resumen {
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
     </style>
 </head>
-<body>
 
+<body>
+    <div style="text-align: center; margin-bottom: 10px;">
+        <img src="{{ public_path('images/utalca-logo.png') }}" alt="Logo UTalca" height="60"
+            style="margin-right: 20px;">
+        <img src="{{ public_path('images/logo-fen.png') }}" alt="Logo FEN" height="60">
+    </div>
     <h1>Bitácora de Incidencias</h1>
+
+    @php
+        use App\Models\Room;
+        use App\Models\Period;
+
+        $periodo = request('period_id') ? Period::find(request('period_id')) : null;
+        $sala = request('room_id') ? Room::find(request('room_id')) : null;
+        $usuario = auth()->user();
+        $fechaActual = \Carbon\Carbon::now()->format('d/m/Y H:i');
+
+        $total = $incidencias->count();
+        $pendientes = $incidencias->where('estado', 'pendiente')->count();
+        $resueltas = $incidencias->where('estado', 'resuelta')->count();
+    @endphp
+
+
+    @if(request()->filled('anio') || $periodo || $sala || request()->filled('estado') || request()->filled('historico'))
+        <div class="resumen">
+            <strong>Filtros aplicados:</strong><br>
+            @if(request('anio')) • Año: {{ request('anio') }}<br> @endif
+            @if($periodo) • Período: {{ $periodo->nombre_completo }}<br> @endif
+            @if($sala) • Sala: {{ $sala->name }}<br> @endif
+            @if(request('estado')) • Estado: {{ ucfirst(request('estado')) }}<br> @endif
+            @if(request('historico')) • Incluyendo datos históricos<br> @endif
+        </div>
+    @endif
+
+    @if($total > 0)
+        <div class="resumen">
+            <strong>Resumen de incidencias exportadas:</strong><br>
+            • Total: {{ $total }}<br>
+            • Pendientes: {{ $pendientes }}<br>
+            • Resueltas: {{ $resueltas }}
+        </div>
+    @endif
 
     <table>
         <thead>
@@ -61,4 +116,5 @@
     </table>
 
 </body>
+
 </html>

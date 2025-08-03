@@ -11,15 +11,20 @@ use App\Http\Requests\StoreRoomRequest;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $ubicacion = $request->input('ubicacion');
+        $capacidad = $request->input('capacidad');
 
-        $rooms = Room::all();
-        return view('rooms.index', compact('rooms'));
+        $rooms = Room::query()
+            ->when($ubicacion, fn($q) => $q->where('location', 'like', "%$ubicacion%"))
+            ->when($capacidad, fn($q) => $q->where('capacity', '>=', $capacidad))
+            ->orderBy('name')
+            ->paginate(10);
+
+        return view('rooms.index', compact('rooms', 'ubicacion', 'capacidad'));
     }
+
 
     public function create()
     {
@@ -74,25 +79,27 @@ class RoomController extends Controller
         return redirect()->route('rooms.index')->with('success', 'Sala eliminada');
     }
 
-public function show(Request $request, Room $room)
-{
-    $usosQuery = $room->usages()->with(['period', 'course.magister']);
+    public function show(Request $request, Room $room)
+    {
+        $usosQuery = $room->usages()->with(['period', 'course.magister']);
 
-    if ($request->filled('period_id')) {
-        $usosQuery->where('period_id', $request->period_id);
+        if ($request->filled('period_id')) {
+            $usosQuery->where('period_id', $request->period_id);
+        }
+
+        if ($request->filled('magister_id')) {
+            $usosQuery->whereHas(
+                'course',
+                fn($q) =>
+                $q->where('magister_id', $request->magister_id)
+            );
+        }
+
+        $usos = $usosQuery->orderBy('period_id')->get();
+        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+
+        return view('rooms.show', compact('room', 'usos', 'periodos'));
     }
-
-    if ($request->filled('magister_id')) {
-        $usosQuery->whereHas('course', fn($q) =>
-            $q->where('magister_id', $request->magister_id)
-        );
-    }
-
-    $usos = $usosQuery->orderBy('period_id')->get();
-    $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
-
-    return view('rooms.show', compact('room', 'usos', 'periodos'));
-}
 
 
     public function asignarUso(Room $room)

@@ -25,7 +25,8 @@ class Period extends Model
     // Accessor para nombre completo generado dinámicamente
     public function getNombreCompletoAttribute()
     {
-        return 'Trimestre: ' . $this->numero . ' | año: ' . $this->anio;
+        $romanos = [1 => 'I', 2 => 'II', 3 => 'III'];
+        return "Año {$this->anio} - Trimestre " . ($romanos[$this->numero] ?? $this->numero);
     }
 
     public function courses()
