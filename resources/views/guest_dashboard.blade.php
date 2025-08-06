@@ -66,7 +66,7 @@
         <div class="bg-white dark:bg-gray-800 rounded shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Cursos por Programa de Magíster</h3>
 
-            @php $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV']; @endphp
+            @php $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI']; @endphp
 
             @foreach ($magisters as $magister)
                 <div class="mb-6">

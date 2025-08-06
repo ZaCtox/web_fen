@@ -13,8 +13,7 @@ class Period extends Model
         'numero',
         'anio',
         'fecha_inicio',
-        'fecha_fin',
-        'activo'
+        'fecha_fin'
     ];
 
     protected $casts = [
@@ -22,10 +21,13 @@ class Period extends Model
         'fecha_fin' => 'date',
     ];
 
+    protected $appends = ['nombre_completo'];
+
+
     // Accessor para nombre completo generado dinámicamente
     public function getNombreCompletoAttribute()
     {
-        $romanos = [1 => 'I', 2 => 'II', 3 => 'III'];
+        $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI'];
         return "Año {$this->anio} - Trimestre " . ($romanos[$this->numero] ?? $this->numero);
     }
 

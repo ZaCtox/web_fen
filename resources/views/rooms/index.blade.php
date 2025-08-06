@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Salas Registradas</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">🏫 Salas Registradas</h2>
     </x-slot>
 
     <div class="p-6">
@@ -8,6 +8,7 @@
             class="mb-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
             + Nueva Sala
         </a>
+
         <form method="GET" class="mb-4 flex flex-col md:flex-row md:items-center gap-4">
             <div>
                 <label class="block text-sm text-gray-700 dark:text-gray-300">Ubicación:</label>
@@ -36,8 +37,8 @@
                     <tr>
                         <th class="px-4 py-2 text-left">Nombre</th>
                         <th class="px-4 py-2 text-left">Ubicación</th>
-                        <th class="px-4 py-2 text-left">Capacidad</th>
-                        <th class="px-4 py-2 text-left">Usos Académicos</th>
+                        <th class="px-4 py-2 text-left">Detalles</th>
+                        <th class="px-4 py-2 text-left">Clases Asignadas</th>
                         <th class="px-4 py-2 text-right w-40">Acciones</th>
                     </tr>
                 </thead>
@@ -46,11 +47,16 @@
                         <tr class="border-b border-gray-200 dark:border-gray-600">
                             <td class="px-4 py-2">{{ $room->name }}</td>
                             <td class="px-4 py-2">{{ $room->location }}</td>
-                            <td class="px-4 py-2">{{ $room->capacity }}</td>
+                            <td>
+                                <a href="{{ route('rooms.show', $room) }}#detalles"
+                                    class="inline-flex items-center text-sm text-green-600 hover:underline">
+                                    ⚙️ Ver Detalles
+                                </a>
+                            </td>
                             <td class="px-4 py-2">
-                                <a href="{{ route('rooms.show', $room) }}"
+                                <a href="{{ route('rooms.show', $room) }}#clases"
                                     class="inline-flex items-center text-indigo-600 hover:underline text-sm">
-                                    Ver asignaciones
+                                    📚 Ver Clases
                                 </a>
                             </td>
                             <td class="px-4 py-2">

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Clase;
 use App\Models\Event;
-use App\Models\RoomUsage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +12,6 @@ class EventController extends Controller
 {
     public function index()
     {
-        // 🎨 Colores por magíster
         $coloresMagister = [
             'Economía' => '#3b82f6',
             'Dirección y Planificación Tributaria' => '#ef4444',
@@ -20,7 +19,7 @@ class EventController extends Controller
             'Gestión y Políticas Públicas' => '#f97316',
         ];
 
-        // Eventos creados manualmente por usuarios
+        // Eventos manuales
         $manualEvents = Event::with('room')->get()->map(function ($event) {
             return [
                 'id' => $event->id,
@@ -34,10 +33,11 @@ class EventController extends Controller
                 'editable' => Auth::check(),
                 'type' => 'manual',
                 'magister' => null,
+                'modality' => null,
             ];
         })->values()->all();
 
-        // Eventos automáticos por uso de salas (clases)
+        // Clases académicas (reemplaza RoomUsage)
         $classEvents = collect();
         $dias = [
             'Domingo' => 0,
@@ -49,40 +49,51 @@ class EventController extends Controller
             'Sábado' => 6,
         ];
 
-        RoomUsage::with(['room', 'period', 'course.magister'])->get()->each(function ($uso) use (&$classEvents, $dias, $coloresMagister) {
-            if (
-                !$uso->period || !$uso->course || !$uso->hora_inicio ||
-                !$uso->hora_fin || !isset($dias[$uso->dia])
-            ) return;
+        Clase::with(['room', 'period', 'course.magister'])->get()->each(function ($clase) use (&$classEvents, $dias, $coloresMagister) {
+            if (!$clase->period || !$clase->course || !$clase->hora_inicio || !$clase->hora_fin || !isset($dias[$clase->dia])) return;
 
-            $dayNumber = $dias[$uso->dia];
-            $fechaInicio = Carbon::parse($uso->period->fecha_inicio);
-            $fechaFin = Carbon::parse($uso->period->fecha_fin);
+            $dayNumber = $dias[$clase->dia];
+            $fechaInicio = Carbon::parse($clase->period->fecha_inicio);
+            $fechaFin = Carbon::parse($clase->period->fecha_fin);
 
-            $magisterNombre = $uso->course->magister->nombre ?? 'Desconocido';
-            $color = $coloresMagister[$magisterNombre] ?? '#6b7280'; // gris si no está definido
+            $magisterNombre = $clase->course->magister->nombre ?? 'Desconocido';
+            $color = $coloresMagister[$magisterNombre] ?? '#6b7280';
+            $modality = $clase->modality;
+            $esOnline = $modality === 'online';
+            $esHibrida = $modality === 'hibrida';
 
             while ($fechaInicio->dayOfWeek !== $dayNumber) {
                 $fechaInicio->addDay();
             }
 
             while ($fechaInicio->lte($fechaFin)) {
-                $start = $fechaInicio->copy()->setTimeFromTimeString($uso->hora_inicio);
-                $end = $fechaInicio->copy()->setTimeFromTimeString($uso->hora_fin);
+                $start = $fechaInicio->copy()->setTimeFromTimeString($clase->hora_inicio);
+                $end = $fechaInicio->copy()->setTimeFromTimeString($clase->hora_fin);
+
+                $titulo = $clase->course->nombre;
+                if ($esOnline) $titulo .= ' [ONLINE]';
+                elseif ($esHibrida) $titulo .= ' [HIBRIDA]';
+
+                $descripcion = 'Magíster: ' . $magisterNombre;
+                if ($clase->url_zoom) {
+                    $descripcion .= "\n🔗 " . $clase->url_zoom;
+                }
 
                 $classEvents->push([
-                    'id' => 'roomusage-' . $uso->id . '-' . $start->format('Ymd'),
-                    'title' => $uso->course->nombre,
-                    'description' => 'Magíster: ' . $magisterNombre,
+                    'id' => 'clase-' . $clase->id . '-' . $start->format('Ymd'),
+                    'title' => $titulo,
+                    'description' => $descripcion,
                     'start' => $start->toDateTimeString(),
                     'end' => $end->toDateTimeString(),
-                    'room_id' => $uso->room_id,
-                    'room' => $uso->room ? ['name' => $uso->room->name] : null,
+                    'room_id' => $clase->room_id,
+                    'room' => $clase->room ? ['name' => $clase->room->name] : null,
                     'editable' => false,
-                    'backgroundColor' => $color,
-                    'borderColor' => $color,
+                    'backgroundColor' => $esOnline ? '#6366f1' : ($esHibrida ? '#facc15' : $color),
+                    'borderColor' => $esOnline ? '#4338ca' : ($esHibrida ? '#eab308' : $color),
                     'type' => 'clase',
                     'magister' => $magisterNombre,
+                    'modality' => $modality,
+                    'url_zoom' => $clase->url_zoom,
                 ]);
 
                 $fechaInicio->addWeek();
@@ -156,5 +167,4 @@ class EventController extends Controller
 
         return response()->json(['message' => 'Evento eliminado']);
     }
-    
 }

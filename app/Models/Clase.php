@@ -2,26 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class RoomUsage extends Model
+class Clase extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
-        'period_id',
         'course_id',
+        'period_id',
+        'room_id',
+        'modality',
         'dia',
         'hora_inicio',
         'hora_fin',
-        'room_id',
-        'url_zoom', // ← agrega esto
+        'url_zoom'
     ];
 
-    public function room()
+    public function course()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(Course::class);
     }
 
     public function period()
@@ -29,9 +31,8 @@ class RoomUsage extends Model
         return $this->belongsTo(Period::class);
     }
 
-        public function course()
+    public function room()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Room::class);
     }
-
 }

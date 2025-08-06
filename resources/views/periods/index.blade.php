@@ -26,7 +26,6 @@
                                 <th class="px-4 py-2 text-left">Trimestre</th>
                                 <th class="px-4 py-2 text-left">Inicio</th>
                                 <th class="px-4 py-2 text-left">Término</th>
-                                <th class="px-4 py-2 text-left">Estado</th>
                                 <th class="px-4 py-2 text-left">Acciones</th>
                             </tr>
                         </thead>
@@ -36,12 +35,6 @@
                                     <td class="px-4 py-2">Trimestre {{ $romanos[$period->numero] ?? $period->numero }}</td>
                                     <td class="px-4 py-2">{{ $period->fecha_inicio->format('d/m/Y') }}</td>
                                     <td class="px-4 py-2">{{ $period->fecha_fin->format('d/m/Y') }}</td>
-                                    <td class="px-4 py-2">
-                                        <span
-                                            class="px-2 py-1 text-xs rounded {{ $period->activo ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' }}">
-                                            {{ $period->activo ? 'Activo' : 'Inactivo' }}
-                                        </span>
-                                    </td>
                                     <td class="px-4 py-2">
                                         <div class="flex flex-col sm:flex-row sm:justify-start gap-2">
                                             <a href="{{ route('periods.edit', $period) }}"

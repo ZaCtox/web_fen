@@ -27,6 +27,37 @@
     </div>
 </div>
 
+{{-- ⚙️ Condiciones de la Sala --}}
+<hr class="my-6 border-gray-300 dark:border-gray-600">
+<h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200 border-b pb-2">⚙️ Condiciones de la Sala</h3>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    @php
+        $condiciones = [
+            'calefaccion' => 'Calefacción',
+            'energia_electrica' => 'Energía Eléctrica',
+            'existe_aseo' => 'Aseo Disponible',
+            'plumones' => 'Plumones',
+            'borrador' => 'Borrador',
+            'pizarra_limpia' => 'Pizarra Limpia',
+            'computador_funcional' => 'Computador Funcional',
+            'cables_computador' => 'Cables del Computador',
+            'control_remoto_camara' => 'Control Remoto de Cámara',
+            'televisor_funcional' => 'Televisor Funcional',
+        ];
+    @endphp
+
+    @foreach ($condiciones as $campo => $label)
+        <label class="flex items-center space-x-2">
+            <input type="checkbox" name="{{ $campo }}" id="{{ $campo }}"
+                {{ old($campo, $room->$campo ?? false) ? 'checked' : '' }}
+                class="rounded border-gray-300 dark:border-gray-600 text-fen-red focus:ring-fen-red dark:bg-gray-800 dark:text-white">
+            <span class="text-sm text-gray-800 dark:text-gray-200">{{ $label }}</span>
+        </label>
+    @endforeach
+</div>
+
+
 {{-- 📚 Usos Académicos --}}
 <hr class="my-6 border-gray-300 dark:border-gray-600">
 <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200 border-b pb-2">📚 Usos Académicos</h3>

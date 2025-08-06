@@ -34,18 +34,16 @@ class PeriodController extends Controller
 
         $request->validate([
             'anio' => 'required|integer|min:1|max:10',
-            'numero' => 'required|integer|between:1,3',
+            'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after:fecha_inicio',
-            'activo' => 'nullable|boolean'
+            'fecha_fin' => 'required|date|after:fecha_inicio'
         ]);
 
         Period::create([
             'anio' => $request->anio,
             'numero' => $request->numero,
             'fecha_inicio' => $request->fecha_inicio,
-            'fecha_fin' => $request->fecha_fin,
-            'activo' => $request->has('activo'),
+            'fecha_fin' => $request->fecha_fin
         ]);
 
         return redirect()->route('periods.index')->with('success', 'Periodo creado correctamente.');
@@ -68,18 +66,16 @@ class PeriodController extends Controller
 
         $request->validate([
             'anio' => 'required|integer|min:1|max:10',
-            'numero' => 'required|integer|between:1,3',
+            'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after:fecha_inicio',
-            'activo' => 'nullable|boolean'
+            'fecha_fin' => 'required|date|after:fecha_inicio'
         ]);
 
         $period->update([
             'anio' => $request->anio,
             'numero' => $request->numero,
             'fecha_inicio' => $request->fecha_inicio,
-            'fecha_fin' => $request->fecha_fin,
-            'activo' => $request->has('activo'),
+            'fecha_fin' => $request->fecha_fin
         ]);
 
         return redirect()->route('periods.index')->with('success', 'Periodo actualizado correctamente.');

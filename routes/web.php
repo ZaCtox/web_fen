@@ -12,6 +12,10 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\GuestDashboardController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\OnlineClassController;
+use App\Http\Controllers\ClaseController;
+
+// Ruta pública
 
 // Página de inicio pública
 Route::get('/', function (Request $request) {
@@ -64,6 +68,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/rooms/{room}/asignar-uso', [RoomController::class, 'asignarUso'])->name('rooms.asignar');
     Route::post('/rooms/{room}/asignar-uso', [RoomController::class, 'guardarUso'])->name('rooms.guardar-uso');
 
+    Route::get('/online/create', [OnlineClassController::class, 'create'])->name('online.create');
+    Route::post('/online', [OnlineClassController::class, 'store'])->name('online.store');
+
 
     // Periodos
     Route::resource('periods', PeriodController::class);
@@ -71,8 +78,15 @@ Route::middleware('auth')->group(function () {
     Route::resource('courses', CourseController::class);
     Route::delete('/courses/programa/{programa}', [CourseController::class, 'destroyPrograma'])->name('courses.destroy-programa');
 
-
+    // Magísters
     Route::resource('magisters', MagisterController::class);
+
+    // Clases
+    Route::resource('clases', ClaseController::class);
+    Route::get('/clases/exportar', [ClaseController::class, 'exportar'])->name('clases.exportar');
+    // Ruta personalizada para exportar PDF
+    Route::get('clases-exportar', [ClaseController::class, 'exportar'])->name('clases.exportar');
+
 });
 
 Route::get('/cloudinary-test', [CloudinaryTestController::class, 'form'])->name('cloudinary.form');

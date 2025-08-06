@@ -19,6 +19,10 @@
                         </option>
                     </select>
                 </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 inline-block rounded-full bg-indigo-500"></span>
+                    <span class="text-sm text-gray-800 dark:text-gray-200">Clases Online (Zoom)</span>
+                </div>
                 <div>
                     <label for="room-filter" class="block text-sm font-medium text-gray-800 dark:text-white">Filtrar por
                         Sala:</label>
@@ -93,7 +97,14 @@
                         const start = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         const end = info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                        const tooltip = `${info.event.title}\n🏛️ ${magister}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
+                        const modalidad = info.event.extendedProps.modality ?? '';
+                        const zoom = info.event.extendedProps.description?.includes('http') ? '🔗 Zoom' : '';
+                        const tooltip = `${info.event.title}
+                            🏛️ ${magister}
+                            🏫 ${sala}
+                            🕒 ${start} - ${end}
+                            📡 ${modalidad} ${zoom}`.trim();
+
                         info.el.setAttribute('title', tooltip);
                     }
                 });
