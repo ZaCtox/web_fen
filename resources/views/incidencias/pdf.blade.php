@@ -50,6 +50,11 @@
         <img src="{{ public_path('images/logo-fen.png') }}" alt="Logo FEN" height="60">
     </div>
     <h1>Bitácora de Incidencias</h1>
+    <p style="text-align: center; font-size: 11px; color: #666;">
+        Generado por {{ $usuario->name }} | Fecha: {{ $fechaActual }}
+    </p>
+    <p>Fecha de exportación: {{ now()->format('d/m/Y H:i') }}</p>
+
 
     @php
         use App\Models\Room;

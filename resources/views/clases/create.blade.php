@@ -11,8 +11,10 @@
 
             {{-- Magíster --}}
             <div>
-                <label for="magister" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Magíster</label>
-                <select id="magister" class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                <label for="magister"
+                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Magíster</label>
+                <select id="magister"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                     <option value="">-- Selecciona --</option>
                     @foreach($agrupados as $magister => $cursos)
                         <option value="{{ $magister }}">{{ $magister }}</option>
@@ -22,9 +24,10 @@
 
             {{-- Asignatura --}}
             <div>
-                <label for="course_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Asignatura</label>
+                <label for="course_id"
+                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Asignatura</label>
                 <select name="course_id" id="course_id" required
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                     <option value="">-- Asignatura --</option>
                 </select>
             </div>
@@ -35,7 +38,7 @@
             <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Periodo Académico</label>
                 <select id="periodo_info" disabled
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 cursor-not-allowed">
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 cursor-not-allowed">
                     <option>Selecciona un curso para ver el período</option>
                 </select>
             </div>
@@ -44,7 +47,7 @@
             <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Modalidad</label>
                 <select name="modality" required
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                     <option value="presencial">Presencial</option>
                     <option value="online">Online</option>
                     <option value="hibrida">Híbrida</option>
@@ -55,7 +58,7 @@
             <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Sala (opcional)</label>
                 <select name="room_id"
-                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                     <option value="">Sin sala (solo si es online)</option>
                     @foreach ($rooms as $room)
                         <option value="{{ $room->id }}">{{ $room->name }}</option>
@@ -68,7 +71,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Día</label>
                     <select name="dia" required
-                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                         <option value="Viernes">Viernes</option>
                         <option value="Sábado">Sábado</option>
                     </select>
@@ -77,29 +80,30 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Hora inicio</label>
                     <input type="time" name="hora_inicio" required
-                           class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Hora fin</label>
                     <input type="time" name="hora_fin" required
-                           class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                 </div>
             </div>
 
             {{-- Zoom opcional --}}
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Enlace Zoom (opcional)</label>
+                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Enlace Zoom
+                    (opcional)</label>
                 <input type="url" name="url_zoom" placeholder="https://us02web.zoom.us/..."
-                       class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
             </div>
 
             {{-- Botones --}}
             <div class="pt-4 flex flex-col sm:flex-row items-center gap-4">
                 <x-button-fen class="w-full sm:w-auto">💾 Guardar Clase</x-button-fen>
                 <a href="{{ route('clases.index') }}"
-                   class="text-sm text-gray-700 dark:text-gray-300 hover:underline">
-                    Cancelar
+                    class="inline-block bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                    ⬅️ Volver a Clases
                 </a>
             </div>
         </form>

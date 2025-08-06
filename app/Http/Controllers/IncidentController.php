@@ -88,7 +88,7 @@ class IncidentController extends Controller
 
         $incidencias = $query->latest()->paginate(10)->withQueryString();
         $salas = Room::orderBy('name')->get();
-        
+
 
         return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'periodos'));
     }
@@ -254,6 +254,8 @@ class IncidentController extends Controller
 
     public function exportarPDF(Request $request)
     {
+        $this->authorizeAccess();
+
         $query = Incident::with('room', 'user');
 
         // Año
@@ -299,11 +301,13 @@ class IncidentController extends Controller
                 }
             });
         }
-        $nombre = 'bitacora_incidencias_'.now()->format('Y-m-d_H-i').'.pdf';
+        $nombre = 'bitacora_incidencias_' . now()->format('Y-m-d_H-i') . '.pdf';
+           $usuario = Auth::user(); 
 
         $incidencias = $query->latest()->get();
+        $fechaActual = now()->format('d/m/Y H:i');
 
-        $pdf = Pdf::loadView('incidencias.pdf', compact('incidencias'));
+        $pdf = Pdf::loadView('incidencias.pdf', compact('incidencias', 'usuario', 'fechaActual'));
         return $pdf->download($nombre);
     }
 

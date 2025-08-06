@@ -28,6 +28,7 @@
     </div>
 </div>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const anioSelect = document.getElementById('anio-select');

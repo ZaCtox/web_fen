@@ -30,6 +30,23 @@
                 URL.revokeObjectURL(url);
             }
         }">
+        {{-- Encabezado superior con botón de nueva clase y exportar --}}
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+            <a href="{{ route('clases.create') }}"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm">
+                ➕ Nueva Clase
+            </a>
+
+            <form method="GET" action="{{ route('clases.exportar') }}" class="flex gap-2 flex-wrap">
+                <input type="hidden" name="magister" :value="magister">
+                <input type="hidden" name="sala" :value="sala">
+                <input type="hidden" name="dia" :value="dia">
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+                    📤 Exportar PDF
+                </button>
+            </form>
+        </div>
+
         {{-- Filtros dinámicos --}}
         <div class="flex flex-col sm:flex-row flex-wrap gap-4 mb-6">
             <div>
@@ -54,35 +71,18 @@
 
             <div>
                 <label class="block text-sm text-gray-700 dark:text-gray-300">Día:</label>
-                <select x-model="dia" class="w-full border rounded px-3 py-2 dark:bg-gray-800 dark:text-white">
+                <select x-model="dia" class="w-full border rounded px-5 py-2 dark:bg-gray-800 dark:text-white">
                     <option value="">Todos</option>
                     <option value="Viernes">Viernes</option>
                     <option value="Sábado">Sábado</option>
                 </select>
             </div>
 
-            {{-- Botones --}}
-            <div class="flex flex-col gap-2 justify-end">
+            <div class="flex flex-col justify-end">
                 <button @click="limpiarFiltros"
                     class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded w-full sm:w-auto">
                     Limpiar filtros
                 </button>
-                <form method="GET" action="{{ route('clases.exportar') }}" class="mb-6 flex gap-2 flex-wrap">
-                    <input type="hidden" name="magister" :value="magister">
-                    <input type="hidden" name="sala" :value="sala">
-                    <input type="hidden" name="dia" :value="dia">
-
-                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-                        📤 Exportar PDF
-                    </button>
-                </form>
-            </div>
-
-            <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
-                <a href="{{ route('clases.create') }}"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm">
-                    ➕ Nueva Clase
-                </a>
             </div>
         </div>
 

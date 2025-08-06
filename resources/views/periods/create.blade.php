@@ -7,10 +7,18 @@
         <form action="{{ route('periods.store') }}" method="POST">
             @csrf
             @include('periods.form', ['period' => null])
+
+        <div class="mt-6 flex justify-between items-center">
+            <a href="{{ route('periods.index') }}"
+               class="inline-block bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                ⬅️ Volver a Períodos
+            </a>
+
             <button type="submit"
-                class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded">
                 Guardar
             </button>
+        </div>
         </form>
     </div>
 </x-app-layout>

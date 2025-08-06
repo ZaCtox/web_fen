@@ -6,15 +6,21 @@
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto">
-        <div x-data="{ tab: 'detalles' }">
+        <div x-data="{
+                tab: window.location.hash === '#clases' ? 'clases' : 'detalles',
+                cambiarTab(valor) {
+                    this.tab = valor;
+                    history.replaceState(null, null, '#' + valor); // actualiza la URL sin recargar
+                }
+            }">
             {{-- Tabs --}}
             <div class="flex space-x-4 mb-4 border-b border-gray-300 dark:border-gray-600">
-                <button @click="tab = 'detalles'"
+                <button @click="cambiarTab('detalles')"
                         class="pb-2 font-semibold"
                         :class="tab === 'detalles' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'">
                     🛠️ Detalles
                 </button>
-                <button @click="tab = 'clases'"
+                <button @click="cambiarTab('clases')"
                         class="pb-2 font-semibold"
                         :class="tab === 'clases' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'">
                     📚 Clases Asignadas
