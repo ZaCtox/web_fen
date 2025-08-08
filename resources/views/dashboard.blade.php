@@ -7,56 +7,58 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
             {{-- Bienvenida --}}
             <div class="bg-white dark:bg-gray-800 shadow rounded p-6">
                 <h3 class="text-2xl font-semibold text-gray-800 dark:text-white mb-2">¡Bienvenido/a, {{ Auth::user()->name }}!</h3>
-                <p class="text-gray-600 dark:text-gray-300">Rol asignado: 
+                <p class="text-gray-600 dark:text-gray-300">
+                    Rol asignado:
                     <span class="font-bold text-blue-700 dark:text-blue-300">{{ ucfirst(Auth::user()->rol) }}</span>
                 </p>
             </div>
 
             {{-- Estadísticas resumidas --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="bg-blue-500 text-white p-5 rounded-lg shadow flex items-center gap-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M9.75 9.75h.008v.008H9.75V9.75zM14.25 9.75h.008v.008h-.008V9.75zM9.75 14.25h.008v.008H9.75v-.008zM14.25 14.25h.008v.008h-.008v-.008z"></path>
-                        <path d="M3 3.75A.75.75 0 013.75 3h16.5a.75.75 0 01.75.75V21l-5.25-3.75L9.75 21l-6.75-4.5V3.75z"></path>
-                    </svg>
-                    <div>
-                        <p class="text-lg font-bold">{{ $resumen['incidencias'] ?? 0 }}</p>
-                        <p class="text-sm">Incidencias</p>
-                    </div>
-                </div>
+                <x-dashboard-card color="bg-blue-500" icon="📋" label="Incidencias" :count="$resumen['incidencias']" />
+                <x-dashboard-card color="bg-indigo-500" icon="📅" label="Eventos" :count="$resumen['eventos']" />
+                <x-dashboard-card color="bg-purple-500" icon="🏫" label="Salas" :count="$resumen['salas']" />
+                <x-dashboard-card color="bg-green-500" icon="👤" label="Usuarios" :count="$resumen['usuarios']" />
+            </div>
 
-                <div class="bg-indigo-500 text-white p-5 rounded-lg shadow flex items-center gap-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M8 7V3m8 4V3M3 11h18M5 19h14a2 2 0 002-2v-5H3v5a2 2 0 002 2z"></path>
-                    </svg>
-                    <div>
-                        <p class="text-lg font-bold">{{ $resumen['eventos'] ?? 0 }}</p>
-                        <p class="text-sm">Eventos</p>
+            {{-- Últimas Incidencias --}}
+            <div class="bg-white dark:bg-gray-800 shadow rounded p-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Últimas Incidencias</h3>
+                @if($ultimas->isEmpty())
+                    <p class="text-gray-500 dark:text-gray-400">No hay incidencias registradas.</p>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-800 dark:text-gray-200">
+                            <thead class="bg-gray-100 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-4 py-2">ID</th>
+                                    <th class="px-4 py-2">Título</th>
+                                    <th class="px-4 py-2">Estado</th>
+                                    <th class="px-4 py-2">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($ultimas as $incidencia)
+                                    <tr class="border-b border-gray-200 dark:border-gray-600">
+                                        <td class="px-4 py-2">{{ $incidencia->id }}</td>
+                                        <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
+                                        <td class="px-4 py-2">
+                                            <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                                {{ $incidencia->estado === 'resuelta' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' }}">
+                                                {{ ucfirst($incidencia->estado) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                </div>
-
-                <div class="bg-purple-500 text-white p-5 rounded-lg shadow flex items-center gap-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M3 7h18M3 12h18M3 17h18"></path>
-                    </svg>
-                    <div>
-                        <p class="text-lg font-bold">{{ $resumen['salas'] ?? 0 }}</p>
-                        <p class="text-sm">Salas</p>
-                    </div>
-                </div>
-
-                <div class="bg-green-500 text-white p-5 rounded-lg shadow flex items-center gap-4">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M12 4.5v15m7.5-7.5h-15"></path>
-                    </svg>
-                    <div>
-                        <p class="text-lg font-bold">{{ $resumen['usuarios'] ?? 0 }}</p>
-                        <p class="text-sm">Usuarios</p>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>

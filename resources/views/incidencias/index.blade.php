@@ -120,7 +120,7 @@
                         <th class="px-4 py-2">Fecha</th>
                         <th class="px-4 py-2" x-show="!historico" x-cloak>Período</th>
                         <th class="px-4 py-2">Resuelta el</th>
-                        <th class="px-4 py-2">Acciones</th>
+                        <th class="px-4 py-2">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -141,11 +141,6 @@
                                             <td class="px-4 py-2 space-x-2">
                                                 <a href="{{ route('incidencias.show', $incidencia) }}"
                                                     class="text-blue-600 hover:underline">🔍 Ver</a>
-                                                <form method="POST" action="{{ route('incidencias.destroy', $incidencia) }}" class="inline"
-                                                    onsubmit="return confirm('¿Eliminar esta incidencia?')">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:underline">🗑️ Eliminar</button>
-                                                </form>
                                             </td>
                                         </tr>
                     @empty

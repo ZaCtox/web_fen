@@ -12,10 +12,11 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\GuestDashboardController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\OnlineClassController;
 use App\Http\Controllers\ClaseController;
-
-// Ruta pública
+use App\Http\Controllers\GuestEventController;
+use App\Http\Controllers\DashboardController;
 
 // Página de inicio pública
 Route::get('/', function (Request $request) {
@@ -26,20 +27,16 @@ Route::get('/', function (Request $request) {
     return app(GuestDashboardController::class)->index($request);
 })->name('guest.dashboard');
 
+// Calendario solo lectura
+Route::get('/guest-events', [GuestEventController::class, 'index'])->name('guest.events.index');
 
-// Ruta pública SOLO para consultar eventos en el calendario
-Route::get('/events', [EventController::class, 'index'])->name('events.index');
 
 
-// Dashboard con datos
-Route::get('/dashboard', function () {
-    $total = Incident::count();
-    $pendientes = Incident::where('estado', 'pendiente')->count();
-    $resueltas = Incident::where('estado', 'resuelta')->count();
-    $ultimas = Incident::latest()->take(5)->get();
 
-    return view('dashboard', compact('total', 'pendientes', 'resueltas', 'ultimas'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
+
 
 // Rutas protegidas por autenticación
 Route::middleware('auth')->group(function () {
@@ -54,7 +51,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])->name('incidencias.exportar.pdf');
     Route::resource('incidencias', IncidentController::class);
 
-    // Eventos
+    // Eventos (solo autenticados pueden crear/editar/eliminar)
+    // Calendario editable (con eventos manuales)
+    Route::get('/events', [EventController::class, 'index'])->middleware('auth')->name('events.index');
     Route::post('/events', [EventController::class, 'store'])->name('events.store');
     Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
     Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
@@ -64,31 +63,30 @@ Route::middleware('auth')->group(function () {
 
     // Salas
     Route::resource('rooms', RoomController::class);
-
     Route::get('/rooms/{room}/asignar-uso', [RoomController::class, 'asignarUso'])->name('rooms.asignar');
     Route::post('/rooms/{room}/asignar-uso', [RoomController::class, 'guardarUso'])->name('rooms.guardar-uso');
 
+    // Clases Online
     Route::get('/online/create', [OnlineClassController::class, 'create'])->name('online.create');
     Route::post('/online', [OnlineClassController::class, 'store'])->name('online.store');
-
 
     // Periodos
     Route::resource('periods', PeriodController::class);
 
+    // Cursos y Programas
     Route::resource('courses', CourseController::class);
     Route::delete('/courses/programa/{programa}', [CourseController::class, 'destroyPrograma'])->name('courses.destroy-programa');
 
-    // Magísters
+    // Magísteres
     Route::resource('magisters', MagisterController::class);
 
     // Clases
     Route::resource('clases', ClaseController::class);
     Route::get('/clases/exportar', [ClaseController::class, 'exportar'])->name('clases.exportar');
-    // Ruta personalizada para exportar PDF
-    Route::get('clases-exportar', [ClaseController::class, 'exportar'])->name('clases.exportar');
-
+    Route::get('/clases-exportar', [ClaseController::class, 'exportar'])->name('clases.exportar'); // redundante pero si lo usas, se mantiene
 });
 
+// Cloudinary test
 Route::get('/cloudinary-test', [CloudinaryTestController::class, 'form'])->name('cloudinary.form');
 Route::post('/cloudinary-test', [CloudinaryTestController::class, 'upload'])->name('cloudinary.upload');
 

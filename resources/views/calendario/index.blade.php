@@ -19,10 +19,6 @@
                         </option>
                     </select>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 inline-block rounded-full bg-indigo-500"></span>
-                    <span class="text-sm text-gray-800 dark:text-gray-200">Clases Online (Zoom)</span>
-                </div>
                 <div>
                     <label for="room-filter" class="block text-sm font-medium text-gray-800 dark:text-white">Filtrar por
                         Sala:</label>
@@ -64,154 +60,149 @@
     @include('calendario.modal-ver')
 
 
-    @section('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', async function () {
-                const calendarEl = document.getElementById('calendar');
-                const magisterFilter = document.getElementById('magister-filter');
-                const roomFilter = document.getElementById('room-filter');
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const magisterFilter = document.getElementById('magister-filter');
+            const roomFilter = document.getElementById('room-filter');
 
-                const res = await fetch('/magisteres_completo.json');
-                const json = await res.json();
-                const detalles = json.detalles;
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                locale: 'es',
+                firstDay: 1,
+                slotMinTime: "08:30:00",
+                slotMaxTime: "21:00:00",
+                expandRows: true,
+                editable: true,
+                selectable: true,
 
-                const calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'timeGridWeek',
-                    locale: 'es',
-                    firstDay: 1,
-                    selectable: true,
-                    editable: true,
-                    slotMinTime: "08:30:00",
-                    slotMaxTime: "21:00:00",
-                    events: fetchFilteredEvents,
-
-                    select: openCreateModal,
-                    eventClick: info => openViewModal(info.event),
-                    eventDrop: info => updateEvent(info.event),
-                    eventResize: info => updateEvent(info.event),
-
-                    eventDidMount: info => {
-                        const magister = info.event.extendedProps.magister || 'Sin magíster';
-                        const sala = info.event.extendedProps.room?.name || 'Sin sala';
-                        const start = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const end = info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                        const modalidad = info.event.extendedProps.modality ?? '';
-                        const zoom = info.event.extendedProps.description?.includes('http') ? '🔗 Zoom' : '';
-                        const tooltip = `${info.event.title}
-                            🏛️ ${magister}
-                            🏫 ${sala}
-                            🕒 ${start} - ${end}
-                            📡 ${modalidad} ${zoom}`.trim();
-
-                        info.el.setAttribute('title', tooltip);
-                    }
-                });
-
-                calendar.render();
-
-                magisterFilter.addEventListener('change', () => calendar.refetchEvents());
-                roomFilter.addEventListener('change', () => calendar.refetchEvents());
-
-                function fetchFilteredEvents(fetchInfo, successCallback, failureCallback) {
-                    fetch('/events')
-                        .then(res => res.json())
-                        .then(events => {
-                            const selectedMagister = magisterFilter.value;
-                            const selectedRoom = roomFilter.value;
-
-                            const filtered = events.filter(e => {
-                                if (e.editable === true) return true;
-                                if (!selectedMagister) return true;
-                                if (e.magister === null) return true;
-                                if (e.description && e.description.includes(selectedMagister)) return true;
-                                if (detalles[e.title] && detalles[e.title].magister === selectedMagister) return true;
-                                return false;
-                            });
-
-                            successCallback(filtered);
-                        })
-                        .catch(failureCallback);
-                }
-
-                function openCreateModal(info) {
+                select: function (info) {
+                    // Abrir modal crear
+                    document.getElementById('modal').classList.remove('hidden');
                     document.getElementById('start_time').value = info.startStr;
                     document.getElementById('end_time').value = info.endStr;
-                    document.getElementById('modal').classList.remove('hidden');
-                }
+                },
 
-                document.getElementById('cancel').addEventListener('click', () => {
-                    document.getElementById('modal').classList.add('hidden');
-                });
+                eventClick: function (info) {
+                    // Abrir modal ver
+                    document.getElementById('modal-title').textContent = info.event.title;
+                    document.getElementById('modal-description').textContent = info.event.extendedProps.description || '';
+                    document.getElementById('modal-start').textContent = info.event.start.toLocaleString();
+                    document.getElementById('modal-end').textContent = info.event.end.toLocaleString();
+                    document.getElementById('modal-room').textContent = info.event.extendedProps.room?.name || 'Sin sala';
 
-                document.getElementById('event-form').addEventListener('submit', function (e) {
-                    e.preventDefault();
+                    const deleteBtn = document.getElementById('delete-btn');
+                    if (info.event.extendedProps.type === 'manual') {
+                        deleteBtn.classList.remove('hidden');
+                        deleteBtn.setAttribute('data-id', info.event.id);
+                    } else {
+                        deleteBtn.classList.add('hidden');
+                    }
 
-                    fetch('/events', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            title: document.getElementById('modal-title-input').value,
-                            description: document.getElementById('modal-description-input').value +
-                                ' - Magíster: ' + document.getElementById('modal-magister').value,
-                            start_time: document.getElementById('start_time').value,
-                            end_time: document.getElementById('end_time').value,
-                            room_id: document.getElementById('room_id').value,
-                            type: 'clase'
-                        })
-                    }).then(() => {
-                        document.getElementById('modal').classList.add('hidden');
-                        document.getElementById('event-form').reset();
-                        calendar.refetchEvents();
-                    });
-                });
-
-                function openViewModal(event) {
-                    document.getElementById('modal-title').innerText = event.title;
-                    document.getElementById('modal-description').innerText = event.extendedProps.description ?? '';
-                    document.getElementById('modal-start').innerText = event.start.toLocaleString();
-                    document.getElementById('modal-end').innerText = event.end.toLocaleString();
-                    document.getElementById('modal-room').innerText = event.extendedProps.room?.name ?? 'No asignada';
-                    document.getElementById('delete-btn').onclick = () => deleteEvent(event);
                     document.getElementById('eventModal').classList.remove('hidden');
-                }
+                },
 
-                function updateEvent(event) {
-                    fetch(`/events/${event.id}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            title: event.title,
-                            start_time: event.start.toISOString(),
-                            end_time: event.end.toISOString(),
-                            room_id: event.extendedProps.room_id ?? null
-                        })
-                    });
-                }
-
-                function deleteEvent(event) {
-                    fetch(`/events/${event.id}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                events: {
+                    url: '{{ route("events.index") }}', // Solo para usuarios autenticados
+                    extraParams: function () {
+                        return {
+                            magister: magisterFilter.value,
+                            room: roomFilter.value,
                         }
-                    }).then(() => {
-                        calendar.refetchEvents();
-                        closeModal();
-                    });
-                }
+                    }
+                },
 
-                window.closeModal = function () {
-                    document.getElementById('eventModal').classList.add('hidden');
+                eventDidMount: function (info) {
+                    const magister = info.event.extendedProps.magister || 'Sin magíster';
+                    const sala = info.event.extendedProps.room?.name || 'Sin sala';
+                    const start = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const end = info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    const tooltip = `${info.event.title}\n🏛️ ${magister}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
+                    info.el.setAttribute('title', tooltip.trim());
                 }
             });
-        </script>
-    @endsection
+
+            calendar.render();
+
+            [magisterFilter, roomFilter].forEach(select =>
+                select.addEventListener('change', () => calendar.refetchEvents())
+            );
+
+            // 🟢 Enviar nuevo evento
+            document.getElementById('event-form').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const data = {
+                    title: document.getElementById('modal-title-input').value,
+                    description: document.getElementById('modal-description-input').value,
+                    start_time: document.getElementById('start_time').value,
+                    end_time: document.getElementById('end_time').value,
+                    room_id: document.getElementById('room_id').value || null,
+                };
+
+                fetch("{{ route('events.store') }}", {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => {
+                    if (response.ok) {
+                        calendar.refetchEvents();
+                        closeModal();
+                    } else {
+                        alert("Error al crear el evento.");
+                    }
+                });
+            });
+
+            // 🗑️ Eliminar evento manual
+            document.getElementById('delete-btn').addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                if (!confirm("¿Estás seguro de eliminar este evento?")) return;
+
+                fetch(`/events/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        calendar.refetchEvents();
+                        closeModal();
+                    } else {
+                        alert("Error al eliminar el evento.");
+                    }
+                });
+            });
+
+            // ❌ Cancelar creación
+            document.getElementById('cancel').addEventListener('click', () => {
+                closeModal();
+            });
+
+            // ✅ Reset & cerrar modales
+            window.closeModal = function () {
+                document.getElementById('modal').classList.add('hidden');
+                document.getElementById('eventModal').classList.add('hidden');
+
+                document.getElementById('event-form').reset();
+                document.getElementById('start_time').value = '';
+                document.getElementById('end_time').value = '';
+                document.getElementById('delete-btn').removeAttribute('data-id');
+            };
+        });
+    </script>
+@endsection
+
+
 </x-app-layout>

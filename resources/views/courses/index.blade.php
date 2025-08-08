@@ -26,15 +26,22 @@
 
                         @if($magister->courses->count() > 0)
                             <button @click="open = !open"
-                                class="text-sm bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-1 rounded hover:bg-gray-400">
-                                <span x-show="!open">📂 Ver Cursos</span>
-                                <span x-show="open">🔽 Ocultar</span>
+                                class="text-sm bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-1 rounded hover:bg-gray-400 transition-colors duration-200">
+                                <template x-if="!open">
+                                    <span>📂 Ver Cursos</span>
+                                </template>
+                                <template x-if="open">
+                                    <span>🔽 Ocultar Cursos</span>
+                                </template>
                             </button>
                         @endif
                     </div>
                 </div>
                 @if($magister->courses->count() > 0)
-                    <div x-show="open" class="mt-3 space-y-4">
+                    <div x-show="open" x-transition:enter="transition ease-out duration-300"
+                        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95" class="mt-3 space-y-4">
                         @php
                             $cursosAgrupados = $magister->courses->groupBy([
                                 fn($curso) => $curso->period->anio ?? 'Sin año',
