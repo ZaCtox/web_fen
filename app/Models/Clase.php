@@ -35,4 +35,15 @@ class Clase extends Model
     {
         return $this->belongsTo(Room::class);
     }
+
+    // app/Models/Clase.php
+    public function scopeFiltrar($q, array $f)
+    {
+        return $q
+            ->when($f['magister'] ?? null, fn($q, $v) =>
+                $q->whereHas('course.magister', fn($q2) => $q2->where('nombre', $v)))
+            ->when($f['sala'] ?? null, fn($q, $v) =>
+                $q->whereHas('room', fn($q2) => $q2->where('name', $v)))
+            ->when($f['dia'] ?? null, fn($q, $v) => $q->where('dia', $v));
+    }
 }

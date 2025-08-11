@@ -7,12 +7,11 @@
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
-
                 @if(Auth::check())
                     @php $rol = Auth::user()->rol; @endphp
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-nav-link>
-                        @if($rol === 'docente' || $rol === 'administrativo')
+                        @if($rol === 'administrativo')
                             <x-nav-link :href="route('calendario')"
                                 :active="request()->routeIs('calendario')">Calendario</x-nav-link>
                             <x-nav-link :href="route('rooms.index')"
@@ -25,11 +24,21 @@
                                 :active="request()->routeIs('courses.index')">Cursos</x-nav-link>
                             <x-nav-link :href="route('clases.index')"
                                 :active="request()->routeIs('clases.index')">Clases</x-nav-link>
+                        @elseif($rol === 'docente')
+                            <x-nav-link :href="route('rooms.index')"
+                                :active="request()->routeIs('rooms.index')">Salas</x-nav-link>
+                            <x-nav-link :href="route('clases.index')"
+                                :active="request()->routeIs('clases.index')">Clases</x-nav-link>
                         @endif
+                    </div>
+                @else
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('public.staff.index')" :active="request()->routeIs('public.staff.index')">
+                            Staff-FEN
+                        </x-nav-link>
                     </div>
                 @endif
             </div>
-
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @if(Auth::check())
                     <x-dropdown align="right" width="48">
@@ -89,7 +98,7 @@
 
             @if(Auth::check())
                 @php $rol = Auth::user()->rol; @endphp
-                @if($rol === 'docente' || $rol === 'administrativo')
+                @if($rol === 'administrativo')
                     <x-responsive-nav-link :href="route('calendario')"
                         :active="request()->routeIs('calendario')">Calendario</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('rooms.index')"
@@ -100,6 +109,11 @@
                         :active="request()->routeIs('periods.index')">Periodos</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('courses.index')"
                         :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('clases.index')"
+                        :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
+                @elseif($rol === 'docente')
+                    <x-responsive-nav-link :href="route('rooms.index')"
+                        :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('clases.index')"
                         :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
                 @endif

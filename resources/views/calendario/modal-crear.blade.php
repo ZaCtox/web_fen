@@ -1,41 +1,53 @@
 <div id="modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex justify-center items-center">
     <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Crear Evento</h3>
+        <h3 id="modal-header" class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Crear Evento
+        </h3>
         <form id="event-form" class="space-y-4">
             @csrf
+            <input type="hidden" id="event_id"> <!-- Para diferenciar crear/editar -->
             <input type="hidden" id="start_time">
             <input type="hidden" id="end_time">
 
             <div>
-                <label for="modal-title-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
+                <label for="modal-title-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Título
+                </label>
                 <input id="modal-title-input" type="text" required
-                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" placeholder="Ej. Taller de Investigación">
+                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white"
+                    placeholder="Ej. Taller de Investigación">
             </div>
 
             <div>
-                <label for="modal-description-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
+                <label for="modal-description-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Descripción
+                </label>
                 <textarea id="modal-description-input" rows="2"
-                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white" placeholder="Opcional..."></textarea>
+                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white"
+                    placeholder="Opcional..."></textarea>
             </div>
 
             <div>
-                <label for="modal-magister" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Magíster</label>
-                <select id="modal-magister" required
+                <label for="modal-magister" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Magíster
+                </label>
+                <select id="modal-magister"
                     class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                     <option value="">Seleccione</option>
-                    <option value="Economía">Economía</option>
-                    <option value="Gestión de Sistemas de Salud">Gestión de Sistemas de Salud</option>
-                    <option value="Gestión y Políticas Públicas">Gestión y Políticas Públicas</option>
-                    <option value="Dirección y Planificación Tributaria">Dirección y Planificación Tributaria</option>
+                    @foreach(\App\Models\Magister::orderBy('nombre')->get() as $m)
+                        <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
+                    @endforeach
                 </select>
             </div>
 
             <div>
-                <label for="room_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sala (opcional)</label>
+                <label for="room_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Sala (opcional)
+                </label>
                 <select id="room_id"
                     class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                     <option value="">-- Sin sala --</option>
-                    @foreach(\App\Models\Room::all() as $room)
+                    @foreach(\App\Models\Room::orderBy('name')->get() as $room)
                         <option value="{{ $room->id }}">{{ $room->name }}</option>
                     @endforeach
                 </select>

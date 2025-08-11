@@ -3,13 +3,19 @@
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2" id="modal-title">Título</h2>
 
         <p class="text-sm text-gray-700 dark:text-gray-300 mb-1" id="modal-description">Descripción</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1"><strong>Magíster:</strong> <span id="modal-magister-view"></span></p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1"><strong>Modalidad:</strong> <span id="modal-modality"></span></p>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-1"><strong>Inicio:</strong> <span id="modal-start"></span></p>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-1"><strong>Fin:</strong> <span id="modal-end"></span></p>
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4"><strong>Sala:</strong> <span id="modal-room"></span></p>
 
         <div class="flex justify-end gap-2">
+            <button id="edit-btn"
+                class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded hidden">
+                Editar
+            </button>
             <button id="delete-btn"
-                class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded">
+                class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded hidden">
                 Eliminar
             </button>
             <button onclick="closeModal()"

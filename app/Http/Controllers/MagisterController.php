@@ -4,13 +4,25 @@ namespace App\Http\Controllers;
 
 use App\Models\Magister;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreMagisterRequest;
+use App\Http\Requests\UpdateMagisterRequest;
 
 class MagisterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorizeAccess();
-        $magisters = Magister::withCount('courses')->get();
+
+        $magisters = Magister::query()
+            ->withCount('courses')
+            ->when($request->filled('q'), fn($q) =>
+                $q->where('nombre', 'like', '%'.$request->q.'%')
+            )
+            ->orderBy('nombre')
+            ->paginate(10)
+            ->withQueryString();
+
         return view('magisters.index', compact('magisters'));
     }
 
@@ -20,16 +32,15 @@ class MagisterController extends Controller
         return view('magisters.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreMagisterRequest $request)
     {
         $this->authorizeAccess();
-        $request->validate([
-            'nombre' => 'required|string|unique:magisters,nombre|max:255'
-        ]);
 
-        Magister::create(['nombre' => $request->nombre]);
+        Magister::create($request->validated());
 
-        return redirect()->route('magisters.index')->with('success', 'Magíster creado correctamente.');
+        return redirect()
+            ->route('magisters.index')
+            ->with('success', 'Magíster creado correctamente.');
     }
 
     public function edit(Magister $magister)
@@ -38,37 +49,38 @@ class MagisterController extends Controller
         return view('magisters.edit', compact('magister'));
     }
 
-    public function update(Request $request, Magister $magister)
+    public function update(UpdateMagisterRequest $request, Magister $magister)
     {
         $this->authorizeAccess();
-        $request->validate([
-            'nombre' => 'required|string|max:255|unique:magisters,nombre,' . $magister->id
-        ]);
 
-        $magister->update(['nombre' => $request->nombre]);
+        $magister->update($request->validated());
 
-        return redirect()->route('magisters.index')->with('success', 'Magíster actualizado.');
+        return redirect()
+            ->route('magisters.index')
+            ->with('success', 'Magíster actualizado.');
     }
 
     public function destroy(Magister $magister)
     {
         $this->authorizeAccess();
 
-        // Eliminar cursos asociados manualmente antes de eliminar el magíster
-        if ($magister->courses()->exists()) {
-            // Eliminar todos los cursos primero
-            $magister->courses()->delete();
-        }
+        DB::transaction(function () use ($magister) {
+            // Si tienes FK con cascadeOnDelete, bastaría $magister->delete();
+            if ($magister->courses()->exists()) {
+                $magister->courses()->delete();
+            }
+            $magister->delete();
+        });
 
-        $magister->delete();
-
-        return redirect()->route('magisters.index')->with('success', 'Magíster y cursos asociados eliminados.');
+        return redirect()
+            ->route('magisters.index')
+            ->with('success', 'Magíster y cursos asociados eliminados.');
     }
 
-
-    private function authorizeAccess()
+    private function authorizeAccess(): void
     {
-        if (!in_array(auth()->user()->rol, ['administrativo', 'docente'])) {
+        $user = auth()->user();
+        if (!$user || !in_array($user->rol ?? null, ['administrativo', 'docente'], true)) {
             abort(403, 'Acceso no autorizado.');
         }
     }

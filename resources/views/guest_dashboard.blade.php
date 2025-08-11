@@ -16,13 +16,12 @@
                     <label for="magister-filter" class="block text-sm font-medium text-gray-800 dark:text-white">
                         Filtrar por Magíster:
                     </label>
-                    <select id="magister-filter" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+                    <select id="magister-filter" name="magister"
+                        class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                         <option value="">Todos</option>
-                        <option value="Economía">Economía</option>
-                        <option value="Gestión de Sistemas de Salud">Gestión de Sistemas de Salud</option>
-                        <option value="Gestión y Políticas Públicas">Gestión y Políticas Públicas</option>
-                        <option value="Dirección y Planificación Tributaria">Dirección y Planificación Tributaria
-                        </option>
+                        @foreach(\App\Models\Magister::orderBy('nombre')->get() as $m)
+                            <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -208,11 +207,11 @@
                         const end = info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                         const tooltip = `
-                                ${info.event.title}
-                                🏛️ ${magister}
-                                🏫 ${sala}
-                                🕒 ${start} - ${end}
-                            `;
+                                    ${info.event.title}
+                                    🏛️ ${magister}
+                                    🏫 ${sala}
+                                    🕒 ${start} - ${end}
+                                `;
                         info.el.setAttribute('title', tooltip.trim());
                     }
                 });

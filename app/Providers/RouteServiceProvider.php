@@ -16,6 +16,10 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
+
+            // 👇 Rutas PÚBLICAS (solo lectura)
+            Route::middleware('web')
+                ->group(base_path('routes/public.php'));
         });
     }
 }

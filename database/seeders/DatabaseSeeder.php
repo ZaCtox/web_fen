@@ -19,8 +19,8 @@ class DatabaseSeeder extends Seeder
         DB::table('magisters')->truncate();
         DB::table('users')->truncate();          // solo si quieres resetear usuarios
         DB::table('periods')->truncate(); 
-        //DB::table('room_usages')->truncate();    //
-        DB::table('clases')->truncate();         //
+        DB::table('clases')->truncate();         
+        DB::table('staff')->truncate();          
         // si tiene relaciones también
         // Añade más tablas si es necesario
 
@@ -35,8 +35,8 @@ class DatabaseSeeder extends Seeder
             CoursesTableSeeder::class,
             RoomsTableSeeder::class,
             IncidentsTableSeeder::class,
-          //  RoomUsageSeeder::class, // 👈 Agregado aquí
             ClaseSeeder::class,
+            StaffSeeder::class,
         ]);
     }
 }

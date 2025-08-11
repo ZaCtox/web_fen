@@ -83,6 +83,7 @@
         });
     </script>
     @yield('scripts')
+    @stack('scripts')
     @vite('resources/js/app.js')
 
 
