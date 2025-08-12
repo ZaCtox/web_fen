@@ -151,6 +151,7 @@
             </div>
         </div>
     </div>
+    @include('components.footer')
 
     @push('styles')
         <style>

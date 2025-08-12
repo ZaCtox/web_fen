@@ -23,7 +23,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Teléfono</label>
-            <input type="text" name="telefono" placeholder="+56 71 241 7313"
+            <input type="text" name="telefono" pattern="\+56\s?\d{1,2}\s?\d{4}\s?\d{4}"
                    class="mt-1 w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
                    value="{{ old('telefono', $staff->telefono ?? '') }}">
             @error('telefono')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror

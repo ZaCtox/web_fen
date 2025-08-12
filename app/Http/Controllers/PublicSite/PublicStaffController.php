@@ -8,20 +8,14 @@ use Illuminate\Http\Request;
 
 class PublicStaffController extends Controller
 {
-    public function index(Request $request)
-    {
-        $q = $request->get('q');
+public function index(Request $request)
+{
+    // Trae todo. Para aligerar, selecciona solo las columnas que usas.
+    $staff = Staff::query()
+        ->orderBy('nombre')
+        ->get(['id','nombre','cargo','telefono','email']);
 
-        $staff = Staff::query()
-            ->when($q, fn($qr) => $qr->where(function($w) use ($q) {
-                $w->where('nombre','like',"%$q%")
-                  ->orWhere('cargo','like',"%$q%")
-                  ->orWhere('email','like',"%$q%");
-            }))
-            ->orderBy('nombre')
-            ->paginate(12)
-            ->withQueryString();
-
-        return view('public.staff-index', compact('staff','q'));
-    }
+    // Ya no necesitamos $q ni paginate()
+    return view('public.staff-index', compact('staff'));
+}
 }

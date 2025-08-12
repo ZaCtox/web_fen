@@ -24,6 +24,8 @@
                                 :active="request()->routeIs('courses.index')">Cursos</x-nav-link>
                             <x-nav-link :href="route('clases.index')"
                                 :active="request()->routeIs('clases.index')">Clases</x-nav-link>
+                                <x-nav-link :href="route('staff.index')"
+                                :active="request()->routeIs('staff.index')">Staff</x-nav-link>
                         @elseif($rol === 'docente')
                             <x-nav-link :href="route('rooms.index')"
                                 :active="request()->routeIs('rooms.index')">Salas</x-nav-link>
@@ -111,6 +113,8 @@
                         :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('clases.index')"
                         :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('staff.index')"
+                        :active="request()->routeIs('staff.index')">Staff</x-responsive-nav-link>
                 @elseif($rol === 'docente')
                     <x-responsive-nav-link :href="route('rooms.index')"
                         :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
