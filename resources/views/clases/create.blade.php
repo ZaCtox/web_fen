@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="p-6 max-w-4xl mx-auto">
-        <form action="{{ route('clases.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('clases.store') }}" method="POST" class="space-y-6" x-data="{ modalidad: '' }">
             @csrf
 
             {{-- Magíster --}}
@@ -34,7 +34,6 @@
 
             {{-- Periodo automático --}}
             <input type="hidden" name="period_id" id="period_id">
-
             <div>
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Periodo Académico</label>
                 <select id="periodo_info" disabled
@@ -45,9 +44,11 @@
 
             {{-- Modalidad --}}
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Modalidad</label>
-                <select name="modality" required
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+                <label for="modality"
+                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Modalidad</label>
+                <select name="modality" id="modality" x-model="modalidad"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                    required>
                     <option value="presencial">Presencial</option>
                     <option value="online">Online</option>
                     <option value="hibrida">Híbrida</option>
@@ -56,14 +57,27 @@
 
             {{-- Sala --}}
             <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Sala (opcional)</label>
-                <select name="room_id"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
-                    <option value="">Sin sala (solo si es online)</option>
+                <label for="room_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Sala
+                    (opcional)</label>
+                <select name="room_id" id="room_id"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                    :disabled="modalidad === 'online'">
+                    <option value="">-- Selecciona una sala --</option>
                     @foreach ($rooms as $room)
                         <option value="{{ $room->id }}">{{ $room->name }}</option>
                     @endforeach
                 </select>
+                <p x-show="modalidad === 'online'" class="text-sm text-blue-500 mt-1">
+                    Esta clase es online, por lo tanto no requiere sala.
+                </p>
+            </div>
+
+            {{-- Enlace Zoom opcional (solo si es online) --}}
+            <div x-show="modalidad === 'online'" x-transition>
+                <label for="url_zoom" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Enlace Zoom
+                    (opcional)</label>
+                <input type="url" name="url_zoom" id="url_zoom" placeholder="https://us02web.zoom.us/..."
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
             </div>
 
             {{-- Día y horas --}}
@@ -76,26 +90,16 @@
                         <option value="Sábado">Sábado</option>
                     </select>
                 </div>
-
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Hora inicio</label>
                     <input type="time" name="hora_inicio" required
                         class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                 </div>
-
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Hora fin</label>
                     <input type="time" name="hora_fin" required
                         class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                 </div>
-            </div>
-
-            {{-- Zoom opcional --}}
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Enlace Zoom
-                    (opcional)</label>
-                <input type="url" name="url_zoom" placeholder="https://us02web.zoom.us/..."
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
             </div>
 
             {{-- Botones --}}
@@ -116,7 +120,8 @@
         const periodInput = document.getElementById('period_id');
         const periodoInfo = document.getElementById('periodo_info');
 
-        magisterSelect.addEventListener('change', function () {
+        // 🎓 Cambiar asignaturas y periodo cuando cambia magíster
+        magisterSelect?.addEventListener('change', function () {
             const mag = this.value;
             courseSelect.innerHTML = '<option value="">-- Asignatura --</option>';
             periodInput.value = '';
@@ -140,6 +145,14 @@
                     periodInput.value = periodId ?? '';
                     periodoInfo.innerHTML = `<option>${periodo ? '📘 ' + periodo : 'Sin periodo asignado'}</option>`;
                 };
+            }
+        });
+
+        // 🧹 Si modalidad es online, limpiar selección de sala
+        document.getElementById('modality')?.addEventListener('change', function () {
+            if (this.value === 'online') {
+                const roomSelect = document.getElementById('room_id');
+                if (roomSelect) roomSelect.value = '';
             }
         });
     </script>

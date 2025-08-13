@@ -3,22 +3,11 @@
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">📚 Clases Académicas</h2>
     </x-slot>
 
-    <div
-        class="p-6 max-w-7xl mx-auto"
-        x-data="{
+    <div class="p-6 max-w-7xl mx-auto" x-data="{
             magister: '',
             sala: '',
             dia: '',
             clases: @js($clases),
-            colorMagister(nombre) {
-                const mapa = {
-                    'Economía': 'border-blue-500',
-                    'Dirección y Planificación Tributaria': 'border-red-500',
-                    'Gestión de Sistemas de Salud': 'border-green-500',
-                    'Gestión y Políticas Públicas': 'border-orange-500',
-                };
-                return mapa[nombre] ?? 'border-gray-400';
-            },
             safe(val, fallback='') { return (val ?? fallback); },
             get filtradas() {
                 return this.clases.filter(c => {
@@ -35,12 +24,11 @@
                 this.sala = '';
                 this.dia = '';
             },
-        }"
-    >
+        }">
         {{-- Encabezado superior --}}
         <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
             <a href="{{ route('clases.create') }}"
-               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm">
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm">
                 ➕ Nueva Clase
             </a>
 
@@ -87,9 +75,8 @@
             </div>
 
             <div class="flex flex-col justify-end">
-                <button @click="limpiarFiltros"
-                        type="button"
-                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded w-full sm:w-auto">
+                <button @click="limpiarFiltros" type="button"
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded w-full sm:w-auto">
                     Limpiar filtros
                 </button>
             </div>
@@ -99,8 +86,8 @@
         <template x-if="filtradas.length > 0">
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <template x-for="clase in filtradas" :key="clase.id">
-                    <div class="bg-white dark:bg-gray-800 shadow-md rounded p-4 border-l-4"
-                         :class="colorMagister(safe(clase?.course?.magister?.nombre))">
+                    <div class="bg-white dark:bg-gray-800 shadow-md rounded p-4"
+                        :style="`border-left: 4px solid ${safe(clase?.course?.magister?.color ?? '#6b7280')}`">
                         <h3 class="font-semibold text-lg text-gray-800 dark:text-white"
                             x-text="safe(clase?.course?.nombre, '—')"></h3>
 
@@ -115,7 +102,8 @@
                                 <span x-text="safe(clase?.dia, '—')"></span>
                             </p>
                             <p><strong>Hora:</strong>
-                                <span x-text="`${safe(clase?.hora_inicio,'--:--')} - ${safe(clase?.hora_fin,'--:--')}`"></span>
+                                <span
+                                    x-text="`${safe(clase?.hora_inicio,'--:--')} - ${safe(clase?.hora_fin,'--:--')}`"></span>
                             </p>
                             <p><strong>Modalidad:</strong>
                                 <span x-text="safe(clase?.modality, '—')"></span>
@@ -127,16 +115,16 @@
 
                         <div class="flex flex-col sm:flex-row gap-2 mt-4">
                             <a :href="`/clases/${clase.id}/edit`"
-                               class="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded text-center">
+                                class="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded text-center">
                                 ✏️ Editar
                             </a>
 
                             <form :action="`/clases/${clase.id}`" method="POST"
-                                  @submit="return confirm('¿Eliminar esta clase?')">
+                                @submit="return confirm('¿Eliminar esta clase?')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
-                                        class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded w-full text-center">
+                                    class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded w-full text-center">
                                     🗑️ Eliminar
                                 </button>
                             </form>

@@ -17,17 +17,39 @@ class ClaseController extends Controller
     public function index()
     {
         return view('clases.index', [
-            'clases'    => Clase::with(['course.magister','period','room'])->get(),
-            'rooms'     => Room::orderBy('name')->get(),
+            'clases' => Clase::with(['course.magister', 'period', 'room'])->get(),
+            'rooms' => Room::orderBy('name')->get(),
             'magisters' => Magister::orderBy('nombre')->get(),
         ]);
     }
 
     public function create()
     {
-        [$agrupados, $courses, $rooms, $periodos] = $this->referencias();
-        return view('clases.create', compact('agrupados','courses','rooms','periodos'));
+        $courses = Course::with('magister', 'period')->get();
+        $agrupados = [];
+
+        foreach ($courses as $course) {
+            $agrupados[$course->magister->nombre][] = [
+                'id' => $course->id,
+                'nombre' => $course->nombre,
+                'period_id' => $course->period_id,
+                'periodo' => $course->period ? $course->period->nombre_completo : 'Sin período',
+            ];
+        }
+
+        $rooms = Room::orderBy('name')->get();
+        $periods = Period::orderBy('anio', 'desc')->orderBy('numero')->get();
+
+        return view('clases.create', [
+            'agrupados' => $agrupados,
+            'rooms' => $rooms,
+            'periods' => $periods,
+            'action' => route('clases.store'), // ✅ aquí se pasa la variable $action
+            'method' => 'POST',               // ✅ opcional si reutilizas form
+            'submitText' => '💾 Crear Clase', // ✅ opcional para cambiar texto
+        ]);
     }
+
 
     public function store(StoreClaseRequest $request)
     {
@@ -37,12 +59,12 @@ class ClaseController extends Controller
 
     public function edit(Clase $clase)
     {
-        $courses  = Course::with('magister')->get();
-        $periods  = Period::orderByDesc('anio')->orderByDesc('numero')->get();
-        $rooms    = Room::orderBy('name')->get();
+        [$agrupados, $courses, $rooms, $periods] = $this->referencias();
 
-        return view('clases.edit', compact('clase','courses','periods','rooms'));
+        return view('clases.edit', compact('clase', 'agrupados', 'courses', 'rooms', 'periods'));
     }
+
+
 
     public function update(UpdateClaseRequest $request, Clase $clase)
     {
@@ -58,8 +80,8 @@ class ClaseController extends Controller
 
     public function exportar(Request $request)
     {
-        $clases = Clase::with(['course.magister','period','room'])
-            ->filtrar($request->only('magister','sala','dia'))
+        $clases = Clase::with(['course.magister', 'period', 'room'])
+            ->filtrar($request->only('magister', 'sala', 'dia'))
             ->orderBy('period_id')
             ->get();
 
@@ -74,16 +96,16 @@ class ClaseController extends Controller
 
     private function referencias()
     {
-        $courses  = Course::with('magister','period')->get();
+        $courses = Course::with('magister', 'period')->get();
         $agrupados = $courses->groupBy(fn($c) => $c->magister->nombre ?? 'Sin Magíster')
             ->map(fn($group) => $group->map(fn($c) => [
-                'id'        => $c->id,
-                'nombre'    => $c->nombre,
+                'id' => $c->id,
+                'nombre' => $c->nombre,
                 'period_id' => $c->period_id,
-                'periodo'   => $c->period?->nombre_completo ?? 'Sin periodo',
+                'periodo' => $c->period?->nombre_completo ?? 'Sin periodo',
             ])->values());
 
-        $rooms    = Room::orderBy('name')->get();
+        $rooms = Room::orderBy('name')->get();
         $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
 
         return [$agrupados, $courses, $rooms, $periodos];

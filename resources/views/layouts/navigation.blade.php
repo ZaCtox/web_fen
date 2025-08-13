@@ -24,7 +24,7 @@
                                 :active="request()->routeIs('courses.index')">Cursos</x-nav-link>
                             <x-nav-link :href="route('clases.index')"
                                 :active="request()->routeIs('clases.index')">Clases</x-nav-link>
-                                <x-nav-link :href="route('staff.index')"
+                            <x-nav-link :href="route('staff.index')"
                                 :active="request()->routeIs('staff.index')">Staff</x-nav-link>
                         @elseif($rol === 'docente')
                             <x-nav-link :href="route('rooms.index')"
@@ -35,6 +35,9 @@
                     </div>
                 @else
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('guest.dashboard')" :active="request()->routeIs('guest.dashboard')">
+                            Inicio
+                        </x-nav-link>
                         <x-nav-link :href="route('public.staff.index')" :active="request()->routeIs('public.staff.index')">
                             Staff-FEN
                         </x-nav-link>
@@ -113,7 +116,7 @@
                         :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('clases.index')"
                         :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
-                        <x-responsive-nav-link :href="route('staff.index')"
+                    <x-responsive-nav-link :href="route('staff.index')"
                         :active="request()->routeIs('staff.index')">Staff</x-responsive-nav-link>
                 @elseif($rol === 'docente')
                     <x-responsive-nav-link :href="route('rooms.index')"

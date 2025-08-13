@@ -9,56 +9,13 @@
         {{-- Calendario --}}
         <div class="bg-white dark:bg-gray-800 rounded shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Calendario Académico</h3>
-
             {{-- 🔍 Filtros --}}
-            <div class="flex flex-wrap items-center gap-4 mb-6">
-                <div>
-                    <label for="magister-filter" class="block text-sm font-medium text-gray-800 dark:text-white">
-                        Filtrar por Magíster:
-                    </label>
-                    <select id="magister-filter" name="magister"
-                        class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-                        <option value="">Todos</option>
-                        @foreach(\App\Models\Magister::orderBy('nombre')->get() as $m)
-                            <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label for="room-filter" class="block text-sm font-medium text-gray-800 dark:text-white">
-                        Filtrar por Sala:
-                    </label>
-                    <select id="room-filter" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-                        <option value="">Todas</option>
-                        @foreach(\App\Models\Room::all() as $room)
-                            <option value="{{ $room->name }}">{{ $room->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-
+            <x-filtros-calendario />
             {{-- Leyenda por Magíster --}}
-            <div class="flex flex-wrap gap-4 mb-4">
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 inline-block rounded-full bg-blue-500"></span>
-                    <span class="text-sm text-gray-800 dark:text-gray-200">Economía</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 inline-block rounded-full bg-red-500"></span>
-                    <span class="text-sm text-gray-800 dark:text-gray-200">Dirección y Planificación Tributaria</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 inline-block rounded-full bg-green-500"></span>
-                    <span class="text-sm text-gray-800 dark:text-gray-200">Gestión de Sistemas de Salud</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="w-4 h-4 inline-block rounded-full bg-orange-500"></span>
-                    <span class="text-sm text-gray-800 dark:text-gray-200">Gestión y Políticas Públicas</span>
-                </div>
-            </div>
+            <x-leyenda-magister />
 
-            <div id="calendar"></div>
+
+            <div id="calendar" data-url="{{ route('guest.events.index') }}"></div>
         </div>
 
         {{-- Salas --}}
@@ -172,57 +129,9 @@
         </style>
     @endpush
 
-    @section('scripts')
+    @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const calendarEl = document.getElementById('calendar');
-                const magisterFilter = document.getElementById('magister-filter');
-                const roomFilter = document.getElementById('room-filter');
+        @vite('resources/js/calendar-public.js')
+    @endpush
 
-                const calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'timeGridWeek',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'dayGridMonth,timeGridWeek'
-                    },
-                    locale: 'es',
-                    firstDay: 1,
-                    slotMinTime: "08:30:00",
-                    slotMaxTime: "21:00:00",
-                    expandRows: true,
-                    events: {
-                        url: '{{ route("guest.events.index") }}',
-                        extraParams: function () {
-                            return {
-                                magister: magisterFilter.value,
-                                room: roomFilter.value,
-                            }
-                        }
-                    },
-                    eventDidMount: info => {
-                        const magister = info.event.extendedProps.magister || 'Sin magíster';
-                        const sala = info.event.extendedProps.room?.name || 'Sin sala';
-                        const start = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const end = info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-                        const tooltip = `
-                                    ${info.event.title}
-                                    🏛️ ${magister}
-                                    🏫 ${sala}
-                                    🕒 ${start} - ${end}
-                                `;
-                        info.el.setAttribute('title', tooltip.trim());
-                    }
-                });
-
-                calendar.render();
-
-                [magisterFilter, roomFilter].forEach(select =>
-                    select.addEventListener('change', () => calendar.refetchEvents())
-                );
-            });
-        </script>
-    @endsection
 </x-app-layout>

@@ -28,14 +28,14 @@
             </div>
 
             <div>
-                <label for="modal-magister" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Magíster
+                <label for="magister_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Magíster (opcional)
                 </label>
-                <select id="modal-magister"
+                <select id="magister_id"
                     class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
-                    <option value="">Seleccione</option>
+                    <option value="">-- Sin Magíster --</option>
                     @foreach(\App\Models\Magister::orderBy('nombre')->get() as $m)
-                        <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
+                        <option value="{{ $m->id }}">{{ $m->nombre }}</option>
                     @endforeach
                 </select>
             </div>

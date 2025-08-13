@@ -4,10 +4,11 @@
             <label for="magister-filter" class="block text-sm font-medium text-gray-800 dark:text-white">
                 Filtrar por Magíster:
             </label>
-            <select id="magister-filter" name="magister" class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+            <select id="magister-filter" name="magister"
+                class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                 <option value="">Todos</option>
                 @foreach(\App\Models\Magister::orderBy('nombre')->get() as $m)
-                    <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
+                    <option value="{{ $m->id }}">{{ $m->nombre }}</option>
                 @endforeach
             </select>
         </div>

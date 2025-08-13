@@ -10,49 +10,51 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
-    private $coloresMagister = [
-        'Economía' => '#3b82f6',
-        'Dirección y Planificación Tributaria' => '#ef4444',
-        'Gestión de Sistemas de Salud' => '#10b981',
-        'Gestión y Políticas Públicas' => '#f97316',
-    ];
-
     public function index(Request $request)
     {
-        $magister = trim((string) $request->query('magister', ''));
+        $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
 
-        // === Eventos manuales ===
-        $manualEvents = Event::with('room')
+        // 👇 Forzamos a integer si existe
+        $magisterId = is_numeric($magisterId) ? (int) $magisterId : null;
+        $roomId = is_numeric($roomId) ? (int) $roomId : null;
+
+        $manualEvents = Event::with(['room', 'magister'])
             ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId))
             ->when($rangeStart, fn($q) => $q->where('end_time', '>=', $rangeStart))
             ->when($rangeEnd, fn($q) => $q->where('start_time', '<=', $rangeEnd))
+            ->when(!empty($magisterId), fn($q) => $q->where(function ($query) use ($magisterId) {
+                $query->whereNull('magister_id')->orWhere('magister_id', $magisterId);
+            }))
             ->get()
             ->map(function ($event) {
+                $color = $event->magister->color ?? '#a5f63b';
+
                 return [
                     'id' => 'event-' . $event->id,
                     'title' => $event->title,
                     'start' => $event->start_time,
                     'end' => $event->end_time,
+                    'magister' => $event->magister ? [
+                        'id' => $event->magister->id,
+                        'name' => $event->magister->nombre
+                    ] : null,
                     'room_id' => $event->room_id,
                     'room' => $event->room ? ['id' => $event->room->id, 'name' => $event->room->name] : null,
-                    'backgroundColor' => '#a5f63b',
-                    'borderColor' => '#8add1e',
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
                     'editable' => Auth::check(),
                     'type' => 'manual',
-                    'magister' => null, // No está asociado a un magíster
                     'modality' => null,
                 ];
             });
 
-        // === Clases ===
-        $classEvents = $this->generarEventosDesdeClases($magister, $roomId, $rangeStart, $rangeEnd);
+        $classEvents = $this->generarEventosDesdeClases($magisterId, $roomId, $rangeStart, $rangeEnd);
 
         return response()->json($manualEvents->concat($classEvents)->values());
     }
-
 
     public function store(Request $request)
     {
@@ -61,6 +63,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'magister_id' => 'nullable|exists:magisters,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after_or_equal:start_time',
             'room_id' => 'nullable|exists:rooms,id',
@@ -84,6 +87,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
+            'magister_id' => 'nullable|exists:magisters,id',
             'start_time' => 'sometimes|required|date',
             'end_time' => 'sometimes|required|date|after_or_equal:start_time',
             'room_id' => 'nullable|exists:rooms,id',
@@ -106,7 +110,6 @@ class EventController extends Controller
     public function destroy(Event $event)
     {
         $this->autorizar();
-
         $event->delete();
 
         return response()->json(['message' => 'Evento eliminado']);
@@ -119,7 +122,7 @@ class EventController extends Controller
         }
     }
 
-    private function generarEventosDesdeClases(?string $magister = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null)
+    private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null)
     {
         $dias = [
             'Domingo' => 0,
@@ -132,17 +135,13 @@ class EventController extends Controller
         ];
 
         $q = Clase::with(['room', 'period', 'course.magister'])
-            ->when($magister !== '', function ($q) use ($magister) {
-                $q->whereHas('course.magister', fn($qq) => $qq->where('nombre', $magister));
-            })
+            ->when(!empty($magisterId), fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
             ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId));
 
-        // Si FullCalendar envía rango, recorta por período para no generar basura
         if ($rangeStart && $rangeEnd) {
-            $q->whereHas('period', function ($qq) use ($rangeStart, $rangeEnd) {
-                $qq->whereDate('fecha_fin', '>=', $rangeStart->toDateString())
-                    ->whereDate('fecha_inicio', '<=', $rangeEnd->toDateString());
-            });
+            $q->whereHas('period', fn($qq) => $qq
+                ->whereDate('fecha_fin', '>=', $rangeStart->toDateString())
+                ->whereDate('fecha_inicio', '<=', $rangeEnd->toDateString()));
         }
 
         $clases = $q->get();
@@ -154,30 +153,22 @@ class EventController extends Controller
             }
 
             $dayNumber = $dias[$clase->dia];
-
-            // Punto de arranque para iterar
             $inicioPeriodo = Carbon::parse($clase->period->fecha_inicio);
             $finPeriodo = Carbon::parse($clase->period->fecha_fin);
-
-            // Si hay rango, úsalo para acotar aún más
             $desde = $rangeStart ? $rangeStart->copy()->max($inicioPeriodo) : $inicioPeriodo->copy();
             $hasta = $rangeEnd ? $rangeEnd->copy()->min($finPeriodo) : $finPeriodo->copy();
 
-            if ($desde->gt($hasta)) {
+            if ($desde->gt($hasta))
                 continue;
-            }
 
-            // Buscar el primer "día de la semana" >= desde
             $fecha = $desde->copy();
-            if ($fecha->dayOfWeek !== $dayNumber) {
+            if ($fecha->dayOfWeek !== $dayNumber)
                 $fecha = $fecha->next($dayNumber);
-            }
-            if ($fecha->lt($desde)) {
-                $fecha->addWeek(); // por si next() cayó antes del rango exacto
-            }
+            if ($fecha->lt($desde))
+                $fecha->addWeek();
 
-            $nombreMagister = $clase->course->magister->nombre ?? 'Desconocido';
-            $color = $this->coloresMagister[$nombreMagister] ?? '#6b7280';
+            $magister = $clase->course->magister;
+            $color = $magister->color ?? '#6b7280';
             $modality = $clase->modality;
             $online = $modality === 'online';
             $hibrida = $modality === 'hibrida';
@@ -192,7 +183,7 @@ class EventController extends Controller
                 elseif ($hibrida)
                     $titulo .= ' [HIBRIDA]';
 
-                $descripcion = 'Magíster: ' . $nombreMagister;
+                $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
                 if (!empty($clase->url_zoom)) {
                     $descripcion .= "\n🔗 " . $clase->url_zoom;
                 }
@@ -206,10 +197,10 @@ class EventController extends Controller
                     'room_id' => $clase->room_id,
                     'room' => $clase->room ? ['id' => $clase->room->id, 'name' => $clase->room->name] : null,
                     'editable' => false,
-                    'backgroundColor' => $online ? '#6366f1' : ($hibrida ? '#facc15' : $color),
-                    'borderColor' => $online ? '#4338ca' : ($hibrida ? '#eab308' : $color),
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
                     'type' => 'clase',
-                    'magister' => $nombreMagister,
+                    'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
                     'modality' => $modality,
                     'url_zoom' => $clase->url_zoom,
                 ]);

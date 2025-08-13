@@ -16,8 +16,10 @@ class MagisterController extends Controller
 
         $magisters = Magister::query()
             ->withCount('courses')
-            ->when($request->filled('q'), fn($q) =>
-                $q->where('nombre', 'like', '%'.$request->q.'%')
+            ->when(
+                $request->filled('q'),
+                fn($q) =>
+                $q->where('nombre', 'like', '%' . $request->q . '%')
             )
             ->orderBy('nombre')
             ->paginate(10)
@@ -36,7 +38,12 @@ class MagisterController extends Controller
     {
         $this->authorizeAccess();
 
-        Magister::create($request->validated());
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'color' => 'nullable|string',
+        ]);
+
+        Magister::create($validated);
 
         return redirect()
             ->route('magisters.index')
@@ -53,7 +60,13 @@ class MagisterController extends Controller
     {
         $this->authorizeAccess();
 
-        $magister->update($request->validated());
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'color' => 'nullable|string',
+        ]);
+
+        $magister->update($validated);
+
 
         return redirect()
             ->route('magisters.index')
@@ -84,4 +97,11 @@ class MagisterController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
     }
+
+    public function show(Magister $magister)
+    {
+        $this->authorizeAccess();
+        return view('magisters.show', compact('magister'));
+    }
+
 }
