@@ -4,25 +4,40 @@
             Información de la Sala: {{ $room->name }}
         </h2>
     </x-slot>
+    
 
     <div class="p-6 max-w-7xl mx-auto">
-        <div x-data="{
+                <div class="mb-8">
+            <a
+                href="{{ route('rooms.index') }}"
+                class="inline-block bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+            >
+                ← Volver a listado de salas
+            </a>
+        </div>
+        <div
+            x-data="{
                 tab: window.location.hash === '#clases' ? 'clases' : 'detalles',
                 cambiarTab(valor) {
                     this.tab = valor;
-                    history.replaceState(null, null, '#' + valor); // actualiza la URL sin recargar
+                    history.replaceState(null, null, '#' + valor);
                 }
-            }">
+            }"
+        >
             {{-- Tabs --}}
             <div class="flex space-x-4 mb-4 border-b border-gray-300 dark:border-gray-600">
-                <button @click="cambiarTab('detalles')"
-                        class="pb-2 font-semibold"
-                        :class="tab === 'detalles' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'">
+                <button
+                    @click="cambiarTab('detalles')"
+                    class="pb-2 font-semibold"
+                    :class="tab === 'detalles' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'"
+                >
                     🛠️ Detalles
                 </button>
-                <button @click="cambiarTab('clases')"
-                        class="pb-2 font-semibold"
-                        :class="tab === 'clases' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'">
+                <button
+                    @click="cambiarTab('clases')"
+                    class="pb-2 font-semibold"
+                    :class="tab === 'clases' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'"
+                >
                     📚 Clases Asignadas
                 </button>
             </div>
@@ -58,24 +73,22 @@
 
             {{-- Clases asignadas --}}
             <div x-show="tab === 'clases'" x-cloak class="mt-6">
-                <div x-data="{
-                    magister: '',
-                    dia: '',
-                    trimestre: '',
-                    clases: @js($clases),
-                    get filtradas() {
-                        return this.clases.filter(c =>
-                            (!this.magister || c.course?.magister?.nombre === this.magister) &&
-                            (!this.dia || c.dia === this.dia) &&
-                            (!this.trimestre || `${c.period?.anio}-${c.period?.numero}` === this.trimestre)
-                        );
-                    },
-                    limpiar() {
-                        this.magister = '';
-                        this.dia = '';
-                        this.trimestre = '';
-                    }
-                }">
+                <div
+                    x-data="{
+                        magister: '',
+                        dia: '',
+                        trimestre: '',
+                        clases: @js($clases),
+                        get filtradas() {
+                            return this.clases.filter(c =>
+                                (!this.magister || c.course?.magister?.nombre === this.magister) &&
+                                (!this.dia || c.dia === this.dia) &&
+                                (!this.trimestre || `${c.period?.anio}-${c.period?.numero}` === this.trimestre)
+                            );
+                        },
+                        limpiar() { this.magister = ''; this.dia = ''; this.trimestre = ''; }
+                    }"
+                >
                     <div class="flex flex-wrap gap-4 mb-4">
                         <div>
                             <label class="block text-sm text-gray-700 dark:text-gray-300">Magíster:</label>
@@ -109,8 +122,10 @@
                         </div>
 
                         <div class="self-end">
-                            <button @click="limpiar"
-                                    class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white px-4 py-2 rounded">
+                            <button
+                                @click="limpiar"
+                                class="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-white px-4 py-2 rounded"
+                            >
                                 Limpiar filtros
                             </button>
                         </div>
@@ -119,13 +134,15 @@
                     <template x-if="filtradas.length > 0">
                         <div class="space-y-4">
                             <template x-for="clase in filtradas" :key="clase.id">
-                                <div class="bg-white dark:bg-gray-800 shadow-sm rounded p-4 border-l-4"
-                                     :class="{
+                                <div
+                                    class="bg-white dark:bg-gray-800 shadow-sm rounded p-4 border-l-4"
+                                    :class="{
                                         'border-blue-500': clase.course.magister?.nombre === 'Economía',
                                         'border-red-500': clase.course.magister?.nombre === 'Dirección y Planificación Tributaria',
                                         'border-green-500': clase.course.magister?.nombre === 'Gestión de Sistemas de Salud',
                                         'border-orange-500': clase.course.magister?.nombre === 'Gestión y Políticas Públicas',
-                                     }">
+                                    }"
+                                >
                                     <h3 class="font-bold text-lg text-gray-800 dark:text-white" x-text="clase.course.nombre"></h3>
                                     <p class="text-sm text-gray-600 dark:text-gray-300">
                                         <strong>Magíster:</strong> <span x-text="clase.course.magister.nombre"></span><br>
@@ -149,4 +166,3 @@
         </div>
     </div>
 </x-app-layout>
-    

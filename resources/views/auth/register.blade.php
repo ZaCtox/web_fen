@@ -33,7 +33,10 @@
                     class="block mt-1 w-full rounded-md border-gray-300 dark:bg-gray-700 dark:text-white focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">Selecciona un rol</option>
                     <option value="docente" {{ old('rol') == 'docente' ? 'selected' : '' }}>Docente</option>
-                    <option value="administrativo" {{ old('rol') == 'administrativo' ? 'selected' : '' }}>Administrativo</option>
+                    <option value="asistente" {{ old('rol') == 'asistente' ? 'selected' : '' }}>Asistente</option>
+                    <option value="director_magister" {{ old('rol') == 'director_magister' ? 'selected' : '' }}>Director Magíster</option>
+                    <option value="director_administrativo" {{ old('rol') == 'director_administrativo' ? 'selected' : '' }}>Director Administrativo</option>
+                    <option value="auxiliar" {{ old('rol') == 'auxiliar' ? 'selected' : '' }}>Auxiliar</option>
                 </select>
                 <x-input-error :messages="$errors->get('rol')" class="mt-2" />
             </div>
@@ -57,7 +60,7 @@
                 <div class="flex gap-2 justify-end">
                     <a href="{{ route('dashboard') }}"
                         class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                        ← Volver al Dashboard
+                        ← Volver
                     </a>
 
                     <x-primary-button class="px-4 py-2">

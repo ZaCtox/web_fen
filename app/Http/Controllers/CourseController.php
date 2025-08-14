@@ -29,7 +29,7 @@ class CourseController extends Controller
 
         $magisters = Magister::all();
         $selectedMagisterId = $request->magister_id;
-        $periods = Period::orderByDesc('anio')->orderBy('numero')->get();
+        $periods = Period::orderBy('anio')->orderBy('numero')->get();
 
         return view('courses.create', compact('magisters', 'selectedMagisterId', 'periods'));
     }
@@ -60,8 +60,7 @@ class CourseController extends Controller
         }
 
         $magisters = Magister::all();
-        $periods = Period::orderByDesc('anio')->orderBy('numero')->get();
-
+        $periods = Period::orderBy('anio')->orderBy('numero')->get();
 
         return view('courses.edit', compact('course', 'magisters', 'periods'));
     }

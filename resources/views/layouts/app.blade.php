@@ -33,7 +33,7 @@
                     {{ $header }}
 
                     <div class="flex flex-wrap items-center">
-                        @if($rol === 'docente' || $rol === 'administrativo')
+                        @if($rol === 'administrativo')
                             <a href="{{ route('register') }}" < href="{{ route('register') }}"
                                 class="text-sm px-3 py-2 mr-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium whitespace-nowrap">
                                 👤➕ Registrar Usuario

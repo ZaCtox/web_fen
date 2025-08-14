@@ -4,7 +4,16 @@
             Bitácora de Incidencias
         </h2>
     </x-slot>
-
+    <div class="p-5 max-w-7xl mx-auto">
+        <a href="{{ route('incidencias.create') }}"
+            class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-2 py-2 rounded shadow">
+            ➕ Nueva Incidencia
+        </a>
+        <a href="{{ route('incidencias.estadisticas') }}"
+            class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-2 rounded shadow">
+            📋 Ver Estadísticas
+        </a>
+    </div>
     <div class="p-6 max-w-7xl mx-auto" x-data="{
         estado: '{{ request('estado') }}',
         sala: '{{ request('room_id') }}',
@@ -29,7 +38,9 @@
                     class="w-full rounded dark:bg-gray-800 dark:text-white">
                     <option value="">Todos</option>
                     <option value="pendiente">Pendientes</option>
+                    <option value="en_revision">Revisión</option>
                     <option value="resuelta">Resueltas</option>
+                    <option value="no_resuelta">No resueltas</option>
                 </select>
             </div>
 
@@ -114,11 +125,13 @@
                 class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
                 <thead x-data="{}" class="bg-gray-100 dark:bg-gray-700">
                     <tr>
+                        <th class="px-4 py-2">ID</th> {{-- ✅ NUEVO --}}
                         <th class="px-4 py-2">Título</th>
                         <th class="px-4 py-2">Sala</th>
                         <th class="px-4 py-2">Estado</th>
                         <th class="px-4 py-2">Fecha</th>
                         <th class="px-4 py-2" x-show="!historico" x-cloak>Período</th>
+                        <th class="px-4 py-2">Ticket UTALCA</th> {{-- ✅ NUEVO --}}
                         <th class="px-4 py-2">Resuelta el</th>
                         <th class="px-4 py-2">Acción</th>
                     </tr>
@@ -126,14 +139,25 @@
                 <tbody>
                     @forelse ($incidencias as $incidencia)
                                         <tr class="border-t border-gray-200 dark:border-gray-600">
+                                            <td class="px-4 py-2">{{ $incidencia->id }}</td> {{-- ✅ NUEVO --}}
                                             <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
                                             <td class="px-4 py-2">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
-                                            <td class="px-4 py-2">{{ ucfirst($incidencia->estado) }}</td>
+                                            @php
+                                                $estadoClase = 'estado estado-' . $incidencia->estado;
+                                                $estadoTexto = ucwords(str_replace('_', ' ', $incidencia->estado));
+                                            @endphp
+
+                                            <td class="px-4 py-2">
+                                                <span class="{{ $estadoClase }}">{{ $estadoTexto }}</span>
+                                            </td>
                                             <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="px-4 py-2" x-show="!historico" x-cloak>
                                                 {{ optional($periodos->first(function ($p) use ($incidencia) {
                             return $incidencia->created_at->between($p->fecha_inicio, $p->fecha_fin);
                         }))->nombre_completo ?? '---' }}
+                                            </td>
+                                            <td class="px-4 py-2">
+                                                {{ $incidencia->nro_ticket ?? '—' }} {{-- ✅ NUEVO --}}
                                             </td>
                                             <td class="px-4 py-2">
                                                 {{ $incidencia->resuelta_en ? $incidencia->resuelta_en->format('d/m/Y H:i') : '-' }}
@@ -145,7 +169,7 @@
                                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-gray-500 dark:text-gray-400">
+                            <td colspan="9" class="text-center py-4 text-gray-500 dark:text-gray-400">
                                 No se encontraron incidencias con los filtros aplicados.
                             </td>
                         </tr>

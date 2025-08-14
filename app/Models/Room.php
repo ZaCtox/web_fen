@@ -26,12 +26,6 @@ class Room extends Model
         'televisor_funcional',
     ];
 
-    // app/Models/Room.php
-    public function usages()
-    {
-        return $this->hasMany(RoomUsage::class);
-    }
-
     public function clases()
     {
         return $this->hasMany(Clase::class);

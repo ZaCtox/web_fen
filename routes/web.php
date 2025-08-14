@@ -19,6 +19,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\PublicStaffController;
 use App\Http\Controllers\PublicRoomController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -54,10 +55,11 @@ Route::middleware('auth')->group(function () {
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        // Incidencias
-        Route::get('/incidencias/estadisticas', [IncidentController::class, 'estadisticas'])->name('incidencias.estadisticas');
-        Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])->name('incidencias.exportar.pdf');
-        Route::resource('incidencias', IncidentController::class);
+        // Usuarios
+        Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+        Route::get('/usuarios/{user}/edit', [UserController::class, 'edit'])->name('usuarios.edit');
+        Route::put('/usuarios/{user}', [UserController::class, 'update'])->name('usuarios.update');
+        Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
         // Eventos
         Route::get('/events', [EventController::class, 'index'])->name('events.index');
@@ -67,22 +69,28 @@ Route::middleware('auth')->group(function () {
 
         // Periodos
         Route::resource('periods', PeriodController::class);
+        Route::post('/periods/actualizar-proximo-anio', [PeriodController::class, 'actualizarAlProximoAnio'])->name('periods.actualizarProximoAnio');
 
         // Cursos y Magísteres
         Route::resource('courses', CourseController::class);
         Route::delete('/courses/programa/{programa}', [CourseController::class, 'destroyPrograma'])->name('courses.destroy-programa');
-        Route::resource('magisters', MagisterController::class);
+        Route::resource('magisters', MagisterController::class)->except(['show']);
 
         // Staff
         Route::resource('staff', StaffController::class);
+
+
     });
 
-    // Acceso para ADMINISTRATIVOS y DOCENTES
-    Route::middleware('role:administrativo,docente')->group(function () {
+    // Acceso para DOCENTES
+    Route::middleware('role:docente')->group(function () {
         // Salas
         Route::resource('rooms', RoomController::class);
-        Route::get('/rooms/{room}/asignar-uso', [RoomController::class, 'asignarUso'])->name('rooms.asignar');
-        Route::post('/rooms/{room}/asignar-uso', [RoomController::class, 'guardarUso'])->name('rooms.guardar-uso');
+
+        // Incidencias
+        Route::get('/incidencias/estadisticas', [IncidentController::class, 'estadisticas'])->name('incidencias.estadisticas');
+        Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])->name('incidencias.exportar.pdf');
+        Route::resource('incidencias', IncidentController::class);
 
         // Clases
         Route::resource('clases', ClaseController::class);
@@ -91,7 +99,14 @@ Route::middleware('auth')->group(function () {
 
         // Vista de calendario editable
         Route::view('/calendario', 'calendario.index')->name('calendario');
+
+        // Eventos
+        Route::get('/events', [EventController::class, 'index'])->name('events.index');
+        Route::post('/events', [EventController::class, 'store'])->name('events.store');
+        Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
     });
+
 });
 
 require __DIR__ . '/auth.php';

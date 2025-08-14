@@ -69,16 +69,24 @@
                         <input type="text" value="{{ Auth::user()->name }}" disabled
                             class="mt-1 block w-full bg-gray-100 dark:bg-gray-700 rounded-md border-gray-300 shadow-sm text-gray-600 dark:text-gray-300">
                     </div>
+                    <div>
+                        <label for="nro_ticket" class="block text-sm font-medium text-gray-700 dark:text-gray-300">N°
+                            Ticket UTALCA (opcional)</label>
+                        <input type="text" name="nro_ticket" id="nro_ticket" value="{{ old('nro_ticket') }}"
+                            class="mt-1 block w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                            placeholder="Ej: 2364552">
+                    </div>
 
-                    <div class="flex space-x-4">
-                        <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                            Guardar Incidencia
-                        </button>
+                    <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                         <a href="{{ route('incidencias.index') }}"
-                            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                            Cancelar
+                            class="inline-flex items-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded shadow text-sm font-medium transition">
+                            ← Cancelar y volver
                         </a>
+
+                        <button type="submit"
+                            class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm font-medium transition">
+                            💾 Guardar Incidencia
+                        </button>
                     </div>
                 </form>
             </div>

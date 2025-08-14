@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Period;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class PeriodController extends Controller
 {
@@ -91,4 +92,24 @@ class PeriodController extends Controller
 
         return redirect()->route('periods.index')->with('success', 'Periodo eliminado.');
     }
+
+    public function actualizarAlProximoAnio()
+    {
+        $periodos = Period::all();
+
+        if ($periodos->isEmpty()) {
+            return back()->with('error', 'No hay períodos académicos para actualizar.');
+        }
+
+        foreach ($periodos as $periodo) {
+            $periodo->update([
+                'fecha_inicio' => \Carbon\Carbon::parse($periodo->fecha_inicio)->addYear(),
+                'fecha_fin' => \Carbon\Carbon::parse($periodo->fecha_fin)->addYear(),
+            ]);
+        }
+
+        return back()->with('success', 'Fechas de todos los períodos se han actualizado al próximo año.');
+    }
+
+
 }

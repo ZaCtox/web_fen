@@ -41,7 +41,11 @@ class MagisterController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string',
+            'encargado' => 'nullable|string|max:255',
+            'telefono' => 'nullable|string|max:20',
+            'correo' => 'nullable|email|max:255',
         ]);
+
 
         Magister::create($validated);
 
@@ -63,7 +67,11 @@ class MagisterController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string',
+            'encargado' => 'nullable|string|max:255',
+            'telefono' => 'nullable|string|max:20',
+            'correo' => 'nullable|email|max:255',
         ]);
+
 
         $magister->update($validated);
 
@@ -97,11 +105,4 @@ class MagisterController extends Controller
             abort(403, 'Acceso no autorizado.');
         }
     }
-
-    public function show(Magister $magister)
-    {
-        $this->authorizeAccess();
-        return view('magisters.show', compact('magister'));
-    }
-
 }

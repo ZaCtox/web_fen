@@ -52,7 +52,7 @@ class RoomController extends Controller
 
         $room = Room::create($data);
 
-        return redirect()->route('rooms.asignar', $room)->with('success', 'Sala creada. Ahora asigna sus usos.');
+        return redirect()->route('rooms.index', $room)->with('success', 'Sala creada. Ahora asigna sus usos.');
     }
 
     public function edit(Room $room)

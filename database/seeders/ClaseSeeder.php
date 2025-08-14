@@ -33,7 +33,7 @@ class ClaseSeeder extends Seeder
         $modalidades = ['presencial', 'online', 'hibrida'];
         $total = 0;
 
-        foreach (Magister::with('courses.period')->get() as $magister) {
+        foreach (Magister::with('courses')->get() as $magister) {
             $cursos = $magister->courses->filter(fn($c) => $c->period_id !== null);
 
             foreach ($cursos as $curso) {

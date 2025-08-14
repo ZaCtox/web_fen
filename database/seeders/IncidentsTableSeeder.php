@@ -1,7 +1,6 @@
 <?php
 
 namespace Database\Seeders;
-
 use Illuminate\Database\Seeder;
 use App\Models\Incident;
 use App\Models\User;
@@ -35,32 +34,38 @@ class IncidentsTableSeeder extends Seeder
             'Ruido molesto desde el pasillo',
         ];
 
-        // Años que quieres simular desde 2026 hacia atrás
         $anios = [2026, 2025, 2024, 2023];
 
         foreach ($anios as $anioSimulado) {
             foreach ($periods as $periodoBase) {
-                // Crear nuevas fechas ajustadas al año deseado
                 $fechaInicio = Carbon::parse($periodoBase->fecha_inicio)->year($anioSimulado);
                 $fechaFin = Carbon::parse($periodoBase->fecha_fin)->year($anioSimulado);
 
-                // Asegurar que no se invierta el rango por cambios de año
                 if ($fechaFin->lessThan($fechaInicio)) {
                     $fechaFin->addYear();
                 }
 
-                // Crear 5 incidencias para este período simulado
                 for ($i = 0; $i < 5; $i++) {
                     $titulo = fake()->randomElement($titulos);
                     $fecha = fake()->dateTimeBetween($fechaInicio, $fechaFin);
 
+                    $estado = fake()->randomElement(['pendiente', 'resuelta', 'en_revision', 'no_resuelta']);
+
+                    $comentario = null;
+                    if ($estado === 'no_resuelta') {
+                        $comentario = 'Se revisó el problema pero no fue posible resolverlo completamente.';
+                    } elseif ($estado === 'en_revision') {
+                        $comentario = 'El incidente está siendo evaluado por el equipo de soporte técnico.';
+                    }
+
                     Incident::create([
                         'titulo' => $titulo,
                         'descripcion' => 'Generada automáticamente para: ' . $titulo,
-                        'estado' => fake()->randomElement(['pendiente', 'resuelta']),
+                        'estado' => $estado,
+                        'comentario' => $comentario,
                         'created_at' => $fecha,
                         'updated_at' => $fecha,
-                        'resuelta_en' => null,
+                        'resuelta_en' => $estado === 'resuelta' ? Carbon::parse($fecha)->addDays(rand(1, 10)) : null,
                         'user_id' => $admin->id,
                         'room_id' => $rooms->random()->id,
                         'imagen' => null,
@@ -70,6 +75,6 @@ class IncidentsTableSeeder extends Seeder
             }
         }
 
-        $this->command->info('✅ Incidencias generadas correctamente para años 2023–2026.');
+        $this->command->info('✅ Incidencias generadas correctamente con comentarios cuando corresponde (2023–2026).');
     }
 }

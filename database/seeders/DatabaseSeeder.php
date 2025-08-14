@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->truncate();          // solo si quieres resetear usuarios
         DB::table('periods')->truncate(); 
         DB::table('clases')->truncate();         
-        DB::table('staff')->truncate();          
+        DB::table('staff')->truncate(); 
+        DB::table('events')->truncate();         
         // si tiene relaciones también
         // Añade más tablas si es necesario
 
@@ -37,6 +38,7 @@ class DatabaseSeeder extends Seeder
             IncidentsTableSeeder::class,
             ClaseSeeder::class,
             StaffSeeder::class,
+            EventSeeder::class,
         ]);
     }
 }

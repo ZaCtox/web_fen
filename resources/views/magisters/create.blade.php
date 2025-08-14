@@ -11,6 +11,6 @@
             </div>
         @endif
 
-        @include('magisters._form')
+        @include('magisters.form')
     </div>
 </x-app-layout>

@@ -9,10 +9,14 @@ class Magister extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre','color'];
+    protected $fillable = ['nombre', 'color', 'encargado', 'telefono', 'correo'];
+
 
     public function courses()
     {
-        return $this->hasMany(Course::class);
+        return $this->hasMany(Course::class)
+            ->with('period')
+            ->orderBy('period_id');
     }
+
 }

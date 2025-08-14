@@ -61,3 +61,32 @@ body {
 .dark .btn-primary:hover {
     background-color: #9d0e23;
 }
+
+
+.estado {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.estado-pendiente {
+    background-color: #fef3c7; /* amarillo claro */
+    color: #92400e;
+}
+
+.estado-en_revision {
+    background-color: #dbeafe; /* azul claro */
+    color: #1e40af;
+}
+
+.estado-resuelta {
+    background-color: #d1fae5; /* verde claro */
+    color: #065f46;
+}
+
+.estado-no_resuelta {
+    background-color: #fecaca; /* rojo claro */
+    color: #991b1b;
+}

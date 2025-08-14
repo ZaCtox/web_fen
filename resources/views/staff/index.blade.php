@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Staff FEN</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Cuerpo Académico FEN</h2>
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto"
@@ -66,9 +66,6 @@
         <!-- Meta -->
         <div class="text-sm text-gray-500 dark:text-gray-300 mb-2">
             Mostrando <span x-text="filtrados.length"></span> de {{ $staff->count() }} registros
-            <template x-if="search">
-                <span> para “<span class="italic" x-text="search"></span>”</span>
-            </template>
         </div>
 
         <!-- Sin resultados -->
@@ -99,7 +96,5 @@
                 </a>
             </template>
         </div>
-
-        <!-- Sin paginación -->
     </div>
 </x-app-layout>

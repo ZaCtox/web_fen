@@ -91,6 +91,7 @@ class ClaseController extends Controller
 
     public function show(Clase $clase)
     {
+        $clase->load(['course.magister', 'period', 'room']);
         return view('clases.show', compact('clase'));
     }
 

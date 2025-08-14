@@ -11,6 +11,6 @@
             </div>
         @endif
 
-        @include('magisters._form', ['magister' => $magister])
+        @include('magisters.form', ['magister' => $magister])
     </div>
 </x-app-layout>

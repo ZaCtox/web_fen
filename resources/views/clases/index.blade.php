@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">📚 Clases Académicas</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Clases Académicas</h2>
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto" x-data="{
@@ -112,15 +112,19 @@
                                 <p><strong>Sala:</strong> <span x-text="safe(clase?.room?.name, '—')"></span></p>
                             </template>
                         </div>
-
                         <div class="flex flex-col sm:flex-row gap-2 mt-4">
+                            <a :href="`/clases/${clase.id}`"
+                                class="text-xs bg-gray-100 text-gray-800 hover:bg-gray-200 px-3 py-1 rounded text-center">
+                                Ver
+                            </a>
+
                             <a :href="`/clases/${clase.id}/edit`"
                                 class="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded text-center">
                                 ✏️ Editar
                             </a>
 
-                            <form :action="`/clases/${clase.id}`" method="POST"
-                                @submit="return confirm('¿Eliminar esta clase?')">
+                            <form :action="`/clases/${clase.id}`" method="POST" x-data
+                                @submit.prevent="if (confirm('¿Eliminar esta clase?')) $el.submit()">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
@@ -133,7 +137,6 @@
                 </template>
             </div>
         </template>
-
         {{-- Sin resultados --}}
         <template x-if="filtradas.length === 0">
             <p class="text-center text-gray-500 dark:text-gray-400 mt-12">

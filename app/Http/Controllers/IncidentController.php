@@ -110,6 +110,7 @@ class IncidentController extends Controller
             'descripcion' => 'required|string',
             'room_id' => 'required|exists:rooms,id',
             'imagen' => 'nullable|image|max:2048',
+            'nro_ticket' => 'nullable|string|max:255|unique:incidents,nro_ticket',
         ]);
 
         if ($request->hasFile('imagen')) {
@@ -137,12 +138,29 @@ class IncidentController extends Controller
     {
         $this->authorizeAccess();
 
-        $incidencia->update([
-            'estado' => 'resuelta',
-            'resuelta_en' => now(),
+        if (in_array($incidencia->estado, ['resuelta', 'no_resuelta'])) {
+            return redirect()->back()->with('error', 'No se puede modificar una incidencia ya cerrada.');
+        }
+
+        $validated = $request->validate([
+            'estado' => 'required|in:pendiente,en_revision,resuelta,no_resuelta',
+            'nro_ticket' => 'nullable|string|max:255',
+            'comentario' => 'nullable|string|max:1000',
         ]);
 
-        return redirect()->back()->with('success', 'Incidencia marcada como resuelta.');
+        // Solo marcar fecha si se resolvió ahora
+        if ($validated['estado'] === 'resuelta' && $incidencia->estado !== 'resuelta') {
+            $validated['resuelta_en'] = now();
+        }
+
+        // Si no se resolvió, aseguramos guardar el comentario
+        if ($validated['estado'] !== 'no_resuelta') {
+            $validated['comentario'] = null;
+        }
+
+        $incidencia->update($validated);
+
+        return redirect()->back()->with('success', 'Incidencia actualizada.');
     }
 
     public function show(Incident $incidencia)
@@ -302,7 +320,7 @@ class IncidentController extends Controller
             });
         }
         $nombre = 'bitacora_incidencias_' . now()->format('Y-m-d_H-i') . '.pdf';
-           $usuario = Auth::user(); 
+        $usuario = Auth::user();
 
         $incidencias = $query->latest()->get();
         $fechaActual = now()->format('d/m/Y H:i');

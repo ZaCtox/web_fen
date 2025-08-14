@@ -8,7 +8,7 @@
         <div class="mb-6">
             <a href="{{ route('magisters.index') }}"
                 class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                🔍 Ver Magísteres
+                Ver Magísteres
             </a>
         </div>
 
@@ -90,7 +90,18 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Este magíster aún no tiene cursos registrados.</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        Este magíster aún no tiene cursos registrados.
+                    </p>
+
+                    <form action="{{ route('magisters.destroy', $magister) }}" method="POST" class="mt-4" x-data
+                        @submit.prevent="if (confirm('¿Estás seguro de eliminar este magíster? Esta acción no se puede deshacer.')) $el.submit()">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded">
+                            🗑️ Eliminar Magíster
+                        </button>
+                    </form>
                 @endif
             </div>
         @endforeach

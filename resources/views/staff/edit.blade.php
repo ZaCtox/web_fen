@@ -5,6 +5,6 @@
     </x-slot>
 
     <div class="p-6 max-w-3xl mx-auto">
-        @include('staff._form', ['staff' => $staff])
+        @include('staff.form', ['staff' => $staff])
     </div>
 </x-app-layout>

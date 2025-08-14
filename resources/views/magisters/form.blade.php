@@ -23,6 +23,27 @@
         <input type="color" name="color" id="color" value="{{ old('color', $magister->color ?? '#3b82f6') }}"
             class="w-16 h-10 border-gray-300 rounded-md shadow-sm">
     </div>
+    {{-- Encargado --}}
+    <div>
+        <label for="encargado" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Encargado</label>
+        <input type="text" name="encargado" id="encargado" value="{{ old('encargado', $magister->encargado ?? '') }}"
+            class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+    </div>
+
+    {{-- Teléfono --}}
+    <div>
+        <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
+        <input type="text" name="telefono" id="telefono" value="{{ old('telefono', $magister->telefono ?? '') }}"
+            class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+    </div>
+
+    {{-- Correo --}}
+    <div>
+        <label for="correo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo</label>
+        <input type="email" name="correo" id="correo" value="{{ old('correo', $magister->correo ?? '') }}"
+            class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+    </div>
+
 
 
     <div class="pt-4 flex items-center justify-between">

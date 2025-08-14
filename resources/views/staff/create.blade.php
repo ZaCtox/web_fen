@@ -5,6 +5,6 @@
     </x-slot>
 
     <div class="p-6 max-w-3xl mx-auto">
-        @include('staff._form')
+        @include('staff.form')
     </div>
 </x-app-layout>
