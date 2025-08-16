@@ -11,14 +11,18 @@ use App\Models\User;
 
 class DashboardController extends Controller
 {
-    public function index()
+    private function authorizeAccess()
     {
-        $user = Auth::user();
-
-        // Protege según roles si lo necesitas
-        if (!in_array($user->rol, ['docente', 'administrativo'])) {
+        if (!tieneRol(['docente', 'administrativo'])) {
             abort(403, 'Acceso no autorizado.');
         }
+    }
+
+    public function index()
+    {
+        $this->authorizeAccess();
+
+        $user = Auth::user();
 
         $resumen = [
             'incidencias' => Incident::count(),

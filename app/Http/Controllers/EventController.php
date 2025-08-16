@@ -7,25 +7,33 @@ use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Period;
 
 class EventController extends Controller
 {
+    private function authorizeAccess()
+    {
+        if (!tieneRol(['docente', 'administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
+        }
+    }
+
     public function index(Request $request)
     {
         $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
+
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
 
-        // 👇 Forzamos a integer si existe
         $magisterId = is_numeric($magisterId) ? (int) $magisterId : null;
         $roomId = is_numeric($roomId) ? (int) $roomId : null;
 
         $manualEvents = Event::with(['room', 'magister'])
-            ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId))
+            ->when($roomId, fn($q) => $q->where('room_id', $roomId))
             ->when($rangeStart, fn($q) => $q->where('end_time', '>=', $rangeStart))
             ->when($rangeEnd, fn($q) => $q->where('start_time', '<=', $rangeEnd))
-            ->when(!empty($magisterId), fn($q) => $q->where(function ($query) use ($magisterId) {
+            ->when($magisterId, fn($q) => $q->where(function ($query) use ($magisterId) {
                 $query->whereNull('magister_id')->orWhere('magister_id', $magisterId);
             }))
             ->get()
@@ -56,9 +64,19 @@ class EventController extends Controller
         return response()->json($manualEvents->concat($classEvents)->values());
     }
 
+
+    public function calendario()
+    {
+        $periodoActual = Period::orderByDesc('anio')->orderByDesc('numero')->first();
+        $fechaInicio = optional($periodoActual)->fecha_inicio?->format('Y-m-d') ?? now()->format('Y-m-d');
+
+        return view('calendario.index', compact('fechaInicio'));
+    }
+
+
     public function store(Request $request)
     {
-        $this->autorizar();
+        $this->authorizeAccess();
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -82,7 +100,7 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event)
     {
-        $this->autorizar();
+        $this->authorizeAccess();
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
@@ -109,17 +127,10 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
-        $this->autorizar();
+        $this->authorizeAccess();
         $event->delete();
 
         return response()->json(['message' => 'Evento eliminado']);
-    }
-
-    private function autorizar()
-    {
-        if (!in_array(Auth::user()->rol ?? null, ['docente', 'administrativo'], true)) {
-            abort(403, 'Acceso no autorizado.');
-        }
     }
 
     private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null)

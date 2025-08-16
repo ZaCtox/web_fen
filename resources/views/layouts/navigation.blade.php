@@ -3,53 +3,48 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('guest.dashboard') }}">
+                    <a href="{{ route('public.dashboard.index') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
+
                 @if(Auth::check())
-                    @php $rol = Auth::user()->rol; @endphp
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-nav-link>
-                        @if($rol === 'administrativo')
-                            <x-nav-link :href="route('calendario')"
-                                :active="request()->routeIs('calendario')">Calendario</x-nav-link>
-                            <x-nav-link :href="route('rooms.index')"
-                                :active="request()->routeIs('rooms.index')">Salas</x-nav-link>
-                            <x-nav-link :href="route('incidencias.index')"
-                                :active="request()->routeIs('incidencias.index')">Incidencias</x-nav-link>
+                        <x-nav-link :href="route('calendario')"
+                            :active="request()->routeIs('calendario')">Calendario</x-nav-link>
+                        <x-nav-link :href="route('rooms.index')"
+                            :active="request()->routeIs('rooms.index')">Salas</x-nav-link>
+                        <x-nav-link :href="route('incidencias.index')"
+                            :active="request()->routeIs('incidencias.index')">Incidencias</x-nav-link>
+                        <x-nav-link :href="route('clases.index')"
+                            :active="request()->routeIs('clases.index')">Clases</x-nav-link>
+
+                        @if(tieneRol('administrativo'))
                             <x-nav-link :href="route('periods.index')"
                                 :active="request()->routeIs('periods.index')">Periodos</x-nav-link>
                             <x-nav-link :href="route('courses.index')"
                                 :active="request()->routeIs('courses.index')">Cursos</x-nav-link>
-                            <x-nav-link :href="route('clases.index')"
-                                :active="request()->routeIs('clases.index')">Clases</x-nav-link>
                             <x-nav-link :href="route('staff.index')"
                                 :active="request()->routeIs('staff.index')">Staff</x-nav-link>
                             <x-nav-link :href="route('usuarios.index')"
                                 :active="request()->routeIs('usuarios.index')">Usuarios</x-nav-link>
-                        @elseif($rol === 'docente')
-                            <x-nav-link :href="route('calendario')"
-                                :active="request()->routeIs('calendario')">Calendario</x-nav-link>
-                            <x-nav-link :href="route('rooms.index')"
-                                :active="request()->routeIs('rooms.index')">Salas</x-nav-link>
-                            <x-nav-link :href="route('incidencias.index')"
-                                :active="request()->routeIs('incidencias.index')">Incidencias</x-nav-link>
-                            <x-nav-link :href="route('clases.index')"
-                                :active="request()->routeIs('clases.index')">Clases</x-nav-link>
                         @endif
                     </div>
                 @else
-                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                        <x-nav-link :href="route('guest.dashboard')" :active="request()->routeIs('guest.dashboard')">
-                            Inicio
-                        </x-nav-link>
-                        <x-nav-link :href="route('public.staff.index')" :active="request()->routeIs('public.staff.index')">
-                            Staff-FEN
-                        </x-nav-link>
-                    </div>
+                    <x-nav-link :href="route('public.dashboard.index')"
+                        :active="request()->routeIs('public.dashboard.index')">Inicio</x-nav-link>
+                    <x-nav-link :href="route('public.calendario.index')"
+                        :active="request()->routeIs('public.calendario.index')">Calendario</x-nav-link>
+                    <x-nav-link :href="route('public.staff.index')"
+                        :active="request()->routeIs('public.staff.index')">Staff-FEN</x-nav-link>
+                    <x-nav-link :href="route('public.rooms.index')"
+                        :active="request()->routeIs('public.rooms.index')">Salas</x-nav-link>
+                    <x-nav-link :href="route('public.courses.index')"
+                        :active="request()->routeIs('public.courses.index')">Cursos</x-nav-link>
                 @endif
             </div>
+
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 @if(Auth::check())
                     <x-dropdown align="right" width="48">
@@ -81,9 +76,7 @@
                     </x-dropdown>
                 @else
                     <a href="{{ route('login') }}"
-                        class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                        Iniciar Sesión
-                    </a>
+                        class="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Iniciar Sesión</a>
                 @endif
             </div>
 
@@ -104,32 +97,33 @@
 
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('guest.dashboard')"
-                :active="request()->routeIs('guest.dashboard')">Inicio</x-responsive-nav-link>
-
             @if(Auth::check())
-                @php $rol = Auth::user()->rol; @endphp
-                @if($rol === 'administrativo')
-                    <x-responsive-nav-link :href="route('calendario')"
-                        :active="request()->routeIs('calendario')">Calendario</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('rooms.index')"
-                        :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('incidencias.index')"
-                        :active="request()->routeIs('incidencias.index')">Incidencias</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('dashboard')"
+                    :active="request()->routeIs('dashboard')">Inicio</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('calendario')"
+                    :active="request()->routeIs('calendario')">Calendario</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rooms.index')"
+                    :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('incidencias.index')"
+                    :active="request()->routeIs('incidencias.index')">Incidencias</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('clases.index')"
+                    :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
+
+                @if(tieneRol('administrativo'))
                     <x-responsive-nav-link :href="route('periods.index')"
                         :active="request()->routeIs('periods.index')">Periodos</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('courses.index')"
                         :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('clases.index')"
-                        :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('staff.index')"
                         :active="request()->routeIs('staff.index')">Staff</x-responsive-nav-link>
-                @elseif($rol === 'docente')
-                    <x-responsive-nav-link :href="route('rooms.index')"
-                        :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('clases.index')"
-                        :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('usuarios.index')"
+                        :active="request()->routeIs('usuarios.index')">Usuarios</x-responsive-nav-link>
                 @endif
+            @else
+                {{-- <x-responsive-nav-link :href="route('guest.dashboard')"
+                    :active="request()->routeIs('guest.dashboard')">Inicio</x-responsive-nav-link> --}}
+                <x-responsive-nav-link :href="route('public.staff.index')"
+                    :active="request()->routeIs('public.staff.index')">Staff-FEN</x-responsive-nav-link>
             @endif
         </div>
 
@@ -145,8 +139,9 @@
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault(); this.closest('form').submit();">Cerrar
-                            Sesión</x-responsive-nav-link>
+                            onclick="event.preventDefault(); this.closest('form').submit();">
+                            Cerrar Sesión
+                        </x-responsive-nav-link>
                     </form>
                 </div>
             </div>

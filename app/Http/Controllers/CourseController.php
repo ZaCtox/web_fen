@@ -7,25 +7,26 @@ use App\Models\Magister;
 use App\Models\Period;
 use Illuminate\Http\Request;
 
-
 class CourseController extends Controller
 {
-    public function index()
+    private function authorizeAccess()
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
+        if (!tieneRol(['docente', 'administrativo'])) {
             abort(403, 'Acceso no autorizado.');
         }
+    }
+
+    public function index()
+    {
+        $this->authorizeAccess();
 
         $magisters = Magister::with('courses')->orderBy('nombre')->get();
-
         return view('courses.index', compact('magisters'));
     }
 
     public function create(Request $request)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $magisters = Magister::all();
         $selectedMagisterId = $request->magister_id;
@@ -34,13 +35,9 @@ class CourseController extends Controller
         return view('courses.create', compact('magisters', 'selectedMagisterId', 'periods'));
     }
 
-
-
     public function store(Request $request)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -55,9 +52,7 @@ class CourseController extends Controller
 
     public function edit(Course $course)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $magisters = Magister::all();
         $periods = Period::orderBy('anio')->orderBy('numero')->get();
@@ -65,12 +60,9 @@ class CourseController extends Controller
         return view('courses.edit', compact('course', 'magisters', 'periods'));
     }
 
-
     public function update(Request $request, Course $course)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -85,9 +77,7 @@ class CourseController extends Controller
 
     public function destroy(Course $course)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $course->delete();
 

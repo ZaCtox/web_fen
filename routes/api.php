@@ -1,17 +1,38 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\RoomController;
-use App\Http\Controllers\Api\EventController;
-use App\Http\Controllers\Api\IncidenciaController;
-use App\Http\Controllers\Api\MagisterController;
-use App\Http\Controllers\Api\CourseController;
+use Illuminate\Http\Request; // ✅ Esto es clave
+use App\Models\Period;
+use Illuminate\Support\Carbon;
 
-Route::get('/rooms', [RoomController::class, 'index']);
-Route::get('/eventos', [EventController::class, 'index']);
-Route::get('/ping', function () {
-    return response()->json(['message' => 'API activa']);
+
+
+Route::get('/proximo-periodo', function (Request $request) {
+    $desde = Carbon::parse($request->query('desde'));
+
+    $proximo = Period::whereDate('fecha_inicio', '>', $desde)
+        ->orderBy('fecha_inicio')
+        ->first();
+
+    return response()->json([
+        'fecha_inicio' => $proximo?->fecha_inicio?->toDateString(),
+        'anio' => $proximo?->anio,
+        'numero' => $proximo?->numero,
+    ]);
 });
-Route::get('/incidencias', [IncidenciaController::class, 'index']);
-Route::get('/magisteres', [MagisterController::class, 'index']);
-Route::get('/cursos', [CourseController::class, 'index']);
+
+Route::get('/periodo-anterior', function (Request $request) {
+    $desde = Carbon::parse($request->query('desde'));
+
+    $anterior = Period::whereDate('fecha_inicio', '<', $desde)
+        ->orderByDesc('fecha_inicio')
+        ->first();
+
+    return response()->json([
+        'fecha_inicio' => $anterior?->fecha_inicio?->toDateString(),
+        'anio' => $anterior?->anio,
+        'numero' => $anterior?->numero,
+    ]);
+});
+
+

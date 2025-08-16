@@ -44,7 +44,7 @@
                         class="w-full bg-[var(--color-utalca-secondary)] hover:bg-red-800 text-white py-2 px-4 rounded-md">
                         Iniciar Sesión
                     </button>
-                    <a href="{{ route('guest.dashboard') }}"
+                    <a href="{{ route('public.dashboard.index') }}"
                         class="block w-full text-center bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
                         Volver
                     </a>

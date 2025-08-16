@@ -1,5 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
+        <meta name="inicio-trimestre" content="{{ $fechaInicio }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="store-url" content="{{ route('events.store') }}">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Calendario Académico</h2>
@@ -8,6 +9,19 @@
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <x-filtros-calendario />
         <x-leyenda-magister />
+        <div class="flex flex-col sm:flex-row justify-center sm:justify-start gap-2">
+            <button id="btnAnterior"
+                class="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow transition">
+                ← Trimestre anterior
+            </button>
+            <button id="btnSiguiente"
+                class="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow transition">
+                Trimestre siguiente →
+            </button>
+        </div>
+        <div id="current-period-label" class="mt-4 text-center text-sm font-medium text-gray-700 dark:text-gray-200">
+            Trimestre actual: <span id="current-period-text">Cargando...</span>
+        </div>
         <div id="calendar" data-url="{{ route('events.index') }}" class="mt-6"></div>
     </div>
 

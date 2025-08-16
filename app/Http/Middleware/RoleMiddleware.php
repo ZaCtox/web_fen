@@ -4,24 +4,24 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
     /**
-     * Maneja el acceso basado en uno o varios roles.
+     * Maneja la solicitud entrante.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
      * @param  mixed  ...$roles
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return mixed
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        $user = $request->user();
+        $user = Auth::user();
 
         if (!$user || !in_array($user->rol, $roles)) {
-            abort(403, 'No tienes permisos para acceder a esta sección.');
+            abort(403, 'Acceso no autorizado.');
         }
 
         return $next($request);

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Room;
-use App\Models\RoomUsage;
 use App\Models\Period;
 use App\Models\Course;
+use App\Models\Magister;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreRoomRequest;
-use App\Models\Magister;
 
 class RoomController extends Controller
 {
@@ -28,9 +27,7 @@ class RoomController extends Controller
 
     public function create()
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
         $cursos = Course::with('magister')->orderBy('magister_id')->orderBy('nombre')->get();
@@ -40,9 +37,7 @@ class RoomController extends Controller
 
     public function store(StoreRoomRequest $request)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $data = $request->validated();
 
@@ -57,18 +52,14 @@ class RoomController extends Controller
 
     public function edit(Room $room)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         return view('rooms.edit', compact('room'));
     }
 
     public function update(StoreRoomRequest $request, Room $room)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $data = $request->validated();
 
@@ -79,6 +70,33 @@ class RoomController extends Controller
         $room->update($data);
 
         return redirect()->route('rooms.index')->with('success', 'Sala actualizada correctamente');
+    }
+
+    public function destroy(Room $room)
+    {
+        $this->authorizeAccess();
+
+        $room->delete();
+        return redirect()->route('rooms.index')->with('success', 'Sala eliminada');
+    }
+
+    public function show(Room $room)
+    {
+        $clases = $room->clases()->with(['course.magister', 'period'])->get();
+
+        // Filtros dinámicos para vista
+        $magisters = Magister::orderBy('nombre')->get();
+        $dias = ['Viernes', 'Sábado'];
+        $trimestres = Period::orderBy('anio')->orderBy('numero')->get();
+
+        return view('rooms.show', compact('room', 'clases', 'magisters', 'dias', 'trimestres'));
+    }
+
+    private function authorizeAccess()
+    {
+        if (!tieneRol(['docente', 'administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
+        }
     }
 
     private function booleanFields()
@@ -96,30 +114,4 @@ class RoomController extends Controller
             'televisor_funcional',
         ];
     }
-
-    public function destroy(Room $room)
-    {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
-
-        $room->delete();
-        return redirect()->route('rooms.index')->with('success', 'Sala eliminada');
-    }
-
-public function show(Room $room)
-{
-    $clases = $room->clases()->with(['course.magister', 'period'])->get();
-
-    // Para filtros dinámicos
-    $magisters = Magister::orderBy('nombre')->get();
-    $dias = ['Viernes', 'Sábado'];
-    $trimestres = Period::orderBy('anio')->orderBy('numero')->get();
-
-    return view('rooms.show', compact('room', 'clases', 'magisters', 'dias', 'trimestres'));
-}
-
-
-
-
 }

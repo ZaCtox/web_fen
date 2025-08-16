@@ -8,30 +8,13 @@ use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
-    // Si quieres restringir: $this->middleware('role:administrativo')->except(['index','show']);
-
-public function index(Request $request)
-{
-    // Trae todo. Para aligerar, selecciona solo las columnas que usas.
-    $staff = Staff::query()
-        ->orderBy('nombre')
-        ->get(['id','nombre','cargo','telefono','email']);
-
-    // Ya no necesitamos $q ni paginate()
-    return view('staff.index', compact('staff'));
-}
-
-
-
-    public function create()
+    public function index(Request $request)
     {
-        return view('staff.create');
-    }
+        $staff = Staff::query()
+            ->orderBy('nombre')
+            ->get(['id', 'nombre', 'cargo', 'telefono', 'email']);
 
-    public function store(StaffRequest $request)
-    {
-        Staff::create($request->validated());
-        return redirect()->route('staff.index')->with('ok', 'Miembro creado correctamente.');
+        return view('staff.index', compact('staff'));
     }
 
     public function show(Staff $staff)
@@ -39,20 +22,46 @@ public function index(Request $request)
         return view('staff.show', compact('staff'));
     }
 
+    public function create()
+    {
+        $this->authorizeAccess();
+        return view('staff.create');
+    }
+
+    public function store(StaffRequest $request)
+    {
+        $this->authorizeAccess();
+        Staff::create($request->validated());
+
+        return redirect()->route('staff.index')->with('ok', 'Miembro creado correctamente.');
+    }
+
     public function edit(Staff $staff)
     {
+        $this->authorizeAccess();
         return view('staff.edit', compact('staff'));
     }
 
     public function update(StaffRequest $request, Staff $staff)
     {
+        $this->authorizeAccess();
         $staff->update($request->validated());
+
         return redirect()->route('staff.index')->with('ok', 'Miembro actualizado.');
     }
 
     public function destroy(Staff $staff)
     {
+        $this->authorizeAccess();
         $staff->delete();
+
         return redirect()->route('staff.index')->with('ok', 'Miembro eliminado.');
+    }
+
+    private function authorizeAccess()
+    {
+        if (!tieneRol(['administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
+        }
     }
 }

@@ -10,34 +10,25 @@ class UserController extends Controller
 {
     public function index()
     {
+        $this->authorizeAccess();
+
+        $usuarios = User::select('id', 'name', 'email', 'rol')->get();
         $rol = Auth::user()->rol;
-
-        if ($rol !== 'administrativo') {
-            abort(403, 'Acceso no autorizado.');
-        }
-
-        $usuarios = User::select('id','name', 'email', 'rol')->get();
 
         return view('usuarios.index', compact('usuarios', 'rol'));
     }
+
     public function edit(User $user)
     {
+        $this->authorizeAccess();
         $rol = Auth::user()->rol;
-
-        if ($rol !== 'administrativo') {
-            abort(403);
-        }
 
         return view('usuarios.edit', compact('user', 'rol'));
     }
 
     public function update(Request $request, User $user)
     {
-        $rol = Auth::user()->rol;
-
-        if ($rol !== 'administrativo') {
-            abort(403);
-        }
+        $this->authorizeAccess();
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -52,11 +43,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        $rol = Auth::user()->rol;
-
-        if ($rol !== 'administrativo') {
-            abort(403);
-        }
+        $this->authorizeAccess();
 
         if ($user->id === Auth::id()) {
             return redirect()->back()->withErrors(['No puedes eliminar tu propio usuario.']);
@@ -65,5 +52,12 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
+    }
+
+    private function authorizeAccess(): void
+    {
+        if (!tieneRol(['administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
+        }
     }
 }

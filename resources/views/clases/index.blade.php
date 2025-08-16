@@ -25,23 +25,32 @@
                 this.dia = '';
             },
         }">
-        {{-- Encabezado superior --}}
+        {{-- Botón para crear y exportar --}}
         <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
             <a href="{{ route('clases.create') }}"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm">
                 ➕ Nueva Clase
             </a>
 
-            {{-- Exportar PDF (usa tus filtros actuales) --}}
-            <form method="GET" action="{{ route('clases.exportar') }}" class="flex gap-2 flex-wrap">
-                <input type="hidden" name="magister" :value="magister">
-                <input type="hidden" name="sala" :value="sala">
-                <input type="hidden" name="dia" :value="dia">
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
-                    📤 Exportar PDF
-                </button>
-            </form>
+            {{-- Exportar PDF con filtros actuales --}}
+            @auth
+                @if(tieneRol(['administrativo', 'docente']))
+                    <form method="GET" action="{{ route('clases.exportar') }}">
+                        <input type="hidden" name="magister" x-bind:value="magister">
+                        <input type="hidden" name="sala" x-bind:value="sala">
+                        <input type="hidden" name="dia" x-bind:value="dia">
+                        <button class="bg-green-600 text-white px-4 py-2 rounded">📤 Exportar PDF</button>
+                    </form>
+                @endif
+            @endauth
         </div>
+        @if (session('warning'))
+            <div class="bg-yellow-100 text-yellow-800 p-4 rounded mb-4">
+                {{ session('warning') }}
+            </div>
+        @endif
+
+
 
         {{-- Filtros dinámicos --}}
         <div class="flex flex-col sm:flex-row flex-wrap gap-4 mb-6">

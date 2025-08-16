@@ -27,10 +27,10 @@
         <form method="GET" class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
             <input x-model="search" name="q" placeholder="Buscar por nombre, cargo o email"
                 class="flex-1 px-4 py-2 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
-            <button
+{{--             <button
                 class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
                 🔍 Buscar
-            </button>
+            </button> --}}
         </form>
 
         {{-- Sin resultados --}}

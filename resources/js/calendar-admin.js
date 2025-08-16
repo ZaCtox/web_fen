@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
     const magisterFilter = document.getElementById('magister-filter');
@@ -8,7 +7,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'timeGridWeek',
-        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek'
+        },
         locale: 'es',
         firstDay: 1,
         slotMinTime: "08:30:00",
@@ -26,24 +29,76 @@ document.addEventListener('DOMContentLoaded', function () {
             }),
             failure: (err) => console.error('Error cargando eventos:', err)
         },
-        eventDidMount: setTooltip
+        eventDidMount: setTooltip,
+        datesSet: (info) => {
+            const start = new Date(info.start); // Lunes (por defecto en calendar)
+            const diaSemana = start.getDay(); // 0=Domingo, 6=Sábado
+
+            // Sábado = día 6 → desplazamiento desde start
+            const offset = (6 - diaSemana + 7) % 7;
+            const sabado = new Date(start);
+            sabado.setDate(start.getDate() + offset);
+
+            actualizarTextoTrimestre(sabado);
+        }
     });
 
     calendar.render();
 
-    // Filtros dinámicos
-    [magisterFilter, roomFilter].forEach(select =>
-        select.addEventListener('change', () => calendar.refetchEvents())
-    );
+    // 🎯 Botones de navegación por trimestres
+    document.getElementById('btnAnterior').addEventListener('click', () => irATrimestre('anterior'));
+    document.getElementById('btnSiguiente').addEventListener('click', () => irATrimestre('siguiente'));
 
-    // Guardar evento
+    async function irATrimestre(direccion) {
+        const fechaActual = calendar.getDate().toISOString().split('T')[0];
+
+        try {
+            const res = await fetch(`/api/trimestre-${direccion}?fecha=${fechaActual}`);
+            const data = await res.json();
+
+            if (data.fecha_inicio) {
+                calendar.gotoDate(data.fecha_inicio);
+            } else {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Trimestre no encontrado',
+                    text: data.error || 'No hay trimestre en esa dirección.'
+                });
+            }
+        } catch (error) {
+            console.error("Error consultando trimestre:", error);
+        }
+    }
+
     document.getElementById('event-form').addEventListener('submit', saveEvent);
-
-    // Eliminar evento
     document.getElementById('delete-btn').addEventListener('click', deleteEvent);
 
-    // Cancelar modal
-    document.getElementById('cancel').addEventListener('click', () => window.closeModal());
+    [magisterFilter, roomFilter].forEach(select =>
+        select.addEventListener('change', () => {
+            calendar.refetchEvents();
+        })
+    );
+
+    async function actualizarTextoTrimestre(fecha) {
+        const fechaISO = fecha.toISOString().split('T')[0];
+
+        try {
+            const res = await fetch(`/api/periodo-por-fecha?fecha=${fechaISO}`);
+            const data = await res.json();
+
+            const romanos = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI' };
+
+            const texto = data.periodo
+                ? `Trimestre ${romanos[data.periodo.numero] || data.periodo.numero} del año ${data.periodo.anio}`
+                : 'Fuera de períodos académicos';
+
+            document.getElementById('current-period-text').textContent = texto;
+        } catch (err) {
+            console.error('Error cargando período:', err);
+            document.getElementById('current-period-text').textContent = 'Error';
+        }
+    }
+
 
     function onSelect(info) {
         resetForm();
@@ -92,14 +147,13 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('modal-description-input').value = event.extendedProps.description || '';
         document.getElementById('magister_id').value = event.extendedProps.magister?.id ?? '';
         document.getElementById('room_id').value = event.extendedProps.room?.id || '';
-        document.getElementById('start_time').value = formatForInput(event.start); // ✅ corregido
-        document.getElementById('end_time').value = formatForInput(event.end);     // ✅ corregido
+        document.getElementById('start_time').value = formatForInput(event.start);
+        document.getElementById('end_time').value = formatForInput(event.end);
         document.getElementById('modal-header').textContent = 'Editar Evento';
 
         document.getElementById('eventModal').classList.add('hidden');
         document.getElementById('modal').classList.remove('hidden');
     }
-
 
     function saveEvent(e) {
         e.preventDefault();
@@ -115,8 +169,6 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'manual'
         };
 
-        console.log('📤 Datos enviados al backend:', data);
-
         const url = eventId ? `/events/${eventId}` : storeUrl;
         const method = eventId ? 'PUT' : 'POST';
 
@@ -129,10 +181,8 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(data)
         }).then(res => {
             if (res.ok) {
-                // 🔁 Fuerza recarga total de eventos y conserva filtros
                 calendar.removeAllEvents();
                 calendar.refetchEvents();
-
                 window.closeModal();
 
                 Swal.fire({
@@ -150,8 +200,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
-
 
     function deleteEvent() {
         const id = this.getAttribute('data-id');
@@ -174,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error al eliminar el evento',
-                    text: 'Intenta nuevamentes'
+                    text: 'Intenta nuevamente'
                 });
             }
         });

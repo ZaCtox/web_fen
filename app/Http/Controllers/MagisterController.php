@@ -18,8 +18,7 @@ class MagisterController extends Controller
             ->withCount('courses')
             ->when(
                 $request->filled('q'),
-                fn($q) =>
-                $q->where('nombre', 'like', '%' . $request->q . '%')
+                fn($q) => $q->where('nombre', 'like', '%' . $request->q . '%')
             )
             ->orderBy('nombre')
             ->paginate(10)
@@ -46,7 +45,6 @@ class MagisterController extends Controller
             'correo' => 'nullable|email|max:255',
         ]);
 
-
         Magister::create($validated);
 
         return redirect()
@@ -72,9 +70,7 @@ class MagisterController extends Controller
             'correo' => 'nullable|email|max:255',
         ]);
 
-
         $magister->update($validated);
-
 
         return redirect()
             ->route('magisters.index')
@@ -86,7 +82,6 @@ class MagisterController extends Controller
         $this->authorizeAccess();
 
         DB::transaction(function () use ($magister) {
-            // Si tienes FK con cascadeOnDelete, bastaría $magister->delete();
             if ($magister->courses()->exists()) {
                 $magister->courses()->delete();
             }
@@ -100,8 +95,7 @@ class MagisterController extends Controller
 
     private function authorizeAccess(): void
     {
-        $user = auth()->user();
-        if (!$user || !in_array($user->rol ?? null, ['administrativo', 'docente'], true)) {
+        if (!tieneRol(['administrativo', 'docente'])) {
             abort(403, 'Acceso no autorizado.');
         }
     }
