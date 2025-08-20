@@ -1,8 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
+        @if(session('success'))
+            <meta name="session-success" content="{{ session('success') }}">
+        @endif
+
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Listado de Usuarios</h2>
     </x-slot>
-
+    <div id="success-message" data-message="{{ session('success') }}"></div>
     @if($rol === 'administrativo')
         <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
@@ -25,19 +29,25 @@
                                 @endphp
                                 <td class="px-4 py-2">{{ $rolTexto }}</td>
                                 <td class="px-4 py-2">
-                                    <div class="flex gap-2">
-                                        <a href="{{ route('usuarios.edit', $usuario) }}"
-                                            class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
-                                            ✏️ Editar
-                                        </a>
+                                    <div class="flex flex-wrap justify-end gap-2">
                                         @if(Auth::id() !== $usuario->id)
+                                            {{-- Botón Editar --}}
+                                            <a href="{{ route('usuarios.edit', $usuario) }}"
+                                                class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                                                title="Editar usuario">
+                                                ✏️
+                                            </a>
+
+                                            {{-- Botón Eliminar --}}
                                             <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST"
-                                                onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?')">
+                                                class="form-eliminar">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit"
-                                                    class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200">🗑️
-                                                    Eliminar</button>
+                                                    class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+                                                    title="Eliminar usuario">
+                                                    🗑️
+                                                </button>
                                             </form>
                                         @endif
                                     </div>
@@ -55,4 +65,5 @@
             </div>
         </div>
     @endif
+    @vite(['resources/js/usuarios.js'])
 </x-app-layout>

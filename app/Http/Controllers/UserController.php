@@ -18,13 +18,19 @@ class UserController extends Controller
         return view('usuarios.index', compact('usuarios', 'rol'));
     }
 
-    public function edit(User $user)
-    {
-        $this->authorizeAccess();
-        $rol = Auth::user()->rol;
+public function edit(User $user)
+{
+    $this->authorizeAccess();
 
-        return view('usuarios.edit', compact('user', 'rol'));
+    if ($user->id === Auth::id()) {
+        return redirect()->route('usuarios.index')->withErrors(['No puedes editar tu propio usuario.']);
     }
+
+    $rol = Auth::user()->rol;
+
+    return view('usuarios.edit', compact('user', 'rol'));
+}
+
 
     public function update(Request $request, User $user)
     {
@@ -33,7 +39,10 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'rol' => 'required|in:administrativo,docente',
+            'rol' => [
+                'required',
+                'in:administrativo,docente,asistente,director_magister,director_administrativo,auxiliar',
+            ],
         ]);
 
         $user->update($request->only('name', 'email', 'rol'));

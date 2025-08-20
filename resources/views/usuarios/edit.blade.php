@@ -24,12 +24,14 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Rol</label>
                     <select name="rol" class="w-full mt-1 rounded border-gray-300 dark:bg-gray-700 dark:text-white">
-                        <option value="docente" {{ old('rol') == 'docente' ? 'selected' : '' }}>Docente</option>
-                        <option value="asistente" {{ old('rol') == 'asistente' ? 'selected' : '' }}>Asistente</option>
-                        <option value="director_magister" {{ old('rol') == 'director_magister' ? 'selected' : '' }}>
-                            Director Magíster</option>
-                        <option value="director_administrativo" {{ old('rol') == 'director_administrativo' ? 'selected' : '' }}>Director Administrativo</option>
-                        <option value="auxiliar" {{ old('rol') == 'auxiliar' ? 'selected' : '' }}>Auxiliar</option>
+                        <option value="docente" {{ old('rol', $user->rol) == 'docente' ? 'selected' : '' }}>Docente
+                        </option>
+                        <option value="asistente" {{ old('rol', $user->rol) == 'asistente' ? 'selected' : '' }}>
+                            Asistente</option>
+                        <option value="director_magister" {{ old('rol', $user->rol) == 'director_magister' ? 'selected' : '' }}>Director Magíster</option>
+                        <option value="director_administrativo" {{ old('rol', $user->rol) == 'director_administrativo' ? 'selected' : '' }}>Director Administrativo</option>
+                        <option value="auxiliar" {{ old('rol', $user->rol) == 'auxiliar' ? 'selected' : '' }}>Auxiliar
+                        </option>
                     </select>
                 </div>
 

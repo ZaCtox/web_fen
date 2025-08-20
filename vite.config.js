@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/calendar-public.js',
                 'resources/js/calendar-admin.js',
+                'resources/js/usuarios.js,'
             ],
             refresh: true,
         }),
