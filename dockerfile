@@ -26,7 +26,7 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Exponer puerto de Render
-EXPOSE 10000
+EXPOSE 80
 
 # Arrancar Apache
 CMD ["apache2-foreground"]
