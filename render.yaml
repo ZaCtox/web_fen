@@ -36,6 +36,8 @@ services:
           property: password
       - key: CLOUDINARY_URL
         value: cloudinary://963952735958551:snrarRVPLb9-cvAMG0pwoidtW0w@dfibkftwg
+    # 🚨 Línea que debes agregar 🚨
+    command: /usr/sbin/apache2ctl -D FOREGROUND -f /etc/apache2/apache2.conf -e "Listen 0.0.0.0:80"
 
 databases:
   - name: web-fen-db
