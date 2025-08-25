@@ -1,27 +1,17 @@
 services:
   - type: web
     name: web-fen
-    runtime: php
+    env: docker
     plan: free
-    buildCommand: |
-      composer install --no-dev --optimize-autoloader
-      php artisan config:cache
-      php artisan route:cache
-      php artisan view:cache
-      npm install
-      npm run build
-    startCommand: php artisan serve --host 0.0.0.0 --port 10000
     envVars:
-      - key: APP_NAME
-        value: Web_Fen
       - key: APP_ENV
         value: production
-      - key: APP_KEY
-        value: base64:sMhkFSBQCER57vCUBWik4dSSCAMrx5+AG86SfK+1vME=
       - key: APP_DEBUG
         value: false
+      - key: APP_KEY
+        value: base64:sMhkFSBQCER57vCUBWik4dSSCAMrx5+AG86SfK+1vME=
       - key: APP_URL
-        value: https://web-fen.onrender.com   # cámbiala por la real que Render te muestre
+        value: https://web-fen.onrender.com   # cámbiala luego por la que Render te muestre
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
@@ -46,7 +36,8 @@ services:
           property: password
       - key: CLOUDINARY_URL
         value: cloudinary://963952735958551:snrarRVPLb9-cvAMG0pwoidtW0w@dfibkftwg
+
 databases:
   - name: web-fen-db
     plan: free
-    ipAllowList: [] # permite conexiones desde cualquier origen
+    ipAllowList: []
