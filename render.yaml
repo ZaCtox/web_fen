@@ -11,7 +11,7 @@ services:
       - key: APP_KEY
         value: base64:sMhkFSBQCER57vCUBWik4dSSCAMrx5+AG86SfK+1vME=
       - key: APP_URL
-        value: https://web-fen.onrender.com   # cámbiala luego por la que Render te muestre
+        value: https://web-fen.onrender.com
       - key: DB_CONNECTION
         value: mysql
       - key: DB_HOST
