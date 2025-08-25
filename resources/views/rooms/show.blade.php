@@ -17,7 +17,7 @@
         </div>
         <div
             x-data="{
-                tab: window.location.hash === '#clases' ? 'clases' : 'detalles',
+                tab: window.location.hash === '#clases' ? 'clases' : 'ficha',
                 cambiarTab(valor) {
                     this.tab = valor;
                     history.replaceState(null, null, '#' + valor);
@@ -27,11 +27,11 @@
             {{-- Tabs --}}
             <div class="flex space-x-4 mb-4 border-b border-gray-300 dark:border-gray-600">
                 <button
-                    @click="cambiarTab('detalles')"
+                    @click="cambiarTab('ficha')"
                     class="pb-2 font-semibold"
-                    :class="tab === 'detalles' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'"
+                    :class="tab === 'ficha' ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'"
                 >
-                    🛠️ Detalles
+                    🛠️ Ficha Técnica
                 </button>
                 <button
                     @click="cambiarTab('clases')"
@@ -42,8 +42,8 @@
                 </button>
             </div>
 
-            {{-- Detalles --}}
-            <div x-show="tab === 'detalles'" class="space-y-4">
+            {{-- Ficha --}}
+            <div x-show="tab === 'ficha'" class="space-y-4">
                 <p><strong>Ubicación:</strong> {{ $room->location }}</p>
                 <p><strong>Capacidad:</strong> {{ $room->capacity }}</p>
                 <p><strong>Descripción:</strong> {{ $room->description ?? 'Sin descripción' }}</p>
@@ -63,9 +63,10 @@
                     ] as $campo => $label)
                         <div class="flex items-center space-x-2">
                             <span class="font-semibold">{{ $label }}:</span>
-                            <span class="{{ $room->$campo ? 'text-green-600' : 'text-red-500' }}">
-                                {{ $room->$campo ? '✅ Sí' : '❌ No' }}
-                            </span>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" disabled {{ $room->$campo ? 'checked' : '' }}
+                                    class="form-checkbox h-5 w-5 text-green-600 border-gray-300 rounded disabled:cursor-not-allowed">
+                            </label>
                         </div>
                     @endforeach
                 </div>

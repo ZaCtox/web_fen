@@ -15,17 +15,18 @@
     }">
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
             <a href="{{ route('rooms.create') }}"
-                class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
                 ➕ Nueva Sala
             </a>
 
             {{-- Filtro de búsqueda en tiempo real --}}
             <div class="w-full px-10 sm:w-1/2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar por nombre o ubicación:</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Buscar por nombre o ubicación:
+                </label>
                 <input type="text" x-model="search"
-                    placeholder="Ej: Edificio Norte o Sala 101"
-                    class="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
-                />
+                       placeholder="Ej: Edificio Norte o Sala 101"
+                       class="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600" />
             </div>
         </div>
 
@@ -37,7 +38,7 @@
                         <tr>
                             <th class="px-4 py-2 text-left">Nombre</th>
                             <th class="px-4 py-2 text-left">Ubicación</th>
-                            <th class="px-4 py-2 text-left">Detalles</th>
+                            <th class="px-4 py-2 text-left">Ficha Técnica</th>
                             <th class="px-4 py-2 text-left">Clases Asignadas</th>
                             <th class="px-4 py-2 text-right w-40">Acciones</th>
                         </tr>
@@ -48,30 +49,31 @@
                                 <td class="px-4 py-2" x-text="room.name"></td>
                                 <td class="px-4 py-2" x-text="room.location"></td>
                                 <td class="px-4 py-2">
-                                    <a :href="`/rooms/${room.id}#detalles`"
-                                        class="inline-flex items-center text-sm text-green-600 hover:underline">
-                                        ⚙️ Ver Detalles
+                                    <a :href="`/rooms/${room.id}#ficha`"
+                                       class="inline-flex items-center text-sm text-green-600 hover:underline">
+                                        📄 Ver Ficha
                                     </a>
                                 </td>
                                 <td class="px-4 py-2">
                                     <a :href="`/rooms/${room.id}#clases`"
-                                        class="inline-flex items-center text-indigo-600 hover:underline text-sm">
+                                       class="inline-flex items-center text-indigo-600 hover:underline text-sm">
                                         📚 Ver Clases
                                     </a>
                                 </td>
                                 <td class="px-4 py-2">
                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                                         <a :href="`/rooms/${room.id}/edit`"
-                                            class="inline-flex items-center justify-center px-3 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded text-xs w-full sm:w-auto">
-                                            ✏️ Editar
+                                           class="inline-flex items-center justify-center px-3 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded text-xs w-full sm:w-auto">
+                                            ✏️
                                         </a>
-                                        <form :action="`/rooms/${room.id}`" method="POST"
-                                            @submit.prevent="if(confirm('¿Eliminar sala?')) $el.submit()">
+
+                                        {{-- IMPORTANTE: usar class="form-eliminar" para SweetAlert de confirmación --}}
+                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="inline-flex items-center justify-center px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded text-xs w-full sm:w-auto">
-                                                🗑️ Eliminar
+                                                    class="inline-flex items-center justify-center px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded text-xs w-full sm:w-auto">
+                                                🗑️
                                             </button>
                                         </form>
                                     </div>
@@ -85,7 +87,14 @@
 
         {{-- Sin resultados --}}
         <template x-if="filtradas.length === 0">
-            <p class="mt-6 text-center text-gray-600 dark:text-gray-400">😕 No se encontraron salas que coincidan con la búsqueda.</p>
+            <p class="mt-6 text-center text-gray-600 dark:text-gray-400">
+                😕 No se encontraron salas que coincidan con la búsqueda.
+            </p>
         </template>
+
+        {{-- Paginación (server-side) --}}
+        <div class="mt-6">
+            {{ $rooms->withQueryString()->links() }}
+        </div>
     </div>
 </x-app-layout>

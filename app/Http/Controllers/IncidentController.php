@@ -25,13 +25,16 @@ class IncidentController extends Controller
         $this->authorizeAccess();
 
         $query = Incident::with('room');
-        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+        $periodos = Period::all()->map(function ($p) {
+            $p->anio = Carbon::parse($p->fecha_inicio)->year;
+            return $p;
+        });
 
         // Filtros
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('titulo', 'like', '%' . $request->search . '%')
-                  ->orWhere('descripcion', 'like', '%' . $request->search . '%');
+                    ->orWhere('descripcion', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -47,14 +50,22 @@ class IncidentController extends Controller
             $query->whereYear('created_at', $request->anio);
         }
 
-        if ($request->filled('period_id')) {
-            $periodo = Period::find($request->period_id);
-            if ($periodo) {
-                $query->whereBetween('created_at', [$periodo->fecha_inicio, $periodo->fecha_fin]);
+        if ($request->filled('trimestre')) {
+            $periodosFiltrados = Period::where('numero', $request->trimestre);
+            if ($request->filled('anio')) {
+                $periodosFiltrados = $periodosFiltrados->whereYear('fecha_inicio', $request->anio);
             }
+
+            $rangos = $periodosFiltrados->get()->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
+
+            $query->where(function ($q) use ($rangos) {
+                foreach ($rangos as [$inicio, $fin]) {
+                    $q->orWhereBetween('created_at', [$inicio, $fin]);
+                }
+            });
         }
 
-        // Filtro "ver solo históricos"
+        // Filtro de históricos
         if ($request->filled('historico')) {
             $rangos = $periodos->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
             $query->where(function ($q) use ($rangos) {
@@ -64,7 +75,9 @@ class IncidentController extends Controller
             });
 
             $anios = Incident::all()
-                ->filter(fn($inc) => !$periodos->contains(fn($p) => $inc->created_at->between($p->fecha_inicio, $p->fecha_fin)))
+                ->filter(fn($inc) => !$periodos->contains(function ($p) use ($inc) {
+                    return $inc->created_at->between($p->fecha_inicio, $p->fecha_fin);
+                }))
                 ->pluck('created_at')
                 ->map(fn($dt) => $dt->format('Y'))
                 ->unique()
@@ -72,7 +85,9 @@ class IncidentController extends Controller
                 ->values();
         } else {
             $anios = Incident::all()
-                ->filter(fn($inc) => $periodos->contains(fn($p) => $inc->created_at->between($p->fecha_inicio, $p->fecha_fin)))
+                ->filter(fn($inc) => $periodos->contains(function ($p) use ($inc) {
+                    return $inc->created_at->between($p->fecha_inicio, $p->fecha_fin);
+                }))
                 ->pluck('created_at')
                 ->map(fn($dt) => $dt->format('Y'))
                 ->unique()
@@ -85,6 +100,7 @@ class IncidentController extends Controller
 
         return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'periodos'));
     }
+
 
     public function create()
     {
@@ -186,8 +202,10 @@ class IncidentController extends Controller
 
         $periodosFiltrados = $periodos->filter(function ($p) use ($request) {
             $anioPeriodo = Carbon::parse($p->fecha_inicio)->year;
-            if ($request->filled('anio') && $anioPeriodo != $request->anio) return false;
-            if ($request->filled('trimestre') && $p->numero != $request->trimestre) return false;
+            if ($request->filled('anio') && $anioPeriodo != $request->anio)
+                return false;
+            if ($request->filled('trimestre') && $p->numero != $request->trimestre)
+                return false;
             return true;
         });
 

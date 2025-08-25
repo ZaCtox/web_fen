@@ -26,7 +26,7 @@
             </div>
 
             {{-- Últimas Incidencias --}}
-            <div class="bg-white dark:bg-gray-800 shadow rounded p-6">
+{{--             <div class="bg-white dark:bg-gray-800 shadow rounded p-6">
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Últimas Incidencias</h3>
                 @if($ultimas->isEmpty())
                     <p class="text-gray-500 dark:text-gray-400">No hay incidencias registradas.</p>
@@ -59,7 +59,7 @@
                         </table>
                     </div>
                 @endif
-            </div>
+            </div> --}}
         </div>
     </div>
 </x-app-layout>

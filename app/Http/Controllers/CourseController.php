@@ -20,7 +20,11 @@ class CourseController extends Controller
     {
         $this->authorizeAccess();
 
-        $magisters = Magister::with('courses')->orderBy('nombre')->get();
+        // Evita N+1 al agrupar por año/trimestre en la vista
+        $magisters = Magister::with(['courses.period'])
+            ->orderBy('nombre')
+            ->get();
+
         return view('courses.index', compact('magisters'));
     }
 
@@ -28,7 +32,7 @@ class CourseController extends Controller
     {
         $this->authorizeAccess();
 
-        $magisters = Magister::all();
+        $magisters = Magister::orderBy('nombre')->get();
         $selectedMagisterId = $request->magister_id;
         $periods = Period::orderBy('anio')->orderBy('numero')->get();
 
@@ -54,7 +58,7 @@ class CourseController extends Controller
     {
         $this->authorizeAccess();
 
-        $magisters = Magister::all();
+        $magisters = Magister::orderBy('nombre')->get();
         $periods = Period::orderBy('anio')->orderBy('numero')->get();
 
         return view('courses.edit', compact('course', 'magisters', 'periods'));

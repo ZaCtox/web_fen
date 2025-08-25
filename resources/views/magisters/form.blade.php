@@ -18,11 +18,20 @@
         @enderror
     </div>
 
-    <div>
+    <div x-data="{ color: '{{ old('color', $magister->color ?? '#3b82f6') }}' }">
         <label for="color" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Color</label>
-        <input type="color" name="color" id="color" value="{{ old('color', $magister->color ?? '#3b82f6') }}"
-            class="w-16 h-10 border-gray-300 rounded-md shadow-sm">
+        <div class="flex items-center gap-3">
+            <!-- Selector de color -->
+            <input type="color" :value="color" @input="color = $event.target.value"
+                class="w-16 h-10 border-gray-300 rounded-md shadow-sm">
+
+            <!-- Campo de texto hexadecimal editable -->
+            <input type="text" name="color" x-model="color"
+                class="w-28 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-2 py-1 text-sm"
+                placeholder="#3b82f6">
+        </div>
     </div>
+
     {{-- Encargado --}}
     <div>
         <label for="encargado" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Encargado</label>

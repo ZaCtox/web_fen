@@ -38,9 +38,6 @@ Route::prefix('/api')->group(function () {
 });
 
 
-// Eventos en modo solo lectura
-Route::get('/guest-events', [GuestEventController::class, 'index'])->name('guest.events.index');
-
 // Dashboard principal (solo autenticados y verificados)
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
@@ -52,6 +49,8 @@ Route::middleware(['auth'])->group(function () {
     // Clases
     Route::get('/clases/exportar', [ClaseController::class, 'exportar'])->name('clases.exportar');
     Route::resource('clases', ClaseController::class);
+    Route::get('/salas/disponibilidad', [ClaseController::class, 'disponibilidad'])->name('salas.disponibilidad');
+    Route::get('/salas/horarios', [ClaseController::class, 'horariosDisponibles'])->name('salas.horarios');
 
     // Calendario
     Route::get('/calendario', [EventController::class, 'calendario'])->name('calendario');
@@ -94,11 +93,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Staff
     Route::resource('staff', StaffController::class);
-
-    // Test de rol (opcional)
-    Route::get('/test-rol', function () {
-        dd(Auth::user()->rol);
-    });
 });
 require __DIR__ . '/public.php';
 

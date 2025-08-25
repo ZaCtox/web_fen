@@ -3,6 +3,12 @@
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Clases Académicas</h2>
     </x-slot>
 
+    {{-- Si tu layout ya incluye meta para success/error, puedes agregar también warning allí.
+    Si aún no, deja este meta aquí para que alerts.js muestre el aviso de advertencia. --}}
+    @if (session('warning'))
+        <meta name="session-warning" content="{{ session('warning') }}">
+    @endif
+
     <div class="p-6 max-w-7xl mx-auto" x-data="{
             magister: '',
             sala: '',
@@ -24,8 +30,9 @@
                 this.sala = '';
                 this.dia = '';
             },
-        }">
-        {{-- Botón para crear y exportar --}}
+         }">
+
+        {{-- Acciones principales --}}
         <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
             <a href="{{ route('clases.create') }}"
                 class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm">
@@ -44,15 +51,8 @@
                 @endif
             @endauth
         </div>
-        @if (session('warning'))
-            <div class="bg-yellow-100 text-yellow-800 p-4 rounded mb-4">
-                {{ session('warning') }}
-            </div>
-        @endif
 
-
-
-        {{-- Filtros dinámicos --}}
+        {{-- Filtros --}}
         <div class="flex flex-col sm:flex-row flex-wrap gap-4 mb-6">
             <div>
                 <label class="block text-sm text-gray-700 dark:text-gray-300">Magíster:</label>
@@ -95,50 +95,62 @@
         <template x-if="filtradas.length > 0">
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 <template x-for="clase in filtradas" :key="clase.id">
-                    <div class="bg-white dark:bg-gray-800 shadow-md rounded p-4"
+                    <div class="bg-white dark:bg-gray-800 shadow-md rounded p-4 space-y-3"
                         :style="`border-left: 4px solid ${safe(clase?.course?.magister?.color ?? '#6b7280')}`">
+
+                        {{-- Título del curso --}}
                         <h3 class="font-semibold text-lg text-gray-800 dark:text-white"
                             x-text="safe(clase?.course?.nombre, '—')"></h3>
 
-                        <div class="text-sm text-gray-600 dark:text-gray-300 mt-1 space-y-1">
-                            <p><strong>Magíster:</strong>
-                                <span x-text="safe(clase?.course?.magister?.nombre, 'Desconocido')"></span>
-                            </p>
-                            <p><strong>Periodo:</strong>
-                                <span x-text="safe(clase?.period?.nombre_completo, '---')"></span>
-                            </p>
-                            <p><strong>Día:</strong>
-                                <span x-text="safe(clase?.dia, '—')"></span>
-                            </p>
-                            <p><strong>Hora:</strong>
-                                <span
-                                    x-text="`${safe(clase?.hora_inicio,'--:--')} - ${safe(clase?.hora_fin,'--:--')}`"></span>
-                            </p>
-                            <p><strong>Modalidad:</strong>
-                                <span x-text="safe(clase?.modality, '—')"></span>
-                            </p>
-                            <template x-if="clase?.room">
-                                <p><strong>Sala:</strong> <span x-text="safe(clase?.room?.name, '—')"></span></p>
-                            </template>
+                        {{-- Badges: Programa, Tipo, Modalidad --}}
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <span
+                                class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+                                x-text="safe(clase?.course?.magister?.nombre, 'Programa')"></span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100"
+                                x-text="safe(clase?.tipo, 'Tipo')"></span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-100"
+                                x-text="safe(clase?.modality, 'Modalidad')"></span>
                         </div>
-                        <div class="flex flex-col sm:flex-row gap-2 mt-4">
+
+                        {{-- Línea principal: Día • Horario --}}
+                        <p class="text-sm text-gray-700 dark:text-gray-300">
+                            <strong x-text="safe(clase?.dia, '—')"></strong>
+                            <span> • </span>
+                            <span
+                                x-text="`${safe(clase?.hora_inicio,'--:--')} - ${safe(clase?.hora_fin,'--:--')}`"></span>
+                        </p>
+
+                        {{-- Secundario: Sala + Trimestre/Año como chips compactos --}}
+                        <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                            <span><strong>Sala:</strong> <span
+                                    x-text="safe(clase?.room?.name, 'No asignada')"></span></span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-100"
+                                x-text="`T${safe(clase?.period?.numero, '—')}`"></span>
+                            <span
+                                class="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-100"
+                                x-text="safe(clase?.period?.anio, '—')"></span>
+                        </div>
+
+                        {{-- Acciones --}}
+                        <div class="flex flex-col sm:flex-row gap-2 pt-2">
                             <a :href="`/clases/${clase.id}`"
-                                class="text-xs bg-gray-100 text-gray-800 hover:bg-gray-200 px-3 py-1 rounded text-center">
-                                Ver
-                            </a>
+                                class="text-xs bg-gray-100 text-gray-800 hover:bg-gray-200 px-3 py-1 rounded text-center">🔍</a>
 
                             <a :href="`/clases/${clase.id}/edit`"
-                                class="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded text-center">
-                                ✏️ Editar
-                            </a>
+                                class="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded text-center">✏️</a>
 
-                            <form :action="`/clases/${clase.id}`" method="POST" x-data
-                                @submit.prevent="if (confirm('¿Eliminar esta clase?')) $el.submit()">
+                            <form :action="`/clases/${clase.id}`" method="POST" class="form-eliminar">
                                 @csrf
                                 @method('DELETE')
+                                <input type="hidden" name="__confirm_msg"
+                                    :value="`¿Eliminar la clase '${safe(clase?.course?.nombre,'')}'?`" />
                                 <button type="submit"
                                     class="text-xs bg-red-100 text-red-700 hover:bg-red-200 px-3 py-1 rounded w-full text-center">
-                                    🗑️ Eliminar
+                                    🗑️
                                 </button>
                             </form>
                         </div>
@@ -146,6 +158,7 @@
                 </template>
             </div>
         </template>
+
         {{-- Sin resultados --}}
         <template x-if="filtradas.length === 0">
             <p class="text-center text-gray-500 dark:text-gray-400 mt-12">

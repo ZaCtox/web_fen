@@ -9,7 +9,9 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/js/calendar-public.js',
                 'resources/js/calendar-admin.js',
-                'resources/js/usuarios.js,'
+                'resources/js/courses/form.js',
+                'resources/js/alerts.js',
+                'resources/js/clases/form.js',
             ],
             refresh: true,
         }),

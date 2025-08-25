@@ -3,6 +3,7 @@
         <meta name="inicio-trimestre" content="{{ $fechaInicio }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="store-url" content="{{ route('events.store') }}">
+        <meta name="clases-show-base" content="{{ url('/clases') }}">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Calendario Académico</h2>
     </x-slot>
 

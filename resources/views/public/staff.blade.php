@@ -27,10 +27,6 @@
         <form method="GET" class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
             <input x-model="search" name="q" placeholder="Buscar por nombre, cargo o email"
                 class="flex-1 px-4 py-2 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
-{{--             <button
-                class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600">
-                🔍 Buscar
-            </button> --}}
         </form>
 
         {{-- Sin resultados --}}
@@ -57,9 +53,9 @@
                             <p class="text-sm text-gray-500 dark:text-gray-300" x-text="p.cargo"></p>
                         </div>
                         <div class="w-1/3 bg-[#12c6df] text-white p-4">
-                            <div class="text-[10px] uppercase tracking-wide opacity-90">Teléfono</div>
+                            <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
                             <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
-                            <div class="text-[10px] uppercase tracking-wide opacity-90">Email</div>
+                            <div class="text-[13px] tracking-wide opacity-90">Email</div>
                             <div class="text-sm truncate" x-text="p.email" :title="p.email"></div>
                         </div>
                     </div>
@@ -80,11 +76,11 @@
 
                 <div class="bg-[#12c6df] text-white p-4 rounded-lg space-y-2">
                     <div>
-                        <div class="text-[10px] uppercase tracking-wide opacity-90">Teléfono</div>
+                        <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
                         <div class="text-sm" x-text="seleccionado?.telefono || '—'"></div>
                     </div>
                     <div>
-                        <div class="text-[10px] uppercase tracking-wide opacity-90">Email</div>
+                        <div class="text-[13px] tracking-wide opacity-90">Email</div>
                         <div class="text-sm break-all" x-text="seleccionado?.email"></div>
                     </div>
                 </div>

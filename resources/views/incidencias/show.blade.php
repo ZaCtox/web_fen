@@ -18,7 +18,7 @@
                 <p><strong>Sala:</strong> {{ $incidencia->room->name ?? 'Sin sala' }}
                     ({{ $incidencia->room->location ?? 'N/D' }})</p>
 
-                <p><strong>Estado actual:</strong>
+                <p><strong>Estado:</strong>
                     @php
                         $colores = [
                             'pendiente' => 'bg-yellow-100 text-yellow-800',

@@ -12,13 +12,12 @@
                     <p class="text-gray-600 dark:text-gray-300 mb-4">{{ $staff->cargo }}</p>
 
                     <div class="flex flex-wrap gap-2">
-                        <a href="{{ route('staff.edit',$staff) }}"
-                           class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Editar</a>
+                        <a href="{{ route('staff.edit', $staff) }}"
+                           class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">✏️</a>
 
-                        <form method="POST" action="{{ route('staff.destroy',$staff) }}" x-data
-                              @submit.prevent="if(confirm('¿Eliminar este registro?')) $el.submit()">
+                        <form method="POST" action="{{ route('staff.destroy', $staff) }}" class="form-eliminar">
                             @csrf @method('DELETE')
-                            <button class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Eliminar</button>
+                            <button class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">🗑️</button>
                         </form>
 
                         <a href="{{ route('staff.index') }}"
@@ -29,9 +28,9 @@
                 </div>
 
                 <div class="md:w-80 bg-[#12c6df] text-white p-6">
-                    <div class="text-[11px] uppercase tracking-wide opacity-90">Teléfono</div>
+                    <div class="tracking-wide opacity-90">Teléfono</div>
                     <div class="mb-4 break-words">{{ $staff->telefono ?: '—' }}</div>
-                    <div class="text-[11px] uppercase tracking-wide opacity-90">Email</div>
+                    <div class="tracking-wide opacity-90">Email</div>
                     <div class="break-words">{{ $staff->email }}</div>
                 </div>
             </div>

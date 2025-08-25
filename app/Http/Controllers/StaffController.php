@@ -33,7 +33,9 @@ class StaffController extends Controller
         $this->authorizeAccess();
         Staff::create($request->validated());
 
-        return redirect()->route('staff.index')->with('ok', 'Miembro creado correctamente.');
+        return redirect()
+            ->route('staff.index')
+            ->with('success', 'Miembro creado correctamente.');
     }
 
     public function edit(Staff $staff)
@@ -47,7 +49,9 @@ class StaffController extends Controller
         $this->authorizeAccess();
         $staff->update($request->validated());
 
-        return redirect()->route('staff.index')->with('ok', 'Miembro actualizado.');
+        return redirect()
+            ->route('staff.index')
+            ->with('success', 'Miembro actualizado.');
     }
 
     public function destroy(Staff $staff)
@@ -55,7 +59,9 @@ class StaffController extends Controller
         $this->authorizeAccess();
         $staff->delete();
 
-        return redirect()->route('staff.index')->with('ok', 'Miembro eliminado.');
+        return redirect()
+            ->route('staff.index')
+            ->with('success', 'Miembro eliminado.');
     }
 
     private function authorizeAccess()

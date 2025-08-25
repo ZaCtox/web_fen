@@ -38,7 +38,7 @@ class EventController extends Controller
             }))
             ->get()
             ->map(function ($event) {
-                $color = $event->magister->color ?? '#a5f63b';
+                $color = is_object($event->magister) ? ($event->magister->color ?? '#a5f63b') : '#a5f63b';
 
                 return [
                     'id' => 'event-' . $event->id,
@@ -61,7 +61,7 @@ class EventController extends Controller
 
         $classEvents = $this->generarEventosDesdeClases($magisterId, $roomId, $rangeStart, $rangeEnd);
 
-        return response()->json($manualEvents->concat($classEvents)->values());
+        return response()->json(collect($manualEvents)->concat(collect($classEvents))->values());
     }
 
 
@@ -214,6 +214,7 @@ class EventController extends Controller
                     'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
                     'modality' => $modality,
                     'url_zoom' => $clase->url_zoom,
+                    'profesor' => $clase->encargado ?? null,
                 ]);
 
                 $fecha->addWeek();

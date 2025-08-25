@@ -3,8 +3,7 @@
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Cuerpo Académico FEN</h2>
     </x-slot>
 
-    <div class="p-6 max-w-7xl mx-auto"
-         x-data="{
+    <div class="p-6 max-w-7xl mx-auto" x-data="{
             search: '',
             sort: 'nombre_asc',
             hasPhone: false,
@@ -38,29 +37,21 @@
             }
          }">
 
-        @if(session('ok'))
-            <div class="mb-4 rounded-lg bg-green-100 text-green-800 dark:bg-gray-900/40 dark:text-green-200 px-4 py-2">
-                {{ session('ok') }}
-            </div>
-        @endif
-
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div class="flex w-full sm:w-auto gap-3 items-center">
-                <input
-                    x-model="search"
-                    type="text"
-                    placeholder="Buscar por nombre, cargo o email"
-                    class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-                >
+                <input x-model="search" type="text" placeholder="Buscar por nombre, cargo o email"
+                    class="w-full sm:w-[350px] px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
                 <button type="button" @click="search=''; sort='nombre_asc'; hasPhone=false"
-                        class="px-3 py-2 rounded-lg bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100">
+                    class="px-3 py-2 rounded-lg bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100">
                     Limpiar
                 </button>
             </div>
 
             <a href="{{ route('staff.create') }}"
-               class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">Nuevo</a>
+                class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
+                Nuevo
+            </a>
         </div>
 
         <!-- Meta -->
@@ -79,16 +70,18 @@
         <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
             <template x-for="p in filtrados" :key="p.id">
                 <a :href="p.show_url" class="group">
-                    <div class="rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition">
+                    <div
+                        class="rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition">
                         <div class="flex">
                             <div class="w-2/3 p-6">
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:underline" x-text="p.nombre"></h3>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:underline"
+                                    x-text="p.nombre"></h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-300" x-text="p.cargo"></p>
                             </div>
                             <div class="w-1/3 bg-[#12c6df] text-white p-4">
-                                <div class="text-[10px] uppercase tracking-wide opacity-90">Teléfono</div>
+                                <div class="text-[12px] tracking-wide opacity-90">Teléfono</div>
                                 <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
-                                <div class="text-[10px] uppercase tracking-wide opacity-90">Email</div>
+                                <div class="text-[12px] tracking-wide opacity-90">Email</div>
                                 <div class="text-sm truncate" x-text="p.email"></div>
                             </div>
                         </div>

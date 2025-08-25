@@ -19,4 +19,8 @@
             </button>
         </form>
     </div>
+    @vite(['resources/js/courses/form.js'])
 </x-app-layout>
+<script>
+    window.PERIODS = @json($periods);
+</script>

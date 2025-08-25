@@ -12,13 +12,15 @@ class Clase extends Model
 
     protected $fillable = [
         'course_id',
+        'tipo',
         'period_id',
         'room_id',
         'modality',
         'dia',
         'hora_inicio',
         'hora_fin',
-        'url_zoom'
+        'url_zoom',
+        'encargado'
     ];
 
     public function course()
