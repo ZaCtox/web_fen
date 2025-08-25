@@ -21,9 +21,8 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-di
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
     && sed -i 's|/var/www/|/var/www/html/public|g' /etc/apache2/apache2.conf
 
-# 🚨 Línea que debes agregar 🚨
-# Escuchar en todas las interfaces de red
-RUN echo "Listen 80" >> /etc/apache2/ports.conf
+# 🚨 Copiar el nuevo archivo ports.conf 🚨
+COPY ports.conf /etc/apache2/ports.conf
 
 # Permisos para Laravel
 RUN chown -R www-data:www-data /var/www/html \
