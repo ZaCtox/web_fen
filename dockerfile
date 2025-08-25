@@ -15,7 +15,8 @@ RUN echo "Listen 10000" > /etc/apache2/ports.conf && \
 
 # Copiar proyecto
 COPY . /var/www/html
-WORKDIR /var/www/html
+WORKDIR /var/www/html/public
+
 
 # Instalar Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
