@@ -1,31 +1,34 @@
-# Imagen oficial de PHP con Apache
+# Imagen base oficial PHP con Apache
 FROM php:8.2-apache
 
 # Instalar extensiones necesarias
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Habilitar mod_rewrite de Apache
+# Habilitar mod_rewrite
 RUN a2enmod rewrite
 
-# Copiar el proyecto
-COPY . /var/www/html
+# Cambiar Apache al puerto 10000 (Render exige este puerto)
+RUN sed -i 's/80/10000/' /etc/apache2/ports.conf && \
+    sed -i 's/:80/:10000/' /etc/apache2/sites-enabled/000-default.conf
 
-# Definir directorio de trabajo
+# Copiar proyecto
+COPY . /var/www/html
 WORKDIR /var/www/html
 
 # Instalar Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Instalar Node y compilar assets
-RUN apt-get update && apt-get install -y nodejs npm
-RUN npm install && npm run build
+# ✅ OJO: Quitamos instalación de Node/NPM porque Render free se queda corto en RAM
+# (sube tu carpeta public/build o public/js ya compilada desde tu máquina local)
+# RUN apt-get update && apt-get install -y nodejs npm
+# RUN npm install && npm run build
 
-# Permisos de storage y bootstrap
+# Permisos
 RUN chmod -R 777 storage bootstrap/cache
 
-# Exponer puerto
-EXPOSE 8080
+# Exponer puerto de Render
+EXPOSE 10000
 
-# Start Apache
+# Arrancar Apache
 CMD ["apache2-foreground"]
