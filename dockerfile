@@ -1,41 +1,37 @@
-# Etapa 1: construir los assets con Node
-FROM node:18 as build-assets
-WORKDIR /app
-
-# Copiar solo package.json para aprovechar cache
-COPY package*.json ./
-RUN npm install
-
-# Copiar todo y compilar Vite
-COPY . .
-RUN npm run build
-
-# Etapa 2: PHP + Apache para Laravel
+# Imagen base con PHP, Composer y extensiones comunes
 FROM php:8.2-apache
 
-# Instalar dependencias necesarias
+# Instalar dependencias del sistema necesarias para Laravel
 RUN apt-get update && apt-get install -y \
-    unzip git libicu-dev libzip-dev libonig-dev \
-    && docker-php-ext-install intl pdo_mysql zip
+    libpq-dev \
+    unzip \
+    git \
+    curl \
+    libzip-dev \
+    && docker-php-ext-install pdo pdo_pgsql zip
 
-# Habilitar mod_rewrite de Apache (Laravel lo necesita)
+# Habilitar mod_rewrite para Laravel
 RUN a2enmod rewrite
 
-# Configurar Apache para Laravel (public como root)
+# Configurar Apache para servir desde /public
+COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+
+# Copiar archivos de Laravel
 WORKDIR /var/www/html
 COPY . .
-COPY --from=build-assets /app/public/build ./public/build
 
-# Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Instalar dependencias de Laravel
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer install --no-dev --optimize-autoloader --prefer-dist
 
-# Instalar dependencias PHP sin dev
-RUN composer install --no-dev --optimize-autoloader
+# Generar clave de Laravel (solo si APP_KEY no existe en env)
+RUN php artisan key:generate --force || true
 
-# Permisos para storage y bootstrap/cache
-RUN chown -R www-data:www-data storage bootstrap/cache
+# Permisos de storage y cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Puerto de Apache
+# Exponer puerto
 EXPOSE 80
 
+# Iniciar Apache
 CMD ["apache2-foreground"]
