@@ -1,19 +1,43 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-B6vTDS8h.css",
+    "file": "assets/app-Cd9tOAO8.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
+  "resources/js/alerts.js": {
+    "file": "assets/alerts-CfGjNeoL.js",
+    "name": "alerts",
+    "src": "resources/js/alerts.js",
+    "isEntry": true
+  },
   "resources/js/app.js": {
-    "file": "assets/app-DUVak8gI.js",
+    "file": "assets/app-DaBYqt0m.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
-  "resources/js/asignaturas_autofill.js": {
-    "file": "assets/asignaturas_autofill-DSRCxC3R.js",
-    "name": "asignaturas_autofill",
-    "src": "resources/js/asignaturas_autofill.js",
+  "resources/js/calendar-admin.js": {
+    "file": "assets/calendar-admin-HD3LdLWv.js",
+    "name": "calendar-admin",
+    "src": "resources/js/calendar-admin.js",
+    "isEntry": true
+  },
+  "resources/js/calendar-public.js": {
+    "file": "assets/calendar-public-CTZFI4i3.js",
+    "name": "calendar-public",
+    "src": "resources/js/calendar-public.js",
+    "isEntry": true
+  },
+  "resources/js/clases/form.js": {
+    "file": "assets/form-CgRDmB3y.js",
+    "name": "form",
+    "src": "resources/js/clases/form.js",
+    "isEntry": true
+  },
+  "resources/js/courses/form.js": {
+    "file": "assets/form-BMVQ3xAP.js",
+    "name": "form",
+    "src": "resources/js/courses/form.js",
     "isEntry": true
   }
 }
