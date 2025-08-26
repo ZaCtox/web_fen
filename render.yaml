@@ -36,6 +36,9 @@ services:
           property: password
       - key: CLOUDINARY_URL
         value: cloudinary://963952735958551:snrarRVPLb9-cvAMG0pwoidtW0w@dfibkftwg
+      - key: LOG_CHANNEL
+        value: stderr
+
 
     preDeployCommand: |
       php artisan config:clear && \
