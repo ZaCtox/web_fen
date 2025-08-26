@@ -17,11 +17,11 @@ WORKDIR /var/www/html
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
 
-# Configurar Apache para servir Laravel desde public/
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
-    && sed -i 's|/var/www/|/var/www/html/public|g' /etc/apache2/apache2.conf
+# 🚨 Eliminar la configuración por defecto y usar la personalizada 🚨
+RUN rm /etc/apache2/sites-available/000-default.conf
 
-# 🚨 Copiar el nuevo archivo ports.conf 🚨
+# 🚨 Copiar el nuevo archivo de configuración 🚨
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
 COPY ports.conf /etc/apache2/ports.conf
 
 # Permisos para Laravel
