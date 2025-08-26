@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 RUN a2enmod rewrite
 
 # Configurar Apache para servir desde /public
-COPY ./docker/apache/000-default.conf /etc/apache2/sites-available/000-default.conf
+COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
 
 # Copiar archivos de Laravel
 WORKDIR /var/www/html
