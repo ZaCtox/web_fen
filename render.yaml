@@ -10,17 +10,34 @@ services:
         value: production
       - key: APP_DEBUG
         value: false
+      - key: APP_URL
+        sync: false
       - key: APP_KEY
-        sync: false   # lo pones manual en Render
+        sync: false   # pega aquí la key que generes
+      - key: APP_LOCALE
+        value: es
+      # --- Base de datos PostgreSQL en Render ---
       - key: DB_CONNECTION
-        value: mysql
+        value: pgsql
       - key: DB_HOST
         sync: false
       - key: DB_PORT
-        value: 3306
+        value: 5432
       - key: DB_DATABASE
         sync: false
       - key: DB_USERNAME
         sync: false
       - key: DB_PASSWORD
+        sync: false
+      # --- Sesiones/Cache (opcional) ---
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: file
+      - key: QUEUE_CONNECTION
+        value: database
+      # --- Almacenamiento (si usas Cloudinary) ---
+      - key: FILESYSTEM_DISK
+        value: cloudinary
+      - key: CLOUDINARY_URL
         sync: false
