@@ -36,7 +36,13 @@ services:
           property: password
       - key: CLOUDINARY_URL
         value: cloudinary://963952735958551:snrarRVPLb9-cvAMG0pwoidtW0w@dfibkftwg
-    command: /usr/sbin/apache2ctl -D FOREGROUND -f /etc/apache2/apache2.conf -e "Listen 0.0.0.0:80"
+
+    preDeployCommand: |
+      php artisan config:clear && \
+      php artisan cache:clear && \
+      php artisan route:clear && \
+      php artisan migrate --force && \
+      php artisan db:seed --force
 
 databases:
   - name: web-fen-db
