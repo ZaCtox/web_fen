@@ -39,14 +39,6 @@ services:
       - key: LOG_CHANNEL
         value: stderr
 
-
-    preDeployCommand: |
-      php artisan config:clear && \
-      php artisan cache:clear && \
-      php artisan route:clear && \
-      php artisan migrate --force && \
-      php artisan db:seed --force
-
 databases:
   - name: web-fen-db
     plan: free

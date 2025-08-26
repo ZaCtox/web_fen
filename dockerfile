@@ -1,35 +1,41 @@
-# Imagen base PHP con Apache
+# Etapa 1: construir los assets con Node
+FROM node:18 as build-assets
+WORKDIR /app
+
+# Copiar solo package.json para aprovechar cache
+COPY package*.json ./
+RUN npm install
+
+# Copiar todo y compilar Vite
+COPY . .
+RUN npm run build
+
+# Etapa 2: PHP + Apache para Laravel
 FROM php:8.2-apache
 
-# Instalar dependencias del sistema y extensiones PHP necesarias
+# Instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
-    && docker-php-ext-install pdo_pgsql pgsql zip gd mbstring
+    unzip git libicu-dev libzip-dev libonig-dev \
+    && docker-php-ext-install intl pdo_mysql zip
 
-# Habilitar mod_rewrite para Laravel
+# Habilitar mod_rewrite de Apache (Laravel lo necesita)
 RUN a2enmod rewrite
 
-# Copiar proyecto
-COPY . /var/www/html
+# Configurar Apache para Laravel (public como root)
 WORKDIR /var/www/html
+COPY . .
+COPY --from=build-assets /app/public/build ./public/build
 
 # Instalar Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# 🚨 Eliminar la configuración por defecto y usar la personalizada 🚨
-RUN rm /etc/apache2/sites-available/000-default.conf
+# Instalar dependencias PHP sin dev
+RUN composer install --no-dev --optimize-autoloader
 
-# 🚨 Copiar el nuevo archivo de configuración 🚨
-COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
-COPY ports.conf /etc/apache2/ports.conf
+# Permisos para storage y bootstrap/cache
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Permisos para Laravel
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Exponer puerto de Render
+# Puerto de Apache
 EXPOSE 80
 
-# Arrancar Apache
 CMD ["apache2-foreground"]
