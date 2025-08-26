@@ -13,7 +13,7 @@ services:
       - key: APP_URL
         value: https://web-fen.onrender.com
       - key: DB_CONNECTION
-        value: mysql
+        value: pgsql
       - key: DB_HOST
         fromDatabase:
           name: web-fen-db
@@ -36,7 +36,6 @@ services:
           property: password
       - key: CLOUDINARY_URL
         value: cloudinary://963952735958551:snrarRVPLb9-cvAMG0pwoidtW0w@dfibkftwg
-    # 🚨 Línea que debes agregar 🚨
     command: /usr/sbin/apache2ctl -D FOREGROUND -f /etc/apache2/apache2.conf -e "Listen 0.0.0.0:80"
 
 databases:
