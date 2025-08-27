@@ -50,13 +50,13 @@
                                 <td class="px-4 py-2" x-text="room.location"></td>
                                 <td class="px-4 py-2">
                                     <a :href="`/rooms/${room.id}#ficha`"
-                                       class="inline-flex items-center text-sm text-green-600 hover:underline">
+                                       class="inline-flex items-center text-sm bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 rounded">
                                         📄 Ver Ficha
                                     </a>
                                 </td>
                                 <td class="px-4 py-2">
                                     <a :href="`/rooms/${room.id}#clases`"
-                                       class="inline-flex items-center text-indigo-600 hover:underline text-sm">
+                                       class="inline-flex items-center text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 rounded">
                                         📚 Ver Clases
                                     </a>
                                 </td>

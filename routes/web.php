@@ -19,15 +19,10 @@ use App\Http\Controllers\{
     StaffController,
     PublicStaffController,
     PublicRoomController,
-    UserController
+    UserController,
+    EmergencyController
 };
 
-// Página de inicio pública
-Route::get('/', function (Request $request) {
-    return Auth::check()
-        ? redirect()->route('dashboard')
-        : app(GuestDashboardController::class)->index($request);
-})->name('public.dashboard.index');
 
 
 // 🌐 API pública para calendario de invitados
@@ -93,6 +88,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Staff
     Route::resource('staff', StaffController::class);
+
+    // web.php
+    Route::post('/emergency', [EmergencyController::class, 'store'])->name('emergency.store');
+
 });
 require __DIR__ . '/public.php';
 

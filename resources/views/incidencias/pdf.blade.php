@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Bitácora de Incidencias</title>
@@ -16,7 +17,8 @@
             margin-top: 15px;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid #aaa;
             padding: 6px;
             text-align: left;
@@ -43,18 +45,14 @@
             font-weight: bold;
             text-transform: uppercase;
         }
-
-        .estado-pendiente { color: #b45309; }     /* naranja */
-        .estado-en_revision { color: #1d4ed8; }    /* azul */
-        .estado-resuelta { color: #15803d; }       /* verde */
-        .estado-no_resuelta { color: #b91c1c; }    /* rojo */
     </style>
 </head>
 
 <body>
     <div style="text-align: center; margin-bottom: 10px;">
-        {{-- <img src="{{ public_path('images/utalca-logo.png') }}" alt="Logo UTalca" height="60" style="margin-right: 20px;"> --}}
-        <img src="{{ public_path('images/logo-fen.png') }}" alt="Logo FEN" height="60">
+        {{-- <img src="{{ public_path('images/utalca-logo.png') }}" alt="Logo UTalca" height="60"
+            style="margin-right: 20px;"> --}}
+        <img src="{{ public_path('images/logo-fen.png') }}" alt="Logo FEN" height="20">
     </div>
 
     <h1>Bitácora de Incidencias</h1>
@@ -98,17 +96,26 @@
         </div>
     @endif
 
+    @php
+        $estadoIconos = [
+            'pendiente' => public_path('images/estados/pendiente.png'),
+            'en_revision' => public_path('images/estados/en_revision.png'),
+            'resuelta' => public_path('images/estados/resuelta.png'),
+            'no_resuelta' => public_path('images/estados/no_resuelta.png'),
+        ];
+    @endphp
+
     <table>
         <thead>
             <tr>
-                <th>Título</th>
-                <th>Sala</th>
-                <th>Estado</th>
-                <th>Ticket</th>
-                <th>Comentario</th>
-                <th>Registrado por</th>
-                <th>Fecha</th>
-                <th>Resuelta el</th>
+                <th style="text-align:center;">Título</th>
+                <th style="text-align:center;">Sala</th>
+                <th style="text-align:center;">Estado</th>
+                <th style="text-align:center;">Ticket</th>
+                <th style="text-align:center;">Registrado por</th>
+                <th style="text-align:center;">Fecha</th>
+                <th style="text-align:center;">Resuelta el</th>
+                <th style="text-align:center;">Resuelta por</th>
             </tr>
         </thead>
         <tbody>
@@ -116,18 +123,19 @@
                 <tr>
                     <td>{{ $i->titulo }}</td>
                     <td>{{ $i->room->name ?? 'Sin sala' }}</td>
-                    <td class="estado estado-{{ $i->estado }}">{{ strtoupper(str_replace('_', ' ', $i->estado)) }}</td>
-                    <td>{{ $i->nro_ticket ?? '—' }}</td>
-                    <td>
-                        @if($i->comentario)
-                            {{ $i->comentario }}
+                    <td style="text-align:center;">
+                        @if(isset($estadoIconos[$i->estado]))
+                            <img src="{{ $estadoIconos[$i->estado] }}" width="16" height="16"
+                                alt="{{ ucfirst(str_replace('_', ' ', $i->estado)) }}">
                         @else
                             —
                         @endif
                     </td>
+                    <td>{{ $i->nro_ticket ?? '—' }}</td>
                     <td>{{ $i->user->name ?? 'N/D' }}</td>
                     <td>{{ $i->created_at->format('d/m/Y H:i') }}</td>
                     <td>{{ $i->resuelta_en ? $i->resuelta_en->format('d/m/Y H:i') : '—' }}</td>
+                    <td>{{ $i->resolvedBy->name ?? '—' }}</td>
                 </tr>
             @empty
                 <tr>
@@ -136,5 +144,7 @@
             @endforelse
         </tbody>
     </table>
+
 </body>
+
 </html>

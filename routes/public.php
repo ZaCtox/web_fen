@@ -8,10 +8,18 @@ use App\Http\Controllers\PublicSite\PublicCalendarioController;
 use App\Http\Controllers\PublicSite\PublicCourseController;
 use App\Http\Controllers\PublicSite\GuestEventController;
 use App\Http\Controllers\PublicSite\PublicClaseController;
+use App\Http\Controllers\DashboardController;
 
 // Página principal pública (antes '/')
-Route::middleware('redirect.authenticated')->group(function () {
-Route::get('/', [PublicDashboardController::class, 'index'])->name('public.dashboard.index');
+// Página pública
+Route::get('/', [PublicDashboardController::class, 'index'])
+    ->name('public.dashboard.index');
+
+// Dashboard para usuarios autenticados
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('auth')
+    ->name('dashboard');
+
 
 // Calendario público
 Route::get('/calendario-academico', [PublicCalendarioController::class, 'index'])->name('public.calendario.index');
@@ -29,4 +37,3 @@ Route::get('/cursos-fen', [PublicCourseController::class, 'index'])->name('publi
 
 Route::get('/public/clases/{clase}', [PublicClaseController::class, 'show'])
     ->name('public.clases.show');
-});

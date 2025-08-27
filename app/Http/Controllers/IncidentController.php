@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Cloudinary\Api\Upload\UploadApi;
 use Carbon\Carbon;
+use App\Models\IncidentLog;
 
 class IncidentController extends Controller
 {
@@ -159,13 +160,18 @@ class IncidentController extends Controller
 
         if ($validated['estado'] === 'resuelta' && $incidencia->estado !== 'resuelta') {
             $validated['resuelta_en'] = now();
-        }
-
-        if ($validated['estado'] !== 'no_resuelta') {
-            $validated['comentario'] = null;
+            $validated['resolved_by'] = Auth::id(); // ✅ guarda quién resolvió
         }
 
         $incidencia->update($validated);
+
+        // ✅ Guardar log en timeline
+        IncidentLog::create([
+            'incident_id' => $incidencia->id,
+            'user_id' => Auth::id(),
+            'estado' => $validated['estado'],
+            'comentario' => $validated['comentario'] ?? null,
+        ]);
 
         return redirect()->back()->with('success', 'Incidencia actualizada.');
     }
@@ -174,7 +180,7 @@ class IncidentController extends Controller
     {
         $this->authorizeAccess();
 
-        $incidencia->load('room', 'user');
+        $incidencia->load('room', 'user', 'logs.user');
         return view('incidencias.show', compact('incidencia'));
     }
 

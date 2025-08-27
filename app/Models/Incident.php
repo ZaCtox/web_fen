@@ -18,6 +18,7 @@ class Incident extends Model
         'user_id',
         'nro_ticket',
         'resuelta_en',
+        'resolved_by',
     ];
 
     protected $casts = [
@@ -34,6 +35,16 @@ class Incident extends Model
     public function room()
     {
         return $this->belongsTo(Room::class);
+    }
+
+    public function resolvedBy()
+    {
+        return $this->belongsTo(User::class, 'resolved_by');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(IncidentLog::class);
     }
 
 

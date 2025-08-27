@@ -78,7 +78,8 @@
                     class="w-full rounded dark:bg-gray-800 dark:text-white">
                     <option value="">Todos</option>
                     <template x-for="p in periodosFiltrados" :key="p.id">
-                        <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero"></option>
+                        <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero">
+                        </option>
                     </template>
                 </select>
             </div>
@@ -128,16 +129,16 @@
         <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded">
             <table x-data="{ historico: {{ request()->filled('historico') ? 'true' : 'false' }} }"
                 class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
-                <thead class="bg-gray-100 dark:bg-gray-700">
+                <thead class="bg-gray-100 dark:bg-gray-700 text-align:center">
                     <tr>
-                        <th class="px-4 py-2">ID</th>
-                        <th class="px-4 py-2">Título</th>
-                        <th class="px-4 py-2">Sala</th>
-                        <th class="px-4 py-2">Estado</th>
-                        <th class="px-4 py-2">Fecha</th>
-                        <th class="px-4 py-2">Ticket</th>
-                        <th class="px-4 py-2">Resuelta el</th>
-                        <th class="px-4 py-2">Acción</th>
+                        <th class="px-4 py-2 text-center">ID</th>
+                        <th class="px-4 py-2 text-center">Título</th>
+                        <th class="px-4 py-2 text-center">Sala</th>
+                        <th class="px-4 py-2 text-center">Estado</th>
+                        <th class="px-4 py-2 text-center">Fecha</th>
+                        <th class="px-4 py-2 text-center">Ticket</th>
+                        <th class="px-4 py-2 text-center">Resuelta el</th>
+                        <th class="px-4 py-2 text-center">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -147,11 +148,15 @@
                             <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
                             <td class="px-4 py-2">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
                             @php
-                                $estadoClase = 'estado estado-' . $incidencia->estado;
-                                $estadoTexto = ucwords(str_replace('_', ' ', $incidencia->estado));
+                                $estadoIconos = [
+                                    'pendiente' => '🕒',
+                                    'en_revision' => '🔍',
+                                    'resuelta' => '✅',
+                                    'no_resuelta' => '❌',
+                                ];
                             @endphp
-                            <td class="px-4 py-2">
-                                <span class="{{ $estadoClase }}">{{ $estadoTexto }}</span>
+                            <td class="px-4 py-2 text-center">
+                                {{ $estadoIconos[$incidencia->estado] ?? 'ℹ️' }}
                             </td>
                             <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
                             <td class="px-4 py-2">{{ $incidencia->nro_ticket ?? '—' }}</td>
@@ -160,7 +165,7 @@
                             </td>
                             <td class="px-4 py-2 space-x-2">
                                 <a href="{{ route('incidencias.show', $incidencia) }}"
-                                    class="text-blue-600 hover:underline">🔍 Ver</a>
+                                    class="bg-blue-100 hover:bg-blue-200 text-white px-1 py-1 rounded">🔍</a>
                             </td>
                         </tr>
                     @empty

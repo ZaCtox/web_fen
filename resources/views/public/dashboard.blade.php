@@ -1,7 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
+        <h1>hola</h1>
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bienvenido a Postgrado FEN</h2>
     </x-slot>
+        @if($emergency)
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '{{ $emergency->title }}',
+                    html: '{!! nl2br(e($emergency->message)) !!}',
+                    confirmButtonText: 'Cerrar'
+                });
+            });
+        </script>
+    @endif
 
     <div class="py-10 max-w-4xl mx-auto px-4 space-y-6 text-center">
         <h3 class="text-lg text-gray-800 dark:text-gray-200 font-semibold">Accesos rápidos</h3>
