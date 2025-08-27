@@ -9,24 +9,22 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 🔒 Desactivar claves foráneas
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // 🔒 Limpiar tablas respetando relaciones FK
+        $tables = [
+            'incidents',
+            'rooms',
+            'courses',
+            'magisters',
+            'users',
+            'periods',
+            'clases',
+            'staff',
+            'events',
+        ];
 
-        // 🧹 Limpiar las tablas en orden seguro (dependencias al final)
-        DB::table('incidents')->truncate();      // depende de rooms
-        DB::table('rooms')->truncate();
-        DB::table('courses')->truncate();        // depende de magisters
-        DB::table('magisters')->truncate();
-        DB::table('users')->truncate();          // solo si quieres resetear usuarios
-        DB::table('periods')->truncate(); 
-        DB::table('clases')->truncate();         
-        DB::table('staff')->truncate(); 
-        DB::table('events')->truncate();         
-        // si tiene relaciones también
-        // Añade más tablas si es necesario
-
-        // 🔒 Reactivar claves foráneas
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        foreach ($tables as $table) {
+            DB::statement("TRUNCATE TABLE {$table} RESTART IDENTITY CASCADE");
+        }
 
         // 🌱 Ejecutar seeders
         $this->call([
