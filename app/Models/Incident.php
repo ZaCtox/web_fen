@@ -10,12 +10,15 @@ class Incident extends Model
     protected $fillable = [
         'titulo',
         'descripcion',
-        'sala',
+        'room_id',
         'estado',
         'imagen',
-        'plublic_id',
+        'comentario',
+        'public_id',
         'user_id',
+        'nro_ticket',
         'resuelta_en',
+        'resolved_by',
     ];
 
     protected $casts = [
@@ -28,6 +31,22 @@ class Incident extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    public function resolvedBy()
+    {
+        return $this->belongsTo(User::class, 'resolved_by');
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(IncidentLog::class);
+    }
+
 
 
 }

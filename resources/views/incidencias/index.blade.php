@@ -1,120 +1,186 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
             Bitácora de Incidencias
         </h2>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
+    <div class="p-5 max-w-7xl mx-auto">
+        <a href="{{ route('incidencias.create') }}"
+            class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-2 py-2 rounded shadow">
+            ➕ Nueva Incidencia
+        </a>
+        <a href="{{ route('incidencias.estadisticas') }}"
+            class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-2 rounded shadow">
+            📋 Ver Estadísticas
+        </a>
+    </div>
 
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-                <a href="{{ route('incidencias.estadisticas') }}"
-                    class="bg-indigo-500 text-white font-semibold py-2 px-4 rounded hover:bg-indigo-600 text-center w-full sm:w-auto mb-2 sm:mb-0">
-                    Ver Estadísticas
-                </a>
-                <a href="{{ route('incidencias.create') }}"
-                    class="bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 text-center w-full sm:w-auto">
-                    Nueva Incidencia
-                </a>
-                <a href="{{ route('incidencias.exportar.pdf', request()->query()) }}"
-                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm">
-                    Exportar PDF
-                </a>
+    <div class="p-6 max-w-7xl mx-auto" x-data="{
+        estado: '{{ request('estado') }}',
+        sala: '{{ request('room_id') }}',
+        anio: '{{ request('anio') }}',
+        trimestre: '{{ request('trimestre') }}',
+        historico: {{ request()->filled('historico') ? 'true' : 'false' }},
+        periodos: @js($periodos),
+        get periodosFiltrados() {
+            if (!this.anio) return this.periodos;
+            return this.periodos.filter(p => p.anio == this.anio);
+        },
+        actualizarURL() {
+            const params = new URLSearchParams(window.location.search);
+            this.estado ? params.set('estado', this.estado) : params.delete('estado');
+            this.sala ? params.set('room_id', this.sala) : params.delete('room_id');
+            this.anio ? params.set('anio', this.anio) : params.delete('anio');
+            this.trimestre ? params.set('trimestre', this.trimestre) : params.delete('trimestre');
+            this.historico ? params.set('historico', '1') : params.delete('historico');
+            window.location.search = params.toString();
+        }
+    }">
 
+        {{-- Filtros --}}
+        <div class="mb-4 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div>
+                <label class="text-sm text-gray-700 dark:text-gray-300">Estado:</label>
+                <select x-model="estado" @change="actualizarURL"
+                    class="w-full rounded dark:bg-gray-800 dark:text-white">
+                    <option value="">Todos</option>
+                    <option value="pendiente">Pendientes</option>
+                    <option value="en_revision">Revisión</option>
+                    <option value="resuelta">Resueltas</option>
+                    <option value="no_resuelta">No resueltas</option>
+                </select>
             </div>
-            <form method="GET" class="grid grid-cols-1 sm:grid-cols-6 gap-4">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar..."
-                    class="rounded border-gray-300 shadow-sm">
 
-                <select name="estado" class="rounded border-gray-300 shadow-sm">
-                    <option value="">-- Estado --</option>
-                    <option value="pendiente" {{ request('estado') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
-                    <option value="resuelta" {{ request('estado') == 'resuelta' ? 'selected' : '' }}>Resuelta</option>
+            <div>
+                <label class="text-sm text-gray-700 dark:text-gray-300">Sala:</label>
+                <select x-model="sala" @change="actualizarURL" class="w-full rounded dark:bg-gray-800 dark:text-white">
+                    <option value="">Todas</option>
+                    @foreach ($salas as $s)
+                        <option value="{{ $s->id }}">{{ $s->name }}</option>
+                    @endforeach
                 </select>
+            </div>
 
-                <input type="text" name="sala" value="{{ request('sala') }}" placeholder="Sala"
-                    class="rounded border-gray-300 shadow-sm">
-
-                <select name="semestre" class="rounded border-gray-300 shadow-sm">
-                    <option value="">-- Semestre --</option>
-                    <option value="1" {{ request('semestre') == '1' ? 'selected' : '' }}>1</option>
-                    <option value="2" {{ request('semestre') == '2' ? 'selected' : '' }}>2</option>
+            <div>
+                <label class="text-sm text-gray-700 dark:text-gray-300">Año:</label>
+                <select x-model="anio" @change="actualizarURL" class="w-full rounded dark:bg-gray-800 dark:text-white">
+                    <option value="">Todos</option>
+                    @foreach ($anios as $a)
+                        <option value="{{ $a }}">{{ $a }}</option>
+                    @endforeach
                 </select>
+            </div>
 
-                <input type="number" name="anio" value="{{ request('anio') }}" placeholder="Año"
-                    class="rounded border-gray-300 shadow-sm">
+            <div>
+                <label class="text-sm text-gray-700 dark:text-gray-300">Trimestre:</label>
+                <select x-model="trimestre" @change="actualizarURL"
+                    class="w-full rounded dark:bg-gray-800 dark:text-white">
+                    <option value="">Todos</option>
+                    <template x-for="p in periodosFiltrados" :key="p.id">
+                        <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero">
+                        </option>
+                    </template>
+                </select>
+            </div>
 
-                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    Filtrar
+            <div class="flex items-center gap-2">
+                <input type="checkbox" x-model="historico" @change="actualizarURL" id="historico"
+                    class="rounded border-gray-300 dark:bg-gray-800">
+                <label for="historico" class="text-sm text-gray-700 dark:text-gray-300">Ver registros históricos</label>
+            </div>
+        </div>
+
+        {{-- Botones --}}
+        <div class="mb-4 flex flex-wrap justify-between items-center gap-2">
+            <div>
+                <button @click="
+                    estado = '';
+                    sala = '';
+                    anio = '';
+                    trimestre = '';
+                    historico = false;
+                    actualizarURL();
+                " class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded text-sm">
+                    🧹 Limpiar filtros
+                </button>
+            </div>
+
+            <form action="{{ route('incidencias.exportar.pdf') }}" method="GET" class="flex gap-2 flex-wrap">
+                <input type="hidden" name="estado" :value="estado">
+                <input type="hidden" name="room_id" :value="sala">
+                <input type="hidden" name="anio" :value="anio">
+                <input type="hidden" name="trimestre" :value="trimestre">
+                <input type="hidden" name="historico" x-bind:value="historico ? 1 : ''">
+
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm">
+                    📄 Exportar PDF
                 </button>
             </form>
+        </div>
 
-            <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
-                        <tr>
-                            <th class="px-4 py-2 text-left">Título</th>
-                            <th class="px-4 py-2 text-left">Sala</th>
-                            <th class="px-4 py-2 text-left">Registrado por</th>
-                            <th class="px-4 py-2 text-left">Estado</th>
-                            <th class="px-4 py-2 text-left">Fecha</th>
-                            <th class="px-4 py-2 text-left">Imagen</th>
-                            <th class="px-4 py-2 text-left">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
-                        @foreach($incidencias as $incidencia)
-                            <tr>
-                                <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
-                                <td class="px-4 py-2">{{ $incidencia->sala }}</td>
-                                <td class="px-4 py-2">{{ $incidencia->user->name ?? 'N/D' }}</td>
-                                <td class="px-4 py-2">{{ ucfirst($incidencia->estado) }}</td>
-                                <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
-                                <td class="px-4 py-2">
-                                    @if($incidencia->imagen)
-                                        <img src="{{ $incidencia->imagen }}" alt="Incidencia" class="w-24 h-auto rounded">
-                                    @else
-                                        <span class="text-sm text-gray-400 italic">Sin imagen</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-2 space-y-1">
-                                    @if($incidencia->estado === 'pendiente')
-                                        <form action="{{ route('incidencias.update', $incidencia) }}" method="POST">
-                                            @csrf
-                                            @method('PUT')
-                                            <button
-                                                class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 text-sm">
-                                                Marcar como resuelta
-                                            </button>
-                                        </form>
-                                    @else
-                                        <span class="text-green-600 font-semibold text-sm">Resuelta</span>
-                                        <a href="{{ route('incidencias.show', $incidencia) }}"
-                                            class="block bg-indigo-500 text-white px-2 py-1 rounded hover:bg-indigo-600 text-sm mt-1 text-center">
-                                            Ver
-                                        </a>
-                                    @endif
-                                    <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST"
-                                        onsubmit="return confirm('¿Estás seguro de eliminar esta incidencia?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                            Eliminar
-                                        </button>
-                                    </form>
-
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="mt-4 flex justify-center">
-                    {{ $incidencias->links() }}
-                </div>
+        <template x-if="historico">
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 px-4 py-3 rounded mb-4 text-sm">
+                Mostrando solo incidencias fuera de los períodos académicos actuales.
             </div>
+        </template>
 
+        {{-- Tabla --}}
+        <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded">
+            <table x-data="{ historico: {{ request()->filled('historico') ? 'true' : 'false' }} }"
+                class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
+                <thead class="bg-gray-100 dark:bg-gray-700 text-align:center">
+                    <tr>
+                        <th class="px-4 py-2 text-center">ID</th>
+                        <th class="px-4 py-2 text-center">Título</th>
+                        <th class="px-4 py-2 text-center">Sala</th>
+                        <th class="px-4 py-2 text-center">Estado</th>
+                        <th class="px-4 py-2 text-center">Fecha</th>
+                        <th class="px-4 py-2 text-center">Ticket</th>
+                        <th class="px-4 py-2 text-center">Resuelta el</th>
+                        <th class="px-4 py-2 text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($incidencias as $incidencia)
+                        <tr class="border-t border-gray-200 dark:border-gray-600">
+                            <td class="px-4 py-2">{{ $incidencia->id }}</td>
+                            <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
+                            <td class="px-4 py-2">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
+                            @php
+                                $estadoIconos = [
+                                    'pendiente' => '🕒',
+                                    'en_revision' => '🔍',
+                                    'resuelta' => '✅',
+                                    'no_resuelta' => '❌',
+                                ];
+                            @endphp
+                            <td class="px-4 py-2 text-center">
+                                {{ $estadoIconos[$incidencia->estado] ?? 'ℹ️' }}
+                            </td>
+                            <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="px-4 py-2">{{ $incidencia->nro_ticket ?? '—' }}</td>
+                            <td class="px-4 py-2">
+                                {{ $incidencia->resuelta_en ? $incidencia->resuelta_en->format('d/m/Y H:i') : '-' }}
+                            </td>
+                            <td class="px-4 py-2 space-x-2">
+                                <a href="{{ route('incidencias.show', $incidencia) }}"
+                                    class="bg-blue-100 hover:bg-blue-200 text-white px-1 py-1 rounded">🔍</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-gray-500 dark:text-gray-400">
+                                No se encontraron incidencias con los filtros aplicados.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6">
+            {{ $incidencias->links() }}
         </div>
     </div>
 </x-app-layout>

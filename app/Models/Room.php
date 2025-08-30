@@ -14,13 +14,23 @@ class Room extends Model
         'location',
         'capacity',
         'description',
+        'calefaccion',
+        'energia_electrica',
+        'existe_aseo',
+        'plumones',
+        'borrador',
+        'pizarra_limpia',
+        'computador_funcional',
+        'cables_computador',
+        'control_remoto_camara',
+        'televisor_funcional',
     ];
 
-    // app/Models/Room.php
-    public function usages()
+    public function clases()
     {
-        return $this->hasMany(RoomUsage::class);
+        return $this->hasMany(Clase::class);
     }
+
 
 }
 

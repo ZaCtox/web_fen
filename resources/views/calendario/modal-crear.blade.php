@@ -1,24 +1,67 @@
-<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white dark:bg-gray-900 p-6 rounded shadow-lg w-full max-w-md">
-        <h3 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Crear Evento</h3>
-        <form id="event-form">
+<div id="modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h3 id="modal-header" class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Crear Evento
+        </h3>
+        <form id="event-form" class="space-y-4">
+            @csrf
+            <input type="hidden" id="event_id"> <!-- Para diferenciar crear/editar -->
             <input type="hidden" id="start_time">
             <input type="hidden" id="end_time">
 
-            <label class="block mb-2 text-sm">Título</label>
-            <input type="text" id="title" required class="w-full mb-3 px-3 py-2 border rounded dark:bg-gray-700 dark:text-white">
+            <div>
+                <label for="modal-title-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Título
+                </label>
+                <input id="modal-title-input" type="text" required
+                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white"
+                    placeholder="Ej. Taller de Investigación">
+            </div>
 
-            <label class="block mb-2 text-sm">Sala (opcional)</label>
-            <select id="room_id" class="w-full mb-4 px-3 py-2 border rounded dark:bg-gray-700 dark:text-white">
-                <option value="">-- Sin sala --</option>
-                @foreach(\App\Models\Room::all() as $room)
-                    <option value="{{ $room->id }}">{{ $room->name }}</option>
-                @endforeach
-            </select>
+            <div>
+                <label for="modal-description-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Descripción
+                </label>
+                <textarea id="modal-description-input" rows="2"
+                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white"
+                    placeholder="Opcional..."></textarea>
+            </div>
 
-            <div class="flex justify-end gap-2">
-                <button type="button" id="cancel" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Cancelar</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Guardar</button>
+            <div>
+                <label for="magister_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Magíster (opcional)
+                </label>
+                <select id="magister_id"
+                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+                    <option value="">-- Sin Magíster --</option>
+                    @foreach(\App\Models\Magister::orderBy('nombre')->get() as $m)
+                        <option value="{{ $m->id }}">{{ $m->nombre }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div>
+                <label for="room_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Sala (opcional)
+                </label>
+                <select id="room_id"
+                    class="w-full px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
+                    <option value="">-- Sin sala --</option>
+                    @foreach(\App\Models\Room::orderBy('name')->get() as $room)
+                        <option value="{{ $room->id }}">{{ $room->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" id="cancel"
+                    class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                    Cancelar
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Guardar
+                </button>
             </div>
         </form>
     </div>

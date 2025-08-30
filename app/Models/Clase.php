@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Clase extends Model
+{
+    use HasFactory;
+
+
+    protected $fillable = [
+        'course_id',
+        'tipo',
+        'period_id',
+        'room_id',
+        'modality',
+        'dia',
+        'hora_inicio',
+        'hora_fin',
+        'url_zoom',
+        'encargado'
+    ];
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function period()
+    {
+        return $this->belongsTo(Period::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    // app/Models/Clase.php
+    public function scopeFiltrar($q, array $f)
+    {
+        return $q
+            ->when($f['magister'] ?? null, fn($q, $v) =>
+                $q->whereHas('course.magister', fn($q2) => $q2->where('nombre', $v)))
+            ->when($f['sala'] ?? null, fn($q, $v) =>
+                $q->whereHas('room', fn($q2) => $q2->where('name', $v)))
+            ->when($f['dia'] ?? null, fn($q, $v) => $q->where('dia', $v));
+    }
+}

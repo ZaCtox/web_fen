@@ -1,53 +1,100 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\IncidentController;
 use Illuminate\Support\Facades\Route;
-use App\Models\Incident;
-use App\Http\Controllers\CloudinaryTestController;
-use App\Http\Controllers\EventController;
-use App\Http\Controllers\RoomController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use App\Http\Controllers\{
+    CourseController,
+    MagisterController,
+    ProfileController,
+    IncidentController,
+    EventController,
+    RoomController,
+    PeriodController,
+    GuestDashboardController,
+    OnlineClassController,
+    ClaseController,
+    GuestEventController,
+    DashboardController,
+    StaffController,
+    PublicStaffController,
+    PublicRoomController,
+    UserController,
+    EmergencyController
+};
 
-// Página de inicio pública
-Route::get('/', function () {
-    return view('welcome');
+
+
+// 🌐 API pública para calendario de invitados
+Route::prefix('/api')->group(function () {
+    Route::get('/periodo-por-fecha', [PeriodController::class, 'periodoPorFecha']);
+    Route::get('/trimestre-siguiente', [PeriodController::class, 'trimestreSiguiente']);
+    Route::get('/trimestre-anterior', [PeriodController::class, 'trimestreAnterior']);
 });
 
-// Dashboard con datos
-Route::get('/dashboard', function () {
-    $total = Incident::count();
-    $pendientes = Incident::where('estado', 'pendiente')->count();
-    $resueltas = Incident::where('estado', 'resuelta')->count();
-    $ultimas = Incident::latest()->take(5)->get();
 
-    return view('dashboard', compact('total', 'pendientes', 'resueltas', 'ultimas'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Dashboard principal (solo autenticados y verificados)
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
-// Rutas protegidas por autenticación
-Route::middleware('auth')->group(function () {
+// 🟡 Rutas protegidas por autenticación
+Route::middleware(['auth'])->group(function () {
 
-    // Perfil de usuario
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Clases
+    Route::get('/clases/exportar', [ClaseController::class, 'exportar'])->name('clases.exportar');
+    Route::resource('clases', ClaseController::class);
+    Route::get('/salas/disponibilidad', [ClaseController::class, 'disponibilidad'])->name('salas.disponibilidad');
+    Route::get('/salas/horarios', [ClaseController::class, 'horariosDisponibles'])->name('salas.horarios');
+
+    // Calendario
+    Route::get('/calendario', [EventController::class, 'calendario'])->name('calendario');
+
+
+    // Eventos
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
     // Incidencias
     Route::get('/incidencias/estadisticas', [IncidentController::class, 'estadisticas'])->name('incidencias.estadisticas');
     Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])->name('incidencias.exportar.pdf');
     Route::resource('incidencias', IncidentController::class);
 
-    // Eventos
-    Route::resource('events', EventController::class)->except(['create', 'edit', 'show']);
-
-    // Calendario
-    Route::view('/calendario', 'calendario.index')->name('calendario');
-
     // Salas
     Route::resource('rooms', RoomController::class);
 
-});
+    // Perfil
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-Route::get('/cloudinary-test', [CloudinaryTestController::class, 'form'])->name('cloudinary.form');
-Route::post('/cloudinary-test', [CloudinaryTestController::class, 'upload'])->name('cloudinary.upload');
+    // Usuarios
+    Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+    Route::get('/usuarios/{user}/edit', [UserController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/usuarios/{user}', [UserController::class, 'update'])->name('usuarios.update');
+    Route::delete('/usuarios/{user}', [UserController::class, 'destroy'])->name('usuarios.destroy');
+
+    // Periodos
+    Route::resource('periods', PeriodController::class);
+    Route::post('/periods/actualizar-proximo-anio', [PeriodController::class, 'actualizarAlProximoAnio'])->name('periods.actualizarProximoAnio');
+
+
+    // Cursos y Magísteres
+    Route::resource('courses', CourseController::class);
+    Route::delete('/courses/programa/{programa}', [CourseController::class, 'destroyPrograma'])->name('courses.destroy-programa');
+    Route::resource('magisters', MagisterController::class)->except(['show']);
+
+    // Staff
+    Route::resource('staff', StaffController::class);
+
+    // Alerta
+    Route::post('/emergency', [EmergencyController::class, 'store'])->name('emergency.store');
+    Route::resource('emergencies', EmergencyController::class);
+    Route::patch('emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])->name('emergencies.deactivate');
+
+});
+require __DIR__ . '/public.php';
 
 require __DIR__ . '/auth.php';

@@ -15,7 +15,7 @@ use Illuminate\View\View;
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Mostrar vista de registro
      */
     public function create(): View
     {
@@ -23,29 +23,30 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Registrar nuevo usuario
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        $validated = $request->validate([
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'rol' => ['required', 'in:estudiante,docente,administrativo'],
+            // Solo los roles que aparecen en tu <select>
+            'rol'      => ['required', 'in:docente,asistente,director_magister,director_administrativo,auxiliar'],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'rol' => $request->rol,
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'rol'      => $validated['rol'],
         ]);
 
-        return back()
-            ->with('success', 'Usuario registrado exitosamente.')
-            ->withInput([]); // 👈 esto limpia los valores previos del formulario
-    }
+        // Importante para verificación de email (si la tienes habilitada)
+        event(new Registered($user));
 
+        return redirect()
+            ->route('login')
+            ->with('success', 'Cuenta creada. Ahora inicia sesión.');
+    }
 }

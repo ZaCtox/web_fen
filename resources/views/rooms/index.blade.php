@@ -3,44 +3,98 @@
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Salas Registradas</h2>
     </x-slot>
 
-    <div class="p-6">
-        <a href="{{ route('rooms.create') }}"
-            class="mb-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-            + Nueva Sala
-        </a>
+    <div class="p-6" x-data="{
+        search: '',
+        salas: @js($rooms->items()),
+        get filtradas() {
+            return this.salas.filter(s =>
+                s.name.toLowerCase().includes(this.search.toLowerCase()) ||
+                s.location.toLowerCase().includes(this.search.toLowerCase())
+            );
+        }
+    }">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+            <a href="{{ route('rooms.create') }}"
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
+                ➕ Nueva Sala
+            </a>
 
-        <table class="w-full table-auto text-sm text-gray-700 dark:text-gray-200">
-            <thead class="bg-gray-100 dark:bg-gray-700">
-                <tr>
-                    <th class="px-4 py-2 text-left">Nombre</th>
-                    <th class="px-4 py-2 text-left">Ubicación</th>
-                    <th class="px-4 py-2 text-left">Capacidad</th>
-                    <th class="px-4 py-2 text-left">Usos Académicos</th>
-                    <th class="px-4 py-2 text-left">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($rooms as $room)
-                    <tr class="border-b border-gray-200 dark:border-gray-600">
-                        <td class="px-4 py-2">{{ $room->name }}</td>
-                        <td class="px-4 py-2">{{ $room->location }}</td>
-                        <td class="px-4 py-2">{{ $room->capacity }}</td>
-                        <td class="px-4 py-2">
-                            <a href="{{ route('rooms.show', $room) }}" class="text-indigo-600 hover:underline">Ver
-                                asignaciones</a>
+            {{-- Filtro de búsqueda en tiempo real --}}
+            <div class="w-full px-10 sm:w-1/2">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Buscar por nombre o ubicación:
+                </label>
+                <input type="text" x-model="search"
+                       placeholder="Ej: Edificio Norte o Sala 101"
+                       class="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600" />
+            </div>
+        </div>
 
-                        </td>
-                        <td class="px-4 py-2 space-x-2">
-                            <a href="{{ route('rooms.edit', $room) }}" class="text-blue-600 hover:underline">Editar</a>
-                            <form action="{{ route('rooms.destroy', $room) }}" method="POST" class="inline">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:underline"
-                                    onclick="return confirm('¿Eliminar sala?')">Eliminar</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        {{-- Tabla de resultados --}}
+        <template x-if="filtradas.length > 0">
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto text-sm text-gray-700 dark:text-gray-200">
+                    <thead class="bg-gray-100 dark:bg-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 text-left">Nombre</th>
+                            <th class="px-4 py-2 text-left">Ubicación</th>
+                            <th class="px-4 py-2 text-left">Ficha Técnica</th>
+                            <th class="px-4 py-2 text-left">Clases Asignadas</th>
+                            <th class="px-4 py-2 text-right w-40">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="room in filtradas" :key="room.id">
+                            <tr class="border-b border-gray-200 dark:border-gray-600">
+                                <td class="px-4 py-2" x-text="room.name"></td>
+                                <td class="px-4 py-2" x-text="room.location"></td>
+                                <td class="px-4 py-2">
+                                    <a :href="`/rooms/${room.id}#ficha`"
+                                       class="inline-flex items-center text-sm bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 rounded">
+                                        📄 Ver Ficha
+                                    </a>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <a :href="`/rooms/${room.id}#clases`"
+                                       class="inline-flex items-center text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 rounded">
+                                        📚 Ver Clases
+                                    </a>
+                                </td>
+                                <td class="px-4 py-2">
+                                    <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                        <a :href="`/rooms/${room.id}/edit`"
+                                           class="inline-flex items-center justify-center px-3 py-1 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded text-xs w-full sm:w-auto">
+                                            ✏️
+                                        </a>
+
+                                        {{-- IMPORTANTE: usar class="form-eliminar" para SweetAlert de confirmación --}}
+                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="inline-flex items-center justify-center px-3 py-1 bg-red-100 text-red-700 hover:bg-red-200 rounded text-xs w-full sm:w-auto">
+                                                🗑️
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        {{-- Sin resultados --}}
+        <template x-if="filtradas.length === 0">
+            <p class="mt-6 text-center text-gray-600 dark:text-gray-400">
+                😕 No se encontraron salas que coincidan con la búsqueda.
+            </p>
+        </template>
+
+        {{-- Paginación (server-side) --}}
+        <div class="mt-6">
+            {{ $rooms->withQueryString()->links() }}
+        </div>
     </div>
 </x-app-layout>

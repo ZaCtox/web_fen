@@ -3,108 +3,115 @@
 namespace App\Http\Controllers;
 
 use App\Models\Room;
-use App\Models\RoomUsage;
-use App\Models\Trimestre;
+use App\Models\Period;
+use App\Models\Course;
+use App\Models\Magister;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreRoomRequest;
-use Illuminate\Support\Collection;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $ubicacion = $request->input('ubicacion');
+        $capacidad = $request->input('capacidad');
 
-        $rooms = Room::all();
-        return view('rooms.index', compact('rooms'));
+        $rooms = Room::query()
+            ->when($ubicacion, fn($q) => $q->where('location', 'like', "%$ubicacion%"))
+            ->when($capacidad, fn($q) => $q->where('capacity', '>=', $capacidad))
+            ->orderBy('name')
+            ->paginate(10);
+
+        return view('rooms.index', compact('rooms', 'ubicacion', 'capacidad'));
     }
 
     public function create()
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
-        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
-        return view('rooms.create', compact('trimestres'));
+        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+        $cursos = Course::with('magister')->orderBy('magister_id')->orderBy('nombre')->get();
+
+        return view('rooms.create', compact('periodos', 'cursos'));
     }
 
     public function store(StoreRoomRequest $request)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
+        $this->authorizeAccess();
+
+        $data = $request->validated();
+
+        foreach ($this->booleanFields() as $campo) {
+            $data[$campo] = $request->has($campo);
         }
 
-        $room = Room::create($request->validated());
+        $room = Room::create($data);
 
-        foreach ($request->input('usos', []) as $uso) {
-            $room->usages()->create([
-                'trimestre_id' => $uso['trimestre_id'],
-                'dia' => $uso['dia'],
-                'hora_inicio' => $uso['hora_inicio'],
-                'hora_fin' => $uso['hora_fin'],
-                'magister' => $uso['magister'],
-                'subject' => $uso['subject'],
-            ]);
-        }
-
-        return redirect()->route('rooms.index')->with('success', 'Sala creada correctamente');
+        return redirect()->route('rooms.index', $room)->with('success', 'Sala creada. Ahora asigna sus usos.');
     }
 
     public function edit(Room $room)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
-        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
-        return view('rooms.edit', compact('room', 'trimestres'));
+        return view('rooms.edit', compact('room'));
     }
 
     public function update(StoreRoomRequest $request, Room $room)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
+        $this->authorizeAccess();
+
+        $data = $request->validated();
+
+        foreach ($this->booleanFields() as $campo) {
+            $data[$campo] = $request->has($campo);
         }
 
-        $room->update($request->validated());
-        $room->usages()->delete();
-
-        foreach ($request->input('usos', []) as $uso) {
-            $room->usages()->create([
-                'trimestre_id' => $uso['trimestre_id'],
-                'dia' => $uso['dia'],
-                'hora_inicio' => $uso['hora_inicio'],
-                'hora_fin' => $uso['hora_fin'],
-            ]);
-        }
+        $room->update($data);
 
         return redirect()->route('rooms.index')->with('success', 'Sala actualizada correctamente');
     }
 
     public function destroy(Room $room)
     {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        $this->authorizeAccess();
 
         $room->delete();
         return redirect()->route('rooms.index')->with('success', 'Sala eliminada');
     }
 
-    public function show(Request $request, Room $room)
+    public function show(Room $room)
     {
-        $usosQuery = $room->usages();
+        $clases = $room->clases()->with(['course.magister', 'period'])->get();
 
-        if ($request->filled('trimestre_id')) {
-            $usosQuery->where('trimestre_id', $request->trimestre_id);
+        // Filtros dinámicos para vista
+        $magisters = Magister::orderBy('nombre')->get();
+        $dias = ['Viernes', 'Sábado'];
+        $trimestres = Period::orderBy('anio')->orderBy('numero')->get();
+
+        return view('rooms.show', compact('room', 'clases', 'magisters', 'dias', 'trimestres'));
+    }
+
+    private function authorizeAccess()
+    {
+        if (!tieneRol(['docente', 'administrativo'])) {
+            abort(403, 'Acceso no autorizado.');
         }
+    }
 
-        $usos = $usosQuery->with('trimestre')->orderBy('trimestre_id')->get();
-        $trimestres = Trimestre::orderBy('año')->orderBy('numero')->get();
-
-        return view('rooms.show', compact('room', 'usos', 'trimestres'));
+    private function booleanFields()
+    {
+        return [
+            'calefaccion',
+            'energia_electrica',
+            'existe_aseo',
+            'plumones',
+            'borrador',
+            'pizarra_limpia',
+            'computador_funcional',
+            'cables_computador',
+            'control_remoto_camara',
+            'televisor_funcional',
+        ];
     }
 }

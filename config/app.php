@@ -85,7 +85,22 @@ return [
 
         // 👇 Agregado para Cloudinary
         'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
+        'providers' => [
+
+            /*
+            |--------------------------------------------------------------------------
+            | Application Service Providers
+            |--------------------------------------------------------------------------
+            */
+
+            App\Providers\AppServiceProvider::class,
+            // App\Providers\AuthServiceProvider::class,
+            // App\Providers\EventServiceProvider::class,
+            App\Providers\RouteServiceProvider::class, // 👈 Agrega esto
+        ],
 
     ],
+
+
 
 ];

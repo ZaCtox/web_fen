@@ -7,7 +7,11 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/js/asignaturas_autofill.js',
+                'resources/js/calendar-public.js',
+                'resources/js/calendar-admin.js',
+                'resources/js/courses/form.js',
+                'resources/js/alerts.js',
+                'resources/js/clases/form.js',
             ],
             refresh: true,
         }),
