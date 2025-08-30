@@ -58,35 +58,9 @@
                             <div x-data="{ open: false }" class="inline-block">
                                 <!-- Botón -->
                                 <div x-data="{ open: false }">
-                                    @if($rol === 'administrativo')
-                                        <button @click="open = true"
-                                            class="text-sm px-3 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-medium">
-                                            ⚠️ Nueva Emergencia
-                                        </button>
-
-                                        <!-- Modal para crear emergencia -->
-                                        <div x-show="open"
-                                            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                            <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-5 relative">
-                                                <button @click="open = false"
-                                                    class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
-                                                <h3 class="text-lg font-semibold mb-3">Crear Emergencia</h3>
-
-                                                <form action="{{ route('emergency.store') }}" method="POST">
-                                                    @csrf
-                                                    <label class="block mb-2">Título</label>
-                                                    <input type="text" name="title" class="w-full mb-3 rounded border p-2" required>
-
-                                                    <label class="block mb-2">Mensaje</label>
-                                                    <textarea name="message" class="w-full mb-3 rounded border p-2" rows="4"
-                                                        required></textarea>
-
-                                                    <button type="submit"
-                                                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Crear</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    @endif
+                                    @if($rol === 'administrativo') <a href="{{ route('register') }}"
+                                        class="text-sm px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium whitespace-nowrap">
+                                    👤➕ Registrar Usuario </a> @endif
                                 </div>
                             </div>
                         @endif

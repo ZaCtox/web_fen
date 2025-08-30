@@ -89,8 +89,10 @@ Route::middleware(['auth'])->group(function () {
     // Staff
     Route::resource('staff', StaffController::class);
 
-    // web.php
+    // Alerta
     Route::post('/emergency', [EmergencyController::class, 'store'])->name('emergency.store');
+    Route::resource('emergencies', EmergencyController::class);
+    Route::patch('emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])->name('emergencies.deactivate');
 
 });
 require __DIR__ . '/public.php';

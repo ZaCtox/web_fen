@@ -189,27 +189,25 @@
                     </div>
                 </div>
                 {{-- Acciones --}}
-                <div class="flex items-center gap-3 pt-6 border-t">
+                <div class="flex flex-wrap gap-3 pt-6 border-t">
                     {{-- Eliminar --}}
                     @if ($incidencia->estado !== 'resuelta' && $incidencia->estado !== 'no_resuelta')
-                        <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST" class="d-inline">
+                        <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST" class="form-eliminar">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                onclick="return confirm('¿Seguro que quieres eliminar esta incidencia?')">
+                            <button type="submit"
+                                class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 font-medium text-center">
                                 🗑️
                             </button>
                         </form>
                     @endif
 
-
                     {{-- Volver --}}
                     <a href="{{ route('incidencias.index') }}"
-                        class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                        class="px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 font-medium text-center">
                         ⬅️ Volver al listado
                     </a>
                 </div>
-
             </div>
         </div>
     </div>

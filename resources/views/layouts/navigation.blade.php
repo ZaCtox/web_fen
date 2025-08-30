@@ -29,6 +29,9 @@
                                 :active="request()->routeIs('staff.index')">Staff</x-nav-link>
                             <x-nav-link :href="route('usuarios.index')"
                                 :active="request()->routeIs('usuarios.index')">Usuarios</x-nav-link>
+                            <x-nav-link :href="route('emergencies.index')"
+                                :active="request()->routeIs('emergencies.index')">Emergencias</x-nav-link>
+
                         @endif
                     </div>
                 @else
