@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const calendarEl     = document.getElementById('calendar');
+  const calendarEl = document.getElementById('calendar');
   const magisterFilter = document.getElementById('magister-filter');
-  const roomFilter     = document.getElementById('room-filter');
+  const roomFilter = document.getElementById('room-filter');
 
   // Helpers UI
   const fmtTime = (dt) =>
@@ -10,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const modalityBadge = (m) => {
     const map = {
       presencial: 'bg-green-100 text-green-800',
-      online:     'bg-indigo-100 text-indigo-800',
-      hibrida:    'bg-yellow-100 text-yellow-800',
+      online: 'bg-indigo-100 text-indigo-800',
+      hibrida: 'bg-yellow-100 text-yellow-800',
     };
     const cls = map[m] || 'bg-gray-100 text-gray-800';
     const label = m || '—';
@@ -27,12 +27,25 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'timeGridWeek',
-    headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+    initialView: window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek',
+    headerToolbar: {
+      left: 'prev,next today', center: 'title', right: window.innerWidth < 768
+        ? 'listWeek,listDay'
+        : 'dayGridMonth,timeGridWeek,listWeek'
+    },
     locale: 'es',
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      list: 'Lista',
+    },
     firstDay: 1,
     slotMinTime: '08:30:00',
-    slotMaxTime:  '21:00:00',
+    slotMaxTime: '21:00:00',
+    slotDuration: '01:10:00',
+    allDaySlot: false,
     expandRows: true,
     editable: false,
     selectable: false,
@@ -41,11 +54,29 @@ document.addEventListener('DOMContentLoaded', function () {
       url: calendarEl.dataset.url,
       extraParams: () => ({
         magister_id: magisterFilter.value || '',
-        room_id:     roomFilter.value || ''
+        room_id: roomFilter.value || ''
       }),
       failure: (err) => console.error('Error cargando eventos:', err)
     },
     eventDidMount: setTooltip,
+    viewDidMount: function (info) {
+      if (info.view.type.startsWith('list')) {
+        calendar.setOption('height', 'auto');
+        calendar.setOption('contentHeight', 'auto');
+      } else {
+        calendar.setOption('height', window.innerHeight - 150);
+        calendar.setOption('contentHeight', null);
+      }
+    },
+    windowResize: function () {
+      if (window.innerWidth < 768) {
+        calendar.changeView('listWeek'); // móvil
+      } else if (window.innerWidth < 1024) {
+        calendar.changeView('timeGridDay'); // tablet
+      } else {
+        calendar.changeView('timeGridWeek'); // desktop
+      }
+    },
     datesSet: (info) => {
       const start = new Date(info.start);
       const diaSemana = start.getDay();
@@ -81,21 +112,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const fallbackRes = await fetch(`/api/trimestres-todos`);
         const todos = await fallbackRes.json();
         if (!todos.length) {
-          Swal.fire({ icon:'warning', title:'Sin trimestres registrados', text:'No hay ningún período académico cargado en el sistema.' });
+          Swal.fire({ icon: 'warning', title: 'Sin trimestres registrados', text: 'No hay ningún período académico cargado en el sistema.' });
           return;
         }
         const fechas = todos.map(p => new Date(p.fecha_inicio));
         const fechaRef = new Date(fechaActual);
         let cercana = null;
         if (direccion === 'anterior') {
-          cercana = fechas.filter(f => f < fechaRef).sort((a,b)=>b-a)[0];
+          cercana = fechas.filter(f => f < fechaRef).sort((a, b) => b - a)[0];
         } else {
-          cercana = fechas.filter(f => f > fechaRef).sort((a,b)=>a-b)[0];
+          cercana = fechas.filter(f => f > fechaRef).sort((a, b) => a - b)[0];
         }
         if (cercana) {
           calendar.gotoDate(cercana.toISOString().split('T')[0]);
         } else {
-          Swal.fire({ icon:'info', title:'Trimestre no disponible', text: direccion==='anterior' ? 'Ya estás en el trimestre más antiguo registrado.' : 'Ya estás en el trimestre más reciente registrado.' });
+          Swal.fire({ icon: 'info', title: 'Trimestre no disponible', text: direccion === 'anterior' ? 'Ya estás en el trimestre más antiguo registrado.' : 'Ya estás en el trimestre más reciente registrado.' });
         }
         return;
       }
@@ -103,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (data.fecha_inicio) calendar.gotoDate(data.fecha_inicio);
     } catch (error) {
       console.error('Error consultando trimestre:', error);
-      Swal.fire({ icon:'error', title:'Error de conexión', text:'No se pudo consultar los trimestres. Intenta nuevamente.' });
+      Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo consultar los trimestres. Intenta nuevamente.' });
     }
   }
 
@@ -111,13 +142,23 @@ document.addEventListener('DOMContentLoaded', function () {
   [magisterFilter, roomFilter].forEach(select => {
     select.addEventListener('change', () => calendar.refetchEvents());
   });
+  // Botón para limpiar filtros
+  const clearBtn = document.getElementById('clear-filters');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      magisterFilter.value = '';
+      roomFilter.value = '';
+      calendar.refetchEvents();
+    });
+  }
+
 
   async function actualizarTextoTrimestre(fecha) {
     const fechaISO = fecha.toISOString().split('T')[0];
     try {
       const res = await fetch(`/api/periodo-por-fecha?fecha=${fechaISO}`);
       const data = await res.json();
-      const romanos = {1:'I',2:'II',3:'III',4:'IV',5:'V',6:'VI'};
+      const romanos = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI' };
       const texto = data.periodo
         ? `Trimestre ${romanos[data.periodo.numero] || data.periodo.numero} del año ${data.periodo.anio}`
         : 'Fuera de períodos académicos';
@@ -162,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Horas solo HH:mm
     document.getElementById('modal-start').textContent = fmtTime(info.event.start);
-    document.getElementById('modal-end').textContent   = fmtTime(info.event.end);
+    document.getElementById('modal-end').textContent = fmtTime(info.event.end);
 
     // Sala
     document.getElementById('modal-room').textContent = ext.room?.name || '—';
@@ -190,9 +231,9 @@ document.addEventListener('DOMContentLoaded', function () {
       ext.programa ||
       (typeof ext.magister === 'string' ? ext.magister : (ext.magister?.name || 'Sin programa'));
     const teacher = ext.profesor || ext.teacher || 'Sin encargado';
-    const sala    = ext.room?.name || 'Sin sala';
-    const start   = fmtTime(info.event.start);
-    const end     = fmtTime(info.event.end);
+    const sala = ext.room?.name || 'Sin sala';
+    const start = fmtTime(info.event.start);
+    const end = fmtTime(info.event.end);
     const tooltip = `${info.event.title}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
     info.el.setAttribute('title', tooltip.trim());
   }

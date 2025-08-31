@@ -1,15 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-[x-cloak]{display:none!important;}
+
+[x-cloak] {
+    display: none !important;
+}
 
 /* ================================
    🎨 Variables institucionales UTalca - FEN
 ================================ */
 :root {
-    --color-utalca-primary: #2f3e9e;       /* Azul institucional */
-    --color-utalca-secondary: #c8102e;     /* Rojo FEN */
-    --color-fen-gold: #ffcc00;             /* Amarillo dorado opcional */
+    --color-utalca-primary: #2f3e9e;
+    /* Azul institucional */
+    --color-utalca-secondary: #c8102e;
+    /* Rojo FEN */
+    --color-fen-gold: #ffcc00;
+    /* Amarillo dorado opcional */
     --color-bg-light: #f9f9f9;
     --color-bg-dark: #1e1e2f;
     --color-text-light: #ffffff;
@@ -25,11 +31,12 @@ body {
 }
 
 .login-card {
-    background-color: var(--color-bg-light); /* o usa bg-gray-100 de Tailwind */
+    background-color: var(--color-bg-light);
+    /* o usa bg-gray-100 de Tailwind */
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 2rem;
-    box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
 }
 
 .btn-primary {
@@ -41,6 +48,7 @@ body {
     font-weight: 600;
     transition: background 0.3s;
 }
+
 .btn-primary:hover {
     background-color: #1f2e7a;
 }
@@ -52,13 +60,16 @@ body {
     background-color: var(--color-bg-dark);
     color: var(--color-text-light);
 }
+
 .dark .login-card {
     background-color: var(--color-bg-dark);
     color: var(--color-text-light);
 }
+
 .dark .btn-primary {
     background-color: var(--color-utalca-secondary);
 }
+
 .dark .btn-primary:hover {
     background-color: #9d0e23;
 }
@@ -73,21 +84,102 @@ body {
 }
 
 .estado-pendiente {
-    background-color: #fef3c7; /* amarillo claro */
+    background-color: #fef3c7;
+    /* amarillo claro */
     color: #92400e;
 }
 
 .estado-en_revision {
-    background-color: #dbeafe; /* azul claro */
+    background-color: #dbeafe;
+    /* azul claro */
     color: #1e40af;
 }
 
 .estado-resuelta {
-    background-color: #d1fae5; /* verde claro */
+    background-color: #d1fae5;
+    /* verde claro */
     color: #065f46;
 }
 
 .estado-no_resuelta {
-    background-color: #fecaca; /* rojo claro */
+    background-color: #fecaca;
+    /* rojo claro */
     color: #991b1b;
+}
+
+/* Ocultar la hora, ya que aparece en el modal */
+.fc-timegrid-event .fc-event-time {
+    display: none;
+}
+
+/* Título del evento: usar todo el ancho y cortar con ... */
+.fc-timegrid-event .fc-event-title {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+
+/* Badge/modalidad más pequeño para no ocupar demasiado espacio */
+.fc-timegrid-event .fc-event-badge {
+    margin-left: 0.25rem;
+    font-size: 0.65rem;
+}
+
+
+
+/* Para asegurar que los textos se vean completos */
+.fc .fc-timegrid-slot-label {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
+}
+
+@media (max-width: 768px) {
+    #calendar {
+        font-size: 0.8rem;
+    }
+
+    .fc-event {
+        font-size: 0.75rem;
+    }
+
+    .fc button {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+
+/* Cabecera de la tabla (días) */
+.fc .fc-col-header-cell.fc-timegrid-axis,
+.fc .fc-col-header-cell.fc-day-mon,
+.fc .fc-col-header-cell.fc-day-tue,
+.fc .fc-col-header-cell.fc-day-wed,
+.fc .fc-col-header-cell.fc-day-thu,
+.fc .fc-col-header-cell.fc-day-sun {
+    width: 5% !important;
+    /* más angostas */
+}
+
+.fc .fc-col-header-cell.fc-day-fri,
+.fc .fc-col-header-cell.fc-day-sat {
+    width: 50% !important;
+    /* más anchas */
+}
+
+/* Columnas de contenido (celdas de horas) */
+.fc .fc-timegrid-col.fc-timegrid-axis,
+.fc .fc-timegrid-col.fc-day-mon,
+.fc .fc-timegrid-col.fc-day-tue,
+.fc .fc-timegrid-col.fc-day-wed,
+.fc .fc-timegrid-col.fc-day-thu,
+.fc .fc-timegrid-col.fc-day-sun {
+    width: 5% !important;
+}
+
+.fc .fc-timegrid-col.fc-day-fri,
+.fc .fc-timegrid-col.fc-day-sat {
+    width: 50% !important;
 }

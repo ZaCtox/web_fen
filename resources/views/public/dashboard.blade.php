@@ -1,6 +1,8 @@
+{{-- Dashboard de Postgrado FEN --}}
+@section('title', 'Inicio')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bienvenido a Postgrado FEN</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Bienvenido a Postgrado FEN!</h2>
     </x-slot>
     @php
         $emergency = app(\App\Http\Controllers\EmergencyController::class)->active();
@@ -19,7 +21,7 @@
         </script>
     @endif
 
-
+    {{-- Accesos Rápidos --}}
     <div class="py-10 max-w-4xl mx-auto px-4 space-y-6 text-center">
         <h3 class="text-lg text-gray-800 dark:text-gray-200 font-semibold">Accesos rápidos</h3>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-4">
@@ -37,6 +39,6 @@
             </a>
         </div>
     </div>
-
+    {{-- Footer --}}
     @include('components.footer')
 </x-app-layout>

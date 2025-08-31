@@ -1,6 +1,8 @@
+{{-- Nuestro equipo FEN --}}
+@section('title', 'Equipo Fen')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Staff FEN</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Información de nuestro equipo</h2>
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto"

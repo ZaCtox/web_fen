@@ -1,7 +1,7 @@
 <nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
+            <div class="flex space-x-4">
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('public.dashboard.index') }}">
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
@@ -35,17 +35,20 @@
                         @endif
                     </div>
                 @else
-                    <x-nav-link :href="route('public.dashboard.index')"
-                        :active="request()->routeIs('public.dashboard.index')">Inicio</x-nav-link>
-                    <x-nav-link :href="route('public.calendario.index')"
-                        :active="request()->routeIs('public.calendario.index')">Calendario</x-nav-link>
-                    <x-nav-link :href="route('public.staff.index')"
-                        :active="request()->routeIs('public.staff.index')">Staff-FEN</x-nav-link>
-                    <x-nav-link :href="route('public.rooms.index')"
-                        :active="request()->routeIs('public.rooms.index')">Salas</x-nav-link>
-                    <x-nav-link :href="route('public.courses.index')"
-                        :active="request()->routeIs('public.courses.index')">Cursos</x-nav-link>
+                    <nav class="flex space-x-4"> {{-- puedes usar gap-x-6 si quieres más separación --}}
+                        <x-nav-link :href="route('public.dashboard.index')"
+                            :active="request()->routeIs('public.dashboard.index')">Inicio</x-nav-link>
+                        <x-nav-link :href="route('public.calendario.index')"
+                            :active="request()->routeIs('public.calendario.index')">Calendario</x-nav-link>
+                        <x-nav-link :href="route('public.Equipo-FEN.index')"
+                            :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-nav-link>
+                        <x-nav-link :href="route('public.rooms.index')"
+                            :active="request()->routeIs('public.rooms.index')">Salas</x-nav-link>
+                        <x-nav-link :href="route('public.courses.index')"
+                            :active="request()->routeIs('public.courses.index')">Cursos</x-nav-link>
+                    </nav>
                 @endif
+
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -125,8 +128,8 @@
             @else
                 {{-- <x-responsive-nav-link :href="route('guest.dashboard')"
                     :active="request()->routeIs('guest.dashboard')">Inicio</x-responsive-nav-link> --}}
-                <x-responsive-nav-link :href="route('public.staff.index')"
-                    :active="request()->routeIs('public.staff.index')">Staff-FEN</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('public.Equipo-FEN.index')"
+                    :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-responsive-nav-link>
             @endif
         </div>
 

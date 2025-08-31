@@ -22,18 +22,18 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 
 
 // Calendario público
-Route::get('/calendario-academico', [PublicCalendarioController::class, 'index'])->name('public.calendario.index');
+Route::get('/Calendario-Academico', [PublicCalendarioController::class, 'index'])->name('public.calendario.index');
 // Eventos en modo solo lectura
 Route::get('/guest-events', [GuestEventController::class, 'index'])->name('guest.events.index');
 
 // Staff
-Route::get('/staff-fen', [PublicStaffController::class, 'index'])->name('public.staff.index');
+Route::get('/Equipo-FEN', [PublicStaffController::class, 'index'])->name('public.Equipo-FEN.index');
 
 // Salas
-Route::get('/salas-fen', [PublicRoomController::class, 'index'])->name('public.rooms.index');
+Route::get('/Salas-FEN', [PublicRoomController::class, 'index'])->name('public.rooms.index');
 
 // Cursos por Magíster
-Route::get('/cursos-fen', [PublicCourseController::class, 'index'])->name('public.courses.index');
+Route::get('/Cursos-FEN', [PublicCourseController::class, 'index'])->name('public.courses.index');
 
 Route::get('/public/clases/{clase}', [PublicClaseController::class, 'show'])
     ->name('public.clases.show');

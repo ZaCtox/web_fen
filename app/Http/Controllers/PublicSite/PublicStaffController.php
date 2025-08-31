@@ -16,6 +16,6 @@ public function index(Request $request)
         ->get(['id','nombre','cargo','telefono','email']);
 
     // Ya no necesitamos $q ni paginate()
-    return view('public.staff', compact('staff'));
+    return view('public.Equipo-FEN', compact('staff'));
 }
 }
