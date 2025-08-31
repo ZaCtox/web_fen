@@ -152,34 +152,31 @@ body {
 }
 
 
-/* Cabecera de la tabla (días) */
-.fc .fc-col-header-cell.fc-timegrid-axis,
-.fc .fc-col-header-cell.fc-day-mon,
-.fc .fc-col-header-cell.fc-day-tue,
-.fc .fc-col-header-cell.fc-day-wed,
-.fc .fc-col-header-cell.fc-day-thu,
-.fc .fc-col-header-cell.fc-day-sun {
-    width: 5% !important;
-    /* más angostas */
+/* Estilos SOLO para vista semanal */
+.week-view-active .fc .fc-col-header-cell.fc-timegrid-axis,
+.week-view-active .fc .fc-col-header-cell.fc-day-mon,
+.week-view-active .fc .fc-col-header-cell.fc-day-tue,
+.week-view-active .fc .fc-col-header-cell.fc-day-wed,
+.week-view-active .fc .fc-col-header-cell.fc-day-thu,
+.week-view-active .fc .fc-col-header-cell.fc-day-sun {
+    width: 15% !important;
 }
 
-.fc .fc-col-header-cell.fc-day-fri,
-.fc .fc-col-header-cell.fc-day-sat {
-    width: 50% !important;
-    /* más anchas */
+.week-view-active .fc .fc-col-header-cell.fc-day-fri,
+.week-view-active .fc .fc-col-header-cell.fc-day-sat {
+    width: 40% !important;
 }
 
-/* Columnas de contenido (celdas de horas) */
-.fc .fc-timegrid-col.fc-timegrid-axis,
-.fc .fc-timegrid-col.fc-day-mon,
-.fc .fc-timegrid-col.fc-day-tue,
-.fc .fc-timegrid-col.fc-day-wed,
-.fc .fc-timegrid-col.fc-day-thu,
-.fc .fc-timegrid-col.fc-day-sun {
-    width: 5% !important;
+.week-view-active .fc .fc-timegrid-col.fc-timegrid-axis,
+.week-view-active .fc .fc-timegrid-col.fc-day-mon,
+.week-view-active .fc .fc-timegrid-col.fc-day-tue,
+.week-view-active .fc .fc-timegrid-col.fc-day-wed,
+.week-view-active .fc .fc-timegrid-col.fc-day-thu,
+.week-view-active .fc .fc-timegrid-col.fc-day-sun {
+    width: 15% !important;
 }
 
-.fc .fc-timegrid-col.fc-day-fri,
-.fc .fc-timegrid-col.fc-day-sat {
-    width: 50% !important;
+.week-view-active .fc .fc-timegrid-col.fc-day-fri,
+.week-view-active .fc .fc-timegrid-col.fc-day-sat {
+    width: 40% !important;
 }

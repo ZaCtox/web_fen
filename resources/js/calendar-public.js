@@ -59,7 +59,17 @@ document.addEventListener('DOMContentLoaded', function () {
       failure: (err) => console.error('Error cargando eventos:', err)
     },
     eventDidMount: setTooltip,
+
     viewDidMount: function (info) {
+      const className = 'week-view-active';
+      const body = document.body; // puedes cambiar a otro contenedor si prefieres
+
+      if (info.view.type === 'timeGridWeek') {
+        body.classList.add(className);
+      } else {
+        body.classList.remove(className);
+      }
+
       if (info.view.type.startsWith('list')) {
         calendar.setOption('height', 'auto');
         calendar.setOption('contentHeight', 'auto');
@@ -71,8 +81,6 @@ document.addEventListener('DOMContentLoaded', function () {
     windowResize: function () {
       if (window.innerWidth < 768) {
         calendar.changeView('listWeek'); // móvil
-      } else if (window.innerWidth < 1024) {
-        calendar.changeView('timeGridDay'); // tablet
       } else {
         calendar.changeView('timeGridWeek'); // desktop
       }
@@ -86,6 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
       actualizarTextoTrimestre(sabado);
     }
   });
+
 
   calendar.render();
 

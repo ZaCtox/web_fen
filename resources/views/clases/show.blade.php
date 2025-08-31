@@ -52,7 +52,7 @@
             @else
                 {{-- 🟢 Modo público: solo botón de volver al calendario --}}
                 <div class="mt-6">
-                    <a href="{{ url('/calendario-academico') }}"
+                    <a href="{{ url('/Calendario-Academico') }}"
                        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded">
                         ← Volver al Calendario
                     </a>
