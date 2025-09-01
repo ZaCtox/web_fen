@@ -23,7 +23,7 @@
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="space-y-3">
                         <p><strong>ID:</strong> {{ $incidencia->id }}</p>
-                        <p><strong>🎫 Ticket:</strong> {{ $incidencia->nro_ticket ?? '---' }}</p>
+                        <p><strong>🎫 Ticket Jira:</strong> {{ $incidencia->nro_ticket ?? '---' }}</p>
                         <p><strong>Sala:</strong> {{ $incidencia->room->name ?? 'Sin sala' }}
                             ({{ $incidencia->room->location ?? 'N/D' }})</p>
 
@@ -89,9 +89,9 @@
                             class="space-y-4 max-w-lg" x-data="{ estado: '{{ old('estado', $incidencia->estado) }}' }">
                             @csrf @method('PUT')
 
-                            {{-- Nro Ticket --}}
+                            {{-- Nro Ticket Jira --}}
                             <div>
-                                <label for="nro_ticket" class="block text-sm font-medium">🎫 N° Ticket UTALCA</label>
+                                <label for="nro_ticket" class="block text-sm font-medium">🎫 N° Ticket Jira</label>
                                 <input type="text" name="nro_ticket" id="nro_ticket"
                                     value="{{ old('nro_ticket', $incidencia->nro_ticket) }}"
                                     class="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">

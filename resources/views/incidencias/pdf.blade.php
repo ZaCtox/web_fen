@@ -111,7 +111,7 @@
                 <th style="text-align:center;">Título</th>
                 <th style="text-align:center;">Sala</th>
                 <th style="text-align:center;">Estado</th>
-                <th style="text-align:center;">Ticket</th>
+                <th style="text-align:center;">Ticket Jira</th>
                 <th style="text-align:center;">Registrado por</th>
                 <th style="text-align:center;">Fecha</th>
                 <th style="text-align:center;">Resuelta el</th>

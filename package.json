@@ -21,6 +21,7 @@
     "@fullcalendar/interaction": "^6.1.19",
     "@fullcalendar/resource-timegrid": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
+    "animate.css": "^4.1.1",
     "sweetalert2": "^11.22.4"
   }
 }

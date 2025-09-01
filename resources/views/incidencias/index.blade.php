@@ -136,7 +136,7 @@
                         <th class="px-4 py-2 text-center">Sala</th>
                         <th class="px-4 py-2 text-center">Estado</th>
                         <th class="px-4 py-2 text-center">Fecha</th>
-                        <th class="px-4 py-2 text-center">Ticket</th>
+                        <th class="px-4 py-2 text-center">Ticket Jira</th>
                         <th class="px-4 py-2 text-center">Resuelta el</th>
                         <th class="px-4 py-2 text-center">Acción</th>
                     </tr>

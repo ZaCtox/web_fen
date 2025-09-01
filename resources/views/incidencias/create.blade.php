@@ -71,7 +71,7 @@
                     </div>
                     <div>
                         <label for="nro_ticket" class="block text-sm font-medium text-gray-700 dark:text-gray-300">N°
-                            Ticket UTALCA (opcional)</label>
+                            Ticket Jira (opcional)</label>
                         <input type="text" name="nro_ticket" id="nro_ticket" value="{{ old('nro_ticket') }}"
                             class="mt-1 block w-full rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                             placeholder="Ej: 2364552">

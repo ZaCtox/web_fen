@@ -66,10 +66,21 @@
                         @endif
 
 
-                        <button id="toggle-theme"
-                            class="text-sm px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                            <span id="theme-icon">🌙</span>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <!-- Botón cambio de tema -->
+                            <button id="toggle-theme"
+                                class="text-sm px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                                <span id="theme-icon">🌙</span>
+                            </button>
+
+                            <!-- Controles accesibilidad -->
+                            <div class="flex items-center gap-1">
+                                <button id="decrease-font"
+                                    class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A-</button>
+                                <button id="increase-font"
+                                    class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A+</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -111,6 +122,30 @@
             });
         }
     </script>
+    <script>
+    // === Control de tamaño de fuente ===
+    const root = document.querySelector("html");
+    const incBtn = document.getElementById("increase-font");
+    const decBtn = document.getElementById("decrease-font");
+
+    // Valor base (1rem = 100%)
+    let fontSize = parseFloat(localStorage.getItem("fontSize")) || 100;
+    root.style.fontSize = fontSize + "%";
+
+    function updateFontSize(newSize) {
+        fontSize = Math.min(150, Math.max(80, newSize)); // rango entre 80% y 150%
+        root.style.fontSize = fontSize + "%";
+        localStorage.setItem("fontSize", fontSize);
+    }
+
+    if (incBtn) {
+        incBtn.addEventListener("click", () => updateFontSize(fontSize + 10));
+    }
+    if (decBtn) {
+        decBtn.addEventListener("click", () => updateFontSize(fontSize - 10));
+    }
+</script>
+
 
     @yield('scripts')
     @stack('scripts')

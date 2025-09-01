@@ -1,4 +1,3 @@
-<!-- resources/views/auth/login.blade.php -->
 {{-- login.blade.php --}}
 @section('title', 'Inicio de Sesión')
 <x-guest-layout>
@@ -6,7 +5,7 @@
         <div class="max-w-md w-full bg-white dark:bg-gray-900 p-8 rounded-lg shadow">
             <div class="text-center mb-6">
                 <div class="flex justify-center items-center gap-x-4 mb-2">
-                    <img src="{{ asset('images/logo-fen.png') }}" alt="FEN" class="w-32 items-center h-auto">
+                    <x-logo-fen />
                 </div>
                 <h2 class="text-2xl font-semibold text-fen-red dark:text-white">Inicio de Sesión</h2>
             </div>
