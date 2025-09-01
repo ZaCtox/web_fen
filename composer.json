@@ -17,6 +17,7 @@
         "doctrine/dbal": "^4.3",
         "guzzlehttp/psr7": "^1.9",
         "laravel/framework": "^12.0",
+        "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10.1"
     },
     "require-dev": {
