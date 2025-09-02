@@ -1,6 +1,8 @@
+{{-- Inicio de Cursos.blade.php --}}
+@section('title', 'Cursos')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Programas de Magíster</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Programas</h2>
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto px-4">
@@ -8,7 +10,7 @@
         <div class="mb-6">
             <a href="{{ route('magisters.index') }}"
                class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                Ver Magísteres
+                Ver Detalles de Programas
             </a>
         </div>
 
@@ -17,7 +19,7 @@
                  class="mb-6 border border-gray-300 dark:border-gray-600 rounded p-4">
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center items-center text-center gap-2 mb-2 w-full">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white sm:text-left w-full sm:w-auto">
-                        {{ $magister->nombre }}
+                        Magíster en {{ $magister->nombre }}
                     </h3>
 
                     <div class="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-end w-full sm:w-auto justify-center">

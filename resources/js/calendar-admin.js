@@ -9,16 +9,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const magisterFilter = document.getElementById('magister-filter');
     const roomFilter = document.getElementById('room-filter');
 
-    // Helpers UI
-    // 24h, HH:MM
+    // Helpers
     const fmtTime = (dt) =>
         new Date(dt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 
-/*     const fmt = (dt) => {
-        const pad = n => (n < 10 ? '0' + n : n);
-        const d = new Date(dt);
-        return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }; */
+    const formatForInput = (date) => {
+        const local = new Date(date);
+        const offset = local.getTimezoneOffset() * 60000;
+        return new Date(local - offset).toISOString().slice(0, 16);
+    };
 
     const modalityBadge = (m) => {
         const map = {
@@ -31,11 +30,11 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const getClaseIdFromEventId = (id) => {
-        // esperado: 'clase-<ID>-YYYYMMDD'
-        const parts = String(id).split('-');
-        return (parts[0] === 'clase' && parts[1]) ? parts[1] : null;
+        const m = String(id).match(/^clase-(\d+)-/);
+        return m ? m[1] : null;
     };
 
+    // Render de detalles de evento
     const renderEventDetails = (ev) => {
         const isClase = ev.extendedProps.type === 'clase';
         const claseId = isClase ? getClaseIdFromEventId(ev.id) : null;
@@ -50,17 +49,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const zoomBtn = zoom
             ? `<a href="${zoom}" target="_blank" rel="noopener"
-             class="inline-flex items-center rounded px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700"
-             title="Abrir Zoom">🔗 Zoom</a>` : '';
+           class="inline-flex items-center rounded px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 text-blue-700">🔗 Zoom</a>` : '';
 
         const lupaBtn = (isClase && claseId)
             ? `<a href="${showBase}/${claseId}" target="_blank" rel="noopener"
-             class="inline-flex items-center rounded px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700"
-             title="Ver detalle de la clase">
-             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-               <path d="M10 4a6 6 0 104.472 10.028l4.75 4.75 1.414-1.414-4.75-4.75A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/>
-             </svg>
-          </a>` : '';
+           class="inline-flex items-center rounded px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700"
+           title="Ver detalle de la clase">
+           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+             <path d="M10 4a6 6 0 104.472 10.028l4.75 4.75 1.414-1.414-4.75-4.75A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/>
+           </svg>
+        </a>` : '';
 
         const descBlock = desc
             ? `<div class="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">${desc}</div>` : '';
@@ -70,46 +68,83 @@ document.addEventListener('DOMContentLoaded', function () {
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">${ev.title}</h2>
         <div class="flex items-center gap-2">${zoomBtn}${lupaBtn}</div>
       </div>
-
       ${descBlock}
-
       <div class="mt-3 space-y-1 text-sm">
-        <div><span class="text-gray-500 dark:text-gray-400 font-medium">Programa:</span> ${magister}</div>
-        <div><span class="text-gray-500 dark:text-gray-400 font-medium">Modalidad:</span> ${modalityBadge(modalidad)}</div>
-        <div><span class="text-gray-500 dark:text-gray-400 font-medium">Profesor:</span> ${profesor}</div>
-        <div><span class="text-gray-500 dark:text-gray-400 font-medium">Inicio:</span> ${start}</div>
-        <div><span class="text-gray-500 dark:text-gray-400 font-medium">Fin:</span> ${end}</div>
-        <div><span class="text-gray-500 dark:text-gray-400 font-medium">Sala:</span> ${sala}</div>
+        <div><span class="font-medium">Programa:</span> ${magister}</div>
+        <div><span class="font-medium">Modalidad:</span> ${modalityBadge(modalidad)}</div>
+        <div><span class="font-medium">Profesor:</span> ${profesor}</div>
+        <div><span class="font-medium">Inicio:</span> ${start}</div>
+        <div><span class="font-medium">Fin:</span> ${end}</div>
+        <div><span class="font-medium">Sala:</span> ${sala}</div>
       </div>
     `;
     };
 
     // FullCalendar
     const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek',
-        headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek' },
+        initialView: window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek'   // 👈 siempre mostrar todos
+        },
         locale: 'es',
+        buttonText: {
+            today: 'Hoy',
+            month: 'Mes',
+            week: 'Semana',
+            day: 'Día',
+            list: 'Lista',
+        },
         firstDay: 1,
         slotMinTime: '08:30:00',
         slotMaxTime: '21:00:00',
+        slotDuration: '01:10:00',
+        allDaySlot: false,
         expandRows: true,
-        editable: true,
-        selectable: true,
-        select: onSelect,
+        editable: false,
+        selectable: true,   // 👈 habilitar selección
+        select: onSelect,   // 👈 función de selección
         eventClick: onEventClick,
         events: {
             url: calendarEl.dataset.url,
             extraParams: () => ({
-                magister_id: magisterFilter?.value || '',
-                room_id: roomFilter?.value || ''
+                magister_id: magisterFilter.value || '',
+                room_id: roomFilter.value || ''
             }),
             failure: (err) => console.error('Error cargando eventos:', err)
         },
         eventDidMount: setTooltip,
+
+        viewDidMount: function (info) {
+            const className = 'week-view-active';
+            const body = document.body;
+
+            if (info.view.type === 'timeGridWeek') {
+                body.classList.add(className);
+            } else {
+                body.classList.remove(className);
+            }
+
+            if (info.view.type.startsWith('list')) {
+                calendar.setOption('height', 'auto');
+                calendar.setOption('contentHeight', 'auto');
+            } else {
+                calendar.setOption('height', window.innerHeight - 150);
+                calendar.setOption('contentHeight', null);
+            }
+        },
+        windowResize: function () {
+            if (window.innerWidth < 768) {
+                calendar.changeView('listWeek'); // móvil
+            } else {
+                calendar.changeView('timeGridWeek'); // desktop
+            }
+        },
         datesSet: (info) => {
             const start = new Date(info.start);
-            const diaSemana = start.getDay(); // 0=Dom, 6=Sáb
-            const offset = (6 - diaSemana + 7) % 7; // hasta Sábado
+            const diaSemana = start.getDay();
+            const offset = (6 - diaSemana + 7) % 7;
             const sabado = new Date(start);
             sabado.setDate(start.getDate() + offset);
             actualizarTextoTrimestre(sabado);
@@ -233,19 +268,20 @@ document.addEventListener('DOMContentLoaded', function () {
     function onSelect(info) {
         resetForm();
 
-        // Prefill desde filtros
         const magSel = document.getElementById('magister_id');
         const roomSel = document.getElementById('room_id');
         if (magSel && magisterFilter?.value) magSel.value = magisterFilter.value;
         if (roomSel && roomFilter?.value) roomSel.value = roomFilter.value;
 
         document.getElementById('modal-header').textContent = 'Crear Evento';
-        document.getElementById('start_time').value = info.startStr;
-        document.getElementById('end_time').value = info.endStr;
+        document.getElementById('start_time').value = formatForInput(info.start);
+        document.getElementById('end_time').value = formatForInput(info.end);
 
         document.getElementById('modal').classList.remove('hidden');
         calendar.unselect();
     }
+
+
 
     // Ver (click en evento)
     function onEventClick(info) {
@@ -362,12 +398,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Tooltip
     function setTooltip(info) {
-        const magister = info.event.extendedProps.magister?.name || 'Sin magíster';
-        const teacher = info.event.extendedProps.profesor || info.event.extendedProps.teacher || 'Sin encargado';
-        const sala = info.event.extendedProps.room?.name || 'Sin sala';
-        const start = info.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const end = info.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const tooltip = `${info.event.title}\n👨‍🏫 ${teacher} \n🏛️ ${magister}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
+        const ext = info.event.extendedProps || {};
+        const programa =
+            ext.programa ||
+            (typeof ext.magister === 'string' ? ext.magister : (ext.magister?.name || 'Sin programa'));
+        const teacher = ext.profesor || ext.teacher || 'Sin encargado';
+        const sala = ext.room?.name || 'Sin sala';
+        const start = fmtTime(info.event.start);
+        const end = fmtTime(info.event.end);
+        const tooltip = `${info.event.title}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
         info.el.setAttribute('title', tooltip.trim());
     }
 

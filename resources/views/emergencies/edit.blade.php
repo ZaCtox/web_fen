@@ -1,3 +1,5 @@
+{{-- Editar Emergencia.blade.php --}}
+@section('title', 'Editar Emergencia')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Editar Emergencia</h2>

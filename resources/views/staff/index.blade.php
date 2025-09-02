@@ -1,6 +1,8 @@
+{{-- Inicio de Staff.blade.php --}}
+@section('title', 'Nuestro Equipo')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Cuerpo Académico FEN</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Información de nuestro equipo</h2>
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto" x-data="{

@@ -1,4 +1,5 @@
-<!-- resources/views/staff/edit.blade.php -->
+{{-- Editar Staff.blade.php --}}
+@section('title', 'Editar miembro')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Editar miembro</h2>

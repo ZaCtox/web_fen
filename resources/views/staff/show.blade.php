@@ -1,4 +1,5 @@
-<!-- resources/views/staff/show.blade.php -->
+{{-- Detalle de Staff.blade.php --}}
+@section('title', 'Detalle miembro')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Detalle del staff</h2>

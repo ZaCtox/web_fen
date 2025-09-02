@@ -1,3 +1,5 @@
+{{-- Inicio de Clase.blade.php --}}
+@section('title', 'Clases')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Clases Académicas</h2>
@@ -55,7 +57,7 @@
         {{-- Filtros --}}
         <div class="flex flex-col sm:flex-row flex-wrap gap-4 mb-6">
             <div>
-                <label class="block text-sm text-gray-700 dark:text-gray-300">Magíster:</label>
+                <label class="block text-sm text-gray-700 dark:text-gray-300">Programa:</label>
                 <select x-model="magister" class="w-full border rounded px-3 py-2 dark:bg-gray-800 dark:text-white">
                     <option value="">Todos</option>
                     @foreach ($magisters as $m)

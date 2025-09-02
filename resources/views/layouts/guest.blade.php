@@ -55,7 +55,7 @@
 
 <body class="font-sans text-gray-900 antialiased">
     <!-- Barra de accesibilidad fija (modo y tamaño) -->
-    <div class="fixed top-3 right-3 z-50 flex gap-2">
+    {{-- <div class="fixed top-3 right-3 z-50 flex gap-2">
         <button id="guest-toggle-theme"
             class="text-sm px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition"
             type="button">
@@ -67,7 +67,7 @@
         <button id="guest-increase-font"
             class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600"
             type="button">A+</button>
-    </div>
+    </div> --}}
 
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
         <div
@@ -76,54 +76,59 @@
         </div>
     </div>
 
-    <!-- Script de tema y tamaño (guest) -->
-    <script>
-        (function () {
-            const html = document.documentElement;
+    <script <!-- Script de tema y tamaño (guest) -->
+        const html = document.documentElement;
+        const toggleBtn = document.getElementById('toggle-theme');
+        const icon = document.getElementById('theme-icon');
 
-            // --- Tema claro/oscuro ---
-            const themeBtn = document.getElementById('guest-toggle-theme');
-            const themeIcon = document.getElementById('guest-theme-icon');
-
-            function applyTheme(theme) {
-                if (theme === 'dark') {
-                    html.classList.add('dark');
-                    if (themeIcon) themeIcon.textContent = '☀️';
-                } else {
-                    html.classList.remove('dark');
-                    if (themeIcon) themeIcon.textContent = '🌙';
-                }
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                html.classList.add('dark');
+                icon.textContent = '☀️';
+            } else {
+                html.classList.remove('dark');
+                icon.textContent = '🌙';
             }
+        }
 
-            const storedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const currentTheme = storedTheme || (prefersDark ? 'dark' : 'light');
-            applyTheme(currentTheme);
+        // Cargar tema guardado
+        const storedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const currentTheme = storedTheme || (prefersDark ? 'dark' : 'light');
+        applyTheme(currentTheme);
 
-            themeBtn?.addEventListener('click', () => {
+        // Toggle al hacer clic
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
                 const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
                 applyTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
             });
-
-            // --- Tamaño de fuente ---
-            const incBtn = document.getElementById('guest-increase-font');
-            const decBtn = document.getElementById('guest-decrease-font');
-
-            let fontSize = parseFloat(localStorage.getItem('fontSize')) || 100;
-            html.style.fontSize = fontSize + '%';
-
-            function updateFontSize(newSize) {
-                fontSize = Math.min(150, Math.max(80, newSize)); // 80% - 150%
-                html.style.fontSize = fontSize + '%';
-                localStorage.setItem('fontSize', fontSize);
-            }
-
-            incBtn?.addEventListener('click', () => updateFontSize(fontSize + 10));
-            decBtn?.addEventListener('click', () => updateFontSize(fontSize - 10));
-        })();
+        }
     </script>
+    <script>
+        // === Control de tamaño de fuente ===
+        const root = document.querySelector("html");
+        const incBtn = document.getElementById("increase-font");
+        const decBtn = document.getElementById("decrease-font");
 
+        // Valor base (1rem = 100%)
+        let fontSize = parseFloat(localStorage.getItem("fontSize")) || 100;
+        root.style.fontSize = fontSize + "%";
+
+        function updateFontSize(newSize) {
+            fontSize = Math.min(150, Math.max(80, newSize)); // rango entre 80% y 150%
+            root.style.fontSize = fontSize + "%";
+            localStorage.setItem("fontSize", fontSize);
+        }
+
+        if (incBtn) {
+            incBtn.addEventListener("click", () => updateFontSize(fontSize + 10));
+        }
+        if (decBtn) {
+            decBtn.addEventListener("click", () => updateFontSize(fontSize - 10));
+        }
+    </script>
     @stack('scripts')
 </body>
 

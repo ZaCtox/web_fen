@@ -1,3 +1,5 @@
+{{-- Formulario de Staff.blade.php --}}
+@section('title', 'Formulario de miembro')
 @php($editing = isset($staff))
 
 <form method="POST" action="{{ $editing ? route('staff.update', $staff) : route('staff.store') }}" class="space-y-4">

@@ -1,3 +1,5 @@
+{{-- Formulario de Salas.blade.php --}}
+@section('title', 'Formulario Salas')
 @csrf
 
 {{-- 🏫 Datos generales --}}

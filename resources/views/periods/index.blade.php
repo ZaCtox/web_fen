@@ -1,3 +1,5 @@
+{{-- Inicio de Periodo Académico.blade.php --}}
+@section('title', 'Periodos Académicos')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Períodos Académicos</h2>

@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const calendar = new FullCalendar.Calendar(calendarEl, {
     initialView: window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek',
     headerToolbar: {
-      left: 'prev,next today', center: 'title', right: window.innerWidth < 768
-        ? 'listWeek,listDay'
-        : 'dayGridMonth,timeGridWeek,listWeek'
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,listWeek'   // 👈 siempre mostrar todos
     },
     locale: 'es',
     buttonText: {

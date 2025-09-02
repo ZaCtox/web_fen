@@ -49,7 +49,7 @@ class MagisterController extends Controller
 
         return redirect()
             ->route('magisters.index')
-            ->with('success', 'Magíster creado correctamente.');
+            ->with('success', 'Programa creado correctamente.');
     }
 
     public function edit(Magister $magister)
@@ -74,7 +74,7 @@ class MagisterController extends Controller
 
         return redirect()
             ->route('magisters.index')
-            ->with('success', 'Magíster actualizado.');
+            ->with('success', 'Programa actualizado.');
     }
 
     public function destroy(Magister $magister)
@@ -90,7 +90,7 @@ class MagisterController extends Controller
 
         return redirect()
             ->route('magisters.index')
-            ->with('success', 'Magíster y cursos asociados eliminados.');
+            ->with('success', 'Programa y cursos asociados eliminados.');
     }
 
     private function authorizeAccess(): void

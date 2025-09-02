@@ -1,3 +1,5 @@
+{{-- Detalle de Salas.blade.php --}}
+@section('title', 'Detalles de la Sala')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
@@ -92,7 +94,7 @@
                 >
                     <div class="flex flex-wrap gap-4 mb-4">
                         <div>
-                            <label class="block text-sm text-gray-700 dark:text-gray-300">Magíster:</label>
+                            <label class="block text-sm text-gray-700 dark:text-gray-300">Programa:</label>
                             <select x-model="magister" class="w-full border rounded px-3 py-2 dark:bg-gray-800 dark:text-white">
                                 <option value="">Todos</option>
                                 @foreach ($magisters as $m)
@@ -116,7 +118,7 @@
                                 <option value="">Todos</option>
                                 @foreach ($trimestres as $p)
                                     <option value="{{ $p->anio }}-{{ $p->numero }}">
-                                        Año {{ $p->anio }} - Trimestre {{ ['I','II','III'][$p->numero - 1] ?? $p->numero }}
+                                        Año {{ $p->anio }} - Trimestre {{ ['I','II','III','IV','V','VI'][$p->numero - 1] ?? $p->numero }}
                                     </option>
                                 @endforeach
                             </select>

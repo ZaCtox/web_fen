@@ -8,7 +8,7 @@
 
     <div>
         <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Nombre del Magíster
+            Nombre del Programa
         </label>
         <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $magister->nombre ?? '') }}" required
             maxlength="150" autofocus class="mt-1 block w-full rounded border-gray-300 focus:border-blue-500 focus:ring-blue-500

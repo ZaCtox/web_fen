@@ -1,3 +1,4 @@
+{{-- Formulario de Cursos.blade.php --}}
 @php($editing = isset($course))
 
 <div class="space-y-4">
@@ -12,11 +13,11 @@
 
     <div>
         <label for="magister_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            Magíster
+            Programa
         </label>
         <select name="magister_id" id="magister_id" class="form-select mt-1 w-full dark:bg-gray-700 dark:text-white"
             required>
-            <option value="">-- Selecciona un Magíster --</option>
+            <option value="">-- Selecciona un Programa --</option>
             @foreach($magisters as $magister)
                 <option value="{{ $magister->id }}" {{ old('magister_id', $course->magister_id ?? $selectedMagisterId ?? '') == $magister->id ? 'selected' : '' }}>
                     {{ $magister->nombre }}

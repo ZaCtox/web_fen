@@ -5,11 +5,9 @@
         {{-- Columna 1: Logo, nombre y guardias --}}
         <div>
             <x-logo-fen />
-
-            <h4 class="font-semibold mt-4 mb-2 text-gray-800 dark:text-white">Guardias</h4>
-            <ul class="space-y-1 text-sm">
-                <li>Entrada Norte: +56 9 1234 5678</li>
-                <li>Entrada Sur: +56 9 8765 4321</li>
+            <ul class="mt-4 space-y-1 text-sm">
+                <li><a href="https://maps.app.goo.gl/UiwqPCGEcV5FSAu56" class="hover:underline">Campus Lircay, Av. Lircay s/n</a></li>
+                <li>Talca, Región del Maule</li>
             </ul>
         </div>
 
@@ -17,10 +15,11 @@
         <div>
             <h4 class="font-semibold mb-2 text-gray-800 dark:text-white">Contacto</h4>
             <ul class="space-y-1">
-                <li>Campus Lircay, Av. Lircay s/n</li>
-                <li>Talca, Región del Maule</li>
-                <li>+56 71 220 0200 (Campus Talca)</li>
+                <li>71 220 0200 (Campus Talca)</li>
                 <li><a href="mailto:contactofen@utalca.cl" class="underline">contactofen@utalca.cl</a></li>
+                <h4 class="font-semibold mt-4 mb-2 text-gray-800 dark:text-white">Guardias</h4>
+                <li>Portería Sur: 71 220 1604</li>
+                <li>Portería Norte: 71 220 0467</li>
             </ul>
         </div>
 

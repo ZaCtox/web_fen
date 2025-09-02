@@ -4,6 +4,19 @@
     <div class="min-h-screen flex items-center justify-center bg-fen-light dark:bg-fen-dark px-4">
         <div class="max-w-md w-full bg-white dark:bg-gray-900 p-8 rounded-lg shadow">
             <div class="text-center mb-6">
+                <div class="flex items-center justify-end gap-1 mb-4">
+                    <!-- Botón cambio de tema -->
+                    <button id="toggle-theme"
+                        class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+
+                    <!-- Controles accesibilidad -->
+                    <button id="decrease-font"
+                        class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A-</button>
+                    <button id="increase-font"
+                        class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A+</button>
+                </div>
                 <div class="flex justify-center items-center gap-x-4 mb-2">
                     <x-logo-fen />
                 </div>
@@ -54,5 +67,5 @@
                 Universidad de Talca - Facultad de Economía y Negocios
             </div>
         </div>
-    </div>
+    </div>    
 </x-guest-layout>

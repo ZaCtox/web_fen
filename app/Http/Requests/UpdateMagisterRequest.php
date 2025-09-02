@@ -23,7 +23,7 @@ class UpdateMagisterRequest extends FormRequest
     {
         return [
             'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.unique'   => 'Ya existe un magíster con ese nombre.',
+            'nombre.unique'   => 'Ya existe un programa con ese nombre.',
         ];
     }
 }

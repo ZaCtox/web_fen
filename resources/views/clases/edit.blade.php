@@ -1,3 +1,5 @@
+{{-- Editar Clase.blade.php --}}
+@section('title', 'Editar Clase')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
@@ -26,7 +28,7 @@
             {{-- Magíster --}}
             <div>
                 <label for="magister"
-                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Magíster</label>
+                    class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Programa</label>
                 <select id="magister" data-agrupados='@json($agrupados)'
                     class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                     <option value="">-- Selecciona --</option>
@@ -86,7 +88,7 @@
             {{-- Tipo --}}
             <div>
                 <label for="tipo" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Tipo</label>
-                @php $tipos = ['clase', 'taller', 'laboratorio', 'ayudantia']; @endphp
+                @php $tipos = ['catedra', 'taller', 'laboratorio', 'ayudantia']; @endphp
                 <select name="tipo" id="tipo" required
                     class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white">
                     <option value="">-- Selecciona tipo --</option>

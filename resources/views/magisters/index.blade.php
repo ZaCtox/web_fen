@@ -1,6 +1,8 @@
+{{-- Incio de Programas.blade.php --}}
+@section('title', 'Programas')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Listado de Magísteres</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Listado de Programas</h2>
     </x-slot>
 
     {{-- Metas para toasts --}}
@@ -23,7 +25,7 @@
 
                 <a href="{{ route('magisters.create') }}"
                    class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow">
-                    ➕ Nuevo Magíster
+                    ➕ Nuevo Programa
                 </a>
             </div>
 
@@ -40,8 +42,8 @@
                     $count = $magister->courses_count ?? 0;
                     $hasCourses = $count > 0;
                     $msg = $hasCourses
-                        ? 'Este magíster tiene cursos asociados. ¿Deseas eliminar también esos cursos?'
-                        : '¿Eliminar este magíster?';
+                        ? 'Este programa tiene cursos asociados. ¿Deseas eliminar también esos cursos?'
+                        : '¿Eliminar este programa?';
                 @endphp
 
                 <div class="p-4 border-l-4 rounded bg-white dark:bg-gray-800 dark:border-gray-600 shadow-sm"
@@ -51,7 +53,7 @@
                         {{-- Info principal --}}
                         <div class="space-y-1">
                             <h3 class="text-lg font-bold text-gray-800 dark:text-white">
-                                {{ $magister->nombre }}
+                                Magíster: {{ $magister->nombre }}
                             </h3>
                             <div class="text-sm text-gray-600 dark:text-gray-300 space-y-0.5">
                                 @if ($magister->encargado)

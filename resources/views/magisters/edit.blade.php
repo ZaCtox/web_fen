@@ -1,6 +1,8 @@
+{{-- Editar Programa.blade.php --}}
+@section('title', 'Editar Programa')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Editar Magíster</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Editar Programa</h2>
     </x-slot>
 
     <div class="p-6 max-w-xl mx-auto">

@@ -69,17 +69,15 @@
                         <div class="flex items-center gap-2">
                             <!-- Botón cambio de tema -->
                             <button id="toggle-theme"
-                                class="text-sm px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                                class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                                 <span id="theme-icon">🌙</span>
                             </button>
 
                             <!-- Controles accesibilidad -->
-                            <div class="flex items-center gap-1">
                                 <button id="decrease-font"
                                     class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A-</button>
                                 <button id="increase-font"
                                     class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A+</button>
-                            </div>
                         </div>
                     </div>
                 </div>

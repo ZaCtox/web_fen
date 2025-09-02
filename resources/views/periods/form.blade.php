@@ -1,3 +1,5 @@
+{{-- Formulario de Periodo.blade.php --}}
+@section('title', 'Formulario Periodo Académico')
 <div class="space-y-4">
     <div>
         <label class="block text-sm font-medium">Año Académico</label>

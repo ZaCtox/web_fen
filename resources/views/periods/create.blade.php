@@ -1,3 +1,5 @@
+{{-- Crear Periodo.blade.php --}}
+@section('title', 'Crear Periodo Académico')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Nuevo periodo Académico</h2>
