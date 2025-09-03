@@ -47,6 +47,8 @@ class Incident extends Model
         return $this->hasMany(IncidentLog::class);
     }
 
-
-
+    public function images()
+    {
+        return $this->hasMany(IncidentImage::class);
+    }
 }

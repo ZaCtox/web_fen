@@ -12,8 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role' => \App\Http\Middleware\CheckRole::class,
             'redirect.authenticated' => \App\Http\Middleware\RedirectIfAuthenticatedToDashboard::class,
+            'log.api.access' => \App\Http\Middleware\LogApiAccess::class,
         ]);
     })
 

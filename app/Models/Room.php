@@ -31,6 +31,19 @@ class Room extends Model
         return $this->hasMany(Clase::class);
     }
 
+    public function roomAssignments()
+    {
+        return $this->hasMany(RoomAssignment::class);
+    }
 
+    public function academicEvents()
+    {
+        return $this->hasMany(AcademicEvent::class);
+    }
+
+    public function incidents()
+    {
+        return $this->hasMany(Incident::class);
+    }
 }
 
