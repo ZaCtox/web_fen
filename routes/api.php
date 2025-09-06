@@ -4,6 +4,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 use App\Models\Period;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\RoomController;
+use App\Http\Controllers\Api\StaffController;
+use App\Http\Controllers\Api\ClaseController;
+use App\Http\Controllers\Api\MagisterController;
+use App\Http\Controllers\Api\EmergencyController;
+use App\Http\Controllers\Api\PeriodController;
 
 Route::get('/trimestre-siguiente', function (Request $request) {
     $fecha = Carbon::parse($request->query('fecha'));
@@ -48,3 +57,36 @@ Route::get('/periodo-por-fecha', function (Request $request) {
 Route::get('/trimestres-todos', function () {
     return \App\Models\Period::orderBy('fecha_inicio')->get(['fecha_inicio']);
 });
+
+
+
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/user', [AuthController::class, 'user']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Rutas protegidas por rol
+    Route::middleware('role.api:admin')->group(function () {
+        Route::get('/admin/dashboard', [AdminController::class, 'index']);
+    });
+
+    Route::middleware('role.api:user')->group(function () {
+        Route::get('/user/profile', [UserController::class, 'profile']);
+    });
+});
+Route::get('/rooms', [RoomController::class, 'index']);
+Route::get('/staff', [StaffController::class, 'index']);
+Route::get('/clases', [ClaseController::class, 'index']);
+Route::get('/magisters', [MagisterController::class, 'index']);
+Route::get('/magisters/{id}', [MagisterController::class, 'show']);
+Route::get('/emergencies', [EmergencyController::class, 'index']);
+Route::get('/emergencies/active', [EmergencyController::class, 'active']);
+
+Route::get('periods', [PeriodController::class, 'index']);
+Route::get('periods/{id}', [PeriodController::class, 'show']);
+Route::get('periodo-por-fecha', [PeriodController::class, 'periodoPorFecha']);
+
+
