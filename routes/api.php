@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Period;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\IncidentController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\StaffController;
+use App\Http\Controllers\Api\EventController;
+use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\ClaseController;
 use App\Http\Controllers\Api\MagisterController;
 use App\Http\Controllers\Api\EmergencyController;
@@ -77,16 +80,32 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/user/profile', [UserController::class, 'profile']);
     });
 });
-Route::get('/rooms', [RoomController::class, 'index']);
-Route::get('/staff', [StaffController::class, 'index']);
-Route::get('/clases', [ClaseController::class, 'index']);
-Route::get('/magisters', [MagisterController::class, 'index']);
-Route::get('/magisters/{id}', [MagisterController::class, 'show']);
+
+
+Route::apiResource('staff', StaffController::class);
+Route::apiResource('rooms', RoomController::class);
+Route::apiResource('periods', PeriodController::class);
+Route::apiResource('magisters', MagisterController::class);
+Route::get('incidents/estadisticas', [IncidentController::class, 'estadisticas']);
+Route::apiResource('incidents', IncidentController::class);
+Route::get('/events', [EventController::class, 'index']);
+Route::post('/events', [EventController::class, 'store']);
+Route::put('/events/{event}', [EventController::class, 'update']);
+Route::delete('/events/{event}', [EventController::class, 'destroy']);
 Route::get('/emergencies', [EmergencyController::class, 'index']);
+Route::post('/emergencies', [EmergencyController::class, 'store']);
+Route::put('/emergencies/{id}', [EmergencyController::class, 'update']);
+Route::delete('/emergencies/{id}', [EmergencyController::class, 'destroy']);
+Route::patch('/emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate']);
+// pública, para que la app consulte la emergencia activa
 Route::get('/emergencies/active', [EmergencyController::class, 'active']);
-
-Route::get('periods', [PeriodController::class, 'index']);
-Route::get('periods/{id}', [PeriodController::class, 'show']);
-Route::get('periodo-por-fecha', [PeriodController::class, 'periodoPorFecha']);
-
-
+Route::get('/courses', [CourseController::class, 'index']);
+Route::post('/courses', [CourseController::class, 'store']);
+Route::get('/courses/{course}', [CourseController::class, 'show']);
+Route::put('/courses/{course}', [CourseController::class, 'update']);
+Route::delete('/courses/{course}', [CourseController::class, 'destroy']);
+Route::get('/clases', [ClaseController::class, 'index']);
+Route::post('/clases', [ClaseController::class, 'store']);
+Route::get('/clases/{clase}', [ClaseController::class, 'show']);
+Route::put('/clases/{clase}', [ClaseController::class, 'update']);
+Route::delete('/clases/{clase}', [ClaseController::class, 'destroy']);

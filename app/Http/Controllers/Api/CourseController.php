@@ -8,54 +8,82 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    // GET /api/courses
+    /**
+     * Listar todos los cursos (con magister y periodo).
+     */
     public function index()
     {
-        $courses = Course::with(['magister','period'])->get();
-        return response()->json($courses);
+        $courses = Course::with(['magister', 'period'])
+            ->orderBy('nombre')
+            ->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $courses
+        ]);
     }
 
-    // GET /api/courses/{id}
-    public function show($id)
-    {
-        $course = Course::with(['magister','period'])->findOrFail($id);
-        return response()->json($course);
-    }
-
-    // POST /api/courses
+    /**
+     * Crear un nuevo curso.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'magister_id' => 'required|exists:magisters,id',
-            'period_id' => 'required|exists:periods,id',
+            'period_id' => 'required|exists:periods,id'
         ]);
 
         $course = Course::create($validated);
-        return response()->json($course, 201);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Curso creado correctamente.',
+            'data' => $course->load(['magister', 'period'])
+        ], 201);
     }
 
-    // PUT /api/courses/{id}
-    public function update(Request $request, $id)
+    /**
+     * Mostrar un curso específico.
+     */
+    public function show(Course $course)
+    {
+        return response()->json([
+            'status' => 'success',
+            'data' => $course->load(['magister', 'period'])
+        ]);
+    }
+
+    /**
+     * Actualizar un curso.
+     */
+    public function update(Request $request, Course $course)
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'magister_id' => 'required|exists:magisters,id',
-            'period_id' => 'required|exists:periods,id',
+            'period_id' => 'required|exists:periods,id'
         ]);
 
-        $course = Course::findOrFail($id);
         $course->update($validated);
 
-        return response()->json($course);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Curso actualizado correctamente.',
+            'data' => $course->load(['magister', 'period'])
+        ]);
     }
 
-    // DELETE /api/courses/{id}
-    public function destroy($id)
+    /**
+     * Eliminar un curso.
+     */
+    public function destroy(Course $course)
     {
-        $course = Course::findOrFail($id);
         $course->delete();
 
-        return response()->json(['message' => 'Curso eliminado']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Curso eliminado correctamente.'
+        ]);
     }
 }
