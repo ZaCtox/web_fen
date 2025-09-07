@@ -20,7 +20,7 @@ use App\Http\Controllers\Api\{
 };
 
 // 🌐 PREFIJO API + NOMBRE DE RUTAS
-Route::prefix('api')->name('api.')->group(function () {
+Route::name('api.')->group(function () {
 
     // 🔹 RUTAS PÚBLICAS (sin auth)
     Route::get('/trimestre-siguiente', function (Request $request) {
