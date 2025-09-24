@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clase;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class ClaseController extends Controller
@@ -103,6 +104,105 @@ class ClaseController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Clase eliminada correctamente.'
+        ]);
+    }
+
+    /**
+     * Listar clases optimizado para grandes volúmenes de datos
+     */
+    /**
+     * Listar clases optimizado para grandes volúmenes de datos
+     */
+    public function simple(Request $request)
+    {
+        try {
+            $page = $request->get('page', 1);
+            $perPage = $request->get('per_page', 30); // Reducir de 50 a 30 para evitar JSON incompleto
+
+            // Usar paginación simple con offset/limit en lugar de paginate()
+            $clases = Clase::select([
+                'id',
+                'course_id',
+                'tipo',
+                'period_id',
+                'room_id',
+                'modality',
+                'dia',
+                'hora_inicio',
+                'hora_fin',
+                'url_zoom',
+                'encargado',
+                'created_at',
+                'updated_at'
+            ])
+                ->with([
+                    'course:id,nombre,magister_id',
+                    'period:id,numero,anio',
+                    'room:id,name'
+                ])
+                ->orderBy('period_id')
+                ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
+                ->orderBy('hora_inicio')
+                ->offset(($page - 1) * $perPage)
+                ->limit($perPage)
+                ->get();
+
+            // Contar total de clases
+            $total = Clase::count();
+            $lastPage = ceil($total / $perPage);
+
+            // Cargar magísteres de forma separada para evitar N+1
+            $courseIds = $clases->pluck('course_id')->unique()->filter();
+            $coursesWithMagisters = Course::select('id', 'nombre', 'magister_id')
+                ->with('magister:id,nombre,color')
+                ->whereIn('id', $courseIds)
+                ->get()
+                ->keyBy('id');
+
+            // Asignar cursos con magísteres
+            foreach ($clases as $clase) {
+                if ($clase->course_id && isset($coursesWithMagisters[$clase->course_id])) {
+                    $clase->course = $coursesWithMagisters[$clase->course_id];
+                }
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $clases, // Datos directos sin paginate()
+                'pagination' => [
+                    'current_page' => (int) $page,
+                    'per_page' => (int) $perPage,
+                    'total' => (int) $total,
+                    'last_page' => (int) $lastPage,
+                    'has_more_pages' => $page < $lastPage,
+                    'from' => (($page - 1) * $perPage) + 1,
+                    'to' => min($page * $perPage, $total)
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error("Error en endpoint simple: " . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener clases: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Método temporal para diagnosticar
+     */
+    public function debug()
+    {
+        $totalClases = Clase::count();
+        $totalConRelaciones = Clase::with(['course.magister', 'period', 'room'])->count();
+
+        return response()->json([
+            'total_clases' => $totalClases,
+            'total_con_relaciones' => $totalConRelaciones,
+            'memory_usage' => memory_get_usage(true),
+            'memory_peak' => memory_get_peak_usage(true)
         ]);
     }
 }

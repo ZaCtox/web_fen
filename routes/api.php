@@ -61,7 +61,7 @@ Route::name('api.')->group(function () {
         return Period::orderBy('fecha_inicio')->get(['fecha_inicio']);
     })->name('trimestres-todos');
 
-    // 🔹 AUTENTICACIÓN
+    // �� AUTENTICACIÓN
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -72,17 +72,35 @@ Route::name('api.')->group(function () {
         Route::get('/user', [AuthController::class, 'user'])->name('user');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+        Route::get('/profile', [AuthController::class, 'user'])->name('user.profile');
+
         // ADMIN
         Route::middleware('role.api:admin')->group(function () {
             Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
         });
 
         // USUARIO
-        Route::middleware('role.api:user')->group(function () {
-            Route::get('/user/profile', [UserController::class, 'profile'])->name('user.profile');
-        });
+    
+           
 
-        // 🔹 RECURSOS API CON NOMBRES ÚNICOS
+        // 🔹 RUTAS ESPECÍFICAS DE PERÍODOS (ANTES DEL APIRESOURCE)
+        Route::put('/periods/update-to-next-year', [PeriodController::class, 'actualizarAlProximoAnio'])->name('periods.updateToNextYear');
+        Route::post('/periods/trimestre-siguiente', [PeriodController::class, 'trimestreSiguiente'])->name('periods.trimestreSiguiente');
+        Route::post('/periods/trimestre-anterior', [PeriodController::class, 'trimestreAnterior'])->name('periods.trimestreAnterior');
+        Route::get('/periods/periodo-por-fecha/{fecha}', [PeriodController::class, 'periodoPorFecha'])->name('periods.periodoPorFecha');
+
+        Route::get('clases/simple', [ClaseController::class, 'simple']);
+        Route::get('clases/debug', [ClaseController::class, 'debug']);
+
+        // Obtener magísteres con cursos agrupados
+        // Rutas adicionales para cursos
+        Route::get('courses/magisters-only', [CourseController::class, 'magistersOnly']);
+        Route::get('courses/magisters', [CourseController::class, 'magistersWithCourses'])
+            ->name('courses.magisters');
+        Route::get('courses/magisters-list', [CourseController::class, 'magistersOnly']);
+        Route::get('courses/magisters/{id}/courses', [CourseController::class, 'magisterCourses']);
+
+        // �� RECURSOS API CON NOMBRES ÚNICOS
         Route::apiResource('staff', StaffController::class)->names([
             'index' => 'staff.index',
             'store' => 'staff.store',
@@ -99,6 +117,7 @@ Route::name('api.')->group(function () {
             'destroy' => 'rooms.destroy'
         ]);
 
+        // ⚠️ ESTA RUTA DEBE IR DESPUÉS DE LAS RUTAS ESPECÍFICAS
         Route::apiResource('periods', PeriodController::class)->names([
             'index' => 'periods.index',
             'store' => 'periods.store',
@@ -144,7 +163,7 @@ Route::name('api.')->group(function () {
         Route::post('/events', [EventController::class, 'store'])->name('events.store');
         Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
         Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-
+        Route::get('/calendario', [EventController::class, 'calendario'])->name('calendario.mobile');
         // 🔹 EMERGENCIAS
         Route::get('/emergencies', [EmergencyController::class, 'index'])->name('emergencies.index');
         Route::post('/emergencies', [EmergencyController::class, 'store'])->name('emergencies.store');

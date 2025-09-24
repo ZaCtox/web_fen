@@ -40,7 +40,7 @@ class StaffController extends Controller
     }
 
     // Actualizar miembro
-    public function update(StaffRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $staff = Staff::find($id);
 
@@ -48,7 +48,15 @@ class StaffController extends Controller
             return response()->json(['message' => 'Miembro no encontrado'], 404);
         }
 
-        $staff->update($request->validated());
+        // Validación manual excluyendo el ID actual
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'email' => 'required|email|unique:staff,email,' . $id,
+            'cargo' => 'required|string|max:255',
+            'telefono' => 'nullable|string|max:20',
+        ]);
+
+        $staff->update($request->all());
 
         return response()->json([
             'message' => 'Miembro actualizado correctamente.',

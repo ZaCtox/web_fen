@@ -25,12 +25,6 @@ use App\Http\Controllers\{
 
 
 
-// 🌐 API pública para calendario de invitados
-Route::prefix('/api')->group(function () {
-    Route::get('/periodo-por-fecha', [PeriodController::class, 'periodoPorFecha']);
-    Route::get('/trimestre-siguiente', [PeriodController::class, 'trimestreSiguiente']);
-    Route::get('/trimestre-anterior', [PeriodController::class, 'trimestreAnterior']);
-});
 
 
 // Dashboard principal (solo autenticados y verificados)

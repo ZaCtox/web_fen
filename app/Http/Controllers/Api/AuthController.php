@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -43,9 +43,9 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        if (! Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'message' => 'Credenciales inválidas'
+                'message' => 'Credenciales inválidas',
             ], 401);
         }
 
@@ -62,9 +62,40 @@ class AuthController extends Controller
     /**
      * Usuario autenticado
      */
+    /**
+     * Usuario autenticado
+     */
     public function user(Request $request)
     {
-        return response()->json($request->user());
+        try {
+            $user = $request->user();
+
+            if (! $user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Usuario no autenticado',
+                ], 401);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'rol' => $user->rol,
+                    'created_at' => $user->created_at->format('d/m/Y'),
+                    'updated_at' => $user->updated_at->format('d/m/Y H:i'),
+                ],
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el perfil del usuario',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -75,7 +106,7 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
 
         return response()->json([
-            'message' => 'Sesión cerrada con éxito'
+            'message' => 'Sesión cerrada con éxito',
         ]);
     }
 }

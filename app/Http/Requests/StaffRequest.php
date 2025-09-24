@@ -6,17 +6,20 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StaffRequest extends FormRequest
 {
-    public function authorize(): bool { return true; }
+    public function authorize(): bool
+    {
+        return true;
+    }
 
     public function rules(): array
     {
-        $id = $this->route('staff')?->id; // null en create
+        $id = $this->route('id');
 
         return [
-            'nombre'   => ['required','string','max:150'],
-            'cargo'    => ['required','string','max:150'],
-            'telefono' => ['nullable','string','max:30'],
-            'email'    => ['required','email','max:150','unique:staff,email,'.($id ?? 'NULL').',id'],
+            'nombre' => ['required', 'string', 'max:150'],
+            'cargo' => ['required', 'string', 'max:150'],
+            'telefono' => ['nullable', 'string', 'max:30'],
+            'email' => ['required', 'email', 'max:150', 'unique:staff,email,' . ($id ?? 'NULL') . ',id'],
         ];
     }
 

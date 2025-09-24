@@ -42,7 +42,7 @@ class RoomController extends Controller
         $data = $request->validated();
 
         foreach ($this->booleanFields() as $campo) {
-            $data[$campo] = $request->has($campo);
+            $data[$campo] = $request->input($campo, 0) ? 1 : 0; // ✅ SOLUCIÓN
         }
 
         $room = Room::create($data);
@@ -65,7 +65,7 @@ class RoomController extends Controller
         $data = $request->validated();
 
         foreach ($this->booleanFields() as $campo) {
-            $data[$campo] = $request->has($campo);
+            $data[$campo] = $request->input($campo, 0) ? 1 : 0; // ✅ SOLUCIÓN
         }
 
         $room->update($data);
