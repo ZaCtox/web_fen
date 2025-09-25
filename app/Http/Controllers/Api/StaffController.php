@@ -13,6 +13,7 @@ class StaffController extends Controller
     public function index()
     {
         $staff = Staff::orderBy('nombre')->get(['id', 'nombre', 'cargo', 'telefono', 'email']);
+
         return response()->json($staff);
     }
 
@@ -21,7 +22,7 @@ class StaffController extends Controller
     {
         $staff = Staff::find($id);
 
-        if (!$staff) {
+        if (! $staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
         }
 
@@ -35,7 +36,7 @@ class StaffController extends Controller
 
         return response()->json([
             'message' => 'Miembro creado correctamente.',
-            'data' => $staff
+            'data' => $staff,
         ], 201);
     }
 
@@ -44,14 +45,14 @@ class StaffController extends Controller
     {
         $staff = Staff::find($id);
 
-        if (!$staff) {
+        if (! $staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
         }
 
         // Validación manual excluyendo el ID actual
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'email' => 'required|email|unique:staff,email,' . $id,
+            'email' => 'required|email|unique:staff,email,'.$id,
             'cargo' => 'required|string|max:255',
             'telefono' => 'nullable|string|max:20',
         ]);
@@ -60,7 +61,7 @@ class StaffController extends Controller
 
         return response()->json([
             'message' => 'Miembro actualizado correctamente.',
-            'data' => $staff
+            'data' => $staff,
         ]);
     }
 
@@ -69,12 +70,52 @@ class StaffController extends Controller
     {
         $staff = Staff::find($id);
 
-        if (!$staff) {
+        if (! $staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
         }
 
         $staff->delete();
 
         return response()->json(['message' => 'Miembro eliminado correctamente.']);
+    }
+
+    // ===== MÉTODO PÚBLICO (SIN AUTENTICACIÓN) =====
+    public function publicIndex()
+    {
+        try {
+            // Obtener staff para vista pública (sin filtro de 'activo' ya que no existe)
+            $staff = Staff::select('id', 'nombre', 'cargo', 'telefono', 'email')
+                ->orderBy('cargo')
+                ->orderBy('nombre')
+                ->get();
+
+            // Formatear datos para respuesta pública
+            $formattedStaff = $staff->map(function ($member) {
+                return [
+                    'id' => $member->id,
+                    'name' => $member->nombre,
+                    'role' => $member->cargo,
+                    'email' => $member->email,
+                    'phone' => $member->telefono,
+                    'department' => $member->cargo, // Usando cargo como departamento
+                    'public_view' => true,
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedStaff,
+                'meta' => [
+                    'total' => $formattedStaff->count(),
+                    'public_view' => true,
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al cargar el equipo: '.$e->getMessage(),
+            ], 500);
+        }
     }
 }

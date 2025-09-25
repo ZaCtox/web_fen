@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Clase;
 use App\Models\Event;
-use App\Models\Period;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +13,7 @@ class EventController extends Controller
 {
     private function authorizeAccess()
     {
-        if (!tieneRol(['docente', 'administrativo'])) {
+        if (! tieneRol(['docente', 'administrativo'])) {
             abort(403, 'Acceso no autorizado.');
         }
     }
@@ -28,7 +27,7 @@ class EventController extends Controller
         $roomId = $request->query('room_id');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
-        
+
         // Límites para evitar JSON demasiado grande
         $maxEvents = 50; // Máximo 50 eventos por respuesta (reducido)
         $maxDays = 15; // Máximo 15 días de rango (reducido)
@@ -39,36 +38,37 @@ class EventController extends Controller
             if ($daysDiff > $maxDays) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => "El rango de fechas no puede ser mayor a {$maxDays} días. Días solicitados: {$daysDiff}"
+                    'message' => "El rango de fechas no puede ser mayor a {$maxDays} días. Días solicitados: {$daysDiff}",
                 ], 400);
             }
         }
 
         // Obtener eventos manuales
         $manualEvents = Event::with(['room', 'magister'])
-            ->when($roomId, fn($q) => $q->where('room_id', $roomId))
-            ->when($rangeStart, fn($q) => $q->where('end_time', '>=', $rangeStart))
-            ->when($rangeEnd, fn($q) => $q->where('start_time', '<=', $rangeEnd))
-            ->when($magisterId, fn($q) => $q->where(function ($query) use ($magisterId) {
+            ->when($roomId, fn ($q) => $q->where('room_id', $roomId))
+            ->when($rangeStart, fn ($q) => $q->where('end_time', '>=', $rangeStart))
+            ->when($rangeEnd, fn ($q) => $q->where('start_time', '<=', $rangeEnd))
+            ->when($magisterId, fn ($q) => $q->where(function ($query) use ($magisterId) {
                 $query->whereNull('magister_id')->orWhere('magister_id', $magisterId);
             }))
             ->limit(25) // Limitar eventos manuales a 25
             ->get()
             ->map(function ($event) {
                 $color = is_object($event->magister) ? ($event->magister->color ?? '#a5f63b') : '#a5f63b';
+
                 return [
-                    'id' => 'event-' . $event->id,
+                    'id' => 'event-'.$event->id,
                     'title' => $event->title,
                     'start' => $event->start_time,
                     'end' => $event->end_time,
                     'description' => $event->description,
                     'magister' => $event->magister ? [
                         'id' => $event->magister->id,
-                        'name' => $event->magister->nombre
+                        'name' => $event->magister->nombre,
                     ] : null,
                     'room' => $event->room ? [
                         'id' => $event->room->id,
-                        'name' => $event->room->name
+                        'name' => $event->room->name,
                     ] : null,
                     'backgroundColor' => $color,
                     'borderColor' => $color,
@@ -94,8 +94,8 @@ class EventController extends Controller
                 'total' => $allEvents->count(),
                 'max_events' => $maxEvents,
                 'range_start' => $rangeStart?->toDateString(),
-                'range_end' => $rangeEnd?->toDateString()
-            ]
+                'range_end' => $rangeEnd?->toDateString(),
+            ],
         ]);
     }
 
@@ -126,7 +126,7 @@ class EventController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Evento creado correctamente.',
-            'data' => $event
+            'data' => $event,
         ], 201);
     }
 
@@ -160,7 +160,7 @@ class EventController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Evento actualizado.',
-            'data' => $event
+            'data' => $event,
         ]);
     }
 
@@ -174,7 +174,7 @@ class EventController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Evento eliminado.'
+            'message' => 'Evento eliminado.',
         ]);
     }
 
@@ -194,14 +194,14 @@ class EventController extends Controller
         ];
 
         // Validar que tenemos un rango de fechas
-        if (!$rangeStart || !$rangeEnd) {
+        if (! $rangeStart || ! $rangeEnd) {
             return collect();
         }
 
         $q = Clase::with(['room', 'period', 'course.magister'])
-            ->when(!empty($magisterId), fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
-            ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId))
-            ->whereHas('period', fn($qq) => $qq
+            ->when(! empty($magisterId), fn ($q) => $q->whereHas('course', fn ($qq) => $qq->where('magister_id', $magisterId)))
+            ->when(! empty($roomId), fn ($q) => $q->where('room_id', $roomId))
+            ->whereHas('period', fn ($qq) => $qq
                 ->whereDate('fecha_fin', '>=', $rangeStart->toDateString())
                 ->whereDate('fecha_inicio', '<=', $rangeEnd->toDateString()));
 
@@ -214,7 +214,7 @@ class EventController extends Controller
                 break; // Salir si ya alcanzamos el límite
             }
 
-            if (!$clase->period || !$clase->course || !$clase->hora_inicio || !$clase->hora_fin || !isset($dias[$clase->dia])) {
+            if (! $clase->period || ! $clase->course || ! $clase->hora_inicio || ! $clase->hora_fin || ! isset($dias[$clase->dia])) {
                 continue;
             }
 
@@ -254,13 +254,13 @@ class EventController extends Controller
                     $titulo .= ' [HÍBRIDA]';
                 }
 
-                $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
-                if (!empty($clase->url_zoom)) {
-                    $descripcion .= "\n🔗 " . $clase->url_zoom;
+                $descripcion = 'Magíster: '.($magister->nombre ?? 'Desconocido');
+                if (! empty($clase->url_zoom)) {
+                    $descripcion .= "\n🔗 ".$clase->url_zoom;
                 }
 
                 $eventos->push([
-                    'id' => 'clase-' . $clase->id . '-' . $start->format('Ymd'),
+                    'id' => 'clase-'.$clase->id.'-'.$start->format('Ymd'),
                     'title' => $titulo,
                     'description' => $descripcion,
                     'start' => $start->toDateTimeString(),
@@ -284,87 +284,169 @@ class EventController extends Controller
 
         return $eventos;
     }
+
     public function calendario(Request $request)
-{
-    $magisterId = $request->query('magister_id');
-    $roomId = $request->query('room_id');
-    $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
-    $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
-    
-    // Si no se especifica rango, usar el mes actual
-    if (!$rangeStart || !$rangeEnd) {
-        $rangeStart = now()->startOfMonth();
-        $rangeEnd = now()->endOfMonth();
-    }
-    
-    // Límites para la app móvil
-    $maxEvents = 100; // Más eventos para la app móvil
-    $maxDays = 30; // Un mes completo
-    
-    // Validar rango de fechas
-    if ($rangeStart && $rangeEnd) {
-        $daysDiff = $rangeStart->diffInDays($rangeEnd);
-        if ($daysDiff > $maxDays) {
-            return response()->json([
-                'status' => 'error',
-                'message' => "El rango de fechas no puede ser mayor a {$maxDays} días. Días solicitados: {$daysDiff}"
-            ], 400);
+    {
+        $magisterId = $request->query('magister_id');
+        $roomId = $request->query('room_id');
+        $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
+        $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
+
+        // Si no se especifica rango, usar el mes actual
+        if (! $rangeStart || ! $rangeEnd) {
+            $rangeStart = now()->startOfMonth();
+            $rangeEnd = now()->endOfMonth();
         }
+
+        // Límites para la app móvil
+        $maxEvents = 100; // Más eventos para la app móvil
+        $maxDays = 30; // Un mes completo
+
+        // Validar rango de fechas
+        if ($rangeStart && $rangeEnd) {
+            $daysDiff = $rangeStart->diffInDays($rangeEnd);
+            if ($daysDiff > $maxDays) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "El rango de fechas no puede ser mayor a {$maxDays} días. Días solicitados: {$daysDiff}",
+                ], 400);
+            }
+        }
+
+        // Obtener eventos manuales
+        $manualEvents = Event::with(['room', 'magister'])
+            ->when($roomId, fn ($q) => $q->where('room_id', $roomId))
+            ->when($rangeStart, fn ($q) => $q->where('end_time', '>=', $rangeStart))
+            ->when($rangeEnd, fn ($q) => $q->where('start_time', '<=', $rangeEnd))
+            ->when($magisterId, fn ($q) => $q->where(function ($query) use ($magisterId) {
+                $query->whereNull('magister_id')->orWhere('magister_id', $magisterId);
+            }))
+            ->limit(50) // Más eventos manuales para la app
+            ->get()
+            ->map(function ($event) {
+                $color = is_object($event->magister) ? ($event->magister->color ?? '#12C6DF') : '#12C6DF';
+
+                return [
+                    'id' => 'event-'.$event->id,
+                    'title' => $event->title,
+                    'start' => $event->start_time,
+                    'end' => $event->end_time,
+                    'description' => $event->description,
+                    'magister' => $event->magister ? [
+                        'id' => $event->magister->id,
+                        'name' => $event->magister->nombre,
+                    ] : null,
+                    'room' => $event->room ? [
+                        'id' => $event->room->id,
+                        'name' => $event->room->name,
+                    ] : null,
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
+                    'editable' => Auth::check(),
+                    'type' => 'manual',
+                ];
+            });
+
+        // Obtener eventos de clases
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, 50);
+
+        $allEvents = collect($manualEvents)->concat(collect($classEvents))->values();
+
+        // Limitar el total de eventos
+        if ($allEvents->count() > $maxEvents) {
+            $allEvents = $allEvents->take($maxEvents);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $allEvents,
+            'meta' => [
+                'total' => $allEvents->count(),
+                'max_events' => $maxEvents,
+                'range_start' => $rangeStart->toDateString(),
+                'range_end' => $rangeEnd->toDateString(),
+                'app_version' => 'mobile',
+            ],
+        ]);
     }
-    
-    // Obtener eventos manuales
-    $manualEvents = Event::with(['room', 'magister'])
-        ->when($roomId, fn($q) => $q->where('room_id', $roomId))
-        ->when($rangeStart, fn($q) => $q->where('end_time', '>=', $rangeStart))
-        ->when($rangeEnd, fn($q) => $q->where('start_time', '<=', $rangeEnd))
-        ->when($magisterId, fn($q) => $q->where(function ($query) use ($magisterId) {
-            $query->whereNull('magister_id')->orWhere('magister_id', $magisterId);
-        }))
-        ->limit(50) // Más eventos manuales para la app
-        ->get()
-        ->map(function ($event) {
-            $color = is_object($event->magister) ? ($event->magister->color ?? '#12C6DF') : '#12C6DF';
-            return [
-                'id' => 'event-' . $event->id,
-                'title' => $event->title,
-                'start' => $event->start_time,
-                'end' => $event->end_time,
-                'description' => $event->description,
-                'magister' => $event->magister ? [
-                    'id' => $event->magister->id,
-                    'name' => $event->magister->nombre
-                ] : null,
-                'room' => $event->room ? [
-                    'id' => $event->room->id,
-                    'name' => $event->room->name
-                ] : null,
-                'backgroundColor' => $color,
-                'borderColor' => $color,
-                'editable' => Auth::check(),
-                'type' => 'manual',
-            ];
-        });
-    
-    // Obtener eventos de clases
-    $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, 50);
-    
-    $allEvents = collect($manualEvents)->concat(collect($classEvents))->values();
-    
-    // Limitar el total de eventos
-    if ($allEvents->count() > $maxEvents) {
-        $allEvents = $allEvents->take($maxEvents);
+
+    // ===== MÉTODO PÚBLICO (SIN AUTENTICACIÓN) =====
+    public function publicIndex(Request $request)
+    {
+        $magisterId = $request->query('magister_id');
+        $roomId = $request->query('room_id');
+        $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
+        $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
+
+        // Límites para la vista pública
+        $maxEvents = 50;
+        $maxDays = 15; // Máximo 15 días para la vista pública
+
+        // Validar rango de fechas
+        if ($rangeStart && $rangeEnd) {
+            $daysDiff = $rangeStart->diffInDays($rangeEnd);
+            if ($daysDiff > $maxDays) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => "El rango de fechas no puede ser mayor a {$maxDays} días. Días solicitados: {$daysDiff}",
+                ], 400);
+            }
+        }
+
+        // Obtener eventos manuales (solo los públicos)
+        $manualEvents = Event::with(['room', 'magister'])
+            ->when($roomId, fn ($q) => $q->where('room_id', $roomId))
+            ->when($rangeStart, fn ($q) => $q->where('end_time', '>=', $rangeStart))
+            ->when($rangeEnd, fn ($q) => $q->where('start_time', '<=', $rangeEnd))
+            ->when($magisterId, fn ($q) => $q->where(function ($query) use ($magisterId) {
+                $query->whereNull('magister_id')->orWhere('magister_id', $magisterId);
+            }))
+            ->limit(25)
+            ->get()
+            ->map(function ($event) {
+                $color = is_object($event->magister) ? ($event->magister->color ?? '#12C6DF') : '#12C6DF';
+
+                return [
+                    'id' => 'event-'.$event->id,
+                    'title' => $event->title,
+                    'start' => $event->start_time,
+                    'end' => $event->end_time,
+                    'description' => $event->description,
+                    'magister' => $event->magister ? [
+                        'id' => $event->magister->id,
+                        'name' => $event->magister->nombre,
+                    ] : null,
+                    'room' => $event->room ? [
+                        'id' => $event->room->id,
+                        'name' => $event->room->name,
+                    ] : null,
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
+                    'editable' => false, // No editable en vista pública
+                    'type' => 'manual',
+                ];
+            });
+
+        // Obtener eventos de clases
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, 25);
+
+        $allEvents = collect($manualEvents)->concat(collect($classEvents))->values();
+
+        // Limitar el total de eventos
+        if ($allEvents->count() > $maxEvents) {
+            $allEvents = $allEvents->take($maxEvents);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $allEvents,
+            'meta' => [
+                'total' => $allEvents->count(),
+                'max_events' => $maxEvents,
+                'range_start' => $rangeStart?->toDateString(),
+                'range_end' => $rangeEnd?->toDateString(),
+                'public_view' => true,
+            ],
+        ]);
     }
-    
-    return response()->json([
-        'status' => 'success',
-        'data' => $allEvents,
-        'meta' => [
-            'total' => $allEvents->count(),
-            'max_events' => $maxEvents,
-            'range_start' => $rangeStart->toDateString(),
-            'range_end' => $rangeEnd->toDateString(),
-            'app_version' => 'mobile'
-        ]
-    ]);
-}
 }
