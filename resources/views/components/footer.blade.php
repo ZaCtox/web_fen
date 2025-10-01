@@ -6,7 +6,12 @@
         <div>
             <x-logo-fen />
             <ul class="mt-4 space-y-1 text-sm">
+<<<<<<< Updated upstream
                 <li><a href="https://maps.app.goo.gl/UiwqPCGEcV5FSAu56" class="hover:underline">Campus Lircay, Av. Lircay s/n</a></li>
+=======
+                <li><a href="https://maps.app.goo.gl/UiwqPCGEcV5FSAu56" class="hover:underline">Campus Lircay, Av.
+                        Lircay s/n</a></li>
+>>>>>>> Stashed changes
                 <li>Talca, Región del Maule</li>
             </ul>
         </div>
@@ -17,7 +22,14 @@
             <ul class="space-y-1">
                 <li>71 220 0200 (Campus Talca)</li>
                 <li><a href="mailto:contactofen@utalca.cl" class="underline">contactofen@utalca.cl</a></li>
+<<<<<<< Updated upstream
                 <h4 class="font-semibold mt-4 mb-2 text-gray-800 dark:text-white">Guardias</h4>
+=======
+            </ul>
+
+            <h4 class="font-semibold mt-6 mb-2 text-gray-800 dark:text-white">Guardias</h4>
+            <ul class="space-y-1">
+>>>>>>> Stashed changes
                 <li>Portería Sur: 71 220 1604</li>
                 <li>Portería Norte: 71 220 0467</li>
             </ul>

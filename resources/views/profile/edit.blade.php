@@ -2,8 +2,17 @@
 @section('title', 'Editar Perfil')
 <x-app-layout>
     <x-slot name="header">
+<<<<<<< Updated upstream
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+<<<<<<< Updated upstream
             {{ __('Perfil') }}
+=======
+            {{ __('Profile') }}
+=======
+        <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">
+            {{ __('Perfil') }}
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
         </h2>
     </x-slot>
 
@@ -21,11 +30,11 @@
                 </div>
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+{{--             <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <div class="max-w-xl">
                     @include('profile.partials.delete-user-form')
                 </div>
-            </div>
+            </div> --}}
         </div>
     </div>
 </x-app-layout>

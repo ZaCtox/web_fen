@@ -12,6 +12,10 @@ class Staff extends Model
     protected $table = 'staff';
 
     protected $fillable = [
+<<<<<<< Updated upstream
         'nombre', 'cargo', 'telefono', 'email',
+=======
+        'nombre', 'cargo', 'telefono','anexo', 'correo', 'email',
+>>>>>>> Stashed changes
     ];
 }

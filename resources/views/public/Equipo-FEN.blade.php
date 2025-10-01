@@ -2,11 +2,18 @@
 @section('title', 'Equipo Fen')
 <x-app-layout>
     <x-slot name="header">
+<<<<<<< Updated upstream
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Información de nuestro equipo</h2>
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto"
          x-data="{
+=======
+        <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Información de nuestro equipo</h2>
+    </x-slot>
+
+    <div class="p-6 max-w-7xl mx-auto" x-data="{
+>>>>>>> Stashed changes
             search: '',
             modalOpen: false,
             seleccionado: null,
@@ -54,7 +61,11 @@
                             <h3 class="text-lg font-bold text-gray-900 dark:text-white" x-text="p.nombre"></h3>
                             <p class="text-sm text-gray-500 dark:text-gray-300" x-text="p.cargo"></p>
                         </div>
+<<<<<<< Updated upstream
                         <div class="w-1/3 bg-[#12c6df] text-white p-4">
+=======
+                        <div class="w-1/3 bg-[#4d82bc] text-white p-4">
+>>>>>>> Stashed changes
                             <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
                             <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
                             <div class="text-[13px] tracking-wide opacity-90">Email</div>
@@ -76,7 +87,11 @@
                 <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" x-text="seleccionado?.nombre"></h2>
                 <p class="text-gray-600 dark:text-gray-300 mb-4" x-text="seleccionado?.cargo"></p>
 
+<<<<<<< Updated upstream
                 <div class="bg-[#12c6df] text-white p-4 rounded-lg space-y-2">
+=======
+                <div class="bg-[#4d82bc] text-white p-4 rounded-lg space-y-2">
+>>>>>>> Stashed changes
                     <div>
                         <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
                         <div class="text-sm" x-text="seleccionado?.telefono || '—'"></div>

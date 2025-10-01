@@ -14,6 +14,16 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
+    /**
+     * Mostrar información del usuario (perfil) con opciones de actualización.
+     */
+    public function index(): View
+    {
+        $user = Auth::user();
+
+        return view('profile.index', compact('user'));
+    }
+
     public function edit(Request $request): View
     {
         return view('profile.edit', [

@@ -15,7 +15,11 @@ class StoreClaseRequest extends FormRequest
             'course_id' => 'required|exists:courses,id',
             'period_id' => 'required|exists:periods,id',
             'tipo' => 'nullable|string|max:150',
+<<<<<<< Updated upstream
             'modality' => 'required|in:presencial,online,hibrida',
+=======
+            'modality' => 'required|in:presencial,online,híbrida',
+>>>>>>> Stashed changes
             'room_id' => 'nullable|exists:rooms,id',
             'dia' => 'required|in:Viernes,Sábado',
             'hora_inicio' => 'required|date_format:H:i',

@@ -11,11 +11,17 @@ use App\Models\User;
 
 class DashboardController extends Controller
 {
+<<<<<<< Updated upstream
     private function authorizeAccess()
+=======
+<<<<<<< Updated upstream
+    public function index()
+>>>>>>> Stashed changes
     {
         if (!tieneRol(['docente', 'administrativo'])) {
             abort(403, 'Acceso no autorizado.');
         }
+<<<<<<< Updated upstream
     }
 
     public function index()
@@ -23,6 +29,17 @@ class DashboardController extends Controller
         $this->authorizeAccess();
 
         $user = Auth::user();
+=======
+=======
+    // Eliminamos authorizeAccess completamente
+
+    public function index()
+    {
+        // Quitamos la llamada a $this->authorizeAccess();
+
+        $user = Auth::user();
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
         $resumen = [
             'incidencias' => Incident::count(),

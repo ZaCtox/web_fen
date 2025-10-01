@@ -4,6 +4,7 @@
     <div class="min-h-screen flex items-center justify-center bg-fen-light dark:bg-fen-dark px-4">
         <div class="max-w-md w-full bg-white dark:bg-gray-900 p-8 rounded-lg shadow">
             <div class="text-center mb-6">
+<<<<<<< Updated upstream
                 <div class="flex items-center justify-end gap-1 mb-4">
                     <!-- Botón cambio de tema -->
                     <button id="toggle-theme"
@@ -20,7 +21,29 @@
                 <div class="flex justify-center items-center gap-x-4 mb-2">
                     <x-logo-fen />
                 </div>
+=======
+<<<<<<< Updated upstream
+                <img src="{{ asset('images/logo-utalca.svg') }}" alt="FEN UTalca" class="mx-auto w-32">
+>>>>>>> Stashed changes
                 <h2 class="text-2xl font-semibold text-fen-red dark:text-white">Inicio de Sesión</h2>
+=======
+                <div class="flex items-center justify-end gap-1 mb-4">
+                    <!-- Botón cambio de tema -->
+                    <button id="toggle-theme"
+                        class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+
+                    <!-- Controles accesibilidad -->
+                    <button id="decrease-font"
+                        class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A-</button>
+                    <button id="increase-font"
+                        class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A+</button>
+                </div>
+                <div class="flex justify-center items-center gap-x-4 mb-2">
+                    <x-logo-fen />
+                </div>
+>>>>>>> Stashed changes
             </div>
 
 
@@ -46,19 +69,33 @@
                         <input type="checkbox" name="remember" class="mr-1">
                         Recuérdame
                     </label>
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+                    <a href="{{ route('password.request') }}" class="text-sm text-fen-red dark:text-fen-yellow hover:underline">¿Olvidaste tu contraseña?</a>
+=======
+>>>>>>> Stashed changes
                     <a href="{{ route('password.request') }}"
                         class="text-sm text-fen-red dark:text-fen-yellow hover:underline">¿Olvidaste tu contraseña?</a>
                 </div>
 
                 <div class="space-y-3">
                     <button type="submit"
+<<<<<<< Updated upstream
                         class="w-full bg-[var(--color-utalca-secondary)] hover:bg-red-800 text-white py-2 px-4 rounded-md">
+=======
+                        class="w-full bg-[#4d82bc] hover:bg-[#005187] text-white py-2 px-4 rounded-md">
+>>>>>>> Stashed changes
                         Iniciar Sesión
                     </button>
                     <a href="{{ route('public.dashboard.index') }}"
                         class="block w-full text-center bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
                         Volver
                     </a>
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
                 </div>
 
             </form>

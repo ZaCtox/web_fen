@@ -12,7 +12,11 @@ class StaffController extends Controller
     {
         $staff = Staff::query()
             ->orderBy('nombre')
+<<<<<<< Updated upstream
             ->get(['id', 'nombre', 'cargo', 'telefono', 'email']);
+=======
+            ->get(['id', 'nombre', 'cargo', 'telefono','anexo', 'email']);
+>>>>>>> Stashed changes
 
         return view('staff.index', compact('staff'));
     }

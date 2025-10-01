@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+<<<<<<< Updated upstream
 use App\Models\Clase;
 use App\Models\Course;
 use App\Models\Period;
@@ -12,16 +13,33 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Requests\StoreClaseRequest;
 use Carbon\Carbon;
 use App\Http\Requests\UpdateClaseRequest;
+=======
+use App\Http\Requests\StoreClaseRequest;
+use App\Http\Requests\UpdateClaseRequest;
+use App\Models\Clase;
+use App\Models\Course;
+use App\Models\Magister;
+use App\Models\Period;
+use App\Models\Room;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+>>>>>>> Stashed changes
 
 class ClaseController extends Controller
 {
     private function authorizeAccess()
     {
+<<<<<<< Updated upstream
         if (!tieneRol(['docente', 'administrativo'])) {
+=======
+        if (! tieneRol(['docente', 'administrativo'])) {
+>>>>>>> Stashed changes
             abort(403, 'Acceso no autorizado.');
         }
     }
 
+<<<<<<< Updated upstream
     public function index()
     {
         $this->authorizeAccess();
@@ -45,6 +63,68 @@ class ClaseController extends Controller
         ]);
     }
 
+=======
+public function index(Request $request)
+{
+    $this->authorizeAccess();
+
+    $query = Clase::with(['course.magister', 'period', 'room']);
+
+    // 📌 Aplicar filtros dinámicos
+    if ($request->filled('magister')) {
+        $query->whereHas('course.magister', function ($q) use ($request) {
+            $q->where('nombre', $request->magister);
+        });
+    }
+
+    if ($request->filled('room_id')) {
+        $query->whereHas('room', function ($q) use ($request) {
+            $q->where('name', $request->room_id);
+        });
+    }
+
+    if ($request->filled('dia')) {
+        $query->where('dia', $request->dia);
+    }
+
+    if ($request->filled('estado')) {
+        $query->where('estado', $request->estado);
+    }
+
+    if ($request->filled('anio')) {
+        $query->whereHas('period', function ($q) use ($request) {
+            $q->where('anio', $request->anio);
+        });
+    }
+
+    if ($request->filled('trimestre')) {
+        $query->whereHas('period', function ($q) use ($request) {
+            $q->where('numero', $request->trimestre);
+        });
+    }
+
+    $clases = $query
+        ->orderBy('period_id')
+        ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
+        ->orderBy('hora_inicio')
+        ->paginate(12) // 📌 Cambia 12 por el número que quieras por página
+        ->appends($request->query()); // conserva los filtros en la URL al paginar
+
+    // Listas auxiliares
+    $anios = Period::distinct()->orderByDesc('anio')->pluck('anio');
+    $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+
+    return view('clases.index', [
+        'clases'    => $clases,
+        'rooms'     => Room::orderBy('name')->get(),
+        'magisters' => Magister::orderBy('nombre')->get(),
+        'anios'     => $anios,
+        'periodos'  => $periodos,
+    ]);
+}
+
+
+>>>>>>> Stashed changes
     public function create()
     {
         $this->authorizeAccess();
@@ -70,7 +150,11 @@ class ClaseController extends Controller
         $trimestres = Period::distinct()->orderBy('numero')->pluck('numero');
 
         // Opciones de tipo (según indicaste)
+<<<<<<< Updated upstream
         $tipos = ['clase', 'taller', 'laboratorio', 'ayudantia'];
+=======
+        $tipos = ['cátedra', 'taller', 'laboratorio', 'ayudantía'];
+>>>>>>> Stashed changes
 
         return view('clases.create', [
             'agrupados' => $agrupados,
@@ -103,7 +187,11 @@ class ClaseController extends Controller
 
         $anios = Period::distinct()->orderByDesc('anio')->pluck('anio');
         $trimestres = Period::distinct()->orderBy('numero')->pluck('numero');
+<<<<<<< Updated upstream
         $tipos = ['clase', 'taller', 'laboratorio', 'ayudantia'];
+=======
+        $tipos = ['cátedra', 'taller', 'laboratorio', 'ayudantía'];
+>>>>>>> Stashed changes
 
         return view('clases.edit', [
             'clase' => $clase,
@@ -152,9 +240,16 @@ class ClaseController extends Controller
             return back()->with('warning', 'No se encontraron clases con los filtros aplicados.');
         }
 
+<<<<<<< Updated upstream
         $nombreArchivo = 'clases_academicas_' . now()->format('Y-m-d_H-i') . '.pdf';
 
         $pdf = Pdf::loadView('clases.export', compact('clases'))->setPaper('a4', 'landscape');
+=======
+        $nombreArchivo = 'clases_academicas_'.now()->format('Y-m-d_H-i').'.pdf';
+
+        $pdf = Pdf::loadView('clases.export', compact('clases'))->setPaper('a4', 'landscape');
+
+>>>>>>> Stashed changes
         return $pdf->download($nombreArchivo);
     }
 
@@ -171,8 +266,13 @@ class ClaseController extends Controller
     {
         $courses = Course::with('magister', 'period')->get();
 
+<<<<<<< Updated upstream
         $agrupados = $courses->groupBy(fn($c) => $c->magister->nombre ?? 'Sin Magíster')
             ->map(fn($group) => $group->map(fn($c) => [
+=======
+        $agrupados = $courses->groupBy(fn ($c) => $c->magister->nombre ?? 'Sin Magíster')
+            ->map(fn ($group) => $group->map(fn ($c) => [
+>>>>>>> Stashed changes
                 'id' => $c->id,
                 'nombre' => $c->nombre,
                 'period_id' => $c->period_id,
@@ -187,6 +287,10 @@ class ClaseController extends Controller
 
         return [$agrupados, $courses, $rooms, $periodos];
     }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
     public function disponibilidad(Request $request)
     {
         $this->authorizeAccess();
@@ -216,7 +320,11 @@ class ClaseController extends Controller
                 $q->where('hora_inicio', '<', $data['hora_fin'])
                     ->where('hora_fin', '>', $data['hora_inicio']);
             })
+<<<<<<< Updated upstream
             ->when(!empty($data['exclude_id']), fn($q) => $q->where('id', '!=', $data['exclude_id']))
+=======
+            ->when(! empty($data['exclude_id']), fn ($q) => $q->where('id', '!=', $data['exclude_id']))
+>>>>>>> Stashed changes
             ->orderBy('hora_inicio')
             ->get()
             ->map(function ($c) {
@@ -263,6 +371,10 @@ class ClaseController extends Controller
         if (($data['modality'] ?? null) === 'online' || empty($data['room_id'])) {
             $desde = $data['desde'] ?? '08:00';
             $hasta = $data['hasta'] ?? '22:00';
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
             return response()->json([
                 'available' => true,
                 'slots' => [['start' => $desde, 'end' => $hasta]],
@@ -279,7 +391,11 @@ class ClaseController extends Controller
             ->where('room_id', $data['room_id'])
             ->where('period_id', $data['period_id'])
             ->where('dia', $data['dia'])
+<<<<<<< Updated upstream
             ->when(!empty($data['exclude_id']), fn($q) => $q->where('id', '!=', $data['exclude_id']))
+=======
+            ->when(! empty($data['exclude_id']), fn ($q) => $q->where('id', '!=', $data['exclude_id']))
+>>>>>>> Stashed changes
             ->orderBy('hora_inicio')
             ->get(['hora_inicio', 'hora_fin'])
             // 2) Expandir cada bloque con buffer (inicio-10, fin+10)
@@ -314,26 +430,48 @@ class ClaseController extends Controller
                         [
                             'start' => $ventanaIni->format('H:i'),
                             'end' => $ventanaFin->format('H:i'),
+<<<<<<< Updated upstream
                         ]
                     ]
                 ]);
             }
+=======
+                        ],
+                    ],
+                ]);
+            }
+
+>>>>>>> Stashed changes
             return response()->json(['available' => false, 'slots' => []]);
         }
 
         // 3) Fusionar intervalos solapados (ya con buffer)
         $arr = $ocupadas->toArray();
+<<<<<<< Updated upstream
         usort($arr, fn($a, $b) => strcmp($a['ini'], $b['ini']));
+=======
+        usort($arr, fn ($a, $b) => strcmp($a['ini'], $b['ini']));
+>>>>>>> Stashed changes
         $merged = [];
         foreach ($arr as $blk) {
             if (empty($merged)) {
                 $merged[] = $blk;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
                 continue;
             }
             $last = &$merged[count($merged) - 1];
             if ($blk['ini'] <= $last['fin']) {
+<<<<<<< Updated upstream
                 if ($blk['fin'] > $last['fin'])
                     $last['fin'] = $blk['fin'];
+=======
+                if ($blk['fin'] > $last['fin']) {
+                    $last['fin'] = $blk['fin'];
+                }
+>>>>>>> Stashed changes
             } else {
                 $merged[] = $blk;
             }
@@ -350,27 +488,48 @@ class ClaseController extends Controller
             if ($cursor->lt($blkIni) && $cursor->diffInMinutes($blkIni) >= $minBlock) {
                 $slots[] = [
                     'start' => $cursor->format('H:i'),
+<<<<<<< Updated upstream
                     'end' => $blkIni->format('H:i')
+=======
+                    'end' => $blkIni->format('H:i'),
+>>>>>>> Stashed changes
                 ];
             }
             // mover cursor al fin del bloque
             $cursor = Carbon::createFromFormat('H:i', max($blk['fin'], $cursor->format('H:i')));
+<<<<<<< Updated upstream
             if ($cursor->gt($ventanaFin))
                 break;
+=======
+            if ($cursor->gt($ventanaFin)) {
+                break;
+            }
+>>>>>>> Stashed changes
         }
 
         // hueco final
         if ($cursor->lt($ventanaFin) && $cursor->diffInMinutes($ventanaFin) >= $minBlock) {
             $slots[] = [
                 'start' => $cursor->format('H:i'),
+<<<<<<< Updated upstream
                 'end' => $ventanaFin->format('H:i')
+=======
+                'end' => $ventanaFin->format('H:i'),
+>>>>>>> Stashed changes
             ];
         }
 
         return response()->json([
+<<<<<<< Updated upstream
             'available' => !empty($slots),
             'slots' => $slots,
         ]);
     }
 
+=======
+            'available' => ! empty($slots),
+            'slots' => $slots,
+        ]);
+    }
+>>>>>>> Stashed changes
 }
