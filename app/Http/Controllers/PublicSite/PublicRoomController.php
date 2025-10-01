@@ -8,17 +8,11 @@ use Illuminate\Http\Request;
 
 class PublicRoomController extends Controller
 {
-<<<<<<< Updated upstream
-    public function index(Request $request)
-=======
     public function index()
->>>>>>> Stashed changes
     {
         $rooms = Room::orderBy('name')->get();
         return view('public.rooms', compact('rooms'));
     }
-<<<<<<< Updated upstream
-=======
 
     public function show(Room $room)
     {
@@ -28,5 +22,4 @@ class PublicRoomController extends Controller
             'public' => true, // si quieres manejar estilos o tabs públicos
         ]);
     }
->>>>>>> Stashed changes
 }

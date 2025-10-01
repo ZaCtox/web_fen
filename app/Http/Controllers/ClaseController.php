@@ -2,18 +2,6 @@
 
 namespace App\Http\Controllers;
 
-<<<<<<< Updated upstream
-use App\Models\Clase;
-use App\Models\Course;
-use App\Models\Period;
-use App\Models\Room;
-use App\Models\Magister;
-use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Http\Requests\StoreClaseRequest;
-use Carbon\Carbon;
-use App\Http\Requests\UpdateClaseRequest;
-=======
 use App\Http\Requests\StoreClaseRequest;
 use App\Http\Requests\UpdateClaseRequest;
 use App\Models\Clase;
@@ -24,46 +12,16 @@ use App\Models\Room;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
->>>>>>> Stashed changes
 
 class ClaseController extends Controller
 {
     private function authorizeAccess()
     {
-<<<<<<< Updated upstream
-        if (!tieneRol(['docente', 'administrativo'])) {
-=======
         if (! tieneRol(['docente', 'administrativo'])) {
->>>>>>> Stashed changes
             abort(403, 'Acceso no autorizado.');
         }
     }
 
-<<<<<<< Updated upstream
-    public function index()
-    {
-        $this->authorizeAccess();
-
-        $clases = Clase::with(['course.magister', 'period', 'room'])
-            ->orderBy('period_id')
-            ->orderByRaw("FIELD(dia, 'Viernes','Sábado')") // opcional
-            ->orderBy('hora_inicio')
-            ->get();
-
-        // Listas para filtros por año y trimestre (si los usas en index)
-        $anios = Period::distinct()->orderByDesc('anio')->pluck('anio');
-        $trimestres = Period::distinct()->orderBy('numero')->pluck('numero');
-
-        return view('clases.index', [
-            'clases' => $clases,
-            'rooms' => Room::orderBy('name')->get(),
-            'magisters' => Magister::orderBy('nombre')->get(),
-            'anios' => $anios,
-            'trimestres' => $trimestres,
-        ]);
-    }
-
-=======
 public function index(Request $request)
 {
     $this->authorizeAccess();
@@ -124,7 +82,6 @@ public function index(Request $request)
 }
 
 
->>>>>>> Stashed changes
     public function create()
     {
         $this->authorizeAccess();
@@ -150,11 +107,7 @@ public function index(Request $request)
         $trimestres = Period::distinct()->orderBy('numero')->pluck('numero');
 
         // Opciones de tipo (según indicaste)
-<<<<<<< Updated upstream
-        $tipos = ['clase', 'taller', 'laboratorio', 'ayudantia'];
-=======
         $tipos = ['cátedra', 'taller', 'laboratorio', 'ayudantía'];
->>>>>>> Stashed changes
 
         return view('clases.create', [
             'agrupados' => $agrupados,
@@ -187,11 +140,7 @@ public function index(Request $request)
 
         $anios = Period::distinct()->orderByDesc('anio')->pluck('anio');
         $trimestres = Period::distinct()->orderBy('numero')->pluck('numero');
-<<<<<<< Updated upstream
-        $tipos = ['clase', 'taller', 'laboratorio', 'ayudantia'];
-=======
         $tipos = ['cátedra', 'taller', 'laboratorio', 'ayudantía'];
->>>>>>> Stashed changes
 
         return view('clases.edit', [
             'clase' => $clase,
@@ -240,16 +189,10 @@ public function index(Request $request)
             return back()->with('warning', 'No se encontraron clases con los filtros aplicados.');
         }
 
-<<<<<<< Updated upstream
-        $nombreArchivo = 'clases_academicas_' . now()->format('Y-m-d_H-i') . '.pdf';
-
-        $pdf = Pdf::loadView('clases.export', compact('clases'))->setPaper('a4', 'landscape');
-=======
         $nombreArchivo = 'clases_academicas_'.now()->format('Y-m-d_H-i').'.pdf';
 
         $pdf = Pdf::loadView('clases.export', compact('clases'))->setPaper('a4', 'landscape');
 
->>>>>>> Stashed changes
         return $pdf->download($nombreArchivo);
     }
 
@@ -266,13 +209,8 @@ public function index(Request $request)
     {
         $courses = Course::with('magister', 'period')->get();
 
-<<<<<<< Updated upstream
-        $agrupados = $courses->groupBy(fn($c) => $c->magister->nombre ?? 'Sin Magíster')
-            ->map(fn($group) => $group->map(fn($c) => [
-=======
         $agrupados = $courses->groupBy(fn ($c) => $c->magister->nombre ?? 'Sin Magíster')
             ->map(fn ($group) => $group->map(fn ($c) => [
->>>>>>> Stashed changes
                 'id' => $c->id,
                 'nombre' => $c->nombre,
                 'period_id' => $c->period_id,
@@ -287,10 +225,6 @@ public function index(Request $request)
 
         return [$agrupados, $courses, $rooms, $periodos];
     }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
     public function disponibilidad(Request $request)
     {
         $this->authorizeAccess();
@@ -320,11 +254,7 @@ public function index(Request $request)
                 $q->where('hora_inicio', '<', $data['hora_fin'])
                     ->where('hora_fin', '>', $data['hora_inicio']);
             })
-<<<<<<< Updated upstream
-            ->when(!empty($data['exclude_id']), fn($q) => $q->where('id', '!=', $data['exclude_id']))
-=======
             ->when(! empty($data['exclude_id']), fn ($q) => $q->where('id', '!=', $data['exclude_id']))
->>>>>>> Stashed changes
             ->orderBy('hora_inicio')
             ->get()
             ->map(function ($c) {
@@ -371,10 +301,6 @@ public function index(Request $request)
         if (($data['modality'] ?? null) === 'online' || empty($data['room_id'])) {
             $desde = $data['desde'] ?? '08:00';
             $hasta = $data['hasta'] ?? '22:00';
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
             return response()->json([
                 'available' => true,
                 'slots' => [['start' => $desde, 'end' => $hasta]],
@@ -391,11 +317,7 @@ public function index(Request $request)
             ->where('room_id', $data['room_id'])
             ->where('period_id', $data['period_id'])
             ->where('dia', $data['dia'])
-<<<<<<< Updated upstream
-            ->when(!empty($data['exclude_id']), fn($q) => $q->where('id', '!=', $data['exclude_id']))
-=======
             ->when(! empty($data['exclude_id']), fn ($q) => $q->where('id', '!=', $data['exclude_id']))
->>>>>>> Stashed changes
             ->orderBy('hora_inicio')
             ->get(['hora_inicio', 'hora_fin'])
             // 2) Expandir cada bloque con buffer (inicio-10, fin+10)
@@ -430,48 +352,28 @@ public function index(Request $request)
                         [
                             'start' => $ventanaIni->format('H:i'),
                             'end' => $ventanaFin->format('H:i'),
-<<<<<<< Updated upstream
-                        ]
-                    ]
-                ]);
-            }
-=======
                         ],
                     ],
                 ]);
             }
 
->>>>>>> Stashed changes
             return response()->json(['available' => false, 'slots' => []]);
         }
 
         // 3) Fusionar intervalos solapados (ya con buffer)
         $arr = $ocupadas->toArray();
-<<<<<<< Updated upstream
-        usort($arr, fn($a, $b) => strcmp($a['ini'], $b['ini']));
-=======
         usort($arr, fn ($a, $b) => strcmp($a['ini'], $b['ini']));
->>>>>>> Stashed changes
         $merged = [];
         foreach ($arr as $blk) {
             if (empty($merged)) {
                 $merged[] = $blk;
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
                 continue;
             }
             $last = &$merged[count($merged) - 1];
             if ($blk['ini'] <= $last['fin']) {
-<<<<<<< Updated upstream
-                if ($blk['fin'] > $last['fin'])
-                    $last['fin'] = $blk['fin'];
-=======
                 if ($blk['fin'] > $last['fin']) {
                     $last['fin'] = $blk['fin'];
                 }
->>>>>>> Stashed changes
             } else {
                 $merged[] = $blk;
             }
@@ -488,48 +390,27 @@ public function index(Request $request)
             if ($cursor->lt($blkIni) && $cursor->diffInMinutes($blkIni) >= $minBlock) {
                 $slots[] = [
                     'start' => $cursor->format('H:i'),
-<<<<<<< Updated upstream
-                    'end' => $blkIni->format('H:i')
-=======
                     'end' => $blkIni->format('H:i'),
->>>>>>> Stashed changes
                 ];
             }
             // mover cursor al fin del bloque
             $cursor = Carbon::createFromFormat('H:i', max($blk['fin'], $cursor->format('H:i')));
-<<<<<<< Updated upstream
-            if ($cursor->gt($ventanaFin))
-                break;
-=======
             if ($cursor->gt($ventanaFin)) {
                 break;
             }
->>>>>>> Stashed changes
         }
 
         // hueco final
         if ($cursor->lt($ventanaFin) && $cursor->diffInMinutes($ventanaFin) >= $minBlock) {
             $slots[] = [
                 'start' => $cursor->format('H:i'),
-<<<<<<< Updated upstream
-                'end' => $ventanaFin->format('H:i')
-=======
                 'end' => $ventanaFin->format('H:i'),
->>>>>>> Stashed changes
             ];
         }
 
         return response()->json([
-<<<<<<< Updated upstream
-            'available' => !empty($slots),
-            'slots' => $slots,
-        ]);
-    }
-
-=======
             'available' => ! empty($slots),
             'slots' => $slots,
         ]);
     }
->>>>>>> Stashed changes
 }

@@ -36,28 +36,15 @@ class MagisterController extends Controller
     public function store(StoreMagisterRequest $request)
     {
         $this->authorizeAccess();
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-        $request->validate([
-            'nombre' => 'required|string|unique:magisters,nombre|max:255'
-=======
->>>>>>> Stashed changes
 
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string',
             'encargado' => 'nullable|string|max:255',
-<<<<<<< Updated upstream
-            'telefono' => 'nullable|string|max:20',
-            'correo' => 'nullable|email|max:255',
-=======
             'asistente' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
             'anexo' => 'nullable|string|max:20',
             'correo' => 'nullable|email|max:255',
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         ]);
 
         Magister::create($validated);
@@ -76,28 +63,15 @@ class MagisterController extends Controller
     public function update(UpdateMagisterRequest $request, Magister $magister)
     {
         $this->authorizeAccess();
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-        $request->validate([
-            'nombre' => 'required|string|max:255|unique:magisters,nombre,' . $magister->id
-=======
->>>>>>> Stashed changes
 
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string',
             'encargado' => 'nullable|string|max:255',
-<<<<<<< Updated upstream
-            'telefono' => 'nullable|string|max:20',
-            'correo' => 'nullable|email|max:255',
-=======
             'asistente' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
             'anexo' => 'nullable|string|max:20',
             'correo' => 'nullable|email|max:255',
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         ]);
 
         $magister->update($validated);

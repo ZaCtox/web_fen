@@ -9,16 +9,7 @@ class Magister extends Model
 {
     use HasFactory;
 
-<<<<<<< Updated upstream
-    protected $fillable = ['nombre', 'color', 'encargado', 'telefono', 'correo'];
-
-=======
-<<<<<<< Updated upstream
-    protected $fillable = ['nombre'];
-=======
     protected $fillable = ['nombre', 'color',  'encargado', 'asistente', 'telefono','anexo', 'correo'];
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 
     public function courses()
     {

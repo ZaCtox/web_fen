@@ -11,61 +11,28 @@ use Carbon\Carbon;
 use Cloudinary\Api\Upload\UploadApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-<<<<<<< Updated upstream
-use Barryvdh\DomPDF\Facade\Pdf;
-use Cloudinary\Api\Upload\UploadApi;
-use Carbon\Carbon;
-use App\Models\IncidentLog;
 
 class IncidentController extends Controller
 {
-<<<<<<< Updated upstream
     private function authorizeAccess()
     {
         if (!tieneRol(['docente', 'administrativo'])) {
-=======
-=======
-
-class IncidentController extends Controller
-{
-    private function authorizeAccess()
-    {
-        if (! tieneRol(['docente', 'administrativo'])) {
->>>>>>> Stashed changes
             abort(403, 'Acceso no autorizado.');
         }
     }
 
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
     public function index(Request $request)
     {
         $this->authorizeAccess();
 
         $query = Incident::with('room');
-<<<<<<< Updated upstream
-        $periodos = Period::all()->map(function ($p) {
-            $p->anio = Carbon::parse($p->fecha_inicio)->year;
-            return $p;
-        });
-=======
-<<<<<<< Updated upstream
-=======
-        $periodos = Period::all()->map(function ($p) {
-            $p->anio = Carbon::parse($p->fecha_inicio)->year;
-
-            return $p;
-        });
->>>>>>> Stashed changes
->>>>>>> Stashed changes
+        $periodos = Period::all()->map(fn($p) => ['anio' => Carbon::parse($p->fecha_inicio)->year] + $p->toArray());
 
         // Filtros
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('titulo', 'like', '%'.$request->search.'%')
-                    ->orWhere('descripcion', 'like', '%'.$request->search.'%');
+                  ->orWhere('descripcion', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -86,16 +53,7 @@ class IncidentController extends Controller
             if ($request->filled('anio')) {
                 $periodosFiltrados = $periodosFiltrados->whereYear('fecha_inicio', $request->anio);
             }
-<<<<<<< Updated upstream
-
             $rangos = $periodosFiltrados->get()->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
-=======
-<<<<<<< Updated upstream
-=======
-
-            $rangos = $periodosFiltrados->get()->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
->>>>>>> Stashed changes
-
             $query->where(function ($q) use ($rangos) {
                 foreach ($rangos as [$inicio, $fin]) {
                     $q->orWhereBetween('created_at', [$inicio, $fin]);
@@ -103,73 +61,33 @@ class IncidentController extends Controller
             });
         }
 
-        // Filtro de históricos
+        // Histórico
         if ($request->filled('historico')) {
-<<<<<<< Updated upstream
-            $rangos = $periodos->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
-=======
-            $rangos = $periodos->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
->>>>>>> Stashed changes
+            $rangos = $periodos->map(fn($p) => [$p['fecha_inicio'], $p['fecha_fin']]);
             $query->where(function ($q) use ($rangos) {
                 foreach ($rangos as [$inicio, $fin]) {
                     $q->whereNotBetween('created_at', [$inicio, $fin]);
                 }
             });
-
-            $anios = Incident::all()
-<<<<<<< Updated upstream
-                ->filter(fn($inc) => !$periodos->contains(function ($p) use ($inc) {
-                    return $inc->created_at->between($p->fecha_inicio, $p->fecha_fin);
-                }))
-                ->pluck('created_at')
-                ->map(fn($dt) => $dt->format('Y'))
-=======
-                ->filter(fn ($inc) => ! $periodos->contains(function ($p) use ($inc) {
-                    return $inc->created_at->between($p->fecha_inicio, $p->fecha_fin);
-                }))
-                ->pluck('created_at')
-                ->map(fn ($dt) => $dt->format('Y'))
->>>>>>> Stashed changes
-                ->unique()
-                ->sortDesc()
-                ->values();
-        } else {
-            $anios = Incident::all()
-<<<<<<< Updated upstream
-                ->filter(fn($inc) => $periodos->contains(function ($p) use ($inc) {
-                    return $inc->created_at->between($p->fecha_inicio, $p->fecha_fin);
-                }))
-                ->pluck('created_at')
-                ->map(fn($dt) => $dt->format('Y'))
-                ->unique()
-                ->sortDesc()
-                ->values();
-=======
-                ->filter(fn ($inc) => $periodos->contains(function ($p) use ($inc) {
-                    return $inc->created_at->between($p->fecha_inicio, $p->fecha_fin);
-                }))
-                ->pluck('created_at')
-                ->map(fn ($dt) => $dt->format('Y'))
-                ->unique()
-                ->sortDesc()
-                ->values();
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         }
 
         $incidencias = $query->latest()->paginate(10)->withQueryString();
         $salas = Room::orderBy('name')->get();
 
+        $anios = Incident::all()
+            ->pluck('created_at')
+            ->map(fn($dt) => Carbon::parse($dt)->format('Y'))
+            ->unique()
+            ->sortDesc()
+            ->values();
+
         return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'periodos'));
     }
-
 
     public function create()
     {
         $this->authorizeAccess();
-
         $salas = Room::orderBy('name')->get();
-
         return view('incidencias.create', compact('salas'));
     }
 
@@ -187,12 +105,8 @@ class IncidentController extends Controller
 
         if ($request->hasFile('imagen')) {
             $uploadedFile = $request->file('imagen')->getRealPath();
-
             try {
-                $cloudinaryUpload = (new UploadApi)->upload($uploadedFile, [
-                    'folder' => 'incidencias',
-                ]);
-
+                $cloudinaryUpload = (new UploadApi)->upload($uploadedFile, ['folder' => 'incidencias']);
                 $validated['imagen'] = $cloudinaryUpload['secure_url'];
                 $validated['public_id'] = $cloudinaryUpload['public_id'];
             } catch (\Exception $e) {
@@ -222,12 +136,11 @@ class IncidentController extends Controller
 
         if ($validated['estado'] === 'resuelta' && $incidencia->estado !== 'resuelta') {
             $validated['resuelta_en'] = now();
-            $validated['resolved_by'] = Auth::id(); // ✅ guarda quién resolvió
+            $validated['resolved_by'] = Auth::id();
         }
 
         $incidencia->update($validated);
 
-        // ✅ Guardar log en timeline
         IncidentLog::create([
             'incident_id' => $incidencia->id,
             'user_id' => Auth::id(),
@@ -241,15 +154,6 @@ class IncidentController extends Controller
     public function show(Incident $incidencia)
     {
         $this->authorizeAccess();
-
-<<<<<<< Updated upstream
-        $incidencia->load('room', 'user', 'logs.user');
-=======
-<<<<<<< Updated upstream
-        $incidencia->load('room', 'user');
->>>>>>> Stashed changes
-        return view('incidencias.show', compact('incidencia'));
-=======
         $incidencia->load('room', 'user', 'logs.user');
 
         $dentroDePeriodo = Period::where('fecha_inicio', '<=', $incidencia->created_at)
@@ -257,117 +161,36 @@ class IncidentController extends Controller
             ->exists();
 
         return view('incidencias.show', compact('incidencia', 'dentroDePeriodo'));
->>>>>>> Stashed changes
     }
 
     public function estadisticas(Request $request)
     {
         $this->authorizeAccess();
 
-<<<<<<< Updated upstream
         $periodos = Period::orderBy('fecha_inicio')->orderBy('numero')->get();
         $aniosUnicos = $periodos->map(fn($p) => Carbon::parse($p->fecha_inicio)->year)->unique()->sort()->values();
 
-=======
-<<<<<<< Updated upstream
-=======
-        $periodos = Period::orderBy('fecha_inicio')->orderBy('numero')->get();
-        $aniosUnicos = $periodos->map(fn ($p) => Carbon::parse($p->fecha_inicio)->year)->unique()->sort()->values();
-
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         $query = Incident::query();
-
-        if ($request->filled('anio')) {
-            $query->whereYear('created_at', $request->anio);
-        }
-
-        if ($request->filled('room_id')) {
-            $query->where('room_id', $request->room_id);
-        }
+        if ($request->filled('anio')) $query->whereYear('created_at', $request->anio);
+        if ($request->filled('room_id')) $query->where('room_id', $request->room_id);
 
         $incidenciasFiltradas = $query->with('room')->get();
 
         $porSala = $incidenciasFiltradas->groupBy(fn ($i) => $i->room->name ?? 'Sin Sala')->map->count();
         $porEstado = $incidenciasFiltradas->groupBy('estado')->map->count();
 
-<<<<<<< Updated upstream
-        $periodosFiltrados = $periodos->filter(function ($p) use ($request) {
-            $anioPeriodo = Carbon::parse($p->fecha_inicio)->year;
-            if ($request->filled('anio') && $anioPeriodo != $request->anio)
-                return false;
-            if ($request->filled('trimestre') && $p->numero != $request->trimestre)
-                return false;
-            return true;
-        });
-
         $porTrimestre = collect();
         foreach ($incidenciasFiltradas as $incidencia) {
             $periodo = $periodos->first(fn($p) => $incidencia->created_at->between($p->fecha_inicio, $p->fecha_fin));
             if ($periodo) {
-                $clave = $incidencia->created_at->year . ' - T' . $periodo->numero;
-=======
-<<<<<<< Updated upstream
-        $salas = Room::orderBy('name')->get(); // ✅ Incluido para el filtro
-        $anios = Incident::selectRaw('YEAR(created_at) as anio')->distinct()->pluck('anio')->sortDesc(); // opcional
-        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get(); // si quieres agregarlo después
-
-        return view('incidencias.estadisticas', [
-            'porSala' => $porSala,
-            'porEstado' => $porEstado,
-            'porSemestre' => $porSemestre,
-            'salas' => $salas,
-            'anios' => $anios,
-        ]);
-=======
-        $periodosFiltrados = $periodos->filter(function ($p) use ($request) {
-            $anioPeriodo = Carbon::parse($p->fecha_inicio)->year;
-            if ($request->filled('anio') && $anioPeriodo != $request->anio) {
-                return false;
-            }
-            if ($request->filled('trimestre') && $p->numero != $request->trimestre) {
-                return false;
-            }
-
-            return true;
-        });
-
-        $porTrimestre = collect();
-        foreach ($incidenciasFiltradas as $incidencia) {
-            $periodo = $periodos->first(fn ($p) => $incidencia->created_at->between($p->fecha_inicio, $p->fecha_fin));
-            if ($periodo) {
                 $clave = $incidencia->created_at->year.' - T'.$periodo->numero;
->>>>>>> Stashed changes
                 $porTrimestre[$clave] = ($porTrimestre[$clave] ?? 0) + 1;
             }
         }
 
         $porTrimestre = $porTrimestre->sortKeys();
-
-        $periodos = Period::orderBy('fecha_inicio')->orderBy('numero')->get();
-<<<<<<< Updated upstream
         $rangos = $periodos->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
-=======
-        $rangos = $periodos->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
->>>>>>> Stashed changes
-
-        $anios = Incident::selectRaw('YEAR(created_at) as anio')->distinct()->get()->pluck('anio')->filter(function ($anio) use ($request, $rangos) {
-            foreach ($rangos as [$inicio, $fin]) {
-                $anioInicio = Carbon::parse($inicio)->year;
-                $anioFin = Carbon::parse($fin)->year;
-                if ($anio >= $anioInicio && $anio <= $anioFin) {
-<<<<<<< Updated upstream
-                    return !$request->filled('historico');
-                }
-            }
-=======
-                    return ! $request->filled('historico');
-                }
-            }
-
->>>>>>> Stashed changes
-            return $request->filled('historico');
-        })->sortDesc()->values();
+        $anios = Incident::selectRaw('YEAR(created_at) as anio')->distinct()->pluck('anio')->sortDesc();
 
         $salas = Room::orderBy('name')->get();
 
@@ -379,10 +202,6 @@ class IncidentController extends Controller
             'periodos',
             'anios',
         ));
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
     }
 
     public function exportarPDF(Request $request)
@@ -391,99 +210,33 @@ class IncidentController extends Controller
 
         $query = Incident::with('room', 'user');
 
-        if ($request->filled('anio')) {
-            $query->whereYear('created_at', $request->anio);
-        }
+        if ($request->filled('anio')) $query->whereYear('created_at', $request->anio);
+        if ($request->filled('estado')) $query->where('estado', $request->estado);
+        if ($request->filled('room_id')) $query->where('room_id', $request->room_id);
 
-        if ($request->filled('estado')) {
-            $query->where('estado', $request->estado);
-        }
-
-        if ($request->filled('room_id')) {
-            $query->where('room_id', $request->room_id);
-        }
-
-<<<<<<< Updated upstream
         if ($request->filled('trimestre')) {
             $periodos = Period::where('numero', $request->trimestre);
-            if ($request->filled('anio')) {
-                $periodos = $periodos->whereYear('fecha_inicio', $request->anio);
-            }
+            if ($request->filled('anio')) $periodos = $periodos->whereYear('fecha_inicio', $request->anio);
             $rangos = $periodos->get()->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
-
             $query->where(function ($q) use ($rangos) {
-                foreach ($rangos as [$inicio, $fin]) {
-                    $q->orWhereBetween('created_at', [$inicio, $fin]);
-                }
-            });
-=======
-<<<<<<< Updated upstream
-        if ($request->filled('anio')) {
-            $query->whereYear('created_at', $request->anio);
->>>>>>> Stashed changes
-        }
-
-        if ($request->filled('historico')) {
-            $periodos = Period::all();
-            $rangos = $periodos->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
-
-            $query->where(function ($q) use ($rangos) {
-                foreach ($rangos as [$inicio, $fin]) {
-                    $q->whereNotBetween('created_at', [$inicio, $fin]);
-                }
-            });
-        }
-
-<<<<<<< Updated upstream
-        $nombre = 'bitacora_incidencias_' . now()->format('Y-m-d_H-i') . '.pdf';
-        $usuario = Auth::user();
-=======
-=======
-        if ($request->filled('trimestre')) {
-            $periodos = Period::where('numero', $request->trimestre);
-            if ($request->filled('anio')) {
-                $periodos = $periodos->whereYear('fecha_inicio', $request->anio);
-            }
-            $rangos = $periodos->get()->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
-
-            $query->where(function ($q) use ($rangos) {
-                foreach ($rangos as [$inicio, $fin]) {
-                    $q->orWhereBetween('created_at', [$inicio, $fin]);
-                }
+                foreach ($rangos as [$inicio, $fin]) $q->orWhereBetween('created_at', [$inicio, $fin]);
             });
         }
 
         if ($request->filled('historico')) {
-            $periodos = Period::all();
-            $rangos = $periodos->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
-
+            $rangos = Period::all()->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
             $query->where(function ($q) use ($rangos) {
-                foreach ($rangos as [$inicio, $fin]) {
-                    $q->whereNotBetween('created_at', [$inicio, $fin]);
-                }
+                foreach ($rangos as [$inicio, $fin]) $q->whereNotBetween('created_at', [$inicio, $fin]);
             });
         }
 
         $nombre = 'bitacora_incidencias_'.now()->format('Y-m-d_H-i').'.pdf';
         $usuario = Auth::user();
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         $incidencias = $query->latest()->get();
         $fechaActual = now()->format('d/m/Y H:i');
 
-<<<<<<< Updated upstream
         $pdf = Pdf::loadView('incidencias.pdf', compact('incidencias', 'usuario', 'fechaActual'));
         return $pdf->download($nombre);
-=======
-<<<<<<< Updated upstream
-        $pdf = Pdf::loadView('incidencias.pdf', compact('incidencias'));
-        return $pdf->download('bitacora_incidencias.pdf');
-=======
-        $pdf = Pdf::loadView('incidencias.pdf', compact('incidencias', 'usuario', 'fechaActual'));
-
-        return $pdf->download($nombre);
->>>>>>> Stashed changes
->>>>>>> Stashed changes
     }
 
     public function destroy(Incident $incidencia)
@@ -499,7 +252,6 @@ class IncidentController extends Controller
         }
 
         $incidencia->delete();
-
         return redirect()->route('incidencias.index')->with('success', 'Incidencia eliminada correctamente.');
     }
 }

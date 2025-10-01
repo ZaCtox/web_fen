@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <script <!-- Script de tema y tamaño (guest) -->
+    <script>
         const html = document.documentElement;
         const toggleBtn = document.getElementById('toggle-theme');
         const icon = document.getElementById('theme-icon');

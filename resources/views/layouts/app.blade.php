@@ -53,32 +53,7 @@
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                     {{ $header }}
 
-<<<<<<< Updated upstream
                     <div class="flex flex-wrap items-center gap-2">
-                        @if($rol === 'administrativo')
-                            <div x-data="{ open: false }" class="inline-block">
-                                <!-- Botón -->
-                                <div x-data="{ open: false }">
-                                    @if($rol === 'administrativo') <a href="{{ route('register') }}"
-                                        class="text-sm px-3 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium whitespace-nowrap">
-                                    👤➕ Registrar Usuario </a> @endif
-                                </div>
-                            </div>
-=======
-<<<<<<< Updated upstream
-                    <div class="flex items-center gap-x-2">
-                        @if($rol === 'docente' || $rol === 'administrativo')
-                            <a href="{{ route('register') }}"
-                                class="text-sm px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium">
-                                👤➕ Registrar Usuario
-                            </a>
->>>>>>> Stashed changes
-                        @endif
-=======
-                    <div class="flex flex-wrap items-center gap-2">
->>>>>>> Stashed changes
-
-
                         <div class="flex items-center gap-2">
                             <!-- Botón cambio de tema -->
                             <button id="toggle-theme"

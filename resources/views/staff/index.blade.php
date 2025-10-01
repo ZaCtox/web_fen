@@ -2,11 +2,7 @@
 @section('title', 'Nuestro Equipo')
 <x-app-layout>
     <x-slot name="header">
-<<<<<<< Updated upstream
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Información de nuestro equipo</h2>
-=======
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Información de Nuestro Equipo</h2>
->>>>>>> Stashed changes
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto" x-data="{
@@ -45,13 +41,10 @@
 
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-<<<<<<< Updated upstream
-=======
             <a href="{{ route('staff.create') }}"
                 class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] ml-4 text-white px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
                 <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
             </a>
->>>>>>> Stashed changes
             <div class="flex w-full sm:w-auto gap-3 items-center">
                 <input x-model="search" type="text" placeholder="Buscar por nombre, cargo o email"
                     class="w-full sm:w-[350px] px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
@@ -61,14 +54,6 @@
                 </button>
             </div>
 
-<<<<<<< Updated upstream
-            <a href="{{ route('staff.create') }}"
-                class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700">
-                Nuevo
-            </a>
-=======
-
->>>>>>> Stashed changes
         </div>
 
         <!-- Meta -->
@@ -88,20 +73,6 @@
             <template x-for="p in filtrados" :key="p.id">
                 <a :href="p.show_url" class="group">
                     <div
-<<<<<<< Updated upstream
-                        class="rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition">
-                        <div class="flex">
-                            <div class="w-2/3 p-6">
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:underline"
-                                    x-text="p.nombre"></h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-300" x-text="p.cargo"></p>
-                            </div>
-                            <div class="w-1/3 bg-[#12c6df] text-white p-4">
-                                <div class="text-[12px] tracking-wide opacity-90">Teléfono</div>
-                                <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
-                                <div class="text-[12px] tracking-wide opacity-90">Email</div>
-                                <div class="text-sm truncate" x-text="p.email"></div>
-=======
                         class="cursor-pointer hover:shadow-lg transition rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                         <div class="flex">
                             <div class="w-2/3 p-4">
@@ -113,7 +84,6 @@
                                 <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
                                 <div class="text-[13px] tracking-wide opacity-90">Email</div>
                                 <div class="text-sm truncate" x-text="p.email" :title="p.email"></div>
->>>>>>> Stashed changes
                             </div>
                         </div>
                     </div>
@@ -121,8 +91,4 @@
             </template>
         </div>
     </div>
-<<<<<<< Updated upstream
 </x-app-layout>
-=======
-</x-app-layout>
->>>>>>> Stashed changes
