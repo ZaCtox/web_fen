@@ -13,7 +13,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BitacoraController;
 use Illuminate\Support\Facades\Route;
+
 
 // 🏠 Dashboard principal
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -60,15 +62,15 @@ Route::middleware(['auth'])->group(function () {
 
     // 🗂️ Incidencias
     Route::get('/incidencias/estadisticas', [IncidentController::class, 'estadisticas'])
-        ->middleware('role:administrador,director_programa,asistente_programa,tecnico,auxiliar,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado')
         ->name('incidencias.estadisticas');
 
     Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])
-        ->middleware('role:administrador,director_programa,asistente_programa,tecnico,auxiliar,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado')
         ->name('incidencias.exportar.pdf');
 
     Route::resource('incidencias', IncidentController::class)
-        ->middleware('role:administrador,director_programa,asistente_programa,tecnico,auxiliar,asistente_postgrado');
+        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado');
 
     // 🏛️ Salas
     Route::resource('rooms', RoomController::class)
@@ -121,6 +123,13 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('informes', InformeController::class)->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado');
 
     Route::get('informes/download/{id}', [InformeController::class, 'download'])->name('informes.download');
+
+    Route::resource('bitacoras', BitacoraController::class)
+        ->middleware('role:asistente_postgrado');
+
+    Route::get('bitacoras/download/{bitacora}', [BitacoraController::class, 'download'])
+        ->name('bitacoras.download')
+        ->middleware('role:asistente_postgrado');
 
 });
 

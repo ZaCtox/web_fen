@@ -1,7 +1,7 @@
 @section('title', 'Clases')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Clases Académicas</h2>
+        <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Clases Académicas</h2>
     </x-slot>
 
     <div class="p-6 max-w-7xl mx-auto" x-data="{
@@ -164,11 +164,11 @@
 
                             {{-- Sala y periodo --}}
                             <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                                <span><strong>Sala:</strong> {{ $clase->room->name ?? 'No asignada' }}</span>
-                                <span class="px-2 py-0.5 rounded bg-[#c4dafa] text-[#005187]">
+                                <span><strong class="text-[#005187]">Sala:</strong> {{ $clase->room->name ?? 'No asignada' }}</span>
+                                <span class="px-2 py-0.5 rounded text-[#005187]">
                                     Año {{ $clase->period->anio ?? '—' }}
                                 </span>
-                                <span class="px-2 py-0.5 rounded bg-[#84b6f4] text-[#005187]">
+                                <span class="px-2 py-0.5 rounded text-[#005187]">
                                     Trimestre {{ $clase->period->numero ?? '—' }}
                                 </span>
                             </div>

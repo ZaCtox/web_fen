@@ -21,7 +21,7 @@
                         <x-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">Salas</x-nav-link>
                     @endif
 
-                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'tecnico', 'auxiliar', 'asistente_postgrado']))
+                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'técnico', 'auxiliar', 'asistente_postgrado']))
                         <x-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">Incidencias</x-nav-link>
                     @endif
 
@@ -35,6 +35,10 @@
 
                     @if(tieneRol('administrador'))
                         <x-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-nav-link>
+                    @endif
+
+                    @if(tieneRol('asistente_postgrado'))
+                        <x-nav-link :href="route('bitacoras.index')" :active="request()->routeIs('bitacoras.index')">Bitácoras</x-nav-link>
                     @endif
 
                     @if(tieneRol(['administrador', 'director_programa', 'asistente_programa']))
