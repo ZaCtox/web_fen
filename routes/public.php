@@ -8,6 +8,7 @@ use App\Http\Controllers\PublicSite\PublicCourseController;
 use App\Http\Controllers\PublicSite\PublicDashboardController;
 use App\Http\Controllers\PublicSite\PublicRoomController;
 use App\Http\Controllers\PublicSite\PublicStaffController;
+use App\Http\Controllers\PublicSite\PublicInformeController;
 use Illuminate\Support\Facades\Route;
 
 // Página principal pública (antes '/')
@@ -39,3 +40,10 @@ Route::get('/public/clases/{clase}', [PublicClaseController::class, 'show'])
 
 Route::get('public/rooms/{room}', [PublicRoomController::class, 'show'])
     ->name('public.rooms.show');
+
+// Archivos públicos
+Route::get('/Archivos-FEN', [PublicInformeController::class, 'index'])
+    ->name('public.informes.index');
+
+Route::get('/Archivos-FEN/download/{id}', [PublicInformeController::class, 'download'])
+    ->name('public.informes.download');

@@ -29,7 +29,7 @@
                 &nbsp; <!-- Para alinear el botón con los selects -->
             </label>
             <button id="clear-filters" type="button" class="px-3 py-2  rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
-                Limpiar filtros 🧹
+                 🧹
             </button>
         </div>
 

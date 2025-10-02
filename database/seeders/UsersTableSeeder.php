@@ -10,13 +10,13 @@ class UsersTableSeeder extends Seeder
 {
     public function run()
     {
-        // Usuario Administrativo
+        // Usuario Administrador
         User::firstOrCreate([
             'email' => 'admin@webfen.cl',
         ], [
             'name' => 'Administrador FEN',
             'password' => Hash::make('admin123'),
-            'rol' => 'administrativo',
+            'rol' => 'administrador',
         ]);
 
         // Usuario Docente
@@ -28,13 +28,22 @@ class UsersTableSeeder extends Seeder
             'rol' => 'docente',
         ]);
 
-        // Usuario Asistente
+        // Usuario Asistente de Programa
         User::firstOrCreate([
-            'email' => 'asistente@webfen.cl',
+            'email' => 'asistente.programa@webfen.cl',
         ], [
-            'name' => 'Asistente FEN',
+            'name' => 'Asistente de Programa',
             'password' => Hash::make('asistente123'),
-            'rol' => 'asistente',
+            'rol' => 'asistente_programa',
+        ]);
+
+        // Usuario Asistente de Postgrado
+        User::firstOrCreate([
+            'email' => 'asistente.postgrado@webfen.cl',
+        ], [
+            'name' => 'Asistente Postgrado',
+            'password' => Hash::make('postgrado123'),
+            'rol' => 'asistente_postgrado',
         ]);
 
         // Usuario Director de Magíster
@@ -43,7 +52,7 @@ class UsersTableSeeder extends Seeder
         ], [
             'name' => 'Director de Magíster',
             'password' => Hash::make('director123'),
-            'rol' => 'director_magister',
+            'rol' => 'director_programa',
         ]);
 
         // Usuario Auxiliar
@@ -62,6 +71,15 @@ class UsersTableSeeder extends Seeder
             'name' => 'Director Administrativo',
             'password' => Hash::make('admin456'),
             'rol' => 'director_administrativo',
+        ]);
+
+        // Usuario Técnico (por rutas de incidencias)
+        User::firstOrCreate([
+            'email' => 'tecnico@webfen.cl',
+        ], [
+            'name' => 'Técnico FEN',
+            'password' => Hash::make('tecnico123'),
+            'rol' => 'técnico',
         ]);
     }
 }

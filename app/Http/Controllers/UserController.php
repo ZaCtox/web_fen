@@ -10,63 +10,41 @@ class UserController extends Controller
 {
     public function index()
     {
-        $this->authorizeAccess();
-
         $usuarios = User::select('id', 'name', 'email', 'rol')->get();
-        $rol = Auth::user()->rol;
-
-        return view('usuarios.index', compact('usuarios', 'rol'));
+        return view('usuarios.index', compact('usuarios'));
     }
 
-public function edit(User $user)
-{
-    $this->authorizeAccess();
-
-    if ($user->id === Auth::id()) {
-        return redirect()->route('usuarios.index')->withErrors(['No puedes editar tu propio usuario.']);
-    }
-
-    $rol = Auth::user()->rol;
-
-    return view('usuarios.edit', compact('user', 'rol'));
-}
-
-
-    public function update(Request $request, User $user)
+    public function edit(User $usuario)
     {
-        $this->authorizeAccess();
+        if ($usuario->id === Auth::id()) {
+            return redirect()->route('usuarios.index')
+                ->withErrors(['No puedes editar tu propio usuario.']);
+        }
 
+        return view('usuarios.edit', compact('usuario'));
+    }
+
+    public function update(Request $request, User $usuario)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'rol' => [
-                'required',
-                'in:administrativo,docente,asistente,director_magister,director_administrativo,auxiliar',
-            ],
+            'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
+            'rol' => 'required|in:administrativo,docente,asistente,director_magister,director_administrativo,auxiliar',
         ]);
 
-        $user->update($request->only('name', 'email', 'rol'));
+        $usuario->update($request->only('name', 'email', 'rol'));
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
-    public function destroy(User $user)
+    public function destroy(User $usuario)
     {
-        $this->authorizeAccess();
-
-        if ($user->id === Auth::id()) {
+        if ($usuario->id === Auth::id()) {
             return redirect()->back()->withErrors(['No puedes eliminar tu propio usuario.']);
         }
 
-        $user->delete();
+        $usuario->delete();
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario eliminado correctamente.');
-    }
-
-    private function authorizeAccess(): void
-    {
-        if (!tieneRol(['administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
     }
 }

@@ -27,7 +27,7 @@ class RoomController extends Controller
 
     public function create()
     {
-        $this->authorizeAccess();
+        
 
         $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
         $cursos = Course::with('magister')->orderBy('magister_id')->orderBy('nombre')->get();
@@ -37,7 +37,7 @@ class RoomController extends Controller
 
     public function store(StoreRoomRequest $request)
     {
-        $this->authorizeAccess();
+        
 
         $data = $request->validated();
 
@@ -52,14 +52,14 @@ class RoomController extends Controller
 
     public function edit(Room $room)
     {
-        $this->authorizeAccess();
+        
 
         return view('rooms.edit', compact('room'));
     }
 
     public function update(StoreRoomRequest $request, Room $room)
     {
-        $this->authorizeAccess();
+        
 
         $data = $request->validated();
 
@@ -74,7 +74,7 @@ class RoomController extends Controller
 
     public function destroy(Room $room)
     {
-        $this->authorizeAccess();
+        
 
         $room->delete();
         return redirect()->route('rooms.index')->with('success', 'Sala eliminada');
@@ -90,13 +90,6 @@ class RoomController extends Controller
         $trimestres = Period::orderBy('anio')->orderBy('numero')->get();
 
         return view('rooms.show', compact('room', 'clases', 'magisters', 'dias', 'trimestres'));
-    }
-
-    private function authorizeAccess()
-    {
-        if (!tieneRol(['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
     }
 
     private function booleanFields()

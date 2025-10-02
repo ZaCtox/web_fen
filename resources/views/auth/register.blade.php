@@ -43,7 +43,7 @@
                     <option value="director_programa" {{ old('rol') == 'director_programa' ? 'selected' : '' }}>Director de Programa</option>
                     <option value="asistente_programa" {{ old('rol') == 'asistente_programa' ? 'selected' : '' }}>Asistente de Programa</option>
                     <option value="docente" {{ old('rol') == 'docente' ? 'selected' : '' }}>Docente</option>
-                    <option value="tecnico" {{ old('rol') == 'tecnico' ? 'selected' : '' }}>Técnico</option>
+                    <option value="técnico" {{ old('rol') == 'técnico' ? 'selected' : '' }}>Técnico</option>
                     <option value="auxiliar" {{ old('rol') == 'auxiliar' ? 'selected' : '' }}>Auxiliar</option>
                     <option value="asistente_postgrado" {{ old('rol') == 'asistente_postgrado' ? 'selected' : '' }}>Asistente de Postgrado</option>
                 </select>

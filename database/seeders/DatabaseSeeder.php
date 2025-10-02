@@ -21,7 +21,10 @@ class DatabaseSeeder extends Seeder
         DB::table('periods')->truncate(); 
         DB::table('clases')->truncate();         
         DB::table('staff')->truncate(); 
-        DB::table('events')->truncate();         
+        DB::table('events')->truncate();
+        DB::table('emergencies')->truncate();
+        DB::table('informes')->truncate();
+         
         // si tiene relaciones también
         // Añade más tablas si es necesario
 

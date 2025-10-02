@@ -7,47 +7,71 @@
         </h2>
     </x-slot>
 
-    <div class="py-6 max-w-7xl mx-auto px-4">
-        <div x-data="{ search: '' }" class="bg-[#fcffff] dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-[#c4dafa]">
-            
-            {{-- Buscador --}}
-            <input type="text" 
-                x-model="search" 
-                placeholder="Buscar sala por nombre..."
-                class="w-full mb-4 px-3 py-2 border border-[#4d82bc] rounded focus:outline-none focus:ring-2 focus:ring-[#005187] dark:bg-gray-700 dark:text-white">
+    <div class="p-6 max-w-7xl mx-auto" x-data="{
+            search: '',
+            rooms: @js($rooms),
+            get filtradas() {
+                const q = this.search.toLowerCase();
+                return this.rooms.filter(r => 
+                    r.name.toLowerCase().includes(q) ||
+                    r.location.toLowerCase().includes(q) ||
+                    (r.description || '').toLowerCase().includes(q)
+                );
+            }
+        }">
 
-            {{-- Tabla --}}
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
-                    <thead class="bg-[#c4dafa] dark:bg-gray-700">
-                        <tr>
-                            <th class="px-4 py-2 text-center font-semibold text-[#005187]">Nombre</th>
-                            <th class="px-4 py-2 text-center font-semibold text-[#005187]">Ubicación</th>
-                            <th class="px-4 py-2 text-center font-semibold text-[#005187]">Capacidad</th>
-                            <th class="px-4 py-2 text-center font-semibold text-[#005187]">Descripción</th>
-                            <th class="px-4 py-2 text-center font-semibold text-[#005187]">Ver ficha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($rooms as $room)
-                            <tr class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#f0f6ff] dark:hover:bg-gray-700 transition">
-                                <td class="px-4 py-2 text-center">{{ $room->name }}</td>
-                                <td class="px-4 py-2 text-center">{{ $room->location }}</td>
-                                <td class="px-4 py-2 text-center">{{ $room->capacity }}</td>
-                                <td class="px-4 py-2 text-center">{{ $room->description }}</td>
-                                <td class="px-4 py-2 text-center">
-                                    <a href="{{ route('public.rooms.show', $room->id) }}"
-                                        class="inline-flex items-center justify-center px-3 py-2 rounded-full hover:bg-[#005187] text-white shadow transition-all duration-200"
-                                        title="Ver ficha de la sala">
-                                        📄
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        <!-- Buscador -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div class="flex w-full sm:w-auto gap-3 items-center">
+                <input x-model="search" type="text" placeholder="Buscar por nombre, ubicación o descripción..." class="w-full sm:w-[350px] px-4 py-2 rounded-lg border border-gray-300 
+                           dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                <button type="button" @click="search=''" class="px-3 py-2 rounded-lg bg-gray-200 text-gray-800 
+                           dark:bg-gray-700 dark:text-gray-100">
+                    Limpiar
+                </button>
             </div>
         </div>
+
+        <!-- Sin resultados -->
+        <template x-if="filtradas.length === 0">
+            <div class="rounded-lg border border-dashed p-6 text-center text-gray-500 dark:text-gray-300">
+                😕 No hay salas que coincidan con tu búsqueda.
+            </div>
+        </template>
+
+        {{-- Tabla --}}
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-200">
+                <thead class="bg-[#c4dafa] dark:bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 text-center font-semibold text-[#005187]">Nombre</th>
+                        <th class="px-4 py-2 text-center font-semibold text-[#005187]">Ubicación</th>
+                        <th class="px-4 py-2 text-center font-semibold text-[#005187]">Capacidad</th>
+                        <th class="px-4 py-2 text-center font-semibold text-[#005187]">Descripción</th>
+                        <th class="px-4 py-2 text-center font-semibold text-[#005187]">Ver ficha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="room in filtradas" :key="room.id">
+                        <tr
+                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#f0f6ff] dark:hover:bg-gray-700 transition">
+                            <td class="px-4 py-2 text-center" x-text="room.name"></td>
+                            <td class="px-4 py-2 text-center" x-text="room.location"></td>
+                            <td class="px-4 py-2 text-center" x-text="room.capacity"></td>
+                            <td class="px-4 py-2 text-center" x-text="room.description"></td>
+                            <td class="px-4 py-2 text-center">
+                                <a :href="'{{ route('public.rooms.show', ':id') }}'.replace(':id', room.id)"
+                                    class="inline-flex items-center justify-center px-3 py-2 rounded-full hover:bg-[#005187] text-white shadow transition-all duration-200"
+                                    title="Ver ficha de la sala">
+                                    <img src="{{ asset('icons/ficha.svg') }}" alt="back" class="w-5 h-5">
+                                </a>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
     </div>
 
     {{-- Footer --}}

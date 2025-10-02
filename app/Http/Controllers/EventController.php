@@ -11,12 +11,6 @@ use App\Models\Period;
 
 class EventController extends Controller
 {
-    private function authorizeAccess()
-    {
-        if (!tieneRol(['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
-    }
 
     public function index(Request $request)
     {
@@ -38,8 +32,7 @@ class EventController extends Controller
             }))
             ->get()
             ->map(function ($event) {
-                $color = is_object($event->magister) ? ($event->magister->color ?? '#a5f63b') : '#a5f63b';
-
+                $color = $event->magister->color ?? '#a5f63b';
                 return [
                     'id' => 'event-' . $event->id,
                     'title' => $event->title,
@@ -64,7 +57,6 @@ class EventController extends Controller
         return response()->json(collect($manualEvents)->concat(collect($classEvents))->values());
     }
 
-
     public function calendario()
     {
         $periodoActual = Period::orderByDesc('anio')->orderByDesc('numero')->first();
@@ -73,11 +65,8 @@ class EventController extends Controller
         return view('calendario.index', compact('fechaInicio'));
     }
 
-
     public function store(Request $request)
     {
-        $this->authorizeAccess();
-
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -100,8 +89,6 @@ class EventController extends Controller
 
     public function update(Request $request, Event $event)
     {
-        $this->authorizeAccess();
-
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
@@ -127,7 +114,6 @@ class EventController extends Controller
 
     public function destroy(Event $event)
     {
-        $this->authorizeAccess();
         $event->delete();
 
         return response()->json(['message' => 'Evento eliminado']);

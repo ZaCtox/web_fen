@@ -30,6 +30,16 @@ class StaffSeeder extends Seeder
             ['nombre' => 'Juan Azares', 'cargo' => 'Encargado de Laboratorio Escuela Ingeniería Informática Empresarial', 'telefono' => null, 'email' => 'jazares@utalca.cl'],
         ];
 
-        Staff::insert($data);
+        foreach ($data as $staff) {
+            Staff::firstOrCreate(
+                ['email' => $staff['email']],
+                [
+                    'nombre' => $staff['nombre'],
+                    'cargo' => $staff['cargo'],
+                    'telefono' => $staff['telefono'] ?? null,
+                    'anexo' => $staff['anexo'] ?? null
+                ]
+            );
+        }
     }
 }

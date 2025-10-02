@@ -104,7 +104,7 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorizeAccess();
+        
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -135,7 +135,7 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        $this->authorizeAccess();
+        
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
@@ -169,7 +169,7 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        $this->authorizeAccess();
+        
         $event->delete();
 
         return response()->json([

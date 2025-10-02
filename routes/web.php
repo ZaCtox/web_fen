@@ -1,24 +1,23 @@
 <?php
 
+use App\Http\Controllers\ClaseController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EmergencyController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\InformeController;
+use App\Http\Controllers\MagisterController;
+use App\Http\Controllers\PeriodController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{
-    CourseController,
-    MagisterController,
-    ProfileController,
-    IncidentController,
-    EventController,
-    RoomController,
-    PeriodController,
-    ClaseController,
-    DashboardController,
-    StaffController,
-    UserController,
-    EmergencyController
-};
 
 // 🏠 Dashboard principal
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified', 'role:decano,director_administrativo,docente,administrativo'])
+    ->middleware(['auth', 'verified', 'role:administrador,director_administrativo,docente,administrativo'])
     ->name('dashboard');
 
 // 🟡 Rutas protegidas
@@ -26,23 +25,23 @@ Route::middleware(['auth'])->group(function () {
 
     // 📚 Clases
     Route::get('/clases/exportar', [ClaseController::class, 'exportar'])
-        ->middleware('role:decano,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
         ->name('clases.exportar');
 
     Route::resource('clases', ClaseController::class)
-        ->middleware('role:decano,director_programa,asistente_programa,director_administrativo,asistente_postgrado');
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado');
 
     Route::get('/salas/disponibilidad', [ClaseController::class, 'disponibilidad'])
-        ->middleware('role:decano,asistente_programa,director_administrativo')
+        ->middleware('role:administrador,asistente_programa,director_administrativo')
         ->name('salas.disponibilidad');
 
     Route::get('/salas/horarios', [ClaseController::class, 'horariosDisponibles'])
-        ->middleware('role:decano,asistente_programa,director_administrativo')
+        ->middleware('role:administrador,asistente_programa,director_administrativo')
         ->name('salas.horarios');
 
     // 📅 Calendario
     Route::get('/calendario', [EventController::class, 'calendario'])
-        ->middleware('role:decano,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
         ->name('calendario');
 
     // 🎉 Eventos
@@ -118,7 +117,12 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])
         ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
         ->name('emergencies.deactivate');
+
+    Route::resource('informes', InformeController::class)->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado');
+
+    Route::get('informes/download/{id}', [InformeController::class, 'download'])->name('informes.download');
+
 });
 
-require __DIR__ . '/public.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/public.php';
+require __DIR__.'/auth.php';

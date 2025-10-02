@@ -10,7 +10,7 @@
 
             <!-- Links -->
             @if(Auth::check())
-                <div class="hidden space-x-8 lg:-my-px lg:ms-10 lg:flex">
+                <div class="hidden space-x-6 lg:-my-px lg:ms-10 lg:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-nav-link>
 
                     @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'asistente_postgrado']))
@@ -29,13 +29,16 @@
                         <x-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">Clases</x-nav-link>
                     @endif
 
+                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'asistente_postgrado']))
+                        <x-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">Archivos</x-nav-link>
+                    @endif
+
                     @if(tieneRol('administrador'))
                         <x-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-nav-link>
                     @endif
 
                     @if(tieneRol(['administrador', 'director_programa', 'asistente_programa']))
                         <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Cursos</x-nav-link>
-                        <x-nav-link :href="route('magisters.index')" :active="request()->routeIs('magisters.index')">Magísteres</x-nav-link>
                     @endif
 
                     @if(tieneRol('administrador'))
@@ -55,6 +58,7 @@
                     <x-nav-link :href="route('public.Equipo-FEN.index')" :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-nav-link>
                     <x-nav-link :href="route('public.rooms.index')" :active="request()->routeIs('public.rooms.index')">Salas</x-nav-link>
                     <x-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Cursos</x-nav-link>
+                    <x-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Archivos</x-nav-link>
                 </nav>
             @endif
 
@@ -131,8 +135,9 @@
                 <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">Incidencias</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">Archivos</x-responsive-nav-link>
                 
-                @if(tieneRol('administrativo'))
+                @if(tieneRol('administrador'))
                     <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.index')">Nuestro Equipo</x-responsive-nav-link>
@@ -145,6 +150,7 @@
                 <x-responsive-nav-link :href="route('public.Equipo-FEN.index')" :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.rooms.index')" :active="request()->routeIs('public.rooms.index')">Salas</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Cursos</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Archivos</x-responsive-nav-link>
                 
                 <a href="{{ route('login') }}" class="mt-4 block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-center">Iniciar Sesión</a>
             @endif

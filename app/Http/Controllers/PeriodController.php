@@ -10,7 +10,7 @@ class PeriodController extends Controller
 {
     public function index()
     {
-        $this->authorizeAccess();
+        
 
         $periods = Period::orderByDesc('anio')->orderBy('numero')->get();
         return view('periods.index', compact('periods'));
@@ -18,14 +18,14 @@ class PeriodController extends Controller
 
     public function create()
     {
-        $this->authorizeAccess();
+        
 
         return view('periods.create');
     }
 
     public function store(Request $request)
     {
-        $this->authorizeAccess();
+        
 
         $request->validate([
             'anio' => 'required|integer|min:1|max:10',
@@ -41,14 +41,14 @@ class PeriodController extends Controller
 
     public function edit(Period $period)
     {
-        $this->authorizeAccess();
+        
 
         return view('periods.edit', ['period' => $period]);
     }
 
     public function update(Request $request, Period $period)
     {
-        $this->authorizeAccess();
+        
 
         $request->validate([
             'anio' => 'required|integer|min:1|max:10',
@@ -64,7 +64,7 @@ class PeriodController extends Controller
 
     public function destroy(Period $period)
     {
-        $this->authorizeAccess();
+        
 
         $period->delete();
 
@@ -73,7 +73,7 @@ class PeriodController extends Controller
 
     public function actualizarAlProximoAnio()
     {
-        $this->authorizeAccess();
+        
 
         $periodos = Period::all();
 
@@ -142,10 +142,4 @@ class PeriodController extends Controller
         ]);
     }
 
-    private function authorizeAccess()
-    {
-        if (!tieneRol(['docente', 'administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
-    }
 }

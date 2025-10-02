@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use App\Models\Room;
 use App\Models\Period;
@@ -30,7 +29,8 @@ class ClaseSeeder extends Seeder
             ]
         ];
 
-        $modalidades = ['presencial', 'online', 'hibrida'];
+        $modalidades = ['presencial', 'online', 'híbrida'];
+        $tipos = ['cátedra', 'taller', 'laboratorio', 'ayudantía'];
         $total = 0;
 
         foreach (Magister::with('courses')->get() as $magister) {
@@ -41,12 +41,14 @@ class ClaseSeeder extends Seeder
                     $dia = array_rand($bloques);
                     $horario = $bloques[$dia][array_rand($bloques[$dia])];
                     $modality = $modalidades[array_rand($modalidades)];
+                    $tipo = $tipos[array_rand($tipos)];
 
                     Clase::create([
                         'course_id' => $curso->id,
                         'period_id' => $curso->period_id,
                         'room_id' => $modality === 'online' ? null : $salas[array_rand($salas)],
                         'modality' => $modality,
+                        'tipo' => $tipo,
                         'dia' => $dia,
                         'hora_inicio' => $horario[0],
                         'hora_fin' => $horario[1],
@@ -60,6 +62,6 @@ class ClaseSeeder extends Seeder
             }
         }
 
-        $this->command->info("✅ Se generaron $total clases en la tabla 'clases'.");
+        $this->command->info("✅ Se generaron $total clases en la tabla 'clases' con tipos asignados.");
     }
 }

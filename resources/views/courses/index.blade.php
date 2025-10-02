@@ -25,7 +25,7 @@
                 <div class="mb-6 border border-[#c4dafa] rounded-lg shadow-sm bg-[#fcffff] dark:bg-gray-800">
                     {{-- Header clickable con affordance --}}
                     <div class="flex justify-between items-center cursor-pointer magister-header 
-                                        bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition">
+                                            bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition">
                         <h3 class="text-lg font-semibold text-[#005187] dark:text-[#84b6f4]">
                             Magíster en {{ $magister->nombre }}
                         </h3>
@@ -67,7 +67,7 @@
                                         <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
-                                                    <th class="px-4 py-2 text-left">Curso</th>
+                                                    <th class="px-4 py-2 text-left"></th>
                                                     <th class="px-4 py-2 text-right w-32">Acciones</th>
                                                 </tr>
                                             </thead>

@@ -19,17 +19,20 @@
 
                     {{-- Header clickable con affordance --}}
                     <div class="flex justify-between items-center cursor-pointer magister-header 
-                                    bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-2 rounded-t-lg transition">
+                                    bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition">
                         <h3 class="text-lg font-semibold text-[#005187] dark:text-[#84b6f4]">
-                            🎓 Magíster en {{ $magister->nombre }}
+                            Magíster en {{ $magister->nombre }}
                         </h3>
-                        <span class="text-sm text-[#4d82bc] flex items-center">
-                            📂 Ver Cursos
-                            <svg class="ml-2 w-4 h-4 transition-transform" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </span>
+                        <div class="flex items-center gap-3">
+                            {{-- Botón añadir curso --}}
+                            <span class="text-sm text-[#4d82bc] flex items-center">
+                                <svg class="ml-2 w-5 h-5 transition-transform" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </span>
+                        </div>
                     </div>
 
                     {{-- Contenido oculto inicialmente --}}
@@ -42,20 +45,31 @@
                         @endphp
 
                         @forelse ($agrupados as $anio => $porTrimestre)
-                            <div class="border border-[#c4dafa] rounded bg-[#c4dafa]/20 p-3">
-                                <h4 class="font-bold text-[#005187] dark:text-[#84b6f4] mb-2">📘 Año {{ $anio }}</h4>
+                            <div class="border border-[#c4dafa] rounded bg-[#c4dafa]/10 p-3">
+                                <h4 class="font-bold text-[#005187] dark:text-[#84b6f4] mb-2">Año {{ $anio }}</h4>
 
                                 @foreach ($porTrimestre as $trimestre => $cursos)
-                                    <div class="ml-4 mb-2">
-                                        <h5 class="text-sm font-semibold text-[#4d82bc] dark:text-[#84b6f4]">
+                                    <div class="ml-4 mb-3">
+                                        <h5 class="text-sm font-semibold text-[#4d82bc] dark:text-[#84b6f4] mb-1">
                                             Trimestre {{ $romanos[$trimestre] ?? $trimestre }}
                                         </h5>
 
-                                        <ul class="list-disc ml-6 text-sm text-[#005187] dark:text-[#fcffff]">
-                                            @foreach ($cursos as $curso)
-                                                <li>{{ $curso->nombre }}</li>
-                                            @endforeach
-                                        </ul>
+                                        <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
+                                            <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
+                                                <tr>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($cursos as $course)
+                                                    <tr
+                                                        class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#84b6f4]/10 transition">
+                                                        <td class="px-4 py-2 text-[#005187] dark:text-gray-100">
+                                                            {{ $course->nombre }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 @endforeach
                             </div>

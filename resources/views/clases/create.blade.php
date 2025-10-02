@@ -206,7 +206,7 @@
                     <button type="button" id="btn-horarios"
                         class="bg-[#4d82bc] hover:bg-[#005187] text-white text-sm px-3 py-1 rounded"
                         data-url-horarios="{{ route('salas.horarios') }}">
-                        Consultar Horarios <img src="{{ asset('icons/revision.svg') }}" alt="Guardar" class="inline w-5 h-5">
+                        Consultar Horarios
                     </button>
 
                     <div class="mt-2 flex flex-wrap items-center gap-3">

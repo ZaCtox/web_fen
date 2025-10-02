@@ -12,14 +12,9 @@ class MagisterController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorizeAccess();
-
         $magisters = Magister::query()
             ->withCount('courses')
-            ->when(
-                $request->filled('q'),
-                fn($q) => $q->where('nombre', 'like', '%' . $request->q . '%')
-            )
+            ->when($request->filled('q'), fn($q) => $q->where('nombre', 'like', '%' . $request->q . '%'))
             ->orderBy('nombre')
             ->paginate(10)
             ->withQueryString();
@@ -29,14 +24,11 @@ class MagisterController extends Controller
 
     public function create()
     {
-        $this->authorizeAccess();
         return view('magisters.create');
     }
 
     public function store(StoreMagisterRequest $request)
     {
-        $this->authorizeAccess();
-
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string',
@@ -49,21 +41,16 @@ class MagisterController extends Controller
 
         Magister::create($validated);
 
-        return redirect()
-            ->route('magisters.index')
-            ->with('success', 'Programa creado correctamente.');
+        return redirect()->route('magisters.index')->with('success', 'Programa creado correctamente.');
     }
 
     public function edit(Magister $magister)
     {
-        $this->authorizeAccess();
         return view('magisters.edit', compact('magister'));
     }
 
     public function update(UpdateMagisterRequest $request, Magister $magister)
     {
-        $this->authorizeAccess();
-
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string',
@@ -76,15 +63,11 @@ class MagisterController extends Controller
 
         $magister->update($validated);
 
-        return redirect()
-            ->route('magisters.index')
-            ->with('success', 'Programa actualizado.');
+        return redirect()->route('magisters.index')->with('success', 'Programa actualizado.');
     }
 
     public function destroy(Magister $magister)
     {
-        $this->authorizeAccess();
-
         DB::transaction(function () use ($magister) {
             if ($magister->courses()->exists()) {
                 $magister->courses()->delete();
@@ -92,15 +75,6 @@ class MagisterController extends Controller
             $magister->delete();
         });
 
-        return redirect()
-            ->route('magisters.index')
-            ->with('success', 'Programa y cursos asociados eliminados.');
-    }
-
-    private function authorizeAccess(): void
-    {
-        if (!tieneRol(['administrativo', 'docente'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
+        return redirect()->route('magisters.index')->with('success', 'Programa y cursos asociados eliminados.');
     }
 }

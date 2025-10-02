@@ -24,11 +24,17 @@
             }
          }">
 
-        {{-- Buscador dinámico --}}
-        <form method="GET" class="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
-            <input x-model="search" name="q" placeholder="Buscar por nombre, cargo o email"
-                class="flex-1 px-4 py-2 rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
-        </form>
+        <!-- Controles -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <div class="flex w-full sm:w-auto gap-3 items-center">
+                <input x-model="search" type="text" placeholder="Buscar por nombre, cargo o email"
+                    class="w-full sm:w-[350px] px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
+                <button type="button" @click="search=''; sort='nombre_asc'; hasPhone=false"
+                    class="px-3 py-2 rounded-lg bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100">
+                    Limpiar
+                </button>
+            </div>
+        </div>
 
         {{-- Sin resultados --}}
         @if($staff->count() === 0)
@@ -49,17 +55,17 @@
                 <div @click="openModal(p)"
                     class="cursor-pointer hover:shadow-lg transition rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
                     <div class="flex">
-                        <div class="w-2/3 p-4">
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white" x-text="p.nombre"></h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-300" x-text="p.cargo"></p>
+                            <div class="w-2/3 p-4">
+                                <h3 class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]" x-text="p.nombre"></h3>
+                                <p class="text-sm text-[#4d82bc] dark:text-[#84b6f4]" x-text="p.cargo"></p>
+                            </div>
+                            <div class="w-1/3 bg-[#4d82bc] text-white p-4">
+                                <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
+                                <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
+                                <div class="text-[13px] tracking-wide opacity-90">Email</div>
+                                <div class="text-sm truncate" x-text="p.email" :title="p.email"></div>
+                            </div>
                         </div>
-                        <div class="w-1/3 bg-[#4d82bc] text-white p-4">
-                            <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
-                            <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
-                            <div class="text-[13px] tracking-wide opacity-90">Email</div>
-                            <div class="text-sm truncate" x-text="p.email" :title="p.email"></div>
-                        </div>
-                    </div>
                 </div>
             </template>
         </div>
@@ -69,16 +75,20 @@
             <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-xl relative">
                 <button @click="modalOpen = false"
                     class="absolute top-2 right-2 text-gray-700 dark:text-gray-200 hover:text-red-500">
-                    ✖
+                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="back" class="w-8 h-8">
                 </button>
 
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2" x-text="seleccionado?.nombre"></h2>
-                <p class="text-gray-600 dark:text-gray-300 mb-4" x-text="seleccionado?.cargo"></p>
+                <h2 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4] mb-2" x-text="seleccionado?.nombre"></h2>
+                <p class="text-[#4d82bc] dark:text-[#84b6f4] mb-4" x-text="seleccionado?.cargo"></p>
 
                 <div class="bg-[#4d82bc] text-white p-4 rounded-lg space-y-2">
                     <div>
                         <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
                         <div class="text-sm" x-text="seleccionado?.telefono || '—'"></div>
+                    </div>
+                     <div>
+                        <div class="text-[13px] tracking-wide opacity-90">Anexo</div>
+                        <div class="text-sm" x-text="seleccionado?.anexo || '—'"></div>
                     </div>
                     <div>
                         <div class="text-[13px] tracking-wide opacity-90">Email</div>

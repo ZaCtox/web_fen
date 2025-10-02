@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             // Roles permitidos según tu formulario
-            'rol'   => ['required', 'in:administrador,director_programa,asistente_programa,tecnico,auxiliar,asistente_postgrado'],
+            'rol'   => ['required', 'in:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado'],
         ]);
 
         $password = Str::random(12); // genera contraseña aleatoria

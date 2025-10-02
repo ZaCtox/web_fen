@@ -9,22 +9,24 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // 🟢 SOLO usuarios autenticados con rol adecuado pueden registrar
 Route::middleware('auth')->group(function () {
     Route::get('/register', function () {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Solo docentes o administrativos pueden registrar nuevos usuarios.');
+        if (! in_array(auth()->user()->rol, ['administrador'])) {
+            abort(403, 'Solo administrador puede registrar nuevos usuarios.');
         }
+
         return app(RegisteredUserController::class)->create();
     })->name('register');
 
     Route::post('/register', function (Request $request) {
-        if (!in_array(auth()->user()->rol, ['docente', 'administrativo'])) {
-            abort(403, 'Solo docentes o administrativos pueden registrar nuevos usuarios.');
+        if (! in_array(auth()->user()->rol, ['administrador'])) {
+            abort(403, 'Solo administrador puede registrar nuevos usuarios.');
         }
+
         return app(RegisteredUserController::class)->store($request);
     });
 });

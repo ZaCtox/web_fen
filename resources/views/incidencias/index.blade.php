@@ -151,16 +151,18 @@
                             <td class="px-4 py-2">{{ $incidencia->id }}</td>
                             <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
                             <td class="px-4 py-2">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
-                            @php
-                                $estadoIconos = [
-                                    'pendiente' => '🕒',
-                                    'en_revision' => '🔍',
-                                    'resuelta' => '✅',
-                                    'no_resuelta' => '❌',
-                                ];
-                            @endphp
-                            <td class="px-4 py-2 text-center">
-                                {{ $estadoIconos[$incidencia->estado] ?? 'ℹ️' }}
+                            <td class="px-4 py-2">
+                                @if ($incidencia->estado === 'resuelta')
+                                    <img src="{{ asset('icons/check.svg') }}" alt="Resuelta" class="w-6 h-6 inline">
+                                @elseif ($incidencia->estado === 'pendiente')
+                                    <img src="{{ asset('icons/clock.svg') }}" alt="Pendiente" class="w-5 h-5 inline">
+                                @elseif ($incidencia->estado === 'en_revision')
+                                    <img src="{{ asset('icons/revision.svg') }}" alt="Revision" class="w-5 h-5 inline">
+                                @elseif ($incidencia->estado === 'no_resuelta')
+                                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="No Resuelta" class="w-6 h-6 inline">
+                                @else
+                                    ℹ️
+                                @endif
                             </td>
                             <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
                             <td class="px-4 py-2">{{ $incidencia->nro_ticket ?? '—' }}</td>
@@ -169,7 +171,8 @@
                             </td>
                             <td class="px-4 py-2 space-x-2">
                                 <a href="{{ route('incidencias.show', $incidencia) }}"
-                                    class="bg-blue-100 hover:bg-blue-200 text-white px-1 py-1 rounded">🔍</a>
+                                    class="bg-blue-100 hover:bg-blue-200 text-white px-1 py-1 rounded">
+                                    <img src="{{ asset('icons/ver.svg') }}" alt="Ver" class="w-5 h-5 inline"></a>
                             </td>
                         </tr>
                     @empty

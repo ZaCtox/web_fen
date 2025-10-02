@@ -45,8 +45,7 @@
             <button type="submit" class="inline-flex items-center justify-center bg-[#005187] hover:bg-[#4d82bc] 
                text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
                transition transform hover:scale-105">
-                <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5 mr-2">
-                {{ __('Guardar') }}
+                <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
             </button>
 
             @if (session('status') === 'password-updated')

@@ -24,13 +24,13 @@ class StaffController extends Controller
 
     public function create()
     {
-        $this->authorizeAccess();
+        
         return view('staff.create');
     }
 
     public function store(StaffRequest $request)
     {
-        $this->authorizeAccess();
+        
         Staff::create($request->validated());
 
         return redirect()
@@ -40,13 +40,13 @@ class StaffController extends Controller
 
     public function edit(Staff $staff)
     {
-        $this->authorizeAccess();
+        
         return view('staff.edit', compact('staff'));
     }
 
     public function update(StaffRequest $request, Staff $staff)
     {
-        $this->authorizeAccess();
+        
         $staff->update($request->validated());
 
         return redirect()
@@ -56,18 +56,11 @@ class StaffController extends Controller
 
     public function destroy(Staff $staff)
     {
-        $this->authorizeAccess();
+        
         $staff->delete();
 
         return redirect()
             ->route('staff.index')
             ->with('success', 'Miembro eliminado.');
-    }
-
-    private function authorizeAccess()
-    {
-        if (!tieneRol(['administrativo'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
     }
 }
