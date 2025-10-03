@@ -2,7 +2,7 @@
 @section('title', 'Informes')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Archivos</h2>
+        <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Registros</h2>
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto px-4" x-data="{
@@ -121,7 +121,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="inline-block bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-3 py-2 rounded-lg shadow transition duration-200">
+                                       class="inline-flex items-center justify-center px-3 py-1 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto">
                                         <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
                                     </button>
                                 </form>

@@ -25,7 +25,7 @@
                 <div class="mb-6 border border-[#c4dafa] rounded-lg shadow-sm bg-[#fcffff] dark:bg-gray-800">
                     {{-- Header clickable con affordance --}}
                     <div class="flex justify-between items-center cursor-pointer magister-header 
-                                            bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition">
+                                                bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition">
                         <h3 class="text-lg font-semibold text-[#005187] dark:text-[#84b6f4]">
                             Magíster en {{ $magister->nombre }}
                         </h3>
@@ -73,34 +73,36 @@
                                             </thead>
                                             <tbody>
                                                 @foreach ($cursos as $course)
-                                                    <tr
-                                                        class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#84b6f4]/10 transition">
-                                                        <td class="px-4 py-2 text-[#005187] dark:text-gray-100">
-                                                            {{ $course->nombre }}
-                                                        </td>
-                                                        <td class="px-3 py-2 text-right">
-                                                            <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
-                                                                {{-- Botón editar --}}
-                                                                <a href="{{ route('courses.edit', $course) }}"
-                                                                    class="inline-flex items-center justify-center px-1 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                                                    <img src="{{ asset('icons/edit.svg') }}" alt="Editar"
-                                                                        class="w-5 h-5">
-                                                                </a>
-
-                                                                {{-- Botón eliminar con SweetAlert --}}
-                                                                <form action="{{ route('courses.destroy', $course) }}" method="POST"
-                                                                    class="form-eliminar inline">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit"
-                                                                        class="inline-flex items-center justify-center px-1 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                                                        <img src="{{ asset('icons/trash.svg') }}" alt="Borrar"
+                                                        <tr
+                                                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#84b6f4]/10 transition">
+                                                            <td class="px-4 py-2 text-[#005187] dark:text-gray-100">
+                                                                {{ $course->nombre }}
+                                                            </td>
+                                                            <td class="px-3 py-2 text-right">
+                                                                <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                                                    {{-- Botón azul (Editar) --}}
+                                                                    <button type="button" class="inline-flex items-center justify-center 
+                                                       w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
+                                                       text-white rounded-lg text-xs font-medium 
+                                                       transition">
+                                                                        <img src="{{ asset('icons/edit.svg') }}" alt="Editar"
                                                                             class="w-4 h-4">
                                                                     </button>
-                                                                </form>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+
+                                                                    {{-- Botón rojo (Eliminar) --}}
+                                                                    <form action="{{ route('courses.destroy', $course) }}" method="POST"
+                                                                        class="form-eliminar inline">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="inline-flex items-center justify-center 
+                                                           w-10 px-3 py-3 bg-[#e57373] hover:bg-[#f28b82] 
+                                                           text-white rounded-lg text-xs font-medium 
+                                                           transition">
+                                                                            <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar"
+                                                                                class="w-3 h-3">
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>

@@ -60,18 +60,20 @@
                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2"
                                         x-show="usuario.id !== authId">
                                         {{-- Editar --}}
-                                        <a :href="`/usuarios/${usuario.id}/edit`"
-                                            class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                            <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-5 h-5">
+                                        <a :href="`/usuarios/${usuario.id}/edit`" class="inline-flex items-center justify-center 
+              w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
+              rounded-lg text-xs font-medium transition">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
 
                                         {{-- Eliminar --}}
                                         <form :action="`/usuarios/${usuario.id}`" method="POST" class="form-eliminar">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                                <img src="{{ asset('icons/trash.svg') }}" alt="Eliminar"
+                                            <button type="submit" class="inline-flex items-center justify-center 
+                       w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] 
+                       rounded-lg text-xs font-medium transition">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar"
                                                     class="w-4 h-4">
                                             </button>
                                         </form>

@@ -40,12 +40,15 @@
                 <select id="rol" name="rol" required
                     class="block mt-1 w-full rounded-md border-gray-300 dark:bg-gray-700 dark:text-white focus:border-[#84b6f4] focus:ring-[#84b6f4]">
                     <option value="">Selecciona un rol</option>
-                    <option value="director_programa" {{ old('rol') == 'director_programa' ? 'selected' : '' }}>Director de Programa</option>
-                    <option value="asistente_programa" {{ old('rol') == 'asistente_programa' ? 'selected' : '' }}>Asistente de Programa</option>
+                    <option value="director_programa" {{ old('rol') == 'director_programa' ? 'selected' : '' }}>Director
+                        de Programa</option>
+                    <option value="asistente_programa" {{ old('rol') == 'asistente_programa' ? 'selected' : '' }}>
+                        Asistente de Programa</option>
                     <option value="docente" {{ old('rol') == 'docente' ? 'selected' : '' }}>Docente</option>
                     <option value="técnico" {{ old('rol') == 'técnico' ? 'selected' : '' }}>Técnico</option>
                     <option value="auxiliar" {{ old('rol') == 'auxiliar' ? 'selected' : '' }}>Auxiliar</option>
-                    <option value="asistente_postgrado" {{ old('rol') == 'asistente_postgrado' ? 'selected' : '' }}>Asistente de Postgrado</option>
+                    <option value="asistente_postgrado" {{ old('rol') == 'asistente_postgrado' ? 'selected' : '' }}>
+                        Asistente de Postgrado</option>
                 </select>
                 <x-input-error :messages="$errors->get('rol')" class="mt-2" />
             </div>
@@ -56,9 +59,10 @@
                            text-white px-4 py-2 rounded-md shadow-md transition">
                     <img src="{{ asset('icons/back.svg') }}" alt="back" class="w-5 h-5">
                 </a>
-                <button type="submit" class="inline-flex items-center justify-center bg-[#005187] hover:bg-[#4d82bc] 
-                                               text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
-                                               transition transform hover:scale-105">
+                <button type="submit" class="inline-flex items-center justify-center 
+           bg-[#3ba55d] hover:bg-[#2d864a] 
+           text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
+           transition transform hover:scale-105">
                     <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
                 </button>
             </div>

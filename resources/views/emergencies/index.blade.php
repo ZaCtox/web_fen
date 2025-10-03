@@ -54,55 +54,60 @@
                 </thead>
                 <tbody>
                     @forelse($emergencies as $emergency)
-                        @php
-                            $isExpired = $emergency->expires_at && $emergency->expires_at->isPast();
-                            $statusColor = $emergency->active && !$isExpired
-                                ? 'bg-green-100 text-green-800'
-                                : ($isExpired ? 'bg-gray-300 text-gray-800' : 'bg-gray-200 text-gray-800');
-                            $statusText = $emergency->active && !$isExpired
-                                ? 'Activa'
-                                : ($isExpired ? 'Expirada' : 'Inactiva');
-                        @endphp
-                        <tr class="border-t border-[#c4dafa]/40 dark:border-gray-700 hover:bg-[#c4dafa]/20 dark:hover:bg-gray-700 transition">
-                            <td class="px-4 py-2 font-medium">{{ $emergency->title }}</td>
-                            <td class="px-4 py-2">{{ Str::limit($emergency->message, 120) }}</td>
-                            <td class="px-4 py-2">
-                                <span class="px-2 py-1 rounded text-xs {{ $statusColor }}">{{ $statusText }}</span>
-                            </td>
-                            <td class="px-4 py-2">
-                                {{ $emergency->expires_at ? $emergency->expires_at->format('d/m/Y H:i') : '—' }}
-                            </td>
-                            <td class="px-4 py-2">{{ $emergency->creator->name ?? '—' }}</td>
-                            <td class="px-4 py-2 flex justify-center gap-2">
-                                {{-- Editar --}}
-                                <a href="{{ route('emergencies.edit', $emergency) }}"
-                                    class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                    <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-5 h-5">
-                                </a>
+                                @php
+                                    $isExpired = $emergency->expires_at && $emergency->expires_at->isPast();
+                                    $statusColor = $emergency->active && !$isExpired
+                                        ? 'bg-green-100 text-green-800'
+                                        : ($isExpired ? 'bg-gray-300 text-gray-800' : 'bg-gray-200 text-gray-800');
+                                    $statusText = $emergency->active && !$isExpired
+                                        ? 'Activa'
+                                        : ($isExpired ? 'Expirada' : 'Inactiva');
+                                @endphp
+                                <tr
+                                    class="border-t border-[#c4dafa]/40 dark:border-gray-700 hover:bg-[#c4dafa]/20 dark:hover:bg-gray-700 transition">
+                                    <td class="px-4 py-2 font-medium">{{ $emergency->title }}</td>
+                                    <td class="px-4 py-2">{{ Str::limit($emergency->message, 120) }}</td>
+                                    <td class="px-4 py-2">
+                                        <span class="px-2 py-1 rounded text-xs {{ $statusColor }}">{{ $statusText }}</span>
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        {{ $emergency->expires_at ? $emergency->expires_at->format('d/m/Y H:i') : '—' }}
+                                    </td>
+                                    <td class="px-4 py-2">{{ $emergency->creator->name ?? '—' }}</td>
+                                    <td class="px-4 py-2 flex justify-center gap-2">
+                                        {{-- Editar --}}
+                                        <a href="{{ route('emergencies.edit', $emergency) }}" class="inline-flex items-center justify-center 
+                          w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
+                          rounded-lg text-xs font-medium transition">
+                                            <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-4 h-4">
+                                        </a>
 
-                                {{-- Desactivar si está activa --}}
-                                @if($emergency->active && !$isExpired)
-                                    <form action="{{ route('emergencies.deactivate', $emergency) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit"
-                                            class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                            <img src="{{ asset('icons/pause.svg') }}" alt="Pausar" class="w-5 h-5">
-                                        </button>
-                                    </form>
-                                @endif
+                                        {{-- Desactivar si está activa --}}
+                                        @if($emergency->active && !$isExpired)
+                                                <form action="{{ route('emergencies.deactivate', $emergency) }}" method="POST">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" class="inline-flex items-center justify-center 
+                                               w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
+                                               rounded-lg text-xs font-medium transition">
+                                                        <img src="{{ asset('icons/pause.svg') }}" alt="Pausar" class="w-4 h-4">
+                                                    </button>
+                                                </form>
+                                        @endif
 
-                                {{-- Eliminar --}}
-                                <form method="POST" action="{{ route('emergencies.destroy', $emergency) }}" class="form-eliminar">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                        <img src="{{ asset('icons/trash.svg') }}" alt="Eliminar" class="w-4 h-4">
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
+                                        {{-- Eliminar --}}
+                                        <form method="POST" action="{{ route('emergencies.destroy', $emergency) }}"
+                                            class="form-eliminar">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="inline-flex items-center justify-center 
+                                   w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] 
+                                   rounded-lg text-xs font-medium transition">
+                                                <img src="{{ asset('icons/trash.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
                     @empty
                         <tr>
                             <td colspan="6" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">

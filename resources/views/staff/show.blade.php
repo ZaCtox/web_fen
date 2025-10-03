@@ -28,16 +28,22 @@
 
                     {{-- Botones (siempre al fondo) --}}
                     <div class="flex flex-wrap gap-2 mt-4">
-                        <a href="{{ route('staff.index') }}"
-                            class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-md shadow-md transition">
-                            <img src="{{ asset('icons/back.svg') }}" alt="back" class="w-5 h-5">
+                        {{-- Botón volver --}}
+                        <a href="{{ route('staff.index') }}" class="inline-flex items-center justify-center 
+               w-15 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] 
+               text-white rounded-md shadow-md transition">
+                            <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5 mr-1">
+
                         </a>
 
-                        <a href="{{ route('staff.edit', $staff) }}"
-                            class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-md shadow-md transition">
-                            <img src="{{ asset('icons/editw.svg') }}" alt="editar" class="w-5 h-5">
+                        {{-- Botón editar --}}
+                        <a href="{{ route('staff.edit', $staff) }}" class="inline-flex items-center justify-center 
+               w-15 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] 
+               text-white rounded-md shadow-md transition">
+                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
                         </a>
 
+                        {{-- Botón eliminar --}}
                         @php
                             $msg = "¿Seguro que deseas eliminar a {$staff->nombre}?";
                         @endphp
@@ -45,12 +51,12 @@
                             data-confirm="{{ $msg }}">
                             @csrf
                             @method('DELETE')
-                            <button type="submit"
-                                class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-5 py-3 rounded-md shadow-md transition">
-                            <img src="{{ asset('icons/trashw.svg') }}" alt="editar" class="w-4 h-4">
+                            <button type="submit" class="inline-flex items-center justify-center 
+                   w-15 px-4 py-2 bg-[#e57373] hover:bg-[#f28b82] 
+                   text-white rounded-md shadow-md transition">
+                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-5">
                             </button>
                         </form>
-
                     </div>
                 </div>
 

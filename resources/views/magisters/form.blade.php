@@ -13,8 +13,7 @@
             Nombre del Programa
         </label>
         <input type="text" name="nombre" id="nombre" value="{{ old('nombre', $magister->nombre ?? '') }}" required
-            maxlength="150" autofocus
-            class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-3 py-2
+            maxlength="150" autofocus class="mt-1 block w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-3 py-2
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-sm"
             placeholder="Ej: Economía">
         @error('nombre')
@@ -28,10 +27,8 @@
         <div class="flex items-center gap-3 mt-1">
             <input type="color" :value="color" @input="color = $event.target.value"
                 class="w-16 h-10 border rounded-md shadow-sm cursor-pointer">
-            <input type="text" name="color" x-model="color"
-                class="w-28 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-2 py-1 text-sm
-                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                placeholder="#3b82f6">
+            <input type="text" name="color" x-model="color" class="w-28 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-2 py-1 text-sm
+                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" placeholder="#3b82f6">
         </div>
     </div>
 
@@ -53,7 +50,8 @@
 
     {{-- Teléfono Asistente --}}
     <div>
-        <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono Asistente</label>
+        <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono
+            Asistente</label>
         <input type="text" name="telefono" id="telefono" placeholder="Ej: 712000000 (fijo) o 912345678 (celular)"
             maxlength="9" pattern="^(712\d{6}|9\d{8})$"
             title="Ingrese un teléfono válido: fijo 712XXXXXX o celular 9XXXXXXXX"
@@ -72,8 +70,7 @@
     {{-- Correo Asistente --}}
     <div>
         <label for="correo" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo Asistente</label>
-        <input type="email" name="correo" id="correo" value="{{ old('correo', $magister->correo ?? '') }}"
-            class="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-3 py-2
+        <input type="email" name="correo" id="correo" value="{{ old('correo', $magister->correo ?? '') }}" class="mt-1 w-full rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-3 py-2
                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition shadow-sm"
             placeholder="Ej: correo@utalca.cl">
     </div>
@@ -84,9 +81,10 @@
                text-white px-4 py-2 rounded-md shadow-md transition">
             <img src="{{ asset('icons/back.svg') }}" alt="back" class="w-5 h-5">
         </a>
-        <button type="submit" class="inline-flex items-center justify-center bg-[#005187] hover:bg-[#4d82bc] 
-                                   text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
-                                   transition transform hover:scale-105">
+        <button type="submit" class="inline-flex items-center justify-center 
+           bg-[#3ba55d] hover:bg-[#2d864a] 
+           text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
+           transition transform hover:scale-105">
             <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
         </button>
     </div>

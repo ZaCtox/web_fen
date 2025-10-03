@@ -8,9 +8,12 @@
                 class="px-3 py-2 rounded border dark:bg-gray-700 dark:text-white">
                 <option value="">Todos</option>
                 @foreach(\App\Models\Magister::orderBy('nombre')->get() as $m)
-                    <option value="{{ $m->id }}">{{ $m->nombre }}</option>
+                    <option value="{{ $m->id }}" {{ $m->id == 3 ? 'selected' : '' }}>
+                        {{ $m->nombre }}
+                    </option>
                 @endforeach
             </select>
+
         </div>
 
         <div>
@@ -28,8 +31,9 @@
             <label class="block text-sm font-medium text-gray-800 dark:text-white invisible">
                 &nbsp; <!-- Para alinear el botón con los selects -->
             </label>
-            <button id="clear-filters" type="button" class="px-3 py-2  rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
-                 🧹
+            <button id="clear-filters" type="button"
+                class="px-3 py-2  rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
+                🧹
             </button>
         </div>
 

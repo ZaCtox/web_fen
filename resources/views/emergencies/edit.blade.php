@@ -6,7 +6,8 @@
     </x-slot>
 
     <div class="py-6 max-w-3xl mx-auto px-4">
-        <div class="bg-[#fcffff] dark:bg-gray-900 shadow-lg rounded-lg p-6 border border-[#c4dafa] dark:border-gray-700 transition">
+        <div
+            class="bg-[#fcffff] dark:bg-gray-900 shadow-lg rounded-lg p-6 border border-[#c4dafa] dark:border-gray-700 transition">
             <form action="{{ route('emergencies.update', $emergency) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
@@ -17,8 +18,8 @@
                     <input type="text" name="title" value="{{ old('title', $emergency->title) }}"
                         class="w-full rounded-md border border-[#c4dafa] dark:border-gray-700 dark:bg-gray-800 dark:text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] transition"
                         maxlength="100" required>
-                    @error('title') 
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p> 
+                    @error('title')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -28,8 +29,8 @@
                     <textarea name="message" rows="5"
                         class="w-full rounded-md border border-[#c4dafa] dark:border-gray-700 dark:bg-gray-800 dark:text-white px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] transition"
                         required>{{ old('message', $emergency->message) }}</textarea>
-                    @error('message') 
-                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p> 
+                    @error('message')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -56,7 +57,7 @@
                         @if($emergency->active)
                             <form action="{{ route('emergencies.deactivate', $emergency) }}" method="POST"
                                 onsubmit="return confirm('¿Desactivar esta emergencia?')">
-                                @csrf 
+                                @csrf
                                 @method('PATCH')
                                 <button type="submit"
                                     class="inline-flex items-center justify-center bg-[#005187] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium transition transform hover:scale-105 gap-2">
@@ -65,8 +66,10 @@
                             </form>
                         @endif
 
-                        <button type="submit"
-                            class="inline-flex items-center justify-center bg-[#005187] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow-md text-sm font-medium transition transform hover:scale-105 gap-2">
+                        <button type="submit" class="inline-flex items-center justify-center 
+           bg-[#3ba55d] hover:bg-[#2d864a] 
+           text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
+           transition transform hover:scale-105">
                             <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
                         </button>
                     </div>

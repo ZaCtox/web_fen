@@ -96,16 +96,16 @@
                     {{-- Botones --}}
                     <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                         {{-- Cancelar --}}
-                        <a href="{{ route('incidencias.index') }}"
-                            class="inline-flex items-center px-5 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow text-sm font-medium 
+                        <a href="{{ route('incidencias.index') }}" class="inline-flex items-center px-5 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow text-sm font-medium 
                                    transition transform hover:scale-105">
                             <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
                         </a>
 
                         {{-- Guardar --}}
-                        <button type="submit" class="inline-flex items-center justify-center bg-[#4d82bc] hover:bg-[#005187] 
-                               text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
-                               transition transform hover:scale-105">
+                        <button type="submit" class="inline-flex items-center justify-center 
+           bg-[#3ba55d] hover:bg-[#2d864a] 
+           text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
+           transition transform hover:scale-105">
                             <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
                         </button>
                     </div>

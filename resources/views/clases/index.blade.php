@@ -191,8 +191,8 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
-                                    class="inline-flex items-center justify-center px-3 py-1 bg-[#84b6f4] hover:bg-[#4d82bc] hover:text-white rounded-lg transition">
-                                    <img src="{{ asset('icons/trash.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                   class="inline-flex items-center justify-center px-3 py-1 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto">
+                                    <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
                                 </button>
                             </form>
                         </div>

@@ -63,7 +63,7 @@
                     <div class="flex gap-3">
                         {{-- Editar --}}
                         <a href="{{ route('clases.edit', $clase) }}"
-                            class="inline-flex items-center px-5 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200">
+                            class="inline-flex items-center px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200">
                             <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
                         </a>
 
@@ -73,7 +73,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="px-4 py-2 rounded-lg bg-[#4d82bc] hover:bg-[#005187] font-medium text-center">
+                                class="inline-flex items-center justify-center px-3 py-1 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto">
                                 <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
                             </button>
                         </form>

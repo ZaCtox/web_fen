@@ -64,9 +64,10 @@
                text-white px-4 py-2 rounded-md shadow-md transition">
             <img src="{{ asset('icons/back.svg') }}" alt="back" class="w-5 h-5">
         </a>
-        <button type="submit" class="inline-flex items-center justify-center bg-[#005187] hover:bg-[#4d82bc] 
-                                   text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
-                                   transition transform hover:scale-105">
+        <button type="submit" class="inline-flex items-center justify-center 
+           bg-[#3ba55d] hover:bg-[#2d864a] 
+           text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
+           transition transform hover:scale-105">
             <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
         </button>
     </div>

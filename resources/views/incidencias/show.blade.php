@@ -71,49 +71,52 @@
                     @endphp
 
                     @if($dentroDePeriodo && !in_array($incidencia->estado, ['resuelta', 'no_resuelta']))
-                        <img src="{{ asset('icons/edit.svg') }}" alt="Actualizar" class="inline w-5 h-5">
-                        <h4 class="text-lg font-bold mb-3 text-[#005187]">Actualizar incidencia</h4>
+                                    <img src="{{ asset('icons/edit.svg') }}" alt="Actualizar" class="inline w-5 h-5">
+                                    <h4 class="text-lg font-bold mb-3 text-[#005187]">Actualizar incidencia</h4>
 
-                        <form action="{{ route('incidencias.update', $incidencia) }}" method="POST"
-                            class="space-y-4 max-w-lg" x-data="{ estado: '{{ old('estado', $incidencia->estado) }}' }">
-                            @csrf @method('PUT')
+                                    <form action="{{ route('incidencias.update', $incidencia) }}" method="POST"
+                                        class="space-y-4 max-w-lg" x-data="{ estado: '{{ old('estado', $incidencia->estado) }}' }">
+                                        @csrf @method('PUT')
 
-                            {{-- Nro Ticket Jira --}}
-                            <div>
-                                <label for="nro_ticket" class="block text-sm font-medium text-[#005187]">N° Ticket Jira (Opcional)</label>
-                                <input type="text" name="nro_ticket" id="nro_ticket"
-                                    value="{{ old('nro_ticket', $incidencia->nro_ticket) }}"
-                                    class="w-full rounded border-[#4d82bc] bg-[#fcffff] text-[#005187] focus:ring-[#005187] focus:border-[#005187]">
-                            </div>
+                                        {{-- Nro Ticket Jira --}}
+                                        <div>
+                                            <label for="nro_ticket" class="block text-sm font-medium text-[#005187]">N° Ticket Jira
+                                                (Opcional)</label>
+                                            <input type="text" name="nro_ticket" id="nro_ticket"
+                                                value="{{ old('nro_ticket', $incidencia->nro_ticket) }}"
+                                                class="w-full rounded border-[#4d82bc] bg-[#fcffff] text-[#005187] focus:ring-[#005187] focus:border-[#005187]">
+                                        </div>
 
-                            {{-- Estado --}}
-                            <div>
-                                <label for="estado" class="block text-sm font-medium text-[#005187]">Estado</label>
-                                <select name="estado" id="estado" x-model="estado"
-                                    class="w-full rounded border-[#4d82bc] bg-[#fcffff] text-[#005187] focus:ring-[#005187] focus:border-[#005187]"
-                                    required>
-                                    <option value="pendiente">Pendiente</option>
-                                    <option value="en_revision">En revisión</option>
-                                    <option value="resuelta">Resuelta</option>
-                                    <option value="no_resuelta">No resuelta</option>
-                                </select>
-                            </div>
+                                        {{-- Estado --}}
+                                        <div>
+                                            <label for="estado" class="block text-sm font-medium text-[#005187]">Estado</label>
+                                            <select name="estado" id="estado" x-model="estado"
+                                                class="w-full rounded border-[#4d82bc] bg-[#fcffff] text-[#005187] focus:ring-[#005187] focus:border-[#005187]"
+                                                required>
+                                                <option value="pendiente">Pendiente</option>
+                                                <option value="en_revision">En revisión</option>
+                                                <option value="resuelta">Resuelta</option>
+                                                <option value="no_resuelta">No resuelta</option>
+                                            </select>
+                                        </div>
 
-                            {{-- Comentario --}}
-                            <div>
-                                <label for="comentario" class="block text-sm font-medium text-[#005187]">Comentario</label>
-                                <textarea name="comentario" id="comentario" rows="3"
-                                    class="w-full rounded border-[#4d82bc] bg-[#fcffff] text-[#005187] focus:ring-[#005187] focus:border-[#005187]"
-                                    placeholder="Agrega observaciones o motivos...">{{ old('comentario', $incidencia->comentario) }}</textarea>
-                            </div>
+                                        {{-- Comentario --}}
+                                        <div>
+                                            <label for="comentario" class="block text-sm font-medium text-[#005187]">Comentario</label>
+                                            <textarea name="comentario" id="comentario" rows="3"
+                                                class="w-full rounded border-[#4d82bc] bg-[#fcffff] text-[#005187] focus:ring-[#005187] focus:border-[#005187]"
+                                                placeholder="Agrega observaciones o motivos...">{{ old('comentario', $incidencia->comentario) }}</textarea>
+                                        </div>
 
-                            <div class="pt-4">
-                                <button type="submit"
-                                    class="bg-[#005187] hover:bg-[#4d82bc] text-white font-bold py-2 px-4 rounded">
-                                    <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="inline w-5 h-5">
-                                </button>
-                            </div>
-                        </form>
+                                        <div class="pt-4">
+                                            <button type="submit" class="inline-flex items-center justify-center 
+                           bg-[#3ba55d] hover:bg-[#2d864a] 
+                           text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
+                           transition transform hover:scale-105">
+                                                <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
+                                            </button>
+                                        </div>
+                                    </form>
                     @else
                         <div class="text-sm text-[#4d82bc] font-medium">
                             🔒 Esta incidencia ha sido marcada como
@@ -134,11 +137,13 @@
                                 <li>
                                     <div class="relative pb-8">
                                         @if(!$loop->last)
-                                            <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-[#84b6f4]" aria-hidden="true"></span>
+                                            <span class="absolute left-4 top-4 -ml-px h-full w-0.5 bg-[#84b6f4]"
+                                                aria-hidden="true"></span>
                                         @endif
                                         <div class="relative flex items-start space-x-3">
                                             <div>
-                                                <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#fcffff] ring-8 ring-[#c4dafa]">
+                                                <span
+                                                    class="flex h-8 w-8 items-center justify-center rounded-full bg-[#fcffff] ring-8 ring-[#c4dafa]">
                                                     <x-estado-icon :estado="$log->estado" />
                                                 </span>
                                             </div>
@@ -148,11 +153,13 @@
                                                         {{ ucfirst(str_replace('_', ' ', $log->estado)) }}
                                                     </p>
                                                     <p class="mt-0.5 text-xs text-[#4d82bc]">
-                                                        {{ $log->created_at->format('d/m/Y H:i') }} — por {{ $log->user->name ?? 'Sistema' }}
+                                                        {{ $log->created_at->format('d/m/Y H:i') }} — por
+                                                        {{ $log->user->name ?? 'Sistema' }}
                                                     </p>
                                                 </div>
                                                 @if($log->comentario)
-                                                    <div class="mt-2 text-sm text-[#005187] bg-[#fcffff] border border-[#84b6f4] p-2 rounded">
+                                                    <div
+                                                        class="mt-2 text-sm text-[#005187] bg-[#fcffff] border border-[#84b6f4] p-2 rounded">
                                                         {{ $log->comentario }}
                                                     </div>
                                                 @endif
@@ -177,8 +184,8 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="px-4 py-2 rounded-lg bg-[#4d82bc] hover:bg-[#005187] font-medium text-center">
-                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
+                                class="inline-flex items-center justify-center px-5 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto">
+                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
                             </button>
                         </form>
                     @endif

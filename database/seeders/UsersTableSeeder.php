@@ -48,9 +48,9 @@ class UsersTableSeeder extends Seeder
 
         // Usuario Director de Magíster
         User::firstOrCreate([
-            'email' => 'director.magister@webfen.cl',
+            'email' => 'director.programa@webfen.cl',
         ], [
-            'name' => 'Director de Magíster',
+            'name' => 'Director de Programa',
             'password' => Hash::make('director123'),
             'rol' => 'director_programa',
         ]);

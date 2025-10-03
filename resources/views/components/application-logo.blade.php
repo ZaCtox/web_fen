@@ -1,4 +1,4 @@
-<img src="{{ asset('images/logo-fen.png') }}" alt="Logo FEN"
+<img src="{{ asset('images/FEN2.png') }}" alt="Logo FEN"
      class="h-8 w-auto block dark:hidden">
-<img src="{{ asset('images/logo-fen-white.png') }}" alt="Logo FEN Blanco"
+<img src="{{ asset('images/FEN1.png') }}" alt="Logo FEN Blanco"
      class="h-8 w-auto hidden dark:block">

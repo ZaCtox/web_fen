@@ -17,21 +17,22 @@
                 </a>
             @else
                 <button type="button" onclick="
-                    Swal.fire({
-                        title:'No puedes crear más trimestres',
-                        text:'Ya existen 6 trimestres registrados.',
-                        icon:'info',
-                        confirmButtonColor:'#4d82bc',
-                        confirmButtonText:'Entendido'
-                    });
-                "
+                                Swal.fire({
+                                    title:'No puedes crear más trimestres',
+                                    text:'Ya existen 6 trimestres registrados.',
+                                    icon:'info',
+                                    confirmButtonColor:'#4d82bc',
+                                    confirmButtonText:'Entendido'
+                                });
+                            "
                     class="inline-block bg-gray-400 cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200">
                     <img src='{{ asset('icons/agregar.svg') }}' alt='nuevo' class='w-5 h-5 opacity-75'>
                 </button>
             @endif
 
             {{-- Botón Actualizar fechas al próximo año --}}
-            <form id="form-actualizar-proximo-anio" method="POST" action="{{ route('periods.actualizarProximoAnio') }}" class="hidden">
+            <form id="form-actualizar-proximo-anio" method="POST" action="{{ route('periods.actualizarProximoAnio') }}"
+                class="hidden">
                 @csrf
             </form>
             <button type="button" onclick="
@@ -45,7 +46,8 @@
                     confirmButtonText:'Sí, actualizar',
                     cancelButtonText:'Cancelar'
                 }).then((r)=>{ if(r.isConfirmed) document.getElementById('form-actualizar-proximo-anio').submit(); });
-            " class="inline-flex items-center justify-center bg-[#4d82bc] hover:bg-[#84b6f4] text-white font-semibold px-4 py-2 rounded-lg shadow transition w-full sm:w-auto">
+            "
+                class="inline-flex items-center justify-center bg-[#4d82bc] hover:bg-[#84b6f4] text-white font-semibold px-4 py-2 rounded-lg shadow transition w-full sm:w-auto">
                 Actualizar al próximo año
             </button>
         </div>
@@ -56,7 +58,8 @@
         @endphp
 
         @foreach ($agrupados as $anio => $porTrimestre)
-            <div class="mt-6 mb-10 bg-[#fcffff] dark:bg-gray-800 rounded-xl shadow-md border-l-4 border-[#005187] overflow-hidden">
+            <div
+                class="mt-6 mb-10 bg-[#fcffff] dark:bg-gray-800 rounded-xl shadow-md border-l-4 border-[#005187] overflow-hidden">
                 <h3 class="text-lg font-bold text-[#005187] dark:text-[#c4dafa] px-6 py-3 bg-[#84b6f4]/20">
                     Año {{ $anio }}
                 </h3>
@@ -72,29 +75,38 @@
                         </thead>
                         <tbody>
                             @foreach ($porTrimestre->sortBy('numero') as $period)
-                                <tr class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#84b6f4]/10 transition">
-                                    <td class="px-4 py-2 font-semibold text-[#005187] dark:text-[#c4dafa]">
-                                        Trimestre {{ $romanos[$period->numero] ?? $period->numero }}
-                                    </td>
-                                    <td class="px-4 py-2">{{ $period->fecha_inicio->format('d/m/Y') }}</td>
-                                    <td class="px-4 py-2">{{ $period->fecha_fin->format('d/m/Y') }}</td>
-                                    <td class="px-4 py-2">
-                                        <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
-                                            <a href="{{ route('periods.edit', $period) }}"
-                                                class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                                <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="ml-1 w-5 h-5">
-                                            </a>
+                                            <tr class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#84b6f4]/10 transition">
+                                                <td class="px-4 py-2 font-semibold text-[#005187] dark:text-[#c4dafa]">
+                                                    Trimestre {{ $romanos[$period->numero] ?? $period->numero }}
+                                                </td>
+                                                <td class="px-4 py-2">{{ $period->fecha_inicio->format('d/m/Y') }}</td>
+                                                <td class="px-4 py-2">{{ $period->fecha_fin->format('d/m/Y') }}</td>
+                                                <td class="px-4 py-2">
+                                                    <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                                        {{-- Botón azul (Editar) --}}
+                                                        <button type="button" class="inline-flex items-center justify-center 
+                                   w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
+                                   text-white rounded-lg text-xs font-medium 
+                                   transition">
+                                                            <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-4 h-4">
+                                                        </button>
 
-                                            <form action="{{ route('periods.destroy', $period) }}" method="POST" class="form-eliminar inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                                    <img src="{{ asset('icons/trash.svg') }}" alt="Borrar" class="ml-1 w-4 h-4">
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
+                                                        {{-- Botón rojo (Eliminar) --}}
+                                                        <form action="{{ route('periods.destroy', $period) }}" method="POST"
+                                                            class="form-eliminar inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="inline-flex items-center justify-center 
+                                       w-10 px-3 py-3 bg-[#e57373] hover:bg-[#f28b82] 
+                                       text-white rounded-lg text-xs font-medium 
+                                       transition">
+                                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar"
+                                                                    class="w-3 h-3">
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
                             @endforeach
                         </tbody>
                     </table>
