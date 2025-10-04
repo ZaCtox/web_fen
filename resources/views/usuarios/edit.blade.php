@@ -34,7 +34,8 @@
                         class="block w-full mt-1 px-3 py-2 border border-[#c4dafa] rounded-lg shadow-sm focus:ring-2 focus:ring-[#84b6f4] focus:outline-none dark:bg-gray-700 dark:text-white dark:border-gray-600">
                         <option value="docente" {{ old('rol', $usuario->rol) == 'docente' ? 'selected' : '' }}>Docente
                         </option>
-                        <option value="asistente" {{ old('rol', $usuario->rol) == 'asistente' ? 'selected' : '' }}>Asistente
+                        <option value="asistente" {{ old('rol', $usuario->rol) == 'asistente' ? 'selected' : '' }}>
+                            Asistente
                         </option>
                         <option value="director_magister" {{ old('rol', $usuario->rol) == 'director_magister' ? 'selected' : '' }}>Director Magíster</option>
                         <option value="director_administrativo" {{ old('rol', $usuario->rol) == 'director_administrativo' ? 'selected' : '' }}>Director Administrativo</option>
@@ -46,15 +47,14 @@
 
                 {{-- Botones --}}
                 <div class="mt-6 flex justify-between items-center">
-                    <a href="{{ route('usuarios.index') }}"
-                        class="inline-block bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-md shadow-md transition flex items-center gap-2">
-                        <img src="{{ asset('icons/back.svg') }}" alt="back" class="w-5 h-5">
-                    </a>
+                    <x-back :href="route('usuarios.index')">
+                        <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
+                    </x-back>
 
-                    <button type="submit"
-                        class="inline-flex items-center justify-center bg-[#005187] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow text-sm font-medium transition transform hover:scale-105 gap-2">
-                        <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
-                    </button>
+                    <x-save type="submit" class="bg-green-600 hover:bg-green-700">
+                        <img src="{{ asset('icons/save.svg') }}" alt="Ok" class="w-5 h-5">
+                    </x-save>
+
                 </div>
             </form>
         </div>
