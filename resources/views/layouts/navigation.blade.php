@@ -11,47 +11,106 @@
             <!-- Links -->
             @if(Auth::check())
                 <div class="hidden space-x-6 lg:-my-px lg:ms-10 lg:flex">
+                    <!-- Inicio - Siempre visible -->
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-nav-link>
 
+                    <!-- Gestión Académica -->
                     @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'asistente_postgrado']))
-                        <x-nav-link :href="route('calendario')" :active="request()->routeIs('calendario')">Calendario</x-nav-link>
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="dropdown-trigger inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md 
+                                        text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 
+                                        focus:outline-none transition">
+                                    <div>Gestión Académica</div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('calendario')" :active="request()->routeIs('calendario')">📅 Calendario</x-dropdown-link>
+                                <x-dropdown-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">🎓 Clases</x-dropdown-link>
+                                @if(tieneRol(['administrador', 'director_programa', 'asistente_programa']))
+                                    <x-dropdown-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">📚 Cursos</x-dropdown-link>
+                                @endif
+                                @if(tieneRol('administrador'))
+                                    <x-dropdown-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">📆 Periodos</x-dropdown-link>
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
                     @endif
 
-                    @if(tieneRol(['administrador', 'asistente_programa']))
-                        <x-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">Salas</x-nav-link>
+                    <!-- Recursos -->
+                    @if(tieneRol(['administrador', 'asistente_programa', 'director_programa', 'asistente_postgrado']))
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="dropdown-trigger inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md 
+                                        text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 
+                                        focus:outline-none transition">
+                                    <div>Recursos</div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                @if(tieneRol(['administrador', 'asistente_programa']))
+                                    <x-dropdown-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">🏫 Salas</x-dropdown-link>
+                                @endif
+                                <x-dropdown-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">📁 Archivos</x-dropdown-link>
+                                @if(tieneRol('asistente_postgrado'))
+                                    <x-dropdown-link :href="route('bitacoras.index')" :active="request()->routeIs('bitacoras.index')">📝 Bitácoras</x-dropdown-link>
+                                @endif
+                            </x-slot>
+                        </x-dropdown>
                     @endif
 
+                    <!-- Soporte -->
                     @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'técnico', 'auxiliar', 'asistente_postgrado']))
-                        <x-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">Incidencias</x-nav-link>
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="dropdown-trigger inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md 
+                                        text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 
+                                        focus:outline-none transition">
+                                    <div>Soporte</div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">🔧 Incidencias</x-dropdown-link>
+                                <x-dropdown-link :href="route('emergencies.index')" :active="request()->routeIs('emergencies.index')">🚨 Emergencias</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
                     @endif
 
-                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'asistente_postgrado']))
-                        <x-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">Clases</x-nav-link>
-                    @endif
-
-                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'asistente_postgrado']))
-                        <x-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">Archivos</x-nav-link>
-                    @endif
-
+                    <!-- Administración -->
                     @if(tieneRol('administrador'))
-                        <x-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-nav-link>
-                    @endif
-
-                    @if(tieneRol('asistente_postgrado'))
-                        <x-nav-link :href="route('bitacoras.index')" :active="request()->routeIs('bitacoras.index')">Bitácoras</x-nav-link>
-                    @endif
-
-                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa']))
-                        <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Cursos</x-nav-link>
-                    @endif
-
-                    @if(tieneRol('administrador'))
-                        <x-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.index')">Nuestro Equipo</x-nav-link>
-                        <x-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.index')">Usuarios</x-nav-link>
-                    @endif
-
-                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'asistente_postgrado']))
-                        <x-nav-link :href="route('emergencies.index')" :active="request()->routeIs('emergencies.index')">Emergencias</x-nav-link>
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="dropdown-trigger inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md 
+                                        text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 
+                                        focus:outline-none transition">
+                                    <div>Administración</div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('staff.index')" :active="request()->routeIs('staff.index')">👥 Nuestro Equipo</x-dropdown-link>
+                                <x-dropdown-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.index')">👤 Usuarios</x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
                     @endif
                 </div>
             @else
@@ -134,19 +193,50 @@
 
         <div class="pt-5 pb-3 flex flex-col space-y-1 px-4">
             @if(Auth::check())
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('calendario')" :active="request()->routeIs('calendario')">Calendario</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">Incidencias</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">Archivos</x-responsive-nav-link>
+                <!-- Inicio -->
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">🏠 Inicio</x-responsive-nav-link>
                 
+                <!-- Gestión Académica -->
+                @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'asistente_postgrado']))
+                    <div class="nav-section-divider"></div>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Gestión Académica</div>
+                    <x-responsive-nav-link :href="route('calendario')" :active="request()->routeIs('calendario')">📅 Calendario</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">🎓 Clases</x-responsive-nav-link>
+                    @if(tieneRol(['administrador', 'director_programa', 'asistente_programa']))
+                        <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">📚 Cursos</x-responsive-nav-link>
+                    @endif
+                    @if(tieneRol('administrador'))
+                        <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">📆 Periodos</x-responsive-nav-link>
+                    @endif
+                @endif
+                
+                <!-- Recursos -->
+                @if(tieneRol(['administrador', 'asistente_programa', 'director_programa', 'asistente_postgrado']))
+                    <div class="nav-section-divider"></div>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Recursos</div>
+                    @if(tieneRol(['administrador', 'asistente_programa']))
+                        <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">🏫 Salas</x-responsive-nav-link>
+                    @endif
+                    <x-responsive-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">📁 Archivos</x-responsive-nav-link>
+                    @if(tieneRol('asistente_postgrado'))
+                        <x-responsive-nav-link :href="route('bitacoras.index')" :active="request()->routeIs('bitacoras.index')">📝 Bitácoras</x-responsive-nav-link>
+                    @endif
+                @endif
+                
+                <!-- Soporte -->
+                @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'técnico', 'auxiliar', 'asistente_postgrado']))
+                    <div class="nav-section-divider"></div>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Soporte</div>
+                    <x-responsive-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">🔧 Incidencias</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('emergencies.index')" :active="request()->routeIs('emergencies.index')">🚨 Emergencias</x-responsive-nav-link>
+                @endif
+                
+                <!-- Administración -->
                 @if(tieneRol('administrador'))
-                    <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.index')">Nuestro Equipo</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.index')">Usuarios</x-responsive-nav-link>
-                    <x-responsive-nav-link :href="route('emergencies.index')" :active="request()->routeIs('emergencies.index')">Emergencias</x-responsive-nav-link>
+                    <div class="nav-section-divider"></div>
+                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Administración</div>
+                    <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.index')">👥 Nuestro Equipo</x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.index')">👤 Usuarios</x-responsive-nav-link>
                 @endif
             @else
                 <x-responsive-nav-link :href="route('public.dashboard.index')" :active="request()->routeIs('public.dashboard.index')">Inicio</x-responsive-nav-link>
