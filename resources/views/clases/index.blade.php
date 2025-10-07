@@ -213,9 +213,15 @@
                 {{ $clases->links() }}
             </div>
         @else
-            <p class="text-center text-gray-500 dark:text-gray-400 mt-12">
-                😢 No hay clases que coincidan con los filtros seleccionados.
-            </p>
+            <x-empty-state
+                type="no-results"
+                icon="🔍"
+                title="No se encontraron clases"
+                message="Intenta ajustar los filtros de programa, tipo, modalidad o período para ver más resultados."
+                secondaryActionText="Limpiar Filtros"
+                secondaryActionUrl="{{ route('clases.index') }}"
+                secondaryActionIcon="🔄"
+            />
         @endif
     </div>
 </x-app-layout>

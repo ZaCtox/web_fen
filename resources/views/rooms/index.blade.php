@@ -108,9 +108,17 @@
 
         {{-- Sin resultados --}}
         <template x-if="filtradas.length === 0">
-            <p class="mt-6 text-center text-[#4d82bc] dark:text-gray-400">
-                😕 No se encontraron salas que coincidan con la búsqueda.
-            </p>
+            <div>
+                <x-empty-state
+                    type="no-results"
+                    icon="🔍"
+                    title="No se encontraron salas"
+                    message="Intenta con otros términos de búsqueda o ajusta los filtros seleccionados."
+                    secondaryActionText="Limpiar Búsqueda"
+                    secondaryActionUrl="{{ route('rooms.index') }}"
+                    secondaryActionIcon="🔄"
+                />
+            </div>
         </template>
 
         {{-- Paginación (server-side) --}}

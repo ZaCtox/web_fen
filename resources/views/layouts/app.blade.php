@@ -50,7 +50,7 @@
         <header class="bg-white dark:bg-gray-800 shadow">
             @php $rol = Auth::check() ? Auth::user()->rol : null; @endphp
 
-            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 @isset($header)
                     {{ $header }}
                 @else
@@ -60,22 +60,6 @@
                         </h1>
                     </div>
                 @endisset
-
-                <div class="flex flex-wrap items-center gap-2">
-                    <div class="flex items-center gap-2">
-                        <!-- Botón cambio de tema -->
-                        <button id="toggle-theme"
-                            class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                            <span id="theme-icon">🌙</span>
-                        </button>
-
-                        <!-- Controles accesibilidad -->
-                            <button id="decrease-font"
-                                class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A-</button>
-                            <button id="increase-font"
-                                class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A+</button>
-                    </div>
-                </div>
             </div>
         </header>
 
@@ -86,17 +70,16 @@
     </div>
 
     <script>
+        // === Control de Tema (Dark/Light Mode) ===
         const html = document.documentElement;
-        const toggleBtn = document.getElementById('toggle-theme');
-        const icon = document.getElementById('theme-icon');
+        const toggleBtnNav = document.getElementById('toggle-theme-nav');
+        const toggleDot = document.getElementById('theme-toggle-dot');
 
         function applyTheme(theme) {
             if (theme === 'dark') {
                 html.classList.add('dark');
-                if (icon) icon.textContent = '☀️';
             } else {
                 html.classList.remove('dark');
-                if (icon) icon.textContent = '🌙';
             }
         }
 
@@ -106,38 +89,37 @@
         const currentTheme = storedTheme || (prefersDark ? 'dark' : 'light');
         applyTheme(currentTheme);
 
-        // Toggle al hacer clic
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', () => {
+        // Toggle al hacer clic (navbar)
+        if (toggleBtnNav) {
+            toggleBtnNav.addEventListener('click', () => {
                 const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
                 applyTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
             });
         }
-    </script>
-    <script>
-    // === Control de tamaño de fuente ===
-    const root = document.querySelector("html");
-    const incBtn = document.getElementById("increase-font");
-    const decBtn = document.getElementById("decrease-font");
 
-    // Valor base (1rem = 100%)
-    let fontSize = parseFloat(localStorage.getItem("fontSize")) || 100;
-    root.style.fontSize = fontSize + "%";
+        // === Control de tamaño de fuente ===
+        const root = document.querySelector("html");
+        const incBtnNav = document.getElementById("increase-font-nav");
+        const decBtnNav = document.getElementById("decrease-font-nav");
 
-    function updateFontSize(newSize) {
-        fontSize = Math.min(150, Math.max(80, newSize)); // rango entre 80% y 150%
+        // Valor base (1rem = 100%)
+        let fontSize = parseFloat(localStorage.getItem("fontSize")) || 100;
         root.style.fontSize = fontSize + "%";
-        localStorage.setItem("fontSize", fontSize);
-    }
 
-    if (incBtn) {
-        incBtn.addEventListener("click", () => updateFontSize(fontSize + 10));
-    }
-    if (decBtn) {
-        decBtn.addEventListener("click", () => updateFontSize(fontSize - 10));
-    }
-</script>
+        function updateFontSize(newSize) {
+            fontSize = Math.min(150, Math.max(80, newSize)); // rango entre 80% y 150%
+            root.style.fontSize = fontSize + "%";
+            localStorage.setItem("fontSize", fontSize);
+        }
+
+        if (incBtnNav) {
+            incBtnNav.addEventListener("click", () => updateFontSize(fontSize + 10));
+        }
+        if (decBtnNav) {
+            decBtnNav.addEventListener("click", () => updateFontSize(fontSize - 10));
+        }
+    </script>
 
 
     @yield('scripts')

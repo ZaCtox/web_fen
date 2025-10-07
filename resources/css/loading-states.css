@@ -1,0 +1,125 @@
+/* ================================
+   ⚡ Efecto Doherty: Loading States
+   Productividad aumenta cuando respuesta < 400ms
+   ================================ */
+
+/* Loading button state */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.btn-loading span {
+    visibility: hidden;
+}
+
+.btn-loading::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    border-top-color: currentColor;
+    animation: spinner 0.6s linear infinite;
+}
+
+/* Loading overlay */
+.loading-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center;
+}
+
+.loading-overlay-content {
+    @apply bg-white dark:bg-gray-800 rounded-lg p-6 shadow-xl flex flex-col items-center gap-4;
+}
+
+/* Skeleton loader */
+.skeleton {
+    @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
+}
+
+.skeleton-text {
+    @apply h-4 bg-gray-200 dark:bg-gray-700 rounded;
+}
+
+.skeleton-title {
+    @apply h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4;
+}
+
+.skeleton-avatar {
+    @apply h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-full;
+}
+
+.skeleton-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg p-4 shadow animate-pulse;
+}
+
+/* Fade in animation for content after loading */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Loading dots animation */
+.loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+}
+
+/* Disable form during submission */
+.form-submitting {
+    @apply pointer-events-none opacity-60;
+}
+
+.form-submitting input,
+.form-submitting select,
+.form-submitting textarea {
+    @apply bg-gray-100 dark:bg-gray-700;
+}
+
+/* Progress bar */
+.progress-bar {
+    @apply relative overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-full h-2;
+}
+
+.progress-bar-fill {
+    @apply bg-[#4d82bc] h-full transition-all duration-300 ease-out;
+    animation: indeterminate 1.5s infinite;
+}
+
+@keyframes indeterminate {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(400%);
+    }
+}

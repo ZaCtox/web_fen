@@ -120,8 +120,16 @@
                                 </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">
-                                No hay emergencias registradas.
+                            <td colspan="6" class="px-4 py-8">
+                                <x-empty-state
+                                    type="no-data"
+                                    icon="🚨"
+                                    title="No hay emergencias registradas"
+                                    message="Las emergencias activas aparecerán aquí cuando se registren."
+                                    actionText="Registrar Emergencia"
+                                    actionUrl="{{ route('emergencies.create') }}"
+                                    actionIcon="➕"
+                                />
                             </td>
                         </tr>
                     @endforelse

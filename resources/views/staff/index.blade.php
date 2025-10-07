@@ -69,8 +69,16 @@
 
         <!-- Sin resultados -->
         <template x-if="filtrados.length === 0">
-            <div class="rounded-lg border border-dashed p-6 text-center text-gray-500 dark:text-gray-300">
-                No hay registros que coincidan.
+            <div>
+                <x-empty-state
+                    type="no-results"
+                    icon="👥"
+                    title="No se encontraron miembros del equipo"
+                    message="Intenta con otros términos de búsqueda o ajusta los filtros de cargo."
+                    secondaryActionText="Limpiar Filtros"
+                    secondaryActionUrl="{{ route('staff.index') }}"
+                    secondaryActionIcon="🔄"
+                />
             </div>
         </template>
 

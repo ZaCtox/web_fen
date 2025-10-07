@@ -64,6 +64,17 @@
             $agrupados = $periods->sortBy([['anio', 'asc'], ['numero', 'asc']])->groupBy('anio');
         @endphp
 
+        @if($periods->isEmpty())
+            <x-empty-state
+                type="no-data"
+                icon="📅"
+                title="No hay períodos académicos registrados"
+                message="Crea tu primer período académico para comenzar a organizar las clases y actividades del año."
+                actionText="Crear Período"
+                actionUrl="{{ route('periods.create') }}"
+                actionIcon="➕"
+            />
+        @else
         @foreach ($agrupados as $anio => $porTrimestre)
             <div
                 class="mt-6 mb-10 bg-[#fcffff] dark:bg-gray-800 rounded-xl shadow-md border-l-4 border-[#005187] overflow-hidden">
@@ -95,7 +106,8 @@
                                                 <td class="px-4 py-2">
                                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                                                         {{-- Botón azul (Editar) --}}
-                                                        <a href="{{ route('periods.edit', $period) }}" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+                                                        <a href="{{ route('periods.edit', $period) }}"
+                                                            class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
                                    w-8 px-2 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
                                    text-white rounded-lg text-xs font-medium 
                                    transition-all duration-200">
@@ -110,7 +122,8 @@
                                                             data-confirm-type="danger">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+                                                            <button type="submit"
+                                                                class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
                                        w-8 px-2 py-2 bg-[#e57373] hover:bg-[#f28b82] 
                                        text-white rounded-lg text-xs font-medium 
                                        transition-all duration-200">
@@ -127,5 +140,6 @@
                 </div>
             </div>
         @endforeach
+        @endif
     </div>
 </x-app-layout>

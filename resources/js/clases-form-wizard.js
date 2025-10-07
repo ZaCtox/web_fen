@@ -20,7 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
 window.nextStep = function() { if (currentStep < totalSteps && validateCurrentStep()) { currentStep++; showStep(currentStep); updateProgress(currentStep);} }
 window.prevStep = function() { if (currentStep > 1) { currentStep--; showStep(currentStep); updateProgress(currentStep);} }
 window.navigateToStep = function(step) { if (step <= currentStep || validateCurrentStep()) { currentStep = step; showStep(step); updateProgress(step);} }
-window.cancelForm = function() { if (confirm('¿Cancelar?')) { window.location.href = window.location.origin + '/clases'; } }
+window.cancelForm = function() { 
+    if (window.hasUnsavedChanges && window.hasUnsavedChanges()) {
+        window.showUnsavedChangesModal(window.location.origin + '/clases');
+    } else {
+        window.location.href = window.location.origin + '/clases';
+    }
+}
 window.submitForm = function() { if (validateCurrentStep()) { document.querySelector('.hci-form').submit(); } }
 
 function showStep(step){

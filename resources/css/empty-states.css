@@ -1,0 +1,251 @@
+/* ==========================================
+   EMPTY STATES - HCI Principles
+   - Visual Hierarchy
+   - Clear Affordances
+   - Helpful Feedback
+   ========================================== */
+
+/* Container */
+.empty-state-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 3rem 1.5rem;
+}
+
+.empty-state-content {
+    text-align: center;
+    max-width: 500px;
+    animation: emptyStateFadeIn 0.4s ease-out;
+}
+
+/* Animación de entrada */
+@keyframes emptyStateFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Icono */
+.empty-state-icon {
+    font-size: 4rem;
+    line-height: 1;
+    margin-bottom: 1.5rem;
+    animation: emptyStateIconBounce 0.6s ease-out;
+}
+
+@keyframes emptyStateIconBounce {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Título */
+.empty-state-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #005187;
+    margin-bottom: 0.75rem;
+}
+
+.dark .empty-state-title {
+    color: #84b6f4;
+}
+
+/* Mensaje */
+.empty-state-message {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.dark .empty-state-message {
+    color: #9ca3af;
+}
+
+/* Contenido personalizado */
+.empty-state-custom {
+    margin: 1.5rem 0;
+}
+
+/* Acciones */
+.empty-state-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+@media (min-width: 640px) {
+    .empty-state-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+/* Botones */
+.empty-state-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-width: 150px;
+}
+
+.empty-state-button-primary {
+    background-color: #4d82bc;
+    color: white;
+    box-shadow: 0 2px 4px rgba(77, 130, 188, 0.2);
+}
+
+.empty-state-button-primary:hover {
+    background-color: #005187;
+    box-shadow: 0 4px 8px rgba(77, 130, 188, 0.3);
+    transform: translateY(-1px);
+}
+
+.dark .empty-state-button-primary {
+    background-color: #84b6f4;
+    color: #1f2937;
+}
+
+.dark .empty-state-button-primary:hover {
+    background-color: #4d82bc;
+    color: white;
+}
+
+.empty-state-button-secondary {
+    background-color: #e5e7eb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.empty-state-button-secondary:hover {
+    background-color: #d1d5db;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+}
+
+.dark .empty-state-button-secondary {
+    background-color: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+}
+
+.dark .empty-state-button-secondary:hover {
+    background-color: #4b5563;
+    border-color: #6b7280;
+}
+
+/* Variantes por tipo */
+.empty-state-container[data-type="error"] .empty-state-icon {
+    color: #e57373;
+}
+
+.empty-state-container[data-type="error"] .empty-state-title {
+    color: #dc2626;
+}
+
+.dark .empty-state-container[data-type="error"] .empty-state-title {
+    color: #f87171;
+}
+
+.empty-state-container[data-type="success"] .empty-state-icon {
+    color: #22c55e;
+}
+
+.empty-state-container[data-type="success"] .empty-state-title {
+    color: #16a34a;
+}
+
+.dark .empty-state-container[data-type="success"] .empty-state-title {
+    color: #4ade80;
+}
+
+.empty-state-container[data-type="info"] .empty-state-icon {
+    color: #4d82bc;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .empty-state-container {
+        min-height: 250px;
+        padding: 2rem 1rem;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.25rem;
+    }
+
+    .empty-state-message {
+        font-size: 0.875rem;
+    }
+
+    .empty-state-button {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+/* Estados interactivos - HCI Feedback */
+.empty-state-button:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.empty-state-button:focus-visible {
+    outline: 2px solid #4d82bc;
+    outline-offset: 2px;
+}
+
+/* Animación sutil de entrada secuencial */
+.empty-state-title {
+    animation: emptyStateSlideIn 0.4s ease-out 0.1s both;
+}
+
+.empty-state-message {
+    animation: emptyStateSlideIn 0.4s ease-out 0.2s both;
+}
+
+.empty-state-actions {
+    animation: emptyStateSlideIn 0.4s ease-out 0.3s both;
+}
+
+@keyframes emptyStateSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+

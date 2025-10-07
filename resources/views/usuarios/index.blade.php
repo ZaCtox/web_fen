@@ -70,7 +70,8 @@
                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2"
                                         x-show="usuario.id !== authId">
                                         {{-- Editar --}}
-                                        <a :href="`/usuarios/${usuario.id}/edit`" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+                                        <a :href="`/usuarios/${usuario.id}/edit`"
+                                            class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
               w-8 px-2 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
               rounded-lg text-xs font-medium transition-all duration-200">
                                             <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
@@ -83,7 +84,8 @@
                                             data-confirm-type="danger">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+                                            <button type="submit"
+                                                class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
                        w-8 px-2 py-2 bg-[#e57373] hover:bg-[#f28b82] 
                        rounded-lg text-xs font-medium transition-all duration-200">
                                                 <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar"
@@ -101,9 +103,17 @@
 
         {{-- Sin resultados --}}
         <template x-if="filtrados.length === 0">
-            <p class="mt-6 text-center text-[#4d82bc] dark:text-gray-400">
-                😕 No se encontraron usuarios que coincidan con la búsqueda.
-            </p>
+            <div>
+                <x-empty-state
+                    type="no-results"
+                    icon="👤"
+                    title="No se encontraron usuarios"
+                    message="Intenta con otros términos de búsqueda o verifica los filtros de rol."
+                    secondaryActionText="Limpiar Búsqueda"
+                    secondaryActionUrl="{{ route('usuarios.index') }}"
+                    secondaryActionIcon="🔄"
+                />
+            </div>
         </template>
     </div>
 </x-app-layout>

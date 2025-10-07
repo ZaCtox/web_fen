@@ -165,13 +165,17 @@
                             <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
                             <td class="px-4 py-2">
                                 @if ($incidencia->estado === 'resuelta')
-                                    <img src="{{ asset('icons/check.svg') }}" alt="Resuelta" class="w-6 h-6 inline group-hover:scale-110 transition-transform duration-200">
+                                    <img src="{{ asset('icons/check.svg') }}" alt="Resuelta" 
+                                         class="w-6 h-6 inline group-hover:scale-110 transition-transform duration-200">
                                 @elseif ($incidencia->estado === 'pendiente')
-                                    <img src="{{ asset('icons/clock.svg') }}" alt="Pendiente" class="w-5 h-5 inline group-hover:scale-110 transition-transform duration-200">
+                                    <img src="{{ asset('icons/clock.svg') }}" alt="Pendiente" 
+                                         class="w-5 h-5 inline group-hover:scale-110 transition-transform duration-200">
                                 @elseif ($incidencia->estado === 'en_revision')
-                                    <img src="{{ asset('icons/revision.svg') }}" alt="Revision" class="w-5 h-5 inline group-hover:scale-110 transition-transform duration-200">
+                                    <img src="{{ asset('icons/revision.svg') }}" alt="Revision" 
+                                         class="w-5 h-5 inline group-hover:scale-110 transition-transform duration-200">
                                 @elseif ($incidencia->estado === 'no_resuelta')
-                                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="No Resuelta" class="w-6 h-6 inline group-hover:scale-110 transition-transform duration-200">
+                                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="No Resuelta" 
+                                         class="w-6 h-6 inline group-hover:scale-110 transition-transform duration-200">
                                 @else
                                     <span class="group-hover:scale-110 transition-transform duration-200 inline-block">ℹ️</span>
                                 @endif
@@ -190,8 +194,16 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-4 text-gray-500 dark:text-gray-400">
-                                No se encontraron incidencias con los filtros aplicados.
+                            <td colspan="8" class="px-4 py-8">
+                                <x-empty-state
+                                    type="no-results"
+                                    icon="🔍"
+                                    title="No se encontraron incidencias"
+                                    message="Intenta ajustar los filtros o elimina alguno para ver más resultados."
+                                    secondaryActionText="Ver Todas"
+                                    secondaryActionUrl="{{ route('incidencias.index') }}"
+                                    secondaryActionIcon="🔄"
+                                />
                             </td>
                         </tr>
                     @endforelse

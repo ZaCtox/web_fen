@@ -46,7 +46,9 @@ window.navigateToStep = function(step) {
 }
 
 window.cancelForm = function() {
-    if (confirm('¿Estás seguro de cancelar?')) {
+    if (window.hasUnsavedChanges && window.hasUnsavedChanges()) {
+        window.showUnsavedChangesModal(window.location.origin + '/rooms');
+    } else {
         window.location.href = window.location.origin + '/rooms';
     }
 }

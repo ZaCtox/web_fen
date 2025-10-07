@@ -1,6 +1,10 @@
 @import "animate.css";
 @import "./navigation-animations.css";
 @import "./microinteractions.css";
+@import "./loading-states.css";
+@import "./keyboard-shortcuts.css";
+@import "./unsaved-changes.css";
+@import "./empty-states.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

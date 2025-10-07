@@ -165,7 +165,9 @@ window.navigateToStep = function(step) {
 
 // Función para cancelar el formulario
 window.cancelForm = function() {
-    if (confirm('¿Estás seguro de que quieres cancelar? Se perderán todos los datos ingresados.')) {
+    if (window.hasUnsavedChanges && window.hasUnsavedChanges()) {
+        window.showUnsavedChangesModal(window.location.origin + '/periods');
+    } else {
         window.location.href = window.location.origin + '/periods';
     }
 }

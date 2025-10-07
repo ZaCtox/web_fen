@@ -23,7 +23,16 @@
         <meta name="session-error" content="{{ session('error') }}">
     @endif
 
-    <div class="py-6 max-w-5xl mx-auto px-4 space-y-6" x-data="{ q: '{{ request('q', '') }}' }">
+    <div class="py-6 max-w-5xl mx-auto px-4 space-y-6" x-data="{ 
+        q: '{{ request('q', '') }}',
+        get hayResultados() {
+            if (this.q.trim() === '') return true;
+            const programas = document.querySelectorAll('[data-magister-nombre]');
+            return Array.from(programas).some(p => 
+                p.dataset.magisterNombre.toLowerCase().includes(this.q.toLowerCase())
+            );
+        }
+    }">
 
         {{-- Header: acciones + búsqueda --}}
         <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
@@ -45,8 +54,23 @@
             </form>
         </div>
 
+        {{-- Empty state para búsqueda sin resultados --}}
+        <template x-if="!hayResultados && q.trim() !== ''">
+            <div>
+                <x-empty-state
+                    type="no-results"
+                    icon="🔍"
+                    title="No se encontraron programas"
+                    message="Intenta con otros términos de búsqueda o verifica la ortografía."
+                    secondaryActionText="Limpiar Búsqueda"
+                    secondaryActionUrl="{{ route('magisters.index') }}"
+                    secondaryActionIcon="🔄"
+                />
+            </div>
+        </template>
+
         {{-- Listado --}}
-        <div class="space-y-4">
+        <div class="space-y-4" x-show="hayResultados">
             @forelse ($magisters as $magister)
                 @php
                     $count = $magister->courses_count ?? 0;
@@ -58,6 +82,7 @@
 
                 <div class="p-5 rounded-xl shadow-md bg-white dark:bg-gray-900 border-l-4 transition hover:shadow-lg"
                     style="border-left-color: {{ $magister->color ?? '#999' }};"
+                    data-magister-nombre="{{ Str::lower($magister->nombre) }}"
                     x-show="'{{ Str::lower($magister->nombre) }}'.includes(q.toLowerCase())" x-cloak>
 
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
@@ -119,9 +144,15 @@
                     </div>
                 </div>
             @empty
-                <p class="text-center text-gray-500 dark:text-gray-400 py-10 text-lg">
-                    😕 No hay programas registrados.
-                </p>
+                <x-empty-state
+                    type="no-data"
+                    icon="🎓"
+                    title="No hay programas de magíster registrados"
+                    message="Crea tu primer programa de magíster para organizar los cursos y actividades académicas."
+                    actionText="Crear Programa"
+                    actionUrl="{{ route('magisters.create') }}"
+                    actionIcon="➕"
+                />
             @endforelse
         </div>
 

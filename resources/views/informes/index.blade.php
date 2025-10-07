@@ -81,8 +81,16 @@
 
         {{-- Sin resultados --}}
         <template x-if="filtrados.length === 0">
-            <div class="rounded-lg border border-dashed p-6 text-center text-gray-500 dark:text-gray-300">
-                😕 No hay informes que coincidan con tu búsqueda.
+            <div>
+                <x-empty-state
+                    type="no-results"
+                    icon="📄"
+                    title="No se encontraron informes"
+                    message="Intenta con otros términos de búsqueda o verifica los filtros aplicados."
+                    secondaryActionText="Limpiar Búsqueda"
+                    secondaryActionUrl="{{ route('informes.index') }}"
+                    secondaryActionIcon="🔄"
+                />
             </div>
         </template>
 
