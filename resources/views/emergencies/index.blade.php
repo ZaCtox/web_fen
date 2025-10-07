@@ -74,11 +74,24 @@
                                            hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
                                            hover:border-l-4 hover:border-l-[#4d82bc]
                                            hover:-translate-y-0.5 hover:shadow-md
-                                           transition-all duration-200 group cursor-pointer">
+                                           transition-all duration-200 group cursor-pointer
+                                           {{ $emergency->active && !$isExpired ? 'von-restorff-critical' : '' }}"
                                     <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $emergency->title }}</td>
                                     <td class="px-4 py-2">{{ Str::limit($emergency->message, 120) }}</td>
                                     <td class="px-4 py-2">
-                                        <span class="px-2 py-1 rounded text-xs {{ $statusColor }}">{{ $statusText }}</span>
+                                        @if($emergency->active && !$isExpired)
+                                            <span class="von-restorff-badge von-restorff-badge-critical">
+                                                🚨 Activa
+                                            </span>
+                                        @elseif($isExpired)
+                                            <span class="von-restorff-badge" style="background-color: #6b7280; color: white;">
+                                                ⏰ Expirada
+                                            </span>
+                                        @else
+                                            <span class="von-restorff-badge" style="background-color: #9ca3af; color: white;">
+                                                ⏸️ Inactiva
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-2">
                                         {{ $emergency->expires_at ? $emergency->expires_at->format('d/m/Y H:i') : '—' }}

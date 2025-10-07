@@ -5,6 +5,7 @@
 @import "./keyboard-shortcuts.css";
 @import "./unsaved-changes.css";
 @import "./empty-states.css";
+@import "./von-restorff.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

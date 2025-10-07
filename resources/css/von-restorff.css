@@ -1,0 +1,338 @@
+/* ==========================================
+   VON RESTORFF EFFECT - HCI Principles
+   - Destacar elementos críticos/importantes
+   - Animaciones sutiles para llamar la atención
+   - Colores semánticos para urgencia
+   ========================================== */
+
+/* ==========================================
+   1. CLASES BASE DE CRITICIDAD
+   ========================================== */
+
+/* Crítico - Máxima urgencia */
+.von-restorff-critical {
+    position: relative;
+    background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%) !important;
+    border-left: 4px solid #dc2626 !important;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15) !important;
+}
+
+.dark .von-restorff-critical {
+    background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%) !important;
+    border-left: 4px solid #f87171 !important;
+}
+
+/* Advertencia - Atención requerida */
+.von-restorff-warning {
+    position: relative;
+    background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%) !important;
+    border-left: 4px solid #f59e0b !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15) !important;
+}
+
+.dark .von-restorff-warning {
+    background: linear-gradient(135deg, #78350f 0%, #92400e 100%) !important;
+    border-left: 4px solid #fbbf24 !important;
+}
+
+/* Importante - Necesita revisión */
+.von-restorff-important {
+    position: relative;
+    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%) !important;
+    border-left: 4px solid #3b82f6 !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+.dark .von-restorff-important {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%) !important;
+    border-left: 4px solid #60a5fa !important;
+}
+
+/* ==========================================
+   2. BADGES PULSANTES
+   ========================================== */
+
+.von-restorff-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.von-restorff-badge-critical {
+    background-color: #dc2626;
+    color: white;
+    animation: vonRestorffPulse 2s ease-in-out infinite;
+}
+
+.dark .von-restorff-badge-critical {
+    background-color: #ef4444;
+}
+
+.von-restorff-badge-warning {
+    background-color: #f59e0b;
+    color: white;
+    animation: vonRestorffPulse 2.5s ease-in-out infinite;
+}
+
+.dark .von-restorff-badge-warning {
+    background-color: #fbbf24;
+    color: #78350f;
+}
+
+.von-restorff-badge-important {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.dark .von-restorff-badge-important {
+    background-color: #60a5fa;
+    color: #1e3a8a;
+}
+
+/* ==========================================
+   3. ANIMACIONES
+   ========================================== */
+
+/* Pulso sutil para elementos críticos */
+@keyframes vonRestorffPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.03);
+        opacity: 0.95;
+    }
+}
+
+/* Glow para elementos muy urgentes */
+@keyframes vonRestorffGlow {
+    0%, 100% {
+        box-shadow: 0 0 5px rgba(220, 38, 38, 0.3),
+                    0 0 10px rgba(220, 38, 38, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 10px rgba(220, 38, 38, 0.5),
+                    0 0 20px rgba(220, 38, 38, 0.3);
+    }
+}
+
+.von-restorff-glow {
+    animation: vonRestorffGlow 2s ease-in-out infinite;
+}
+
+/* Shake sutil para llamar la atención */
+@keyframes vonRestorffShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+.von-restorff-shake {
+    animation: vonRestorffShake 0.5s ease-in-out;
+}
+
+/* ==========================================
+   4. ICONOS DESTACADOS
+   ========================================== */
+
+.von-restorff-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    font-size: 1rem;
+}
+
+.von-restorff-icon-critical {
+    background-color: #dc2626;
+    color: white;
+    animation: vonRestorffPulse 2s ease-in-out infinite;
+}
+
+.dark .von-restorff-icon-critical {
+    background-color: #ef4444;
+}
+
+.von-restorff-icon-warning {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.dark .von-restorff-icon-warning {
+    background-color: #fbbf24;
+    color: #78350f;
+}
+
+/* ==========================================
+   5. NOTIFICACIONES DESTACADAS
+   ========================================== */
+
+.von-restorff-notification {
+    position: relative;
+    background: linear-gradient(to right, #fee2e2, #fef2f2);
+    border-left: 4px solid #dc2626;
+}
+
+.dark .von-restorff-notification {
+    background: linear-gradient(to right, #7f1d1d, #991b1b);
+    border-left: 4px solid #f87171;
+}
+
+.von-restorff-notification::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #dc2626;
+    animation: vonRestorffSlide 2s ease-in-out infinite;
+}
+
+@keyframes vonRestorffSlide {
+    0%, 100% {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scaleY(0.5);
+        opacity: 0.7;
+    }
+}
+
+/* ==========================================
+   6. HOVER STATES MEJORADOS
+   ========================================== */
+
+.von-restorff-critical:hover,
+.von-restorff-warning:hover,
+.von-restorff-important:hover {
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+.von-restorff-critical:hover {
+    box-shadow: 0 8px 20px rgba(220, 38, 38, 0.25) !important;
+}
+
+.von-restorff-warning:hover {
+    box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25) !important;
+}
+
+.von-restorff-important:hover {
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* ==========================================
+   7. TEXTO DESTACADO
+   ========================================== */
+
+.von-restorff-text-critical {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.dark .von-restorff-text-critical {
+    color: #f87171;
+}
+
+.von-restorff-text-warning {
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.dark .von-restorff-text-warning {
+    color: #fbbf24;
+}
+
+.von-restorff-text-important {
+    color: #3b82f6;
+    font-weight: 600;
+}
+
+.dark .von-restorff-text-important {
+    color: #60a5fa;
+}
+
+/* ==========================================
+   8. CORNERS DESTACADOS (alternativa)
+   ========================================== */
+
+.von-restorff-corner {
+    position: relative;
+    overflow: visible;
+}
+
+.von-restorff-corner::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 16px;
+    height: 16px;
+    background: #dc2626;
+    border-radius: 0 4px 0 8px;
+    animation: vonRestorffPulse 2s ease-in-out infinite;
+}
+
+.dark .von-restorff-corner::after {
+    background: #ef4444;
+}
+
+/* ==========================================
+   9. RESPONSIVE
+   ========================================== */
+
+@media (max-width: 640px) {
+    .von-restorff-critical,
+    .von-restorff-warning,
+    .von-restorff-important {
+        border-left-width: 3px !important;
+    }
+
+    .von-restorff-badge {
+        font-size: 0.625rem;
+        padding: 0.125rem 0.5rem;
+    }
+
+    .von-restorff-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ==========================================
+   10. ACCESIBILIDAD
+   ========================================== */
+
+/* Reducir animaciones si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+    .von-restorff-badge-critical,
+    .von-restorff-badge-warning,
+    .von-restorff-icon-critical,
+    .von-restorff-glow,
+    .von-restorff-shake,
+    .von-restorff-notification::before,
+    .von-restorff-corner::after {
+        animation: none !important;
+    }
+}
+
+/* Focus visible para accesibilidad */
+.von-restorff-critical:focus-visible,
+.von-restorff-warning:focus-visible,
+.von-restorff-important:focus-visible {
+    outline: 3px solid #dc2626;
+    outline-offset: 2px;
+}
+

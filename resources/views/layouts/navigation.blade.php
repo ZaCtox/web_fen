@@ -104,7 +104,7 @@
                                         <span>Incidencias</span>
                                         @php $pendingCount = \App\Models\Incident::whereNotIn('estado', ['resuelta','no_resuelta'])->count(); @endphp
                                         @if($pendingCount>0)
-                                            <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">{{ $pendingCount }}</span>
+                                            <span class="von-restorff-badge von-restorff-badge-critical">{{ $pendingCount }}</span>
                                         @endif
                                     </a>
                                 @endif
@@ -112,7 +112,19 @@
                                     <a href="{{ route('informes.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Archivos</a>
                                 @endif
                                 @if($canEmergencias)
-                                    <a href="{{ route('emergencies.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Emergencias</a>
+                                    <a href="{{ route('emergencies.index') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                        <span>Emergencias</span>
+                                        @php 
+                                            $activeEmergencies = \App\Models\Emergency::where('active', true)
+                                                ->where(function($q) {
+                                                    $q->whereNull('expires_at')
+                                                      ->orWhere('expires_at', '>', now());
+                                                })->count(); 
+                                        @endphp
+                                        @if($activeEmergencies > 0)
+                                            <span class="von-restorff-badge von-restorff-badge-critical von-restorff-glow">{{ $activeEmergencies }}</span>
+                                        @endif
+                                    </a>
                                 @endif
                                 @if($canBitacoras)
                                     <a href="{{ route('bitacoras.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Bitácoras</a>

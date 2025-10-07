@@ -159,7 +159,9 @@
                                    hover:bg-[#e3f2fd] dark:hover:bg-blue-900/20 
                                    hover:border-l-4 hover:border-l-[#4d82bc]
                                    hover:-translate-y-0.5 hover:shadow-md
-                                   transition-all duration-200 group cursor-pointer">
+                                   transition-all duration-200 group cursor-pointer
+                                   {{ $incidencia->estado === 'no_resuelta' ? 'von-restorff-critical' : '' }}
+                                   {{ $incidencia->estado === 'pendiente' ? 'von-restorff-warning' : '' }}"
                             <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->id }}</td>
                             <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">{{ $incidencia->titulo }}</td>
                             <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
