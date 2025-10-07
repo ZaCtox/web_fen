@@ -4,6 +4,12 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Clases Académicas</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Clases', 'url' => '#']
+    ]" />
+
     <div class="p-6 max-w-7xl mx-auto" x-data="{
             magister: '{{ request('magister') }}',
             sala: '{{ request('room_id') }}',
@@ -132,7 +138,9 @@
         @if ($clases->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach ($clases as $clase)
-                    <div class="bg-[#fcffff] dark:bg-gray-800 shadow-md rounded-xl p-4 flex flex-col justify-between transition hover:shadow-lg hover:-translate-y-1"
+                    <div class="bg-[#fcffff] dark:bg-gray-800 shadow-md rounded-xl p-4 flex flex-col justify-between 
+                                hci-card-hover hci-lift cursor-pointer
+                                transition-all duration-300 hover:shadow-xl group"
                         style="border-left: 4px solid {{ $clase->course->magister->color ?? '#4d82bc' }}">
 
                         <div class="space-y-3">

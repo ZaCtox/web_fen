@@ -5,6 +5,13 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Detalle</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Nuestro Equipo', 'url' => route('staff.index')],
+        ['label' => 'Detalle', 'url' => '#']
+    ]" />
+
     {{-- Metas para toasts --}}
     @if(session('success'))
         <meta name="session-success" content="{{ session('success') }}">

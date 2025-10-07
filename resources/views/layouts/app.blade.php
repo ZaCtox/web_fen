@@ -35,8 +35,8 @@
         <meta name="session-error" content="{{ session('error') }}">
     @endif
 
-    <!-- Vite: CSS + JS principal + alerts.js -->
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/alerts.js'])
+    <!-- Vite: CSS + JS principal + alerts.js + HCI principles -->
+    @vite(['resources/css/app.css', 'resources/css/hci-principles.css', 'resources/js/app.js', 'resources/js/alerts.js', 'resources/js/hci-principles.js'])
 
     @stack('head') {{-- Por si necesitas inyectar algo extra desde vistas hijas --}}
 </head>
@@ -46,31 +46,38 @@
         @include('layouts.navigation')
 
         <!-- Page Heading -->
-        @isset($header)
-            <header class="bg-white dark:bg-gray-800 shadow">
-                @php $rol = Auth::check() ? Auth::user()->rol : null; @endphp
+        <!-- Header con controles de accesibilidad -->
+        <header class="bg-white dark:bg-gray-800 shadow">
+            @php $rol = Auth::check() ? Auth::user()->rol : null; @endphp
 
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                @isset($header)
                     {{ $header }}
+                @else
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                            @yield('title', 'Sistema FEN')
+                        </h1>
+                    </div>
+                @endisset
 
-                    <div class="flex flex-wrap items-center gap-2">
-                        <div class="flex items-center gap-2">
-                            <!-- Botón cambio de tema -->
-                            <button id="toggle-theme"
-                                class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                <span id="theme-icon">🌙</span>
-                            </button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <div class="flex items-center gap-2">
+                        <!-- Botón cambio de tema -->
+                        <button id="toggle-theme"
+                            class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            <span id="theme-icon">🌙</span>
+                        </button>
 
-                            <!-- Controles accesibilidad -->
-                                <button id="decrease-font"
-                                    class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A-</button>
-                                <button id="increase-font"
-                                    class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A+</button>
-                        </div>
+                        <!-- Controles accesibilidad -->
+                            <button id="decrease-font"
+                                class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A-</button>
+                            <button id="increase-font"
+                                class="text-sm px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600">A+</button>
                     </div>
                 </div>
-            </header>
-        @endisset
+            </div>
+        </header>
 
         <!-- Page Content -->
         <main>
@@ -86,10 +93,10 @@
         function applyTheme(theme) {
             if (theme === 'dark') {
                 html.classList.add('dark');
-                icon.textContent = '☀️';
+                if (icon) icon.textContent = '☀️';
             } else {
                 html.classList.remove('dark');
-                icon.textContent = '🌙';
+                if (icon) icon.textContent = '🌙';
             }
         }
 
@@ -135,6 +142,9 @@
 
     @yield('scripts')
     @stack('scripts')
+    
+    <!-- Sistema de Notificaciones Global -->
+    <x-hci-notification-system />
 </body>
 
 </html>

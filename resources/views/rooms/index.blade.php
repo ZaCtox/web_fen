@@ -7,6 +7,12 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Salas', 'url' => '#']
+    ]" />
+
     <div class="p-6" x-data="{
             search: '',
             salas: @js($rooms->items()),
@@ -21,8 +27,9 @@
         {{-- Header acciones --}}
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
             <a href="{{ route('rooms.create') }}"
-                class="inline-block bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
+                class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5 mr-2">
+                <span>Nueva Sala</span>
             </a>
 
             {{-- Filtro de búsqueda en tiempo real --}}
@@ -51,36 +58,41 @@
                     <tbody>
                         <template x-for="room in filtradas" :key="room.id">
                             <tr
-                                class="border-b border-[#c4dafa]/60 dark:border-gray-600 hover:bg-[#c4dafa]/20 transition">
-                                <td class="px-4 py-2 font-medium" x-text="room.name"></td>
-                                <td class="px-4 py-2" x-text="room.location"></td>
+                                class="border-b border-[#c4dafa]/60 dark:border-gray-600 
+                                       hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                       hover:border-l-4 hover:border-l-[#4d82bc]
+                                       hover:-translate-y-0.5 hover:shadow-md
+                                       transition-all duration-200 group cursor-pointer">
+                                <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="room.name"></td>
+                                <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="room.location"></td>
                                 <td class="px-4 py-2">
                                     <a :href="`/rooms/${room.id}#ficha`"
-                                        class="inline-flex items-center text-sm  hover:bg-[#84b6f4]/30  font-medium rounded-lg px-2 py-1 transition">
-                                        <span>Ver</span>
-                                        <img src="{{ asset('icons/ficha.svg') }}" alt="Ficha" class=" ml-1 w-5 h-5">
+                                        class="hci-button hci-lift hci-focus-ring inline-flex items-center text-sm hover:bg-[#84b6f4]/30 font-medium rounded-lg px-2 py-1 transition-all duration-200">
+                                        <img src="{{ asset('icons/ficha.svg') }}" alt="Ficha" class="w-5 h-5">
                                     </a>
                                 </td>
                                 <td class="px-4 py-2">
                                     <a :href="`/rooms/${room.id}#clases`"
-                                        class="inline-flex items-center text-sm hover:bg-[#4d82bc]/30 font-medium rounded-lg px-2 py-1 transition">
-                                        <span>Ver</span>
-                                        <img src="{{ asset('icons/class.svg') }}" alt="Clases" class=" ml-1 w-5 h-5">
+                                        class="hci-button hci-lift hci-focus-ring inline-flex items-center text-sm hover:bg-[#4d82bc]/30 font-medium rounded-lg px-2 py-1 transition-all duration-200">
+                                        <img src="{{ asset('icons/class.svg') }}" alt="Clases" class="w-5 h-5">
                                     </a>
                                 </td>
                                 <td class="px-4 py-2">
                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                                         <a :href="`/rooms/${room.id}/edit`"
-                                            class="inline-flex items-center justify-center px-3 py-1 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                            <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class=" ml-1 w-5 h-5">
+                                            class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center px-2 py-2 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition-all duration-200">
+                                            <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
 
-                                        {{-- IMPORTANTE: usar class="form-eliminar" para SweetAlert de confirmación --}}
-                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar">
+                                        {{-- Botón de eliminar con confirmación --}}
+                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar hci-confirm-button"
+                                            data-confirm-title="Eliminar Sala"
+                                            data-confirm-message="¿Estás seguro de que quieres eliminar esta sala? Esta acción no se puede deshacer."
+                                            data-confirm-type="danger">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="inline-flex items-center justify-center px-3 py-1 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto">
+                                                class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center px-2 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition-all duration-200">
                                                 <img src="{{ asset('icons/trashw.svg') }}" alt="Borrar"
                                                     class="w-4 h-4">
                                             </button>

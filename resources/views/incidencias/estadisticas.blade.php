@@ -7,6 +7,13 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Incidencias', 'url' => route('incidencias.index')],
+        ['label' => 'Estadísticas', 'url' => '#']
+    ]" />
+
     <div class="py-6 space-y-8">
 
         {{-- Volver --}}

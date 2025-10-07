@@ -1,0 +1,704 @@
+/* ================================
+   🎨 MICROINTERACCIONES HCI AVANZADAS
+   ================================ */
+
+/* ================================
+   🎯 Ley de Fitts - Botones grandes y accesibles
+   ================================ */
+
+/* Botones con microinteracciones */
+.hci-button {
+    @apply relative overflow-hidden transition-all duration-200 ease-out;
+    transform: translateZ(0); /* Hardware acceleration */
+}
+
+.hci-button::before {
+    content: '';
+    @apply absolute inset-0 bg-white opacity-0 transition-opacity duration-200;
+    transform: translateX(-100%);
+}
+
+.hci-button:hover::before {
+    @apply opacity-10;
+    transform: translateX(0);
+}
+
+.hci-button:active {
+    transform: scale(0.99) translateZ(0);
+}
+
+/* Efecto ripple para botones */
+.hci-button-ripple {
+    @apply relative overflow-hidden;
+}
+
+.hci-button-ripple::after {
+    content: '';
+    @apply absolute top-1/2 left-1/2 w-0 h-0 bg-white opacity-20 rounded-full;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s, height 0.4s;
+}
+
+.hci-button-ripple:active::after {
+    width: 300px;
+    height: 300px;
+}
+
+/* ================================
+   🎨 Ley de Prägnanz - Animaciones limpias
+   ================================ */
+
+/* Transiciones suaves para elementos */
+.hci-smooth {
+    @apply transition-all duration-300 ease-out;
+}
+
+.hci-smooth-fast {
+    @apply transition-all duration-150 ease-out;
+}
+
+.hci-smooth-slow {
+    @apply transition-all duration-500 ease-out;
+}
+
+/* Hover effects para cards */
+.hci-card-hover {
+    @apply transition-all duration-300 ease-out;
+}
+
+.hci-card-hover:hover {
+    @apply shadow-lg transform -translate-y-1;
+}
+
+/* ================================
+   📱 Ley de Jakob - Patrones familiares
+   ================================ */
+
+/* Loading states */
+.hci-loading {
+    @apply relative;
+}
+
+.hci-loading::after {
+    content: '';
+    @apply absolute top-1/2 left-1/2 w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full;
+    animation: hci-spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes hci-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Skeleton loading */
+.hci-skeleton {
+    @apply bg-gray-200 dark:bg-gray-700 rounded animate-pulse;
+}
+
+.hci-skeleton-text {
+    @apply h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse;
+}
+
+.hci-skeleton-avatar {
+    @apply w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse;
+}
+
+/* ================================
+   🎭 Microinteracciones específicas
+   ================================ */
+
+/* Bounce effect para notificaciones */
+@keyframes hci-bounce-in {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.hci-bounce-in {
+    animation: hci-bounce-in 0.6s ease-out;
+}
+
+/* Slide in from right */
+@keyframes hci-slide-in-right {
+    0% {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.hci-slide-in-right {
+    animation: hci-slide-in-right 0.3s ease-out;
+}
+
+/* Fade in */
+@keyframes hci-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hci-fade-in {
+    animation: hci-fade-in 0.4s ease-out;
+}
+
+/* ================================
+   🎯 Formularios - Ley de Miller
+   ================================ */
+
+/* Focus states mejorados */
+.hci-input:focus {
+    @apply ring-2 ring-blue-500 ring-opacity-50 border-blue-500;
+    transform: scale(1.01);
+    transition: all 0.15s ease-out;
+}
+
+.hci-input:focus + .hci-label {
+    @apply text-blue-600 transform scale-95;
+    transition: all 0.2s ease-out;
+}
+
+/* Validación visual */
+.hci-input.error {
+    @apply border-red-500 bg-red-50 dark:bg-red-900/20;
+    animation: hci-shake 0.5s ease-in-out;
+}
+
+@keyframes hci-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.hci-input.success {
+    @apply border-green-500 bg-green-50 dark:bg-green-900/20;
+}
+
+/* ================================
+   🎨 Dropdowns y modales
+   ================================ */
+
+/* Dropdown animations */
+.hci-dropdown-enter {
+    @apply opacity-0 transform scale-95 -translate-y-2;
+}
+
+.hci-dropdown-enter-active {
+    @apply opacity-100 transform scale-100 translate-y-0;
+    transition: all 0.2s ease-out;
+}
+
+.hci-dropdown-exit {
+    @apply opacity-100 transform scale-100 translate-y-0;
+}
+
+.hci-dropdown-exit-active {
+    @apply opacity-0 transform scale-95 -translate-y-2;
+    transition: all 0.15s ease-in;
+}
+
+/* Modal animations */
+.hci-modal-enter {
+    @apply opacity-0;
+}
+
+.hci-modal-enter-active {
+    @apply opacity-100;
+    transition: opacity 0.3s ease-out;
+}
+
+.hci-modal-exit {
+    @apply opacity-100;
+}
+
+.hci-modal-exit-active {
+    @apply opacity-0;
+    transition: opacity 0.2s ease-in;
+}
+
+/* ================================
+   📊 Progress indicators
+   ================================ */
+
+/* Progress bar animation */
+.hci-progress-bar {
+    @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+}
+
+.hci-progress-fill {
+    @apply h-full bg-blue-500 transition-all duration-500 ease-out;
+    transform: translateX(-100%);
+}
+
+.hci-progress-fill.animate {
+    transform: translateX(0);
+}
+
+/* ================================
+   🎯 Hover states mejorados
+   ================================ */
+
+/* Hover para enlaces */
+.hci-link {
+    @apply relative transition-colors duration-200;
+}
+
+.hci-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-200;
+}
+
+.hci-link:hover::after {
+    @apply w-full;
+}
+
+/* Hover para iconos */
+.hci-icon-hover {
+    @apply transition-all duration-200;
+}
+
+.hci-icon-hover:hover {
+    @apply transform scale-110 text-blue-500;
+}
+
+/* ================================
+   🎨 Estados de carga
+   ================================ */
+
+/* Pulse effect */
+@keyframes hci-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.hci-pulse {
+    animation: hci-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ================================
+   📱 Responsive microinteracciones
+   ================================ */
+
+/* Reducir animaciones en móvil */
+@media (prefers-reduced-motion: reduce) {
+    .hci-smooth,
+    .hci-smooth-fast,
+    .hci-smooth-slow {
+        @apply transition-none;
+    }
+    
+    .hci-bounce-in,
+    .hci-slide-in-right,
+    .hci-fade-in {
+        animation: none;
+    }
+}
+
+/* ================================
+   🎯 Estados de interacción
+   ================================ */
+
+/* Disabled state */
+.hci-disabled {
+    @apply opacity-50 cursor-not-allowed;
+    pointer-events: none;
+}
+
+/* Active state */
+.hci-active {
+    @apply bg-blue-500 text-white;
+    transform: scale(0.98);
+}
+
+/* Success state */
+.hci-success {
+    @apply bg-green-500 text-white;
+    animation: hci-bounce-in 0.6s ease-out;
+}
+
+/* Error state */
+.hci-error {
+    @apply bg-red-500 text-white;
+    animation: hci-shake 0.5s ease-in-out;
+}
+
+/* ================================
+   🚀 MICROINTERACCIONES AVANZADAS
+   ================================ */
+
+/* ================================
+   🎯 Efectos de Hover Avanzados
+   ================================ */
+
+/* Hover con elevación 3D */
+.hci-lift {
+    @apply transition-all duration-300 ease-out;
+    transform: translateZ(0);
+}
+
+.hci-lift:hover {
+    transform: translateY(-2px) translateZ(0);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.hci-lift:active {
+    transform: translateY(0) translateZ(0);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover con rotación sutil */
+.hci-rotate {
+    @apply transition-transform duration-300 ease-out;
+}
+
+.hci-rotate:hover {
+    transform: rotate(2deg) scale(1.02);
+}
+
+/* Hover con brillo */
+.hci-glow {
+    @apply transition-all duration-300 ease-out;
+}
+
+.hci-glow:hover {
+    box-shadow: 0 0 20px rgba(77, 130, 188, 0.4);
+    transform: scale(1.02);
+}
+
+/* ================================
+   🎨 Efectos de Focus Mejorados
+   ================================ */
+
+/* Focus ring personalizado */
+.hci-focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2;
+    transition: all 0.2s ease-out;
+}
+
+.hci-focus-ring:focus {
+    transform: scale(1.01);
+}
+
+/* Focus con animación de pulso */
+.hci-focus-pulse {
+    @apply focus:outline-none;
+    transition: all 0.3s ease-out;
+}
+
+.hci-focus-pulse:focus {
+    animation: hci-pulse-focus 0.6s ease-out;
+}
+
+@keyframes hci-pulse-focus {
+    0% {
+        box-shadow: 0 0 0 0 rgba(77, 130, 188, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(77, 130, 188, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(77, 130, 188, 0);
+    }
+}
+
+/* ================================
+   🎭 Efectos de Transición Suaves
+   ================================ */
+
+/* Transición de entrada desde abajo */
+.hci-slide-up {
+    @apply opacity-0 transform translate-y-4;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hci-slide-up.hci-visible {
+    @apply opacity-100 transform translate-y-0;
+}
+
+/* Transición de entrada desde la izquierda */
+.hci-slide-left {
+    @apply opacity-0 transform -translate-x-4;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hci-slide-left.hci-visible {
+    @apply opacity-100 transform translate-x-0;
+}
+
+/* Transición de entrada con escala */
+.hci-scale-in {
+    @apply opacity-0 transform scale-95;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hci-scale-in.hci-visible {
+    @apply opacity-100 transform scale-100;
+}
+
+/* ================================
+   🎪 Efectos de Loading Avanzados
+   ================================ */
+
+/* Skeleton loading mejorado */
+.hci-skeleton-advanced {
+    @apply relative overflow-hidden bg-gray-200 dark:bg-gray-700 rounded;
+}
+
+.hci-skeleton-advanced::after {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30;
+    animation: hci-skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes hci-skeleton-shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Spinner personalizado */
+.hci-spinner {
+    @apply inline-block w-4 h-4 border-2 border-gray-300 border-t-[#4d82bc] rounded-full;
+    animation: hci-spin 1s linear infinite;
+}
+
+@keyframes hci-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ================================
+   🎯 Efectos de Interacción Táctil
+   ================================ */
+
+/* Efecto de presión táctil */
+.hci-touch {
+    @apply transition-all duration-150 ease-out;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hci-touch:active {
+    transform: scale(0.98);
+}
+
+/* Efecto de deslizamiento */
+.hci-swipe {
+    @apply transition-transform duration-200 ease-out;
+}
+
+.hci-swipe.hci-swipe-left {
+    transform: translateX(-100%);
+}
+
+.hci-swipe.hci-swipe-right {
+    transform: translateX(100%);
+}
+
+/* ================================
+   🎨 Efectos de Notificación
+   ================================ */
+
+/* Toast notification con animación */
+.hci-toast-enter {
+    animation: hci-toast-slide-in 0.3s ease-out;
+}
+
+.hci-toast-exit {
+    animation: hci-toast-slide-out 0.3s ease-in;
+}
+
+@keyframes hci-toast-slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes hci-toast-slide-out {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* ================================
+   🎭 Efectos de Hover en Cards
+   ================================ */
+
+/* Card con efecto de elevación */
+.hci-card-hover {
+    @apply transition-all duration-300 ease-out;
+    transform: translateZ(0);
+}
+
+.hci-card-hover:hover {
+    transform: translateY(-4px) translateZ(0);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Card con efecto de rotación sutil */
+.hci-card-tilt {
+    @apply transition-transform duration-300 ease-out;
+    transform-style: preserve-3d;
+}
+
+.hci-card-tilt:hover {
+    transform: rotateX(5deg) rotateY(5deg) scale(1.02);
+}
+
+/* ================================
+   🎯 Efectos de Formularios
+   ================================ */
+
+/* Input con efecto de enfoque suave */
+.hci-input-focus {
+    @apply transition-all duration-300 ease-out;
+}
+
+.hci-input-focus:focus {
+    transform: scale(1.01);
+    box-shadow: 0 0 0 3px rgba(77, 130, 188, 0.1);
+}
+
+/* Label flotante */
+.hci-label-float {
+    @apply transition-all duration-300 ease-out;
+}
+
+.hci-label-float.hci-focused {
+    transform: translateY(-20px) scale(0.85);
+    color: #4d82bc;
+}
+
+/* ================================
+   🎪 Efectos de Navegación
+   ================================ */
+
+/* Link con efecto de subrayado animado */
+.hci-link-underline {
+    @apply relative transition-colors duration-200;
+}
+
+.hci-link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-[#4d82bc] transition-all duration-300;
+}
+
+.hci-link-underline:hover::after {
+    width: 100%;
+}
+
+/* Dropdown con animación de deslizamiento */
+.hci-dropdown {
+    @apply transition-all duration-200 ease-out;
+    transform: translateY(-10px);
+    opacity: 0;
+}
+
+.hci-dropdown.hci-open {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* ================================
+   🎨 Efectos de Estado
+   ================================ */
+
+/* Estado de éxito con animación */
+.hci-success {
+    @apply bg-green-500 text-white;
+    animation: hci-success-bounce 0.6s ease-out;
+}
+
+@keyframes hci-success-bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+/* Estado de advertencia con parpadeo */
+.hci-warning {
+    @apply bg-yellow-500 text-white;
+    animation: hci-warning-blink 1s ease-in-out infinite;
+}
+
+@keyframes hci-warning-blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ================================
+   🎯 Utilidades de Microinteracciones
+   ================================ */
+
+/* Clase para deshabilitar animaciones (accesibilidad) */
+@media (prefers-reduced-motion: reduce) {
+    .hci-button,
+    .hci-link,
+    .hci-card-hover,
+    .hci-lift,
+    .hci-rotate,
+    .hci-glow,
+    .hci-slide-up,
+    .hci-slide-left,
+    .hci-scale-in {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+/* Clase para habilitar todas las microinteracciones */
+.hci-interactive {
+    @apply hci-button hci-lift hci-focus-ring;
+}
+
+/* Clase para elementos que deben ser suaves */
+.hci-smooth {
+    @apply transition-all duration-200 ease-out;
+}

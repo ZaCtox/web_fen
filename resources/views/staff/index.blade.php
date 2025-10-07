@@ -5,6 +5,12 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Información de Nuestro Equipo</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Nuestro Equipo', 'url' => '#']
+    ]" />
+
     <div class="p-6 max-w-7xl mx-auto" x-data="{
             search: '',
             sort: 'nombre_asc',
@@ -71,15 +77,15 @@
         <!-- Grid -->
         <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
             <template x-for="p in filtrados" :key="p.id">
-                <a :href="p.show_url" class="group">
+                <a :href="p.show_url" class="group hci-card-hover">
                     <div
-                        class="cursor-pointer hover:shadow-lg transition rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                        class="cursor-pointer hci-lift transition-all duration-300 rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-xl">
                         <div class="flex">
                             <div class="w-2/3 p-4">
-                                <h3 class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]" x-text="p.nombre"></h3>
-                                <p class="text-sm text-[#4d82bc] dark:text-[#84b6f4]" x-text="p.cargo"></p>
+                                <h3 class="text-lg font-bold text-[#005187] dark:text-[#84b6f4] group-hover:text-[#4d82bc] transition-colors duration-200" x-text="p.nombre"></h3>
+                                <p class="text-sm text-[#4d82bc] dark:text-[#84b6f4] group-hover:text-[#005187] transition-colors duration-200" x-text="p.cargo"></p>
                             </div>
-                            <div class="w-1/3 bg-[#4d82bc] text-white p-4">
+                            <div class="w-1/3 bg-[#4d82bc] group-hover:bg-[#005187] text-white p-4 transition-colors duration-200">
                                 <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
                                 <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
                                 <div class="text-[13px] tracking-wide opacity-90">Email</div>

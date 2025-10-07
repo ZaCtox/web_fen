@@ -7,12 +7,19 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Cursos', 'url' => '#']
+    ]" />
+
     <div class="py-6 max-w-7xl mx-auto px-4">
         {{-- Botón global --}}
         <div class="flex justify-start mb-3">
             <a href="{{ route('magisters.index') }}"
-                class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition">
-                Detalles de Programas
+                class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
+                <img src="{{ asset('icons/estadistica.svg') }}" alt="Detalles" class="w-5 h-5 mr-2">
+                <span>Detalles de Programas</span>
             </a>
         </div>
 
@@ -74,32 +81,42 @@
                                             <tbody>
                                                 @foreach ($cursos as $course)
                                                         <tr
-                                                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#84b6f4]/10 transition">
-                                                            <td class="px-4 py-2 text-[#005187] dark:text-gray-100">
+                                                            class="border-b border-gray-200 dark:border-gray-600 
+                                                                   hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                                                   hover:border-l-4 hover:border-l-[#4d82bc]
+                                                                   hover:-translate-y-0.5 hover:shadow-md
+                                                                   transition-all duration-200 group cursor-pointer">
+                                                            <td class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
                                                                 {{ $course->nombre }}
                                                             </td>
                                                             <td class="px-3 py-2 text-right">
                                                                 <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                                                                     {{-- Botón azul (Editar) --}}
-                                                                    <button type="button" class="inline-flex items-center justify-center 
-                                                       w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
+                                                                    <a href="{{ route('courses.edit', $course) }}" 
+                                                                       class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+                                                       w-8 px-2 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
                                                        text-white rounded-lg text-xs font-medium 
-                                                       transition">
+                                                       transition-all duration-200">
                                                                         <img src="{{ asset('icons/edit.svg') }}" alt="Editar"
                                                                             class="w-4 h-4">
-                                                                    </button>
+                                                                    </a>
 
                                                                     {{-- Botón rojo (Eliminar) --}}
                                                                     <form action="{{ route('courses.destroy', $course) }}" method="POST"
-                                                                        class="form-eliminar inline">
+                                                                        class="form-eliminar inline hci-confirm-button"
+                                                                        data-confirm-title="Eliminar Curso"
+                                                                        data-confirm-message="¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer."
+                                                                        data-confirm-type="danger">
                                                                         @csrf
                                                                         @method('DELETE')
-                                                                        <button type="submit" class="inline-flex items-center justify-center 
-                                                           w-10 px-3 py-3 bg-[#e57373] hover:bg-[#f28b82] 
+                                                                        <button type="submit" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+                                                           w-8 px-2 py-2 bg-[#e57373] hover:bg-[#f28b82] 
                                                            text-white rounded-lg text-xs font-medium 
-                                                           transition">
+                                                           transition-all duration-200">
                                                                             <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar"
                                                                                 class="w-3 h-3">
+                                                                        </button>
+                                                                    </form>
                                                                 </div>
                                                             </td>
                                                         </tr>

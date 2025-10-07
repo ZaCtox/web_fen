@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CourseRequest;
 use App\Models\Course;
 use App\Models\Magister;
 use App\Models\Period;
@@ -28,14 +29,8 @@ class CourseController extends Controller
         return view('courses.create', compact('magisters', 'selectedMagisterId', 'periods'));
     }
 
-    public function store(Request $request)
+    public function store(CourseRequest $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'magister_id' => 'required|exists:magisters,id',
-            'period_id' => 'required|exists:periods,id'
-        ]);
-
         Course::create($request->only('nombre', 'magister_id', 'period_id'));
 
         return redirect()->route('courses.index')->with('success', 'Curso creado correctamente.');
@@ -49,14 +44,8 @@ class CourseController extends Controller
         return view('courses.edit', compact('course', 'magisters', 'periods'));
     }
 
-    public function update(Request $request, Course $course)
+    public function update(CourseRequest $request, Course $course)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'magister_id' => 'required|exists:magisters,id',
-            'period_id' => 'required|exists:periods,id'
-        ]);
-
         $course->update($request->only('nombre', 'magister_id', 'period_id'));
 
         return redirect()->route('courses.index')->with('success', 'Curso actualizado correctamente.');

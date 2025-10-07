@@ -5,9 +5,7 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Registrar Nueva Sala</h2>
     </x-slot>
 
-    <div class="p-6">
-        <form action="{{ route('rooms.store') }}" method="POST">
-            @include('rooms.form', ['submitText' => 'Crear Sala'])
-        </form>
+    <div class="p-6 max-w-full mx-auto">
+        @include('rooms.form-wizard')
     </div>
 </x-app-layout>

@@ -22,6 +22,16 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'role:administrador,director_administrativo,docente,administrativo'])
     ->name('dashboard');
 
+// 🧠 Demo de Principios HCI
+Route::get('/hci-demo', function () {
+    return view('examples.hci-demo');
+})->middleware(['auth', 'role:administrador'])->name('hci.demo');
+
+// 🎨 Demo de Microinteracciones HCI
+Route::get('/microinteractions-demo', function () {
+    return view('examples.microinteractions-demo');
+})->middleware(['auth', 'role:administrador'])->name('microinteractions.demo');
+
 // 🟡 Rutas protegidas
 Route::middleware(['auth'])->group(function () {
 
@@ -80,6 +90,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // 🔔 Notificaciones (tabla personalizada notifications)
+    Route::patch('/notifications/{notification}/read', function($notificationId) {
+        \DB::table('notifications')
+            ->where('id', $notificationId)
+            ->where('user_id', auth()->id())
+            ->update(['read' => 1, 'updated_at' => now()]);
+        return response()->json(['success' => true]);
+    })->name('notifications.mark-read');
 
     // 👥 Usuarios (solo administrador)
     Route::resource('usuarios', UserController::class)

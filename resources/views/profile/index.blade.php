@@ -5,6 +5,12 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Mi Perfil', 'url' => '#']
+    ]" />
+
     <div class="py-6 max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
         {{-- Información de usuario --}}

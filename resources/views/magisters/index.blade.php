@@ -7,6 +7,13 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Cursos', 'url' => route('courses.index')],
+        ['label' => 'Programas', 'url' => '#']
+    ]" />
+
     {{-- Metas para toasts --}}
     @if(session('success'))
         <meta name="session-success" content="{{ session('success') }}">

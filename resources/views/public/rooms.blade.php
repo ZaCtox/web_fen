@@ -54,11 +54,15 @@
                 <tbody>
                     <template x-for="room in filtradas" :key="room.id">
                         <tr
-                            class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#f0f6ff] dark:hover:bg-gray-700 transition">
-                            <td class="px-4 py-2 text-center" x-text="room.name"></td>
+                            class="border-b border-gray-200 dark:border-gray-600 
+                                   hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                   hover:border-l-4 hover:border-l-[#4d82bc]
+                                   hover:-translate-y-0.5 hover:shadow-md
+                                   transition-all duration-200 group cursor-pointer">
+                            <td class="px-4 py-2 text-center font-medium group-hover:text-[#005187] transition-colors" x-text="room.name"></td>
                             <td class="px-4 py-2 text-center" x-text="room.location"></td>
                             <td class="px-4 py-2 text-center" x-text="room.capacity"></td>
-                            <td class="px-4 py-2 text-center" x-text="room.description"></td>
+                            <td class="px-4 py-2 text-center text-sm text-gray-600 dark:text-gray-400" x-text="room.description"></td>
                             <td class="px-4 py-2 text-center">
                                 <a :href="'{{ route('public.rooms.show', ':id') }}'.replace(':id', room.id)"
                                     class="inline-flex items-center justify-center px-3 py-2 rounded-full hover:bg-[#005187] text-white shadow transition-all duration-200"

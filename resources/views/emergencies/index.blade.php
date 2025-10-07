@@ -5,6 +5,12 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Emergencias</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Emergencias', 'url' => '#']
+    ]" />
+
     @php
         $activeEmergency = app(\App\Http\Controllers\EmergencyController::class)->active();
     @endphp
@@ -64,8 +70,12 @@
                                         : ($isExpired ? 'Expirada' : 'Inactiva');
                                 @endphp
                                 <tr
-                                    class="border-t border-[#c4dafa]/40 dark:border-gray-700 hover:bg-[#c4dafa]/20 dark:hover:bg-gray-700 transition">
-                                    <td class="px-4 py-2 font-medium">{{ $emergency->title }}</td>
+                                    class="border-t border-[#c4dafa]/40 dark:border-gray-700 
+                                           hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                           hover:border-l-4 hover:border-l-[#4d82bc]
+                                           hover:-translate-y-0.5 hover:shadow-md
+                                           transition-all duration-200 group cursor-pointer">
+                                    <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $emergency->title }}</td>
                                     <td class="px-4 py-2">{{ Str::limit($emergency->message, 120) }}</td>
                                     <td class="px-4 py-2">
                                         <span class="px-2 py-1 rounded text-xs {{ $statusColor }}">{{ $statusText }}</span>

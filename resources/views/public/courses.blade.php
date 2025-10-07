@@ -62,8 +62,12 @@
                                             <tbody>
                                                 @foreach ($cursos as $course)
                                                     <tr
-                                                        class="border-b border-gray-200 dark:border-gray-600 hover:bg-[#84b6f4]/10 transition">
-                                                        <td class="px-4 py-2 text-[#005187] dark:text-gray-100">
+                                                        class="border-b border-gray-200 dark:border-gray-600 
+                                                               hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                                               hover:border-l-4 hover:border-l-[#4d82bc]
+                                                               hover:-translate-y-0.5 hover:shadow-md
+                                                               transition-all duration-200 group cursor-pointer">
+                                                        <td class="px-4 py-2 text-[#005187] dark:text-gray-100 font-medium group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
                                                             {{ $course->nombre }}
                                                         </td>
                                                     </tr>

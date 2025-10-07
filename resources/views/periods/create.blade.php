@@ -1,20 +1,14 @@
-{{-- Crear Periodo.blade.php --}}
-@section('title', 'Crear Periodo Académico')
+{{-- Crear Período con Wizard HCI --}}
+@section('title', 'Crear Período Académico')
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-2xl font-bold text-[#005187] dark:text-[#c4dafa]">
-            Nuevo Periodo Académico
-        </h2>
+        <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Registrar Nuevo Período</h2>
     </x-slot>
 
-    <div class="p-6 max-w-2xl mx-auto bg-[#fcffff] dark:bg-gray-800 rounded-xl shadow-md">
-
-        <form action="{{ route('periods.store') }}" method="POST">
-            @csrf
-
-            {{-- Incluir el formulario reutilizable --}}
-            @include('periods.form', ['period' => null])
-
-        </form>
+    <div class="p-6 max-w-full mx-auto">
+        @include('periods.form-wizard', ['editing' => false])
     </div>
 </x-app-layout>
+
+{{-- Cargar JavaScript del wizard --}}
+@vite('resources/js/periods-form-wizard.js')

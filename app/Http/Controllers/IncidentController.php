@@ -108,6 +108,13 @@ class IncidentController extends Controller
 
     public function update(Request $request, Incident $incidencia)
     {
+        // Debug: Log the request data
+        \Log::info('Incident Update Request:', [
+            'incident_id' => $incidencia->id,
+            'current_estado' => $incidencia->estado,
+            'request_data' => $request->all()
+        ]);
+
         if (in_array($incidencia->estado, ['resuelta', 'no_resuelta'])) {
             return redirect()->back()->with('error', 'No se puede modificar una incidencia ya cerrada.');
         }
@@ -118,6 +125,11 @@ class IncidentController extends Controller
             'comentario' => 'nullable|string|max:1000',
         ]);
 
+        \Log::info('Validated data:', $validated);
+
+        // Guardar el estado anterior para crear notificación
+        $estadoAnterior = $incidencia->estado;
+
         if ($validated['estado'] === 'resuelta' && $incidencia->estado !== 'resuelta') {
             $validated['resuelta_en'] = now();
             $validated['resolved_by'] = Auth::id();
@@ -125,12 +137,19 @@ class IncidentController extends Controller
 
         $incidencia->update($validated);
 
+        // Crear notificación si el estado cambió
+        if ($estadoAnterior !== $validated['estado']) {
+            crearNotificacionCambioEstado($incidencia->id, $estadoAnterior, $validated['estado'], Auth::user());
+        }
+
         IncidentLog::create([
             'incident_id' => $incidencia->id,
             'user_id' => Auth::id(),
             'estado' => $validated['estado'],
             'comentario' => $validated['comentario'] ?? null,
         ]);
+
+        \Log::info('Incident updated successfully');
 
         return redirect()->back()->with('success', 'Incidencia actualizada.');
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Period;
+use App\Http\Requests\PeriodRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -23,20 +24,14 @@ class PeriodController extends Controller
         return view('periods.create');
     }
 
-    public function store(Request $request)
+    public function store(PeriodRequest $request)
     {
+        $data = $request->validated();
+        $data['activo'] = true; // Siempre activo al crear
         
+        Period::create($data);
 
-        $request->validate([
-            'anio' => 'required|integer|min:1|max:10',
-            'numero' => 'required|integer|between:1,6',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after:fecha_inicio'
-        ]);
-
-        Period::create($request->only('anio', 'numero', 'fecha_inicio', 'fecha_fin'));
-
-        return redirect()->route('periods.index')->with('success', 'Periodo creado correctamente.');
+        return redirect()->route('periods.index')->with('success', 'Período creado correctamente.');
     }
 
     public function edit(Period $period)
@@ -46,20 +41,14 @@ class PeriodController extends Controller
         return view('periods.edit', ['period' => $period]);
     }
 
-    public function update(Request $request, Period $period)
+    public function update(PeriodRequest $request, Period $period)
     {
+        $data = $request->validated();
+        $data['activo'] = true; // Siempre activo al actualizar
         
+        $period->update($data);
 
-        $request->validate([
-            'anio' => 'required|integer|min:1|max:10',
-            'numero' => 'required|integer|between:1,6',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after:fecha_inicio'
-        ]);
-
-        $period->update($request->only('anio', 'numero', 'fecha_inicio', 'fecha_fin'));
-
-        return redirect()->route('periods.index')->with('success', 'Periodo actualizado correctamente.');
+        return redirect()->route('periods.index')->with('success', 'Período actualizado correctamente.');
     }
 
     public function destroy(Period $period)

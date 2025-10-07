@@ -1,4 +1,6 @@
 @import "animate.css";
+@import "./navigation-animations.css";
+@import "./microinteractions.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

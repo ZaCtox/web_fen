@@ -1,7 +1,22 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CQemsFeR.css",
+    "file": "assets/app-O1-0agg4.css",
     "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/hci-principles.css": {
+    "file": "assets/hci-principles-D1ct6uKI.css",
+    "src": "resources/css/hci-principles.css",
+    "isEntry": true
+  },
+  "resources/css/microinteractions.css": {
+    "file": "assets/microinteractions-Cy9LVgz9.css",
+    "src": "resources/css/microinteractions.css",
+    "isEntry": true
+  },
+  "resources/css/navigation-animations.css": {
+    "file": "assets/navigation-animations-d1hbvORQ.css",
+    "src": "resources/css/navigation-animations.css",
     "isEntry": true
   },
   "resources/js/alerts.js": {
@@ -28,16 +43,94 @@
     "src": "resources/js/calendar-public.js",
     "isEntry": true
   },
+  "resources/js/clases-form-wizard.js": {
+    "file": "assets/clases-form-wizard-BL2CS_RN.js",
+    "name": "clases-form-wizard",
+    "src": "resources/js/clases-form-wizard.js",
+    "isEntry": true
+  },
   "resources/js/clases/form.js": {
-    "file": "assets/form-CgRDmB3y.js",
+    "file": "assets/form-CSoLSk6Z.js",
     "name": "form",
     "src": "resources/js/clases/form.js",
+    "isEntry": true
+  },
+  "resources/js/courses-form-wizard.js": {
+    "file": "assets/courses-form-wizard-CmqdFpho.js",
+    "name": "courses-form-wizard",
+    "src": "resources/js/courses-form-wizard.js",
     "isEntry": true
   },
   "resources/js/courses/form.js": {
     "file": "assets/form-BMVQ3xAP.js",
     "name": "form",
     "src": "resources/js/courses/form.js",
+    "isEntry": true
+  },
+  "resources/js/emergency-form-wizard.js": {
+    "file": "assets/emergency-form-wizard-ZLOz2xmb.js",
+    "name": "emergency-form-wizard",
+    "src": "resources/js/emergency-form-wizard.js",
+    "isEntry": true
+  },
+  "resources/js/feedback-system.js": {
+    "file": "assets/feedback-system-Ch6KlOzy.js",
+    "name": "feedback-system",
+    "src": "resources/js/feedback-system.js",
+    "isEntry": true
+  },
+  "resources/js/hci-principles.js": {
+    "file": "assets/hci-principles-C0VjQfB6.js",
+    "name": "hci-principles",
+    "src": "resources/js/hci-principles.js",
+    "isEntry": true
+  },
+  "resources/js/incidencias-form-wizard.js": {
+    "file": "assets/incidencias-form-wizard-DVbk6QM-.js",
+    "name": "incidencias-form-wizard",
+    "src": "resources/js/incidencias-form-wizard.js",
+    "isEntry": true
+  },
+  "resources/js/informes-form-wizard.js": {
+    "file": "assets/informes-form-wizard-B-9u6G04.js",
+    "name": "informes-form-wizard",
+    "src": "resources/js/informes-form-wizard.js",
+    "isEntry": true
+  },
+  "resources/js/magisters-form-wizard.js": {
+    "file": "assets/magisters-form-wizard-1bVU0jfA.js",
+    "name": "magisters-form-wizard",
+    "src": "resources/js/magisters-form-wizard.js",
+    "isEntry": true
+  },
+  "resources/js/microinteractions.js": {
+    "file": "assets/microinteractions-D6P1umi7.js",
+    "name": "microinteractions",
+    "src": "resources/js/microinteractions.js",
+    "isEntry": true
+  },
+  "resources/js/periods-form-wizard.js": {
+    "file": "assets/periods-form-wizard-BkQzk9Y4.js",
+    "name": "periods-form-wizard",
+    "src": "resources/js/periods-form-wizard.js",
+    "isEntry": true
+  },
+  "resources/js/rooms-form-wizard.js": {
+    "file": "assets/rooms-form-wizard-Dtimtp7Z.js",
+    "name": "rooms-form-wizard",
+    "src": "resources/js/rooms-form-wizard.js",
+    "isEntry": true
+  },
+  "resources/js/staff-form-wizard.js": {
+    "file": "assets/staff-form-wizard-za_J7vla.js",
+    "name": "staff-form-wizard",
+    "src": "resources/js/staff-form-wizard.js",
+    "isEntry": true
+  },
+  "resources/js/usuarios-form-wizard.js": {
+    "file": "assets/usuarios-form-wizard-CsI4fCVm.js",
+    "name": "usuarios-form-wizard",
+    "src": "resources/js/usuarios-form-wizard.js",
     "isEntry": true
   }
 }

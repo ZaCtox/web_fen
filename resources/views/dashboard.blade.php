@@ -11,12 +11,67 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             {{-- Bienvenida --}}
-            <div class="bg-white dark:bg-gray-800 shadow rounded p-6">
+            <div class="bg-white dark:bg-gray-800 shadow rounded p-6 hci-card-hover">
                 <h3 class="text-2xl font-semibold text-gray-800 dark:text-white mb-2">¡Bienvenido/a, {{ Auth::user()->name }}!</h3>
                 <p class="text-gray-600 dark:text-gray-300">
                     Rol asignado:
                     <span class="font-bold text-blue-700 dark:text-blue-300">{{ ucfirst(Auth::user()->rol) }}</span>
                 </p>
+            </div>
+
+            {{-- Demo de Sistema de Feedback --}}
+            <div class="bg-white dark:bg-gray-800 shadow rounded p-6 hci-card-hover">
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Sistema de Feedback HCI</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Notificaciones -->
+                    <button 
+                        onclick="showSuccess('Operación completada exitosamente!', 'Éxito')"
+                        class="hci-button hci-lift hci-focus-ring px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-200"
+                    >
+                        Mostrar Éxito
+                    </button>
+                    
+                    <button 
+                        onclick="showError('Ha ocurrido un error inesperado', 'Error')"
+                        class="hci-button hci-lift hci-focus-ring px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all duration-200"
+                    >
+                        Mostrar Error
+                    </button>
+                    
+                    <button 
+                        onclick="showWarning('Esta acción requiere confirmación', 'Advertencia')"
+                        class="hci-button hci-lift hci-focus-ring px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-all duration-200"
+                    >
+                        Mostrar Advertencia
+                    </button>
+                    
+                    <button 
+                        onclick="showInfo('Información importante del sistema', 'Información')"
+                        class="hci-button hci-lift hci-focus-ring px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200"
+                    >
+                        Mostrar Info
+                    </button>
+                </div>
+                
+                <!-- Loading States -->
+                <div class="mt-6">
+                    <h4 class="text-lg font-medium text-gray-800 dark:text-white mb-3">Estados de Loading</h4>
+                    <div class="flex space-x-4">
+                        <button 
+                            onclick="this.innerHTML='<div class=\'hci-spinner w-4 h-4 mr-2\'></div>Procesando...'; setTimeout(() => this.innerHTML='Botón con Loading', 3000)"
+                            class="hci-button hci-lift hci-focus-ring px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-all duration-200"
+                        >
+                            Botón con Loading
+                        </button>
+                        
+                        <button 
+                            onclick="this.classList.add('hci-loading'); setTimeout(() => this.classList.remove('hci-loading'), 3000)"
+                            class="hci-button hci-lift hci-focus-ring px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all duration-200"
+                        >
+                            Loading State
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {{-- Estadísticas resumidas --}}

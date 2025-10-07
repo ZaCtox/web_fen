@@ -5,6 +5,12 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Bitácoras</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Bitácoras', 'url' => '#']
+    ]" />
+
     <div class="p-6">
         <div class="mb-4 flex justify-end">
             <a href="{{ route('bitacoras.create') }}"
@@ -26,8 +32,12 @@
                 </thead>
                 <tbody>
                     @foreach ($bitacoras as $bitacora)
-                        <tr class="border-b dark:border-gray-700">
-                            <td class="px-4 py-2">
+                        <tr class="border-b dark:border-gray-700 
+                                   hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                   hover:border-l-4 hover:border-l-[#4d82bc]
+                                   hover:-translate-y-0.5 hover:shadow-md
+                                   transition-all duration-200 group cursor-pointer">
+                            <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
                                 @if($bitacora->room)
                                     {{ $bitacora->room->nombre }}
                                 @else

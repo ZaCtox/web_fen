@@ -1,0 +1,213 @@
+/* ================================
+   🎯 Animaciones de Navegación HCI
+   ================================ */
+
+/* Animaciones de entrada para elementos del menú */
+@keyframes slideInFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInFromTop {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Aplicar animaciones a elementos del menú */
+.hci-nav-link {
+    animation: slideInFromLeft 0.2s ease-out;
+}
+
+.hci-nav-group {
+    animation: slideInFromTop 0.25s ease-out;
+}
+
+/* Efectos de hover mejorados */
+.hci-nav-link:hover {
+    transform: translateX(2px) scale(1.01);
+    box-shadow: 0 2px 8px rgba(77, 130, 188, 0.1);
+}
+
+.hci-nav-link:active {
+    transform: translateX(1px) scale(0.99);
+}
+
+/* Animación de búsqueda */
+.search-results {
+    animation: scaleIn 0.2s ease-out;
+}
+
+/* Animación de notificaciones */
+.notification-badge {
+    animation: pulse 2s infinite;
+}
+
+/* Transiciones suaves para dropdowns */
+.dropdown-menu {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Efecto de ripple en botones */
+.ripple-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple-effect::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(77, 130, 188, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.ripple-effect:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Animación de carga para búsqueda */
+.search-loading {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Efectos de focus mejorados */
+.hci-nav-link:focus {
+    outline: none;
+    ring: 2px;
+    ring-color: rgba(77, 130, 188, 0.5);
+    ring-offset: 2px;
+}
+
+/* Animación de entrada para menú móvil */
+.mobile-menu-enter {
+    animation: slideInFromTop 0.2s ease-out;
+}
+
+/* El menú hamburguesa se maneja con Tailwind lg:hidden */
+
+/* Efectos de microinteracciones */
+.micro-interaction {
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.micro-interaction:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación de aparición escalonada para elementos de lista */
+.stagger-animation > * {
+    animation: slideInFromLeft 0.3s ease-out;
+}
+
+.stagger-animation > *:nth-child(1) { animation-delay: 0.1s; }
+.stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
+.stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
+.stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
+.stagger-animation > *:nth-child(5) { animation-delay: 0.5s; }
+
+/* Efectos de glassmorphism para elementos flotantes */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Animación de progreso para elementos activos */
+.active-progress {
+    position: relative;
+    overflow: hidden;
+}
+
+.active-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Responsive animations */
+@media (max-width: 768px) {
+    .hci-nav-link {
+        animation: slideInFromTop 0.3s ease-out;
+    }
+    
+    .hci-nav-link:hover {
+        transform: translateY(-2px) scale(1.01);
+    }
+}
+
+/* Reducir animaciones para usuarios que prefieren menos movimiento */
+@media (prefers-reduced-motion: reduce) {
+    .hci-nav-link,
+    .hci-nav-group,
+    .search-results,
+    .dropdown-menu {
+        animation: none;
+        transition: none;
+    }
+    
+    .hci-nav-link:hover {
+        transform: none;
+    }
+}

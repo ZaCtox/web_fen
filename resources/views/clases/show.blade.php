@@ -3,6 +3,13 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#c4dafa]">Detalle de Clase</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Clases', 'url' => route('clases.index')],
+        ['label' => 'Detalle de Clase', 'url' => '#']
+    ]" />
+
     <div class="max-w-4xl mx-auto p-6">
         <div class="rounded-xl shadow-md p-6 border-l-4 transition hover:shadow-lg hover:-translate-y-1 
     bg-[#fcffff] dark:bg-gray-800 text-gray-900 dark:text-gray-200"

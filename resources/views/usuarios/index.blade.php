@@ -7,6 +7,12 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Usuarios', 'url' => '#']
+    ]" />
+
     <div class="p-6" x-data="{
             search: '',
             usuarios: @js($usuarios->toArray()),
@@ -52,27 +58,34 @@
                     <tbody>
                         <template x-for="usuario in filtrados" :key="usuario.id">
                             <tr
-                                class="border-b border-[#c4dafa]/60 dark:border-gray-600 hover:bg-[#c4dafa]/20 transition">
-                                <td class="px-4 py-2 font-medium" x-text="usuario.name"></td>
-                                <td class="px-4 py-2" x-text="usuario.email"></td>
-                                <td class="px-4 py-2 capitalize" x-text="usuario.rol.replace('_',' ')"></td>
+                                class="border-b border-[#c4dafa]/60 dark:border-gray-600 
+                                       hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                       hover:border-l-4 hover:border-l-[#4d82bc]
+                                       hover:-translate-y-0.5 hover:shadow-md
+                                       transition-all duration-200 group cursor-pointer">
+                                <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="usuario.name"></td>
+                                <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="usuario.email"></td>
+                                <td class="px-4 py-2 capitalize group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="usuario.rol.replace('_',' ')"></td>
                                 <td class="px-4 py-2">
                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2"
                                         x-show="usuario.id !== authId">
                                         {{-- Editar --}}
-                                        <a :href="`/usuarios/${usuario.id}/edit`" class="inline-flex items-center justify-center 
-              w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
-              rounded-lg text-xs font-medium transition">
+                                        <a :href="`/usuarios/${usuario.id}/edit`" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+              w-8 px-2 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
+              rounded-lg text-xs font-medium transition-all duration-200">
                                             <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
 
                                         {{-- Eliminar --}}
-                                        <form :action="`/usuarios/${usuario.id}`" method="POST" class="form-eliminar">
+                                        <form :action="`/usuarios/${usuario.id}`" method="POST" class="form-eliminar hci-confirm-button"
+                                            data-confirm-title="Eliminar Usuario"
+                                            data-confirm-message="¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer."
+                                            data-confirm-type="danger">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center justify-center 
-                       w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] 
-                       rounded-lg text-xs font-medium transition">
+                                            <button type="submit" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
+                       w-8 px-2 py-2 bg-[#e57373] hover:bg-[#f28b82] 
+                       rounded-lg text-xs font-medium transition-all duration-200">
                                                 <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar"
                                                     class="w-4 h-4">
                                             </button>

@@ -1,0 +1,765 @@
+/* ================================
+   🧠 Principios de HCI
+   Implementación de Leyes de Hick-Hyman, Fitts, Miller, Prägnanz, Jakob
+   ================================ */
+
+/* ================================
+   🎯 Ley de Hick-Hyman: Menús simplificados
+   ================================ */
+.hci-menu {
+    @apply flex flex-col space-y-2 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md;
+}
+
+.hci-menu-item {
+    @apply flex items-center px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200;
+    min-height: 48px; /* Ley de Fitts */
+}
+
+.hci-menu-item.active {
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold;
+}
+
+.hci-menu-icon {
+    @apply w-5 h-5 mr-3;
+}
+
+/* ================================
+   🎯 Ley de Fitts: Botones grandes y accesibles
+   ================================ */
+.hci-button {
+    @apply inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm;
+    @apply transition-all duration-200 ease-in-out;
+    min-height: 48px; /* WCAG minimum target size */
+    min-width: 48px;
+}
+
+.hci-button-primary {
+    @apply bg-[#4d82bc] text-white hover:bg-[#005187] focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2;
+}
+
+.hci-button-secondary {
+    @apply bg-gray-200 text-gray-800 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+}
+
+.hci-button-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+}
+
+.hci-button-success {
+    @apply bg-[#005187] text-white hover:bg-[#4d82bc] focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2;
+}
+
+.hci-button-fab {
+    @apply fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg z-50;
+    @apply bg-[#4d82bc] text-white hover:bg-[#005187] focus:outline-none focus:ring-2 focus:ring-[#84b6f4];
+}
+
+/* ================================
+   🎯 Ley de Miller & Prägnanz: Agrupación de formularios
+   ================================ */
+.hci-form-group {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border border-gray-200 dark:border-gray-700;
+}
+
+.hci-form-group-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center;
+}
+
+.hci-form-group-description {
+    @apply text-gray-600 dark:text-gray-400 text-sm mb-6;
+}
+
+.hci-form-row {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4; /* Chunks de 3-4 campos */
+}
+
+.hci-field {
+    @apply space-y-2;
+}
+
+.hci-label {
+    @apply block text-sm font-medium text-gray-700 dark:text-gray-300;
+}
+
+.hci-input, .hci-select, .hci-textarea {
+    @apply block px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm;
+    @apply bg-[#fcffff] dark:bg-gray-700 text-gray-900 dark:text-white;
+    @apply focus:ring-[#84b6f4] focus:border-[#4d82bc] transition-all duration-200;
+    min-height: 48px; /* Ley de Fitts */
+    width: 100%; /* Ancho por defecto, pero puede ser sobrescrito */
+}
+
+.hci-textarea {
+    min-height: 120px;
+}
+
+.hci-help-text {
+    @apply text-xs text-gray-500 dark:text-gray-400 mt-1;
+}
+
+.hci-field-error {
+    @apply text-red-500 text-xs mt-1;
+}
+
+/* ================================
+   🎯 Ley de Jakob: Patrones familiares y breadcrumbs
+   ================================ */
+.hci-breadcrumb {
+    @apply flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-6;
+}
+
+.hci-breadcrumb-item a {
+    @apply hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
+}
+
+.hci-breadcrumb-separator {
+    @apply text-gray-400 dark:text-gray-500;
+}
+
+/* ================================
+   🎯 Ley de Prägnanz: Diseño limpio y minimalista
+   ================================ */
+.hci-container {
+    @apply w-full mx-auto p-1;
+}
+
+.hci-section {
+    @apply mb-4;
+}
+
+.hci-heading-1 {
+    @apply text-2xl font-bold text-[#005187] dark:text-[#84b6f4] mb-2;
+}
+
+.hci-heading-2 {
+    @apply text-xl font-semibold text-[#005187] dark:text-[#84b6f4] mb-2;
+}
+
+.hci-heading-3 {
+    @apply text-lg font-semibold text-[#4d82bc] dark:text-[#84b6f4] mb-2;
+}
+
+.hci-heading-4 {
+    @apply text-base font-medium text-[#4d82bc] dark:text-[#84b6f4] mb-1;
+}
+
+.hci-text {
+    @apply text-gray-600 dark:text-gray-400 mb-3;
+}
+
+.hci-text-small {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* ================================
+   🎯 Ley de Miller: Información progresiva
+   ================================ */
+.hci-progressive-disclosure {
+    @apply mt-6;
+}
+
+.hci-progressive-section {
+    @apply border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+}
+
+.hci-progressive-header {
+    @apply flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 cursor-pointer;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors;
+}
+
+.hci-progressive-content {
+    @apply p-4 bg-white dark:bg-gray-900;
+    display: none;
+}
+
+.hci-progressive-section.expanded .hci-progressive-content {
+    display: block;
+}
+
+/* ================================
+   🎯 Ley de Prägnanz: Cards y layouts
+   ================================ */
+.hci-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 mb-6;
+}
+
+.hci-card-header {
+    @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+.hci-card-content {
+    @apply px-6 py-4;
+}
+
+.hci-grid {
+    @apply grid gap-6;
+}
+
+.hci-grid.cols-1 {
+    @apply grid-cols-1;
+}
+
+.hci-grid.cols-2 {
+    @apply grid-cols-1 md:grid-cols-2;
+}
+
+.hci-grid.cols-3 {
+    @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+}
+
+/* ================================
+   🎯 Ley de Fitts: Checkboxes y elementos interactivos
+   ================================ */
+.hci-checkbox {
+    @apply w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500;
+    min-width: 20px;
+    min-height: 20px;
+}
+
+/* ================================
+   🎯 Ley de Jakob: Estados y feedback
+   ================================ */
+.hci-loading {
+    @apply opacity-50 pointer-events-none;
+}
+
+.hci-success {
+    @apply border-green-500 bg-green-50 dark:bg-green-900/20;
+}
+
+.hci-error {
+    @apply border-red-500 bg-red-50 dark:bg-red-900/20;
+}
+
+.hci-warning {
+    @apply border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20;
+}
+
+/* ================================
+   🎯 Ley de Prägnanz: Variantes de color
+   ================================ */
+.hci-form-group.variant-info {
+    @apply border-l-4 border-l-blue-500;
+}
+
+.hci-form-group.variant-success {
+    @apply border-l-4 border-l-green-500;
+}
+
+.hci-form-group.variant-warning {
+    @apply border-l-4 border-l-yellow-500;
+}
+
+.hci-form-group.variant-danger {
+    @apply border-l-4 border-l-red-500;
+}
+
+/* ================================
+   🎯 Ley de Fitts: Responsive y accesibilidad
+   ================================ */
+@media (max-width: 768px) {
+    .hci-button {
+        @apply w-full;
+    }
+    
+    .hci-form-row {
+        @apply grid-cols-1;
+    }
+    
+    .hci-grid.cols-2 {
+        @apply grid-cols-1;
+    }
+    
+    .hci-grid.cols-3 {
+        @apply grid-cols-1;
+    }
+}
+
+/* ================================
+   🎯 Ley de Jakob: Animaciones familiares
+   ================================ */
+.hci-fade-in {
+    animation: hciFadeIn 0.3s ease-in-out;
+}
+
+@keyframes hciFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hci-slide-in {
+    animation: hciSlideIn 0.3s ease-in-out;
+}
+
+@keyframes hciSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ================================
+   🎯 Ley de Prägnanz: Focus y estados
+   ================================ */
+.hci-input:focus,
+.hci-select:focus,
+.hci-textarea:focus {
+    @apply ring-2 ring-blue-500 border-blue-500;
+}
+
+.hci-button:focus {
+    @apply ring-2 ring-offset-2;
+}
+
+/* ================================
+   🎯 Ley de Miller: Espaciado consistente
+   ================================ */
+.hci-spacing-xs { @apply space-y-1; }
+.hci-spacing-sm { @apply space-y-2; }
+.hci-spacing-md { @apply space-y-4; }
+.hci-spacing-lg { @apply space-y-6; }
+.hci-spacing-xl { @apply space-y-8; }
+
+/* ================================
+   🎯 Ley de Jakob: Iconos familiares
+   ================================ */
+.hci-icon {
+    @apply w-5 h-5;
+}
+
+.hci-icon-sm {
+    @apply w-4 h-4;
+}
+
+.hci-icon-lg {
+    @apply w-6 h-6;
+}
+
+/* ================================
+   🎯 Ley de Prägnanz: Utilidades
+   ================================ */
+.hci-hidden {
+    @apply hidden;
+}
+
+.hci-visible {
+    @apply block;
+}
+
+.hci-text-center {
+    @apply text-center;
+}
+
+.hci-text-left {
+    @apply text-left;
+}
+
+.hci-text-right {
+    @apply text-right;
+}
+
+/* ================================
+   🎯 Ley de Hick-Hyman: Secciones del formulario
+   ================================ */
+.hci-form-section {
+    @apply mb-12 scroll-mt-24;
+}
+
+.hci-form-section:last-child {
+    @apply mb-0;
+}
+
+/* ================================
+   🎯 Ley de Hick-Hyman: Layout con progreso lateral vertical
+   ================================ */
+.hci-wizard-layout {
+    @apply flex gap-6;
+}
+
+.hci-progress-sidebar {
+    @apply w-72 flex-shrink-0 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 p-4 sticky top-4;
+}
+
+.hci-progress-sidebar-header {
+    @apply mb-4;
+}
+
+.hci-progress-stats {
+    @apply flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mt-2;
+}
+
+.hci-progress-vertical {
+    @apply relative;
+}
+
+.hci-progress-line {
+    @apply absolute left-6 top-0 w-1 bg-gray-200 dark:bg-gray-700 rounded-full;
+    height: calc(100% - 2rem);
+}
+
+.hci-progress-fill-vertical {
+    @apply bg-gradient-to-b from-[#4d82bc] to-[#005187] w-full rounded-full transition-all duration-500 ease-out;
+}
+
+.hci-progress-steps-vertical {
+    @apply space-y-4 relative z-10;
+}
+
+.hci-progress-step-vertical {
+    @apply flex items-start space-x-3 cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 p-2 rounded-lg;
+}
+
+.hci-progress-step-vertical.active {
+    @apply bg-[#c4dafa] dark:bg-[#84b6f4]/20;
+}
+
+.hci-progress-step-vertical.completed {
+    @apply bg-[#c4dafa] dark:bg-[#84b6f4]/20;
+}
+
+.hci-progress-step-circle-vertical {
+    @apply w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center text-sm font-semibold text-gray-500 dark:text-gray-400 transition-all duration-300 flex-shrink-0;
+}
+
+.hci-progress-step-vertical.active .hci-progress-step-circle-vertical {
+    @apply border-[#4d82bc] bg-[#4d82bc] text-white;
+}
+
+.hci-progress-step-vertical.completed .hci-progress-step-circle-vertical {
+    @apply border-[#005187] bg-[#005187] text-white;
+}
+
+.hci-progress-step-content-vertical {
+    @apply flex-1 space-y-1;
+}
+
+.hci-progress-step-title {
+    @apply text-sm font-medium text-gray-900 dark:text-white block;
+}
+
+.hci-progress-step-desc {
+    @apply text-xs text-gray-500 dark:text-gray-400 block;
+}
+
+.hci-cancel-section {
+    @apply mt-8 pt-6 border-t border-gray-200 dark:border-gray-600;
+}
+
+.hci-form-content {
+    @apply flex-1;
+}
+
+/* ================================
+   🎯 Ley de Miller: Tarjetas de pasos grandes
+   ================================ */
+.hci-step-card {
+    @apply bg-[#fcffff] dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden;
+}
+
+.hci-step-header {
+    @apply bg-gradient-to-r from-[#c4dafa] to-[#84b6f4]/30 dark:from-[#84b6f4]/20 dark:to-[#4d82bc]/20 p-4 flex items-center space-x-3;
+}
+
+.hci-step-icon {
+    @apply text-3xl;
+}
+
+.hci-step-info {
+    @apply flex-1;
+}
+
+.hci-step-title {
+    @apply text-2xl font-bold text-[#005187] dark:text-[#84b6f4] mb-1;
+}
+
+.hci-step-description {
+    @apply text-gray-600 dark:text-gray-400;
+}
+
+.hci-step-number {
+    @apply w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-bold;
+}
+
+.hci-step-content {
+    @apply p-4;
+}
+
+.hci-form-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+}
+
+.hci-step-navigation {
+    @apply flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-600;
+}
+
+/* ================================
+   🎯 Ley de Prägnanz: Secciones del formulario
+   ================================ */
+.hci-form-section {
+    @apply mb-8 hidden;
+}
+
+.hci-form-section.active {
+    @apply block;
+}
+
+/* ================================
+   🎯 Ley de Jakob: Resumen y términos
+   ================================ */
+.hci-summary-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6;
+}
+
+.hci-summary-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4 mb-6;
+}
+
+.hci-summary-item {
+    @apply flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg;
+}
+
+.hci-summary-label {
+    @apply font-medium text-gray-700 dark:text-gray-300;
+}
+
+.hci-summary-value {
+    @apply text-gray-900 dark:text-white font-semibold;
+}
+
+.hci-terms-section {
+    @apply mt-6;
+}
+
+.hci-terms-card {
+    @apply bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4;
+}
+
+.hci-checkbox-large {
+    @apply w-5 h-5 rounded text-blue-600 dark:text-blue-400 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-blue-500;
+}
+
+.hci-terms-label {
+    @apply text-sm text-gray-700 dark:text-gray-300 leading-relaxed;
+}
+
+.hci-terms-text {
+    @apply text-gray-600 dark:text-gray-400;
+}
+
+/* ================================
+   🎯 Ley de Fitts: Botones mejorados
+   ================================ */
+.hci-button-success {
+    @apply bg-green-600 hover:bg-green-700 focus:ring-green-500;
+}
+
+.hci-button-cancel {
+    @apply bg-gray-500 text-white hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
+}
+
+.hci-button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+}
+
+/* ================================
+   🎯 Mensajes de error
+   ================================ */
+.hci-error-message {
+    @apply mb-6;
+}
+
+.hci-error-content {
+    @apply flex items-center space-x-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg;
+}
+
+.hci-error-icon {
+    @apply text-red-500 text-lg;
+}
+
+.hci-error-text {
+    @apply text-red-700 dark:text-red-300 font-medium;
+}
+
+/* ================================
+   🎯 Ley de Fitts: Responsive para wizard
+   ================================ */
+@media (min-width: 1400px) {
+    .hci-container {
+        @apply max-w-full;
+    }
+    
+    .hci-wizard-layout {
+        @apply gap-6;
+    }
+    
+    .hci-progress-sidebar {
+        @apply w-72;
+    }
+    
+    .hci-form-grid {
+        @apply grid-cols-4 gap-6;
+    }
+}
+
+@media (min-width: 1600px) {
+    .hci-form-grid {
+        @apply grid-cols-5 gap-8;
+    }
+}
+
+@media (max-width: 1024px) {
+    .hci-wizard-layout {
+        @apply flex-col;
+    }
+    
+    .hci-progress-sidebar {
+        @apply w-full sticky top-0 z-50;
+    }
+    
+    .hci-progress-steps-vertical {
+        @apply flex space-x-4 space-y-0 overflow-x-auto pb-4;
+    }
+    
+    .hci-progress-step-vertical {
+        @apply flex-shrink-0 w-48;
+    }
+    
+    .hci-progress-line {
+        @apply hidden;
+    }
+}
+
+@media (max-width: 768px) {
+    .hci-progress-sidebar {
+        @apply p-4;
+    }
+    
+    .hci-progress-step-vertical {
+        @apply w-40;
+    }
+    
+    .hci-progress-step-circle-vertical {
+        @apply w-10 h-10 text-xs;
+    }
+    
+    .hci-step-header {
+        @apply p-4 flex-col text-center space-x-0 space-y-3;
+    }
+    
+    .hci-step-content {
+        @apply p-4;
+    }
+    
+    .hci-form-grid {
+        @apply grid-cols-1;
+    }
+    
+    .hci-step-navigation {
+        @apply flex-col space-y-3 p-4;
+    }
+    
+    .hci-step-navigation .hci-button {
+        @apply w-full;
+    }
+}
+
+/* ================================
+   🎯 HCI File Drop Zone - Ley de Fitts
+   ================================ */
+.hci-file-drop-zone {
+    @apply border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer transition-all duration-200;
+    @apply hover:border-[#005187] hover:bg-[#f8fafc] dark:hover:bg-gray-800;
+}
+
+.hci-file-drop-zone.drag-over {
+    @apply border-[#005187] bg-[#f0f7ff] dark:bg-[#1e3a8a]/20;
+}
+
+.hci-file-drop-content {
+    @apply flex flex-col items-center justify-center;
+}
+
+/* Estilos para drag & drop más ancho y menos alto */
+.hci-file-drop-zone {
+    min-height: 140px !important;
+    max-height: 160px !important;
+    padding: 1.5rem 2rem !important;
+    width: 100% !important;
+    min-width: 300px !important;
+    overflow: hidden !important;
+}
+
+@media (min-width: 640px) {
+    .hci-file-drop-zone {
+        min-width: 400px !important;
+        padding: 2rem 2.5rem !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hci-file-drop-zone {
+        min-width: 500px !important;
+    }
+}
+
+.hci-file-drop-zone .hci-file-drop-content {
+    flex-direction: row !important;
+    gap: 1.5rem !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    height: 100% !important;
+}
+
+.hci-file-drop-zone .hci-file-drop-content svg {
+    width: 4rem !important;
+    height: 4rem !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+.hci-file-drop-zone .hci-file-drop-content p {
+    text-align: left !important;
+    margin-bottom: 0.25rem !important;
+    flex: 1 !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.2 !important;
+    font-size: 0.875rem !important;
+}
+
+.hci-file-drop-zone .hci-file-drop-content p:first-of-type {
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+}
+
+.hci-file-drop-zone .hci-file-drop-content > div {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    gap: 0.25rem !important;
+    min-width: 0 !important;
+}
+
+/* Estilos para select con opciones largas */
+.hci-select option {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    max-width: 100% !important;
+    padding: 8px 12px !important;
+    line-height: 1.4 !important;
+}
+
+.hci-select {
+    min-height: 48px !important;
+}

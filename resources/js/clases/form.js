@@ -27,8 +27,17 @@
         const magSel = qs('#magister');
         if (!magSel) return {};
         try {
-            return JSON.parse(magSel.dataset.agrupados || '{}');
+            const raw = magSel.dataset.agrupados || '{}';
+            console.log('[CLASES] data-agrupados raw length:', raw?.length);
+            const parsed = JSON.parse(raw);
+            console.log('[CLASES] parseAgrupados keys:', Object.keys(parsed));
+            return parsed;
         } catch (_) {
+            console.warn('[CLASES] parseAgrupados JSON inválido');
+            if (window.AGRUPADOS) {
+                console.log('[CLASES] usando window.AGRUPADOS como fallback');
+                return window.AGRUPADOS;
+            }
             return {};
         }
     }
@@ -47,6 +56,7 @@
 
         magSel.addEventListener('change', () => {
             const mag = magSel.value;
+            console.log('[CLASES] Programa cambiado:', mag);
             courseSel.innerHTML = '<option value="">-- Asignatura --</option>';
             if (periodInput) periodInput.value = '';
             if (periodoInfo) periodoInfo.innerHTML = '<option>Selecciona un curso para ver el período</option>';
@@ -54,6 +64,7 @@
             if (anio) anio.value = '';
 
             if (agrupados[mag]) {
+                console.log('[CLASES] Cursos del programa:', agrupados[mag]);
                 agrupados[mag].forEach(c => {
                     const opt = document.createElement('option');
                     opt.value = c.id;
@@ -78,16 +89,31 @@
             if (periodoInfo) periodoInfo.innerHTML = `<option>${periodo ? '📘 ' + periodo : 'Sin periodo asignado'}</option>`;
             if (trimestre) trimestre.value = numero;
             if (anio) anio.value = _anio;
+            console.log('[CLASES] Asignatura cambiada:', { periodId, periodo, numero, anio: _anio });
         });
 
         // Hidratación inicial (EDIT)
         (function hydrateInitial() {
+            // Si viene preseleccionado el magister en editar, rellena el select de cursos
+            const magSelVal = qs('#magister')?.value;
+            const agrupadosLocal = parseAgrupados();
+            if (magSelVal && agrupadosLocal[magSelVal] && courseSel.options.length <= 1) {
+                agrupadosLocal[magSelVal].forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id; opt.textContent = c.nombre;
+                    opt.dataset.period_id = c.period_id; opt.dataset.periodo = c.periodo;
+                    opt.dataset.period_numero = c.numero ?? ''; opt.dataset.period_anio = c.anio ?? '';
+                    courseSel.appendChild(opt);
+                });
+            }
+
             const sel = courseSel.options[courseSel.selectedIndex];
             if (!sel) return;
             const numero = sel.dataset.period_numero || '';
             const _anio = sel.dataset.period_anio || '';
             if (trimestre) trimestre.value = numero;
             if (anio) anio.value = _anio;
+            console.log('[CLASES] Hidratación inicial:', { selectedCourseId: sel.value, numero, anio: _anio });
         })();
     }
 
@@ -97,6 +123,7 @@
     function wireModalityRoomDisable() {
         const modality = qs('#modality');
         const roomSel = qs('#room_id');
+        const zoom = qs('input[name="url_zoom"]');
         if (!modality || !roomSel) return;
 
         const apply = () => {
@@ -106,6 +133,20 @@
                 roomSel.disabled = true;
             } else {
                 roomSel.disabled = false;
+            }
+
+            // Zoom requerido en online; visible en híbrida
+            if (zoom) {
+                if (modality.value === 'online') {
+                    zoom.required = true;
+                    zoom.parentElement.classList.remove('hidden');
+                } else if (modality.value === 'hibrida') {
+                    zoom.required = false;
+                    zoom.parentElement.classList.remove('hidden');
+                } else {
+                    zoom.required = false;
+                    zoom.parentElement.classList.add('hidden');
+                }
             }
 
             // Horarios: limpia UI cuando pasa a online
@@ -236,9 +277,9 @@
     function updateHelpText() {
         const help = qs('#help-huecos');
         if (!help) return;
-        const hrs = parseInt(qs('#block_hours')?.value || '1', 10);
-        const buf = parseInt(qs('#buffer_mins')?.value || '10', 10);
-        help.textContent = `Busca huecos libres de ${hrs} ${hrs === 1 ? 'hora' : 'horas'} con ${buf} minutos de holgura antes y después.`;
+        const blocks = parseInt(qs('#block_count')?.value || '1', 10);
+        const total = blocks * 60;
+        help.textContent = `Busca huecos de ${blocks} bloque(s) (${total} min).`;
     }
 
     function wireHorarios() {
@@ -253,15 +294,13 @@
         const diaSel = qs('select[name="dia"]');
         const modality = qs('#modality');
 
-        const blockHours = qs('#block_hours');   // opcional
-        const bufferInp = qs('#buffer_mins');   // opcional
+        const blockCount = qs('#block_count');   // requerido (1..5)
 
         const HOR_URL = btn.dataset.urlHorarios || '';
         const excludeId = btn.dataset.excludeId ? parseInt(btn.dataset.excludeId, 10) : null;
 
         // texto de ayuda dinámico
-        qsa('#block_hours, #buffer_mins').forEach(el => el.addEventListener('change', updateHelpText));
-        qsa('#buffer_mins').forEach(el => el.addEventListener('input', updateHelpText));
+        qsa('#block_count').forEach(el => el.addEventListener('change', updateHelpText));
         updateHelpText();
 
         btn.addEventListener('click', async () => {
@@ -274,17 +313,19 @@
             if (mod !== 'online' && !room_id) { alert('Selecciona una sala (o cambia a modalidad online).'); return; }
             if (!dia) { alert('Selecciona el día.'); return; }
 
-            const durMin = Math.max(30, (parseInt(blockHours?.value || '1', 10) * 60));
-            const buffer = Math.max(0, Math.min(60, parseInt(bufferInp?.value || '10', 10)));
+            const blocks = Math.max(1, Math.min(5, parseInt(blockCount?.value || '1', 10)));
+            const durMin = blocks * 60;
+            const buffer = 10; // fijo: 10 minutos en bordes; entre bloques se suma 10 por bloque interno
 
-            const params = {
+                const params = {
                 period_id, room_id, dia,
                 modality: mod,
                 exclude_id: excludeId ?? '',
-                desde: '08:00',
-                hasta: '22:00',
-                min_block: durMin,
-                buffer: buffer
+                    desde: '08:00',
+                    hasta: '22:00',
+                    min_block: durMin,
+                    buffer: buffer,
+                    blocks: blocks
             };
 
             try {
@@ -296,30 +337,28 @@
                 slotsWrap.classList.remove('hidden');
 
                 if (json.slots && json.slots.length) {
+                    const blocks = parseInt((json.blocks || 1), 10);
+                    const perBlock = parseInt((json.block_minutes || 60), 10);
+                    const between = 10; // 10 min entre bloques internos
+                    const totalNeeded = blocks * perBlock + (blocks > 1 ? (blocks - 1) * between : 0);
+
                     json.slots.forEach(s => {
-                        // Proponer alternativas cada 15 min dentro del slot
                         let cursor = s.start;
                         let added = 0;
 
-                        while (addMinutes(cursor, durMin) <= s.end) {
-                            const start = cursor;                     // ⬅️ CAPTURA LOCAL
-                            const end = addMinutes(start, durMin);  // ⬅️ USA start, no cursor
+                        while (addMinutes(cursor, totalNeeded) <= s.end) {
+                            const start = cursor;
+                            const end = addMinutes(start, totalNeeded);
 
                             const chip = document.createElement('button');
                             chip.type = 'button';
                             chip.className = 'px-3 py-1 text-xs rounded bg-green-100 text-green-800 hover:bg-green-200';
-                            chip.textContent = `${start}–${end}`;
+                            chip.textContent = `${start}–${end} (${blocks} bloques)`;
                             chip.addEventListener('click', () => {
                                 const hIni = qs('input[name="hora_inicio"]');
                                 const hFin = qs('input[name="hora_fin"]');
-                                if (hIni) {
-                                    hIni.value = start;
-                                    hIni.dispatchEvent(new Event('input', { bubbles: true })); // para tu debounceCheck
-                                }
-                                if (hFin) {
-                                    hFin.value = end;
-                                    hFin.dispatchEvent(new Event('input', { bubbles: true }));
-                                }
+                                if (hIni) { hIni.value = start; hIni.dispatchEvent(new Event('input', { bubbles: true })); }
+                                if (hFin) { hFin.value = end; hFin.dispatchEvent(new Event('input', { bubbles: true })); }
                             });
                             slotsDiv.appendChild(chip);
 
@@ -328,24 +367,18 @@
                         }
 
                         if (!added) {
-                            const start = addMinutes(s.end, -durMin); // ⬅️ CAPTURA LOCAL
+                            const start = addMinutes(s.end, -totalNeeded);
                             if (start >= s.start) {
                                 const end = s.end;
                                 const chip = document.createElement('button');
                                 chip.type = 'button';
                                 chip.className = 'px-3 py-1 text-xs rounded bg-green-100 text-green-800 hover:bg-green-200';
-                                chip.textContent = `${start}–${end}`;
+                                chip.textContent = `${start}–${end} (${blocks} bloques)`;
                                 chip.addEventListener('click', () => {
                                     const hIni = qs('input[name="hora_inicio"]');
                                     const hFin = qs('input[name="hora_fin"]');
-                                    if (hIni) {
-                                        hIni.value = start;
-                                        hIni.dispatchEvent(new Event('input', { bubbles: true }));
-                                    }
-                                    if (hFin) {
-                                        hFin.value = end;
-                                        hFin.dispatchEvent(new Event('input', { bubbles: true }));
-                                    }
+                                    if (hIni) { hIni.value = start; hIni.dispatchEvent(new Event('input', { bubbles: true })); }
+                                    if (hFin) { hFin.value = end; hFin.dispatchEvent(new Event('input', { bubbles: true })); }
                                 });
                                 slotsDiv.appendChild(chip);
                             }

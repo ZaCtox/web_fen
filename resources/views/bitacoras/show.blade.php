@@ -7,6 +7,13 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Bitácoras', 'url' => route('bitacoras.index')],
+        ['label' => 'Detalle de Bitácora', 'url' => '#']
+    ]" />
+
     <div class="p-6">
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             {{-- Título --}}

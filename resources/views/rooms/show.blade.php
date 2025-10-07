@@ -7,6 +7,13 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Salas', 'url' => route('rooms.index')],
+        ['label' => $room->name, 'url' => '#']
+    ]" />
+
     <div class="p-6 max-w-7xl mx-auto">
         <div class="mb-8">
             <a href="{{ route('rooms.index') }}"

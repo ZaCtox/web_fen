@@ -7,15 +7,23 @@
         </h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Incidencias', 'url' => '#']
+    ]" />
+
     {{-- Botones superiores --}}
     <div class="p-5 max-w-7xl mx-auto flex gap-3">
         <a href="{{ route('incidencias.create') }}"
-            class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
-            <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
+            class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
+            <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5 mr-2">
+            <span>Nueva Incidencia</span>
         </a>
         <a href="{{ route('incidencias.estadisticas') }}"
-            class="inline-flex items-center bg-[#84b6f4] hover:bg-[#4d82bc] text-[#005187] px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
-            <img src="{{ asset('icons/estadistica.svg') }}" alt="Estadísticas" class="w-6 h-6">
+            class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#84b6f4] hover:bg-[#4d82bc] text-[#005187] px-4 py-2 rounded-lg shadow transition-all duration-200">
+            <img src="{{ asset('icons/estadistica.svg') }}" alt="Estadísticas" class="w-6 h-6 mr-2">
+            <span>Estadísticas</span>
         </a>
     </div>
 
@@ -147,32 +155,37 @@
                 </thead>
                 <tbody>
                     @forelse ($incidencias as $incidencia)
-                        <tr class="border-t border-gray-200 dark:border-gray-600">
-                            <td class="px-4 py-2">{{ $incidencia->id }}</td>
-                            <td class="px-4 py-2">{{ $incidencia->titulo }}</td>
-                            <td class="px-4 py-2">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
+                        <tr class="border-t border-gray-200 dark:border-gray-600 
+                                   hover:bg-[#e3f2fd] dark:hover:bg-blue-900/20 
+                                   hover:border-l-4 hover:border-l-[#4d82bc]
+                                   hover:-translate-y-0.5 hover:shadow-md
+                                   transition-all duration-200 group cursor-pointer">
+                            <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->id }}</td>
+                            <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">{{ $incidencia->titulo }}</td>
+                            <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
                             <td class="px-4 py-2">
                                 @if ($incidencia->estado === 'resuelta')
-                                    <img src="{{ asset('icons/check.svg') }}" alt="Resuelta" class="w-6 h-6 inline">
+                                    <img src="{{ asset('icons/check.svg') }}" alt="Resuelta" class="w-6 h-6 inline group-hover:scale-110 transition-transform duration-200">
                                 @elseif ($incidencia->estado === 'pendiente')
-                                    <img src="{{ asset('icons/clock.svg') }}" alt="Pendiente" class="w-5 h-5 inline">
+                                    <img src="{{ asset('icons/clock.svg') }}" alt="Pendiente" class="w-5 h-5 inline group-hover:scale-110 transition-transform duration-200">
                                 @elseif ($incidencia->estado === 'en_revision')
-                                    <img src="{{ asset('icons/revision.svg') }}" alt="Revision" class="w-5 h-5 inline">
+                                    <img src="{{ asset('icons/revision.svg') }}" alt="Revision" class="w-5 h-5 inline group-hover:scale-110 transition-transform duration-200">
                                 @elseif ($incidencia->estado === 'no_resuelta')
-                                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="No Resuelta" class="w-6 h-6 inline">
+                                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="No Resuelta" class="w-6 h-6 inline group-hover:scale-110 transition-transform duration-200">
                                 @else
-                                    ℹ️
+                                    <span class="group-hover:scale-110 transition-transform duration-200 inline-block">ℹ️</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-2">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
-                            <td class="px-4 py-2">{{ $incidencia->nro_ticket ?? '—' }}</td>
-                            <td class="px-4 py-2">
+                            <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->nro_ticket ?? '—' }}</td>
+                            <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
                                 {{ $incidencia->resuelta_en ? $incidencia->resuelta_en->format('d/m/Y H:i') : '-' }}
                             </td>
                             <td class="px-4 py-2 space-x-2">
                                 <a href="{{ route('incidencias.show', $incidencia) }}"
-                                    class="bg-blue-100 hover:bg-blue-200 text-white px-1 py-1 rounded">
-                                    <img src="{{ asset('icons/ver.svg') }}" alt="Ver" class="w-5 h-5 inline"></a>
+                                    class="hci-button hci-lift hci-focus-ring bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-2 rounded-lg transition-all duration-200 inline-flex items-center">
+                                    <img src="{{ asset('icons/ver.svg') }}" alt="Ver" class="w-4 h-4">
+                                </a>
                             </td>
                         </tr>
                     @empty

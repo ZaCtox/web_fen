@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Informe;
 use App\Models\Magister;
+use App\Http\Requests\InformeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,23 +24,19 @@ class InformeController extends Controller
         return view('informes.create', compact('magisters'));
     }
 
-    public function store(Request $request)
+    public function store(InformeRequest $request)
     {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'archivo' => 'required|file|max:4096',
-            'magister_id' => 'nullable|exists:magisters,id',
-        ]);
-
+        $data = $request->validated();
+        
         $file = $request->file('archivo');
         $path = $file->store('informes', 'public');
 
         Informe::create([
-            'nombre' => $request->nombre,
+            'nombre' => $data['nombre'],
             'mime' => $file->getClientMimeType(),
             'archivo' => $path,
             'user_id' => auth()->id(),
-            'magister_id' => $request->magister_id,
+            'magister_id' => $data['magister_id'],
         ]);
 
         return redirect()->route('informes.index')->with('success', 'Informe guardado correctamente');
@@ -52,15 +49,10 @@ class InformeController extends Controller
         return view('informes.edit', compact('informe', 'magisters'));
     }
 
-    public function update(Request $request, $id)
+    public function update(InformeRequest $request, $id)
     {
         $informe = Informe::findOrFail($id);
-
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'archivo' => 'nullable|file|max:4096',
-            'magister_id' => 'nullable|exists:magisters,id',
-        ]);
+        $data = $request->validated();
 
         // Reemplazar archivo si se sube uno nuevo
         if ($request->hasFile('archivo')) {
@@ -73,8 +65,8 @@ class InformeController extends Controller
             $informe->mime = $file->getClientMimeType();
         }
 
-        $informe->nombre = $request->nombre;
-        $informe->magister_id = $request->magister_id;
+        $informe->nombre = $data['nombre'];
+        $informe->magister_id = $data['magister_id'];
         $informe->save();
 
         return redirect()->route('informes.index')->with('success', 'Informe actualizado correctamente');

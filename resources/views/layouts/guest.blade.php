@@ -78,16 +78,16 @@
 
     <script>
         const html = document.documentElement;
-        const toggleBtn = document.getElementById('toggle-theme');
-        const icon = document.getElementById('theme-icon');
+        const toggleBtn = document.getElementById('guest-toggle-theme');
+        const icon = document.getElementById('guest-theme-icon');
 
         function applyTheme(theme) {
             if (theme === 'dark') {
                 html.classList.add('dark');
-                icon.textContent = '☀️';
+                if (icon) icon.textContent = '☀️';
             } else {
                 html.classList.remove('dark');
-                icon.textContent = '🌙';
+                if (icon) icon.textContent = '🌙';
             }
         }
 
