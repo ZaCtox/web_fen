@@ -375,6 +375,41 @@
                         </x-slot>
                     </x-dropdown>
                 @else
+                    <!-- Controles de accesibilidad para visitantes públicos -->
+                    <div class="flex items-center gap-3 mr-3 pr-3 border-r border-gray-300 dark:border-gray-600">
+                        <!-- Aumentar fuente -->
+                        <button id="increase-font-nav" 
+                                class="p-2 text-gray-600 dark:text-gray-400 hover:text-[#4d82bc] dark:hover:text-[#4d82bc] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+                                title="Aumentar tamaño de fuente">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <text x="2" y="18" font-size="14" font-weight="bold" fill="currentColor">A+</text>
+                            </svg>
+                        </button>
+                        
+                        <!-- Disminuir fuente -->
+                        <button id="decrease-font-nav" 
+                                class="p-2 text-gray-600 dark:text-gray-400 hover:text-[#4d82bc] dark:hover:text-[#4d82bc] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+                                title="Disminuir tamaño de fuente">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <text x="3" y="18" font-size="14" font-weight="bold" fill="currentColor">A-</text>
+                            </svg>
+                        </button>
+                        
+                        <!-- Toggle tema oscuro -->
+                        <button id="toggle-theme-nav" 
+                                class="p-2 text-gray-600 dark:text-gray-400 hover:text-[#4d82bc] dark:hover:text-[#4d82bc] hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+                                title="Cambiar tema">
+                            <svg class="w-5 h-5 hidden dark:block" fill="currentColor" viewBox="0 0 20 20">
+                                <!-- Sol (modo claro) -->
+                                <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                            </svg>
+                            <svg class="w-5 h-5 dark:hidden" fill="currentColor" viewBox="0 0 20 20">
+                                <!-- Luna (modo oscuro) -->
+                                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
                     <a href="{{ route('login') }}"
                         class="text-sm bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded">Iniciar Sesión</a>
                 @endif
@@ -485,6 +520,45 @@
                 </div>
                 @endif
             @else
+                <!-- Controles de accesibilidad para visitantes móvil -->
+                <div class="px-3 py-4 border-b border-gray-200 dark:border-gray-600 mb-2">
+                    <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Personalización</p>
+                    
+                    <!-- Modo Oscuro -->
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                            </svg>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">Modo Oscuro</span>
+                        </div>
+                        <button onclick="document.getElementById('toggle-theme-nav').click()"
+                            class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-[#4d82bc] transition-colors focus:outline-none">
+                            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-1 dark:translate-x-6"></span>
+                        </button>
+                    </div>
+
+                    <!-- Tamaño de Fuente -->
+                    <div class="mb-2">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                            </svg>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">Tamaño de Fuente</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="document.getElementById('decrease-font-nav').click()"
+                                class="flex-1 text-sm px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition font-semibold">
+                                A-
+                            </button>
+                            <button onclick="document.getElementById('increase-font-nav').click()"
+                                class="flex-1 text-sm px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition font-semibold">
+                                A+
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
                 <x-responsive-nav-link :href="route('public.dashboard.index')" :active="request()->routeIs('public.dashboard.index')">Inicio</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.calendario.index')" :active="request()->routeIs('public.calendario.index')">Calendario</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.Equipo-FEN.index')" :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-responsive-nav-link>
