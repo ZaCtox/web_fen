@@ -13,7 +13,7 @@
     <x-danger-button
         x-data=""
         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-        class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg shadow transition transform hover:scale-105"
+        class="hci-button hci-lift hci-focus-ring bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg shadow transition transform hover:scale-105 min-h-[48px] min-w-[48px]"
     >
         {{ __('Eliminar Cuenta') }}
     </x-danger-button>
@@ -49,13 +49,13 @@
             <div class="mt-6 flex justify-end gap-3">
                 <x-secondary-button
                     x-on:click="$dispatch('close')"
-                    class="bg-gray-500 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded-lg shadow transition"
+                    class="hci-button hci-lift hci-focus-ring bg-gray-500 hover:bg-gray-600 text-white font-medium px-4 py-2 rounded-lg shadow transition min-h-[48px] min-w-[48px]"
                 >
                     {{ __('Cancelar') }}
                 </x-secondary-button>
 
                 <x-danger-button
-                    class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg shadow transition transform hover:scale-105"
+                    class="hci-button hci-lift hci-focus-ring bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded-lg shadow transition transform hover:scale-105 min-h-[48px] min-w-[48px]"
                 >
                     {{ __('Eliminar Cuenta') }}
                 </x-danger-button>

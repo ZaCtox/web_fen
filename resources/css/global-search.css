@@ -1,0 +1,578 @@
+/* ==========================================
+   GLOBAL SEARCH - HCI Principles
+   - Quick access to everything
+   - Keyboard-first navigation
+   - Instant feedback
+   ========================================== */
+
+/* ==========================================
+   1. OVERLAY Y BACKDROP
+   ========================================== */
+
+.global-search-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    animation: searchOverlayFadeIn 0.2s ease-out;
+}
+
+.global-search-overlay.active {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10vh 1rem 1rem;
+}
+
+@keyframes searchOverlayFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   2. MODAL PRINCIPAL
+   ========================================== */
+
+.global-search-modal {
+    width: 100%;
+    max-width: 640px;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3),
+                0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: searchModalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.dark .global-search-modal {
+    background: #1f2937;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes searchModalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ==========================================
+   3. INPUT DE BÚSQUEDA
+   ========================================== */
+
+.global-search-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.dark .global-search-input-wrapper {
+    border-bottom-color: #374151;
+}
+
+.global-search-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #9ca3af;
+    flex-shrink: 0;
+}
+
+.global-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 1.125rem;
+    color: #111827;
+    background: transparent;
+}
+
+.global-search-input::placeholder {
+    color: #9ca3af;
+}
+
+.dark .global-search-input {
+    color: #f9fafb;
+}
+
+.dark .global-search-input::placeholder {
+    color: #6b7280;
+}
+
+.global-search-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    background: #f3f4f6;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+.dark .global-search-shortcut {
+    background: #374151;
+    color: #9ca3af;
+}
+
+.global-search-shortcut kbd {
+    font-family: monospace;
+    font-size: 0.6875rem;
+}
+
+/* ==========================================
+   4. HINTS DE NAVEGACIÓN
+   ========================================== */
+
+.global-search-hints {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1.25rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.dark .global-search-hints {
+    background: #111827;
+    border-bottom-color: #374151;
+    color: #9ca3af;
+}
+
+.global-search-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.global-search-hint kbd {
+    padding: 0.125rem 0.375rem;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.6875rem;
+}
+
+.dark .global-search-hint kbd {
+    background: #1f2937;
+    border-color: #4b5563;
+}
+
+/* ==========================================
+   5. CONTENEDOR DE RESULTADOS
+   ========================================== */
+
+.global-search-results {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.75rem;
+}
+
+.global-search-results::-webkit-scrollbar {
+    width: 8px;
+}
+
+.global-search-results::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.global-search-results::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.dark .global-search-results::-webkit-scrollbar-thumb {
+    background: #4b5563;
+}
+
+/* ==========================================
+   6. GRUPOS DE RESULTADOS
+   ========================================== */
+
+.global-search-group {
+    margin-bottom: 1rem;
+}
+
+.global-search-group-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+}
+
+.dark .global-search-group-title {
+    color: #9ca3af;
+}
+
+.global-search-group-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.global-search-group-count {
+    margin-left: auto;
+    padding: 0.125rem 0.5rem;
+    background: #e5e7eb;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    color: #4b5563;
+}
+
+.dark .global-search-group-count {
+    background: #374151;
+    color: #9ca3af;
+}
+
+/* ==========================================
+   7. ITEMS DE RESULTADO
+   ========================================== */
+
+.global-search-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.global-search-item:hover,
+.global-search-item.selected {
+    background: #f3f4f6;
+}
+
+.dark .global-search-item:hover,
+.dark .global-search-item.selected {
+    background: #374151;
+}
+
+.global-search-item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background: #e5e7eb;
+    border-radius: 0.5rem;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+}
+
+.dark .global-search-item-icon {
+    background: #4b5563;
+}
+
+.global-search-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.global-search-item-title {
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 0.125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dark .global-search-item-title {
+    color: #f9fafb;
+}
+
+.global-search-item-description {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dark .global-search-item-description {
+    color: #9ca3af;
+}
+
+.global-search-item-badge {
+    padding: 0.25rem 0.5rem;
+    background: #dbeafe;
+    color: #1e40af;
+    border-radius: 0.375rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.dark .global-search-item-badge {
+    background: #1e3a8a;
+    color: #93c5fd;
+}
+
+/* ==========================================
+   8. ESTADOS VACÍOS
+   ========================================== */
+
+.global-search-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    color: #9ca3af;
+}
+
+.global-search-empty-icon {
+    width: 4rem;
+    height: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.global-search-empty-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+}
+
+.dark .global-search-empty-title {
+    color: #9ca3af;
+}
+
+.global-search-empty-description {
+    font-size: 0.875rem;
+    color: #9ca3af;
+}
+
+.dark .global-search-empty-description {
+    color: #6b7280;
+}
+
+/* ==========================================
+   9. BÚSQUEDAS RECIENTES
+   ========================================== */
+
+.global-search-recent {
+    padding: 0.75rem;
+}
+
+.global-search-recent-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+}
+
+.dark .global-search-recent-title {
+    color: #9ca3af;
+}
+
+.global-search-recent-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.global-search-recent-item:hover {
+    background: #f3f4f6;
+}
+
+.dark .global-search-recent-item:hover {
+    background: #374151;
+}
+
+.global-search-recent-icon {
+    width: 1rem;
+    height: 1rem;
+    color: #9ca3af;
+}
+
+.global-search-recent-text {
+    flex: 1;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.dark .global-search-recent-text {
+    color: #9ca3af;
+}
+
+.global-search-recent-remove {
+    opacity: 0;
+    padding: 0.25rem;
+    background: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.global-search-recent-item:hover .global-search-recent-remove {
+    opacity: 1;
+}
+
+.global-search-recent-remove:hover {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.dark .global-search-recent-remove:hover {
+    background: #4b5563;
+    color: #e5e7eb;
+}
+
+/* ==========================================
+   10. LOADING STATE
+   ========================================== */
+
+.global-search-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.global-search-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid #e5e7eb;
+    border-top-color: #4d82bc;
+    border-radius: 50%;
+    animation: searchSpinner 0.6s linear infinite;
+}
+
+.dark .global-search-spinner {
+    border-color: #374151;
+    border-top-color: #84b6f4;
+}
+
+@keyframes searchSpinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==========================================
+   11. RESPONSIVE
+   ========================================== */
+
+@media (max-width: 640px) {
+    .global-search-overlay.active {
+        padding: 0;
+        align-items: stretch;
+    }
+
+    .global-search-modal {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        animation: searchModalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes searchModalSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .global-search-input-wrapper {
+        padding: 0.875rem 1rem;
+    }
+
+    .global-search-input {
+        font-size: 1rem;
+    }
+
+    .global-search-hints {
+        display: none;
+    }
+
+    .global-search-item {
+        padding: 0.625rem;
+    }
+
+    .global-search-item-icon {
+        width: 2rem;
+        height: 2rem;
+        font-size: 1rem;
+    }
+}
+
+/* ==========================================
+   12. ACCESIBILIDAD
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .global-search-overlay,
+    .global-search-modal,
+    .global-search-item {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+.global-search-item:focus-visible {
+    outline: 2px solid #4d82bc;
+    outline-offset: 2px;
+}
+
+/* ==========================================
+   13. HIGHLIGHT DE BÚSQUEDA
+   ========================================== */
+
+.search-highlight {
+    background: #fef3c7;
+    color: #92400e;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+}
+
+.dark .search-highlight {
+    background: #78350f;
+    color: #fbbf24;
+}
+

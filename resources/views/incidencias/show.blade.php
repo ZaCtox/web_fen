@@ -189,7 +189,13 @@
                         </h3>
                     </div>
                     <div class="hci-card-body px-6 py-4">
-                        @if(!in_array($incidencia->estado, ['resuelta', 'no_resuelta']))
+                        @php
+                            $user = Auth::user();
+                            $rolesPermitidos = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+                            $puedeModificar = in_array($user->rol, $rolesPermitidos);
+                        @endphp
+                        
+                        @if($puedeModificar && !in_array($incidencia->estado, ['resuelta', 'no_resuelta']))
                             <form action="{{ route('incidencias.update', $incidencia) }}" method="POST"
                                 class="space-y-6 max-w-2xl">
                                 @csrf
@@ -236,23 +242,31 @@
                                     </button>
                                 </div>
                             </form>
-                        @else
-                            <div
-                                class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                        @elseif(!$puedeModificar && !in_array($incidencia->estado, ['resuelta', 'no_resuelta']))
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                                 <div class="flex items-start">
-                                    <svg class="w-5 h-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor"
-                                        viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M8.257 3.099c.765-1.36 2.725-1.36 3.49 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                            clip-rule="evenodd" />
+                                    <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                                     </svg>
                                     <div>
-                                        <h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">Incidencia
-                                            Bloqueada</h4>
+                                        <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200">Solo Lectura</h4>
+                                        <p class="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                                            Tu rol actual <strong>({{ ucfirst(str_replace('_', ' ', $user->rol)) }})</strong> no tiene permisos para cambiar el estado de las incidencias. 
+                                            Solo administradores, directores administrativos, técnicos, auxiliares y asistentes de postgrado pueden modificar el estado.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @else
+                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-yellow-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.725-1.36 3.49 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <div>
+                                        <h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">Incidencia Bloqueada</h4>
                                         <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                                            Esta incidencia ha sido marcada como
-                                            <strong>{{ strtoupper(str_replace('_', ' ', $incidencia->estado)) }}</strong>
-                                            y no puede modificarse.
+                                            Esta incidencia ha sido marcada como <strong>{{ strtoupper(str_replace('_', ' ', $incidencia->estado)) }}</strong> y no puede modificarse.
                                         </p>
                                     </div>
                                 </div>

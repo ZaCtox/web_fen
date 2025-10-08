@@ -47,3 +47,9 @@ Route::get('/Archivos-FEN', [PublicInformeController::class, 'index'])
 
 Route::get('/Archivos-FEN/download/{id}', [PublicInformeController::class, 'download'])
     ->name('public.informes.download');
+
+// Novedades públicas
+Route::get('/Novedades-FEN', [PublicDashboardController::class, 'novedades'])
+    ->name('public.novedades');
+Route::get('/Novedades-FEN/{novedad}', [PublicDashboardController::class, 'novedadDetalle'])
+    ->name('public.novedades.show');

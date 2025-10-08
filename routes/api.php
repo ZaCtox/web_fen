@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\IncidentController;
 use App\Http\Controllers\Api\MagisterController;
 use App\Http\Controllers\Api\PeriodController;
 use App\Http\Controllers\Api\RoomController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\StaffController;
 use App\Models\Period;
 use Illuminate\Http\Request;
@@ -83,6 +84,9 @@ Route::name('api.')->group(function () {
         // Usuario actual
         Route::get('/user', [AuthController::class, 'user'])->name('user');
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+        // 🔍 BÚSQUEDA GLOBAL
+        Route::get('/search', [SearchController::class, 'search'])->name('search');
 
         Route::get('/profile', [AuthController::class, 'user'])->name('user.profile');
 

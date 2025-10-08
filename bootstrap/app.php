@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'redirect.authenticated' => \App\Http\Middleware\RedirectIfAuthenticatedToDashboard::class,
             'role.api' => \App\Http\Middleware\RoleApiMiddleware::class,
             'handle.cors' => \App\Http\Middleware\HandleCors::class,
+            'incident.modify' => \App\Http\Middleware\IncidentModificationMiddleware::class,
         ]);
         
     })

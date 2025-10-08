@@ -29,7 +29,7 @@
         {{-- Header con botón agregar y búsqueda --}}
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
             <x-agregar :href="route('register')">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="Volver" class="w-5 h-5">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="Volver" class="w-4 h-4">
             </x-agregar>
 
 
@@ -71,25 +71,22 @@
                                         x-show="usuario.id !== authId">
                                         {{-- Editar --}}
                                         <a :href="`/usuarios/${usuario.id}/edit`"
-                                            class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
-              w-8 px-2 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
-              rounded-lg text-xs font-medium transition-all duration-200">
+                                            class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition"
+                                            title="Editar usuario">
                                             <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
 
                                         {{-- Eliminar --}}
-                                        <form :action="`/usuarios/${usuario.id}`" method="POST" class="form-eliminar hci-confirm-button"
+                                        <form :action="`/usuarios/${usuario.id}`" method="POST" class="form-eliminar inline"
                                             data-confirm-title="Eliminar Usuario"
                                             data-confirm-message="¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer."
                                             data-confirm-type="danger">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
-                       w-8 px-2 py-2 bg-[#e57373] hover:bg-[#f28b82] 
-                       rounded-lg text-xs font-medium transition-all duration-200">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar"
-                                                    class="w-4 h-4">
+                                                class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition"
+                                                title="Eliminar usuario">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
                                             </button>
                                         </form>
                                     </div>

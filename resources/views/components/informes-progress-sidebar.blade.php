@@ -27,7 +27,7 @@
                 </div>
                 <div class="hci-progress-step-content-vertical">
                     <span class="hci-progress-step-title">Información Básica</span>
-                    <span class="hci-progress-step-desc">Nombre y archivo</span>
+                    <span class="hci-progress-step-desc">Nombre y tipo</span>
                 </div>
             </div>
             
@@ -36,8 +36,8 @@
                     <span class="hci-progress-step-number">2</span>
                 </div>
                 <div class="hci-progress-step-content-vertical">
-                    <span class="hci-progress-step-title">Destinatario</span>
-                    <span class="hci-progress-step-desc">Programa específico</span>
+                    <span class="hci-progress-step-title">Archivo y Destinatario</span>
+                    <span class="hci-progress-step-desc">Subir y dirigir</span>
                 </div>
             </div>
             

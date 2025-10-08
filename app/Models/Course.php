@@ -22,6 +22,10 @@ class Course extends Model
         return $this->belongsTo(Period::class);
     }
 
+    public function clases()
+    {
+        return $this->hasMany(Clase::class, 'course_id');
+    }
 
 }
 

@@ -121,24 +121,22 @@
                         {{-- Acciones --}}
                         <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                             <div class="flex gap-2">
-                                {{-- Botón azul (Editar) --}}
-                                <a href="{{ route('magisters.edit', $magister) }}" class="inline-flex items-center justify-center 
-                       w-10 px-2 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
-                       text-white rounded-lg text-xs font-medium transition">
-                                    <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
-                                </a>
+                                {{-- Botón Editar --}}
+                                <x-action-button 
+                                    variant="edit" 
+                                    type="link" 
+                                    :href="route('magisters.edit', $magister)" 
+                                    icon="editw.svg"
+                                    tooltip="Editar programa" />
 
-                                {{-- Botón rojo (Eliminar) --}}
-                                <form action="{{ route('magisters.destroy', $magister) }}" method="POST"
-                                    class="form-eliminar" data-confirm="{{ $msg }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="inline-flex items-center justify-center 
-                           w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] 
-                           text-white rounded-lg text-xs font-medium transition">
-                                        <img src="{{ asset('icons/trashw.svg') }}" alt="Borrar" class="w-3 h-4">
-                                    </button>
-                                </form>
+                                {{-- Botón Eliminar --}}
+                                <x-action-button 
+                                    variant="delete" 
+                                    :formAction="route('magisters.destroy', $magister)" 
+                                    formMethod="DELETE" 
+                                    class="form-eliminar"
+                                    data-confirm="{{ $msg }}"
+                                    tooltip="Eliminar programa" />
                             </div>
                         </div>
                     </div>

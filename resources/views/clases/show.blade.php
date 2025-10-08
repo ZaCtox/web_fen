@@ -75,8 +75,7 @@
                         </a>
 
                         {{-- Eliminar --}}
-                        <form action="{{ route('clases.destroy', $clase) }}" method="POST"
-                            onsubmit="return confirm('¿Eliminar esta clase?')" class="inline-flex">
+                        <form action="{{ route('clases.destroy', $clase) }}" method="POST" class="inline-flex form-eliminar">
                             @csrf
                             @method('DELETE')
                             <button type="submit"

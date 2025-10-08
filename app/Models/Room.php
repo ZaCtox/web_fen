@@ -31,6 +31,25 @@ class Room extends Model
         return $this->hasMany(Clase::class);
     }
 
+    public function incidents()
+    {
+        return $this->hasMany(Incident::class);
+    }
+
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function bitacoras()
+    {
+        return $this->hasMany(Bitacora::class);
+    }
+
+    public function reportEntries()
+    {
+        return $this->hasMany(ReportEntry::class);
+    }
 
 }
 

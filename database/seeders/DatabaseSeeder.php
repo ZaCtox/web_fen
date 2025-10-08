@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         DB::table('events')->truncate();
         DB::table('emergencies')->truncate();
         DB::table('informes')->truncate();
+        DB::table('novedades')->truncate();
          
         // si tiene relaciones también
         // Añade más tablas si es necesario
@@ -42,6 +43,7 @@ class DatabaseSeeder extends Seeder
             ClaseSeeder::class,
             StaffSeeder::class,
             EventSeeder::class,
+            NovedadesSeeder::class,
         ]);
     }
 }

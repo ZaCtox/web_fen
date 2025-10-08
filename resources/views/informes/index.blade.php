@@ -1,5 +1,5 @@
 {{-- Lista de Informes --}}
-@section('title', 'Informes')
+@section('title', 'Registros')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Registros</h2>
@@ -8,16 +8,18 @@
     {{-- Breadcrumb --}}
     <x-hci-breadcrumb :items="[
         ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Archivos', 'url' => '#']
+        ['label' => 'Registros', 'url' => '#']
     ]" />
 
     <div class="py-6 max-w-7xl mx-auto px-4" x-data="{
         search: '',
         selectedMagister: '',
         selectedUser: '',
+        selectedTipo: '',
         informes: @js($informes),
         magisters: @js($informes->pluck('magister')->unique()->filter()->values()),
         users: @js($informes->pluck('user')->unique()->filter()->values()),
+        tipos: ['calendario', 'academico', 'administrativo', 'general'],
         get filtrados() {
             const q = this.search.toLowerCase();
             return this.informes.filter(i =>
@@ -25,7 +27,8 @@
                  (i.magister ? i.magister.nombre.toLowerCase() : 'todos').includes(q) ||
                  (i.user ? i.user.name.toLowerCase() : '').includes(q)) &&
                 (this.selectedMagister === '' || (i.magister && i.magister.nombre === this.selectedMagister)) &&
-                (this.selectedUser === '' || (i.user && i.user.name === this.selectedUser))
+                (this.selectedUser === '' || (i.user && i.user.name === this.selectedUser)) &&
+                (this.selectedTipo === '' || i.tipo === this.selectedTipo)
             );
         }
     }">
@@ -70,8 +73,19 @@
                     </select>
                 </div>
 
+                <div class="min-w-[180px]">
+                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4]">Tipo:</label>
+                    <select x-model="selectedTipo"
+                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-[#84b6f4] px-3 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
+                        <option value="">Todos</option>
+                        <template x-for="tipo in tipos" :key="tipo">
+                            <option :value="tipo" x-text="tipo.charAt(0).toUpperCase() + tipo.slice(1)"></option>
+                        </template>
+                    </select>
+                </div>
+
                 <div class="flex items-end">
-                    <button type="button" @click="search=''; selectedMagister=''; selectedUser=''"
+                    <button type="button" @click="search=''; selectedMagister=''; selectedUser=''; selectedTipo=''"
                         class="flex justify-center items-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-all duration-200">
                         <img src="{{ asset('icons/filtro.svg') }}" class="w-6 h-6" alt="Filtro">
                     </button>
@@ -100,6 +114,7 @@
                 <thead class="bg-[#c4dafa]/50 dark:bg-gray-700">
                     <tr>
                         <th class="px-4 py-2 text-left">Nombre</th>
+                        <th class="px-4 py-2 text-left">Tipo</th>
                         <th class="px-4 py-2 text-left">Dirigido a</th>
                         <th class="px-4 py-2 text-left">Subido por</th>
                         <th class="px-4 py-2 text-left">Fecha</th>
@@ -115,34 +130,50 @@
                                    hover:-translate-y-0.5 hover:shadow-md
                                    transition-all duration-200 group cursor-pointer">
                             <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="informe.nombre"></td>
+                            <td class="px-4 py-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                      :class="{
+                                          'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300': informe.tipo === 'calendario',
+                                          'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': informe.tipo === 'academico',
+                                          'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300': informe.tipo === 'administrativo',
+                                          'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300': informe.tipo === 'general'
+                                      }"
+                                      x-text="informe.tipo ? informe.tipo.charAt(0).toUpperCase() + informe.tipo.slice(1) : 'General'">
+                                </span>
+                            </td>
                             <td class="px-4 py-2" x-text="informe.magister ? informe.magister.nombre : 'Todos'"></td>
                             <td class="px-4 py-2" x-text="informe.user ? informe.user.name : '—'"></td>
                             <td class="px-4 py-2"
                                 x-text="new Date(informe.created_at).toLocaleString('es-CL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })">
                             </td>
-                            <td class="px-4 py-2 flex justify-center gap-2">
-                                {{-- Descargar --}}
-                                <a :href="'{{ url('informes/download') }}/' + informe.id"
-                                    class="inline-block bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-3 py-1 rounded-lg shadow transition duration-200">
-                                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-5 h-5">
-                                </a>
+                            <td class="px-4 py-2">
+                                <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                    {{-- Descargar --}}
+                                    <a :href="'{{ url('informes/download') }}/' + informe.id"
+                                        class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                                        title="Descargar informe">
+                                        <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-4 h-4">
+                                    </a>
 
-                                {{-- Editar --}}
-                                <a :href="'{{ url('informes') }}/' + informe.id + '/edit'"
-                                    class="inline-block bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-3 py-1 rounded-lg shadow transition duration-200">
-                                    <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
-                                </a>
+                                    {{-- Editar --}}
+                                    <a :href="'{{ url('informes') }}/' + informe.id + '/edit'"
+                                        class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition"
+                                        title="Editar informe">
+                                        <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
+                                    </a>
 
-                                {{-- Eliminar --}}
-                                <form :action="'{{ url('informes') }}/' + informe.id" method="POST"
-                                    class="form-eliminar">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                       class="inline-flex items-center justify-center px-3 py-1 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                        <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
-                                    </button>
-                                </form>
+                                    {{-- Eliminar --}}
+                                    <form :action="'{{ url('informes') }}/' + informe.id" method="POST"
+                                        class="form-eliminar inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition"
+                                            title="Eliminar informe">
+                                            <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     </template>

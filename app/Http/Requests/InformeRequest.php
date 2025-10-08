@@ -23,6 +23,7 @@ class InformeRequest extends FormRequest
     {
         $rules = [
             'nombre' => 'required|string|max:255',
+            'tipo' => 'required|string|in:calendario,academico,administrativo,general',
             'magister_id' => 'nullable|exists:magisters,id',
         ];
 
@@ -42,6 +43,8 @@ class InformeRequest extends FormRequest
         return [
             'nombre.required' => 'El nombre del informe es obligatorio.',
             'nombre.max' => 'El nombre no puede exceder los 255 caracteres.',
+            'tipo.required' => 'Debe seleccionar un tipo de registro.',
+            'tipo.in' => 'El tipo de registro seleccionado no es válido.',
             'archivo.required' => 'Debe seleccionar un archivo.',
             'archivo.file' => 'El archivo debe ser válido.',
             'archivo.max' => 'El archivo no puede exceder los 4MB.',

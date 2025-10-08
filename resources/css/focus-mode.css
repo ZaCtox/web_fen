@@ -1,0 +1,468 @@
+/* ==========================================
+   FOCUS MODE - HCI Principles
+   - Reduce distractions
+   - Maximize work area
+   - Improve concentration
+   ========================================== */
+
+/* ==========================================
+   1. CLASE PRINCIPAL DE MODO FOCO
+   ========================================== */
+
+body.focus-mode {
+    overflow: hidden;
+}
+
+/* Ocultar navegación en modo foco */
+body.focus-mode nav[x-data] {
+    transform: translateY(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ocultar breadcrumbs en modo foco */
+body.focus-mode .hci-breadcrumb,
+body.focus-mode [class*="breadcrumb"] {
+    display: none;
+}
+
+/* Maximizar contenido principal */
+body.focus-mode main {
+    padding-top: 0 !important;
+    max-width: 100% !important;
+}
+
+/* ==========================================
+   2. INDICADOR VISUAL DE MODO FOCO
+   ========================================== */
+
+.focus-mode-indicator {
+    position: fixed;
+    top: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9998;
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(77, 130, 188, 0.95);
+    backdrop-filter: blur(10px);
+    color: white;
+    border-radius: 2rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: focusIndicatorSlide 0.3s ease-out;
+}
+
+body.focus-mode .focus-mode-indicator {
+    display: flex;
+}
+
+.dark .focus-mode-indicator {
+    background: rgba(132, 182, 244, 0.95);
+    color: #1f2937;
+}
+
+@keyframes focusIndicatorSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+/* Ícono del indicador */
+.focus-mode-indicator svg {
+    width: 1rem;
+    height: 1rem;
+    animation: focusIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes focusIconPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* ==========================================
+   3. BOTÓN TOGGLE DE MODO FOCO
+   ========================================== */
+
+.focus-mode-toggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9997;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    background: #4d82bc;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(77, 130, 188, 0.3),
+                0 8px 24px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    outline: none;
+}
+
+.focus-mode-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(77, 130, 188, 0.4),
+                0 12px 32px rgba(0, 0, 0, 0.2);
+    background: #005187;
+}
+
+.focus-mode-toggle:active {
+    transform: scale(0.95);
+}
+
+.dark .focus-mode-toggle {
+    background: #84b6f4;
+    color: #1f2937;
+}
+
+.dark .focus-mode-toggle:hover {
+    background: #4d82bc;
+    color: white;
+}
+
+/* Icono del botón */
+.focus-mode-toggle svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+body.focus-mode .focus-mode-toggle svg {
+    transform: rotate(180deg);
+}
+
+/* Tooltip del botón */
+.focus-mode-toggle::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(17, 24, 39, 0.95);
+    color: white;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    border-radius: 0.375rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.focus-mode-toggle:hover::before {
+    opacity: 1;
+}
+
+.dark .focus-mode-toggle::before {
+    background: rgba(249, 250, 251, 0.95);
+    color: #1f2937;
+}
+
+/* ==========================================
+   4. MODO FOCO PARA FORMULARIOS
+   ========================================== */
+
+body.focus-mode .hci-form,
+body.focus-mode form {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+body.focus-mode .hci-form-section {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.dark body.focus-mode .hci-form-section {
+    background: #1f2937;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================
+   5. OCULTAR ELEMENTOS DISTRACTORES
+   ========================================== */
+
+/* Ocultar sidebar de progreso en modo foco (opcional) */
+body.focus-mode .hci-progress-sidebar {
+    opacity: 0.3;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+body.focus-mode .hci-progress-sidebar:hover {
+    opacity: 1;
+    pointer-events: all;
+}
+
+/* Ocultar headers secundarios */
+body.focus-mode .secondary-header,
+body.focus-mode .page-header-actions {
+    display: none;
+}
+
+/* ==========================================
+   6. BACKDROP SUTIL
+   ========================================== */
+
+.focus-mode-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.02);
+    z-index: -1;
+    display: none;
+    animation: focusBackdropFade 0.3s ease-out;
+}
+
+body.focus-mode .focus-mode-backdrop {
+    display: block;
+}
+
+.dark .focus-mode-backdrop {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+@keyframes focusBackdropFade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ==========================================
+   7. ATAJOS DE TECLADO VISUAL
+   ========================================== */
+
+.focus-mode-hint {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9996;
+    padding: 0.5rem 1rem;
+    background: rgba(107, 114, 128, 0.95);
+    backdrop-filter: blur(10px);
+    color: white;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: none;
+    animation: focusHintSlide 0.3s ease-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    gap: 0.75rem;
+    align-items: center;
+}
+
+body.focus-mode .focus-mode-hint {
+    display: flex;
+}
+
+.dark .focus-mode-hint {
+    background: rgba(75, 85, 99, 0.95);
+}
+
+@keyframes focusHintSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.focus-mode-hint-text {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.focus-mode-hint kbd {
+    display: inline-block;
+    padding: 0.125rem 0.375rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.6875rem;
+    margin: 0 0.25rem;
+}
+
+.focus-mode-hint-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 0.25rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.focus-mode-hint-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.focus-mode-hint-close:active {
+    transform: scale(0.95);
+}
+
+.focus-mode-hint-close svg {
+    width: 0.875rem;
+    height: 0.875rem;
+}
+
+/* Ocultar hint después de unos segundos */
+body.focus-mode .focus-mode-hint {
+    animation: focusHintSlide 0.3s ease-out, 
+               focusHintFadeOut 0.5s ease-out 3s forwards;
+}
+
+@keyframes focusHintFadeOut {
+    to {
+        opacity: 0;
+        pointer-events: none;
+    }
+}
+
+/* ==========================================
+   8. RESPONSIVE
+   ========================================== */
+
+@media (max-width: 768px) {
+    .focus-mode-toggle {
+        bottom: 1rem;
+        right: 1rem;
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .focus-mode-toggle svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .focus-mode-indicator {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+
+    body.focus-mode .hci-form,
+    body.focus-mode form {
+        padding: 1rem;
+    }
+
+    body.focus-mode .hci-form-section {
+        padding: 1.25rem;
+    }
+
+    .focus-mode-hint {
+        font-size: 0.6875rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .focus-mode-toggle::before {
+        display: none; /* Ocultar tooltip en móvil */
+    }
+
+    .focus-mode-hint {
+        bottom: 4.5rem; /* Evitar superposición con botón */
+    }
+}
+
+/* ==========================================
+   9. ACCESIBILIDAD
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .focus-mode-indicator,
+    .focus-mode-toggle,
+    .focus-mode-hint,
+    .focus-mode-backdrop,
+    body.focus-mode nav,
+    body.focus-mode .hci-progress-sidebar {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+.focus-mode-toggle:focus-visible {
+    outline: 3px solid #4d82bc;
+    outline-offset: 4px;
+}
+
+/* ==========================================
+   10. ESTADOS DE CARGA Y TRANSICIONES
+   ========================================== */
+
+body.focus-mode-transitioning {
+    pointer-events: none;
+}
+
+body.focus-mode-transitioning * {
+    transition-duration: 0.3s !important;
+}
+
+/* ==========================================
+   11. MEJORAS VISUALES EN MODO FOCO
+   ========================================== */
+
+/* Aumentar contraste de inputs en foco */
+body.focus-mode input:focus,
+body.focus-mode textarea:focus,
+body.focus-mode select:focus {
+    box-shadow: 0 0 0 3px rgba(77, 130, 188, 0.2);
+    border-color: #4d82bc;
+}
+
+/* Resaltar sección actual */
+body.focus-mode .hci-form-section.active {
+    box-shadow: 0 0 0 2px #4d82bc,
+                0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.dark body.focus-mode .hci-form-section.active {
+    box-shadow: 0 0 0 2px #84b6f4,
+                0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Suavizar elementos no activos */
+body.focus-mode .hci-form-section:not(.active) {
+    opacity: 0.7;
+}
+
+body.focus-mode .hci-form-section:not(.active):hover {
+    opacity: 1;
+}
+

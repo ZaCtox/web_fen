@@ -5,15 +5,6 @@
     $editing = isset($incident);
 @endphp
 
-{{-- Breadcrumb (Ley de Jakob) --}}
-<x-hci-breadcrumb 
-    :items="[
-        ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Incidencias', 'url' => route('incidencias.index')],
-        ['label' => $editing ? 'Editar Incidencia' : 'Nueva Incidencia', 'url' => '#']
-    ]"
-/>
-
 {{-- Contenedor principal con principios HCI --}}
 <div class="hci-container">
     <div class="hci-section">

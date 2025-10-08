@@ -66,33 +66,120 @@
 
 {{-- Script para actualizar trimestres dinámicamente --}}
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const anioSelect = document.getElementById('anio-select');
-    const numeroSelect = document.getElementById('numero-select');
+console.log('🚀 Script de períodos iniciado');
 
-    const opcionesTrimestre = {
-        1: [1, 2, 3],
-        2: [4, 5, 6]
-    };
+(function() {
+    console.log('📋 Función inmediata ejecutándose...');
+    
+    function inicializarTrimestres() {
+        console.log('🔍 Buscando elementos...');
+        
+        const anioSelect = document.getElementById('anio-select');
+        const numeroSelect = document.getElementById('numero-select');
+        
+        if (!anioSelect || !numeroSelect) {
+            console.error('❌ Elementos no encontrados todavía:', {
+                anioSelect: !!anioSelect,
+                numeroSelect: !!numeroSelect
+            });
+            return false;
+        }
+        
+        console.log('✅ Elementos encontrados:', {
+            anioSelect: anioSelect,
+            numeroSelect: numeroSelect,
+            anioValue: anioSelect.value,
+            numeroOptions: numeroSelect.options.length
+        });
 
-    function actualizarTrimestres() {
-        const anio = parseInt(anioSelect.value);
-        const trimestres = opcionesTrimestre[anio] || [];
+        const opcionesTrimestre = {
+            1: [1, 2, 3],
+            2: [4, 5, 6]
+        };
 
-        numeroSelect.innerHTML = '';
+        // Valor del trimestre a seleccionar
+        const trimestreSeleccionado = @if(isset($period)) {{ old('numero', $period->numero) ?? 'null' }} @else {{ old('numero', 'null') }} @endif;
+        
+        console.log('📊 Datos del período:', {
+            periodoExiste: @if(isset($period)) true @else false @endif,
+            trimestreSeleccionado: trimestreSeleccionado,
+            anioActual: anioSelect.value
+        });
 
-        trimestres.forEach(function (num) {
-            const option = document.createElement('option');
-            option.value = num;
-            option.textContent = 'Trimestre ' + num;
-            if ({{ old('numero', optional($period)->numero) ?? 'null' }} == num) {
-                option.selected = true;
-            }
-            numeroSelect.appendChild(option);
+        function actualizarTrimestres() {
+            console.log('🔄 Actualizando trimestres...');
+            
+            const anio = parseInt(anioSelect.value);
+            const trimestres = opcionesTrimestre[anio] || [];
+            
+            console.log('📅 Datos para actualizar:', {
+                anio: anio,
+                trimestresDisponibles: trimestres,
+                trimestreASeleccionar: trimestreSeleccionado
+            });
+
+            numeroSelect.innerHTML = '';
+
+            trimestres.forEach(function (num) {
+                const option = document.createElement('option');
+                option.value = num;
+                option.textContent = 'Trimestre ' + num;
+                
+                // Seleccionar el trimestre correcto
+                if (trimestreSeleccionado && trimestreSeleccionado == num) {
+                    option.selected = true;
+                    console.log('✅ Trimestre seleccionado:', num);
+                }
+                
+                numeroSelect.appendChild(option);
+            });
+            
+            console.log('🎯 Estado final:', {
+                anioSeleccionado: anio,
+                trimestreASeleccionar: trimestreSeleccionado,
+                trimestreActualmenteSeleccionado: numeroSelect.value,
+                opcionesDisponibles: Array.from(numeroSelect.options).map(opt => ({value: opt.value, text: opt.text, selected: opt.selected}))
+            });
+        }
+
+        anioSelect.addEventListener('change', function() {
+            console.log('🔄 Año cambió a:', anioSelect.value);
+            actualizarTrimestres();
+        });
+        
+        // Ejecutar actualización
+        console.log('⚡ Ejecutando actualización...');
+        actualizarTrimestres();
+        
+        return true;
+    }
+    
+    // Intentar múltiples veces hasta que los elementos estén disponibles
+    let intentos = 0;
+    const maxIntentos = 10;
+    
+    function intentarInicializar() {
+        intentos++;
+        console.log(`🔄 Intento ${intentos}/${maxIntentos}...`);
+        
+        if (inicializarTrimestres()) {
+            console.log('✅ Inicialización exitosa!');
+        } else if (intentos < maxIntentos) {
+            setTimeout(intentarInicializar, 100);
+        } else {
+            console.error('❌ No se pudo inicializar después de', maxIntentos, 'intentos');
+        }
+    }
+    
+    // Intentar inmediatamente
+    intentarInicializar();
+    
+    // También intentar cuando el DOM esté listo
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📋 DOMContentLoaded disparado');
+            inicializarTrimestres();
         });
     }
-
-    anioSelect.addEventListener('change', actualizarTrimestres);
-    actualizarTrimestres(); // Inicial al cargar
-});
+})();
 </script>

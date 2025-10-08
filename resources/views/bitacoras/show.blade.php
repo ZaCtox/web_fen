@@ -53,31 +53,68 @@
             </div>
 
             {{-- Botones --}}
-            <div class="flex space-x-3 mt-6">
+            <div class="flex flex-wrap gap-3 mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
                 <a href="{{ route('bitacoras.index') }}"
-                   class="px-4 py-2 bg-gray-500 text-white rounded-lg shadow hover:bg-gray-600 transition">
-                    🔙 Volver
+                   class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg shadow transition-all duration-200">
+                    <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-4 h-4">
+                    <span>Volver</span>
                 </a>
 
                 <a href="{{ route('bitacoras.edit', $bitacora) }}"
-                   class="px-4 py-2 bg-[#005187] text-white rounded-lg shadow hover:bg-[#003c63] transition">
-                    ✏️ Editar
+                   class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 px-4 py-2 bg-[#005187] hover:bg-[#4d82bc] text-white rounded-lg shadow transition-all duration-200">
+                    <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-4 h-4">
+                    <span>Editar</span>
                 </a>
 
-                <form action="{{ route('bitacoras.destroy', $bitacora) }}" method="POST" onsubmit="return confirm('¿Seguro que quieres eliminar este registro?')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit"
-                            class="px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
-                        🗑️ Eliminar
-                    </button>
-                </form>
-
-                <a href="{{ route('bitacoras.exportarPDF', $bitacora) }}"
-                   class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition">
-                    📄 Exportar PDF
+                @if($bitacora->pdf_path)
+                <a href="{{ route('bitacoras.download', $bitacora) }}"
+                   class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 px-4 py-2 bg-[#005187] hover:bg-[#4d82bc] text-white rounded-lg shadow transition-all duration-200">
+                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar PDF" class="w-5 h-5">
+                    <span>Descargar PDF</span>
                 </a>
+                @endif
+
+                <button type="button" 
+                        onclick="confirmarEliminacion('{{ route('bitacoras.destroy', $bitacora) }}', '{{ $bitacora->titulo ?? 'este reporte' }}')"
+                        class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow transition-all duration-200">
+                    <img src="{{ asset('icons/trash.svg') }}" alt="Eliminar" class="w-4 h-4">
+                    <span>Eliminar</span>
+                </button>
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        function confirmarEliminacion(url, titulo) {
+            Swal.fire({
+                title: '¿Eliminar reporte?',
+                text: `¿Estás seguro de que quieres eliminar "${titulo}"? Esta acción no se puede deshacer.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'hci-button hci-lift hci-focus-ring px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200',
+                    cancelButton: 'hci-button hci-lift hci-focus-ring px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-all duration-200'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+    @endpush
 </x-app-layout>

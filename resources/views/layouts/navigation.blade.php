@@ -109,7 +109,7 @@
                                     </a>
                                 @endif
                                 @if($canInformes)
-                                    <a href="{{ route('informes.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Archivos</a>
+                                    <a href="{{ route('informes.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Registros</a>
                                 @endif
                                 @if($canEmergencias)
                                     <a href="{{ route('emergencies.index') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
@@ -127,7 +127,7 @@
                                     </a>
                                 @endif
                                 @if($canBitacoras)
-                                    <a href="{{ route('bitacoras.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Bitácoras</a>
+                                    <a href="{{ route('daily-reports.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Reportes Diarios</a>
                                 @endif
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                     @endif
 
                     <!-- Administración -->
-                    @if(tieneRol('administrador'))
+                    @if(tieneRol(['administrador', 'director_administrativo', 'asistente_postgrado']))
                     <div class="relative" x-data="{open:false}" @mouseenter="open=true" @mouseleave="open=false">
                         <button @click="open=!open" 
                                 class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md 
@@ -160,6 +160,21 @@
                              x-transition:leave-end="opacity-0"
                              class="absolute z-40 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                             <div class="py-1">
+                                @if(tieneRol(['administrador', 'director_administrativo', 'asistente_postgrado']))
+                                    <a href="{{ route('novedades.index') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                        <span>📰 Novedades</span>
+                                        @php 
+                                            $urgentNews = \App\Models\Novedad::where('es_urgente', true)
+                                                ->where(function($q) {
+                                                    $q->whereNull('fecha_expiracion')
+                                                      ->orWhere('fecha_expiracion', '>', now());
+                                                })->count(); 
+                                        @endphp
+                                        @if($urgentNews > 0)
+                                            <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">{{ $urgentNews }}</span>
+                                        @endif
+                                    </a>
+                                @endif
                                 @if(tieneRol('administrador'))
                                     <a href="{{ route('staff.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Nuestro Equipo</a>
                                     <a href="{{ route('usuarios.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Usuarios</a>
@@ -177,7 +192,7 @@
                     <x-nav-link :href="route('public.Equipo-FEN.index')" :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-nav-link>
                     <x-nav-link :href="route('public.rooms.index')" :active="request()->routeIs('public.rooms.index')">Salas</x-nav-link>
                     <x-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Cursos</x-nav-link>
-                    <x-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Archivos</x-nav-link>
+                    <x-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Registros</x-nav-link>
                 </nav>
             @endif
 
@@ -450,13 +465,13 @@
                         </div>
                     @endif
                     @if($canInformes)
-                        <x-responsive-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">Archivos</x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">Registros</x-responsive-nav-link>
                     @endif
                     @if($canEmergencias)
                         <x-responsive-nav-link :href="route('emergencies.index')" :active="request()->routeIs('emergencies.index')">Emergencias</x-responsive-nav-link>
                     @endif
                     @if($canBitacoras)
-                        <x-responsive-nav-link :href="route('bitacoras.index')" :active="request()->routeIs('bitacoras.index')">Bitácoras</x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('daily-reports.index')" :active="request()->routeIs('daily-reports.*')">Reportes Diarios</x-responsive-nav-link>
                     @endif
                 </div>
                 @endif
@@ -475,7 +490,7 @@
                 <x-responsive-nav-link :href="route('public.Equipo-FEN.index')" :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.rooms.index')" :active="request()->routeIs('public.rooms.index')">Salas</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Cursos</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Archivos</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Registros</x-responsive-nav-link>
                 
                 <a href="{{ route('login') }}" class="mt-4 block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-center">Iniciar Sesión</a>
             @endif

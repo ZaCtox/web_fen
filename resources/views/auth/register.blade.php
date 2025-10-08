@@ -1,4 +1,12 @@
 <x-app-layout>
+
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Usuarios', 'url' => route('usuarios.index')],
+        ['label' => 'Nuevo Usuario', 'url' => '#']
+    ]" />
+
     {{-- Metas para toasts (las usa alerts.js) --}}
     @if(session('success'))
         <meta name="session-success" content="{{ session('success') }}">

@@ -297,17 +297,9 @@ function updateSummary() {
         // Validar el paso actual antes de enviar
         if (validateCurrentStep()) {
             // Asegurar que period_id esté actualizado antes de enviar
-            window.actualizarPeriodId();
-            
-            // Debug: Verificar datos antes de enviar
-            const formData = new FormData(document.querySelector('.hci-form'));
-            console.log('Datos del formulario antes de enviar:', {
-                nombre: formData.get('nombre'),
-                magister_id: formData.get('magister_id'),
-                period_id: formData.get('period_id'),
-                anio: formData.get('anio'),
-                numero: formData.get('numero')
-            });
+            if (typeof window.actualizarPeriodId === 'function') {
+                window.actualizarPeriodId();
+            }
             
             // Enviar el formulario
             document.querySelector('.hci-form').submit();

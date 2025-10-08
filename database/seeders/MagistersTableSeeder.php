@@ -13,34 +13,38 @@ class MagistersTableSeeder extends Seeder
             [
                 'nombre' => 'Economía',
                 'color' => '#3b82f6',
-                'encargado' => 'Dr. Juan Pérez',
-                'telefono' => '712345678',
-                'anexo' => '101',
-                'correo' => 'jperez@utalca.cl'
+                'encargado' => 'Patricio Aroca Gonzalez',
+                'asistente' => 'Juan Parra',
+                'telefono' => '+56 71 220 0312',
+                'anexo' => '3312',
+                'correo' => 'jparra@utalca.cl'
             ],
             [
                 'nombre' => 'Dirección y Planificación Tributaria',
                 'color' => '#ef4444',
-                'encargado' => 'Dra. María López',
-                'telefono' => '712345679',
-                'anexo' => '102',
-                'correo' => 'mlopez@utalca.cl'
+                'encargado' => 'Verónica Mies Moreno',
+                'asistente' => 'Ivonne Henríquez Toro',
+                'telefono' => '+56 71 220 0321',
+                'anexo' => '3321',
+                'correo' => 'ihenriquez@utalca.cl'
             ],
             [
                 'nombre' => 'Gestión de Sistemas de Salud',
                 'color' => '#10b981',
-                'encargado' => 'Dr. Carlos Díaz',
-                'telefono' => '712345680',
-                'anexo' => '103',
-                'correo' => 'cdiaz@utalca.cl'
+                'encargado' => 'Luis Canales',
+                'asistente' => 'Camila González',
+                'telefono' => '+56 71 220 0321',
+                'anexo' => '3321',
+                'correo' => 'cgonzales@utalca.cl'
             ],
             [
                 'nombre' => 'Gestión y Políticas Públicas',
                 'color' => '#f97316',
-                'encargado' => 'Dra. Ana Ríos',
-                'telefono' => '712345681',
-                'anexo' => '104',
-                'correo' => 'arios@utalca.cl'
+                'encargado' => 'María José Retamal Silva',
+                'asistente' => 'July Basoalto',
+                'telefono' => '+56 71 220 0312',
+                'anexo' => '3312',
+                'correo' => 'jbasoalto@utalca.cl'
             ]
         ];
 
@@ -51,6 +55,6 @@ class MagistersTableSeeder extends Seeder
             );
         }
 
-        $this->command->info('✅ Magísteres creados correctamente con colores, encargados y anexos.');
+        $this->command->info('✅ Magísteres creados correctamente con encargados reales de FEN.');
     }
 }

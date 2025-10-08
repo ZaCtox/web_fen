@@ -18,4 +18,19 @@ class Magister extends Model
             ->orderBy('period_id');
     }
 
+    public function novedades()
+    {
+        return $this->hasMany(Novedad::class);
+    }
+
+    public function informes()
+    {
+        return $this->hasMany(Informe::class);
+    }
+
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
 }

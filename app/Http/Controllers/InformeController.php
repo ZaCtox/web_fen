@@ -33,6 +33,7 @@ class InformeController extends Controller
 
         Informe::create([
             'nombre' => $data['nombre'],
+            'tipo' => $data['tipo'],
             'mime' => $file->getClientMimeType(),
             'archivo' => $path,
             'user_id' => auth()->id(),
@@ -66,6 +67,7 @@ class InformeController extends Controller
         }
 
         $informe->nombre = $data['nombre'];
+        $informe->tipo = $data['tipo'];
         $informe->magister_id = $data['magister_id'];
         $informe->save();
 

@@ -5,62 +5,172 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StaffRequest;
 use App\Models\Staff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class StaffController extends Controller
 {
+    /**
+     * Mostrar listado de personal
+     */
     public function index(Request $request)
     {
-        $staff = Staff::query()
-            ->orderBy('nombre')
-            ->get(['id', 'nombre', 'cargo', 'telefono','anexo', 'email']);
+        try {
+            $query = Staff::query();
 
-        return view('staff.index', compact('staff'));
+            // Búsqueda por nombre, cargo o email
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                      ->orWhere('cargo', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+            // Ordenamiento
+            $sortBy = $request->get('sort', 'nombre');
+            $sortDirection = $request->get('direction', 'asc');
+            
+            $staff = $query->orderBy($sortBy, $sortDirection)
+                ->paginate(15)
+                ->withQueryString();
+
+            return view('staff.index', compact('staff'));
+
+        } catch (Exception $e) {
+            Log::error('Error al cargar el listado de personal: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al cargar el listado de personal.');
+        }
     }
 
+    /**
+     * Mostrar detalle de un miembro del personal
+     */
     public function show(Staff $staff)
     {
-        return view('staff.show', compact('staff'));
+        try {
+            return view('staff.show', compact('staff'));
+        } catch (Exception $e) {
+            Log::error('Error al mostrar detalle del personal: ' . $e->getMessage());
+            return redirect()->route('staff.index')->with('error', 'Error al cargar los datos del personal.');
+        }
     }
 
+    /**
+     * Mostrar formulario de creación
+     */
     public function create()
     {
-        
-        return view('staff.create');
+        try {
+            return view('staff.create');
+        } catch (Exception $e) {
+            Log::error('Error al cargar formulario de creación de personal: ' . $e->getMessage());
+            return redirect()->route('staff.index')->with('error', 'Error al cargar el formulario.');
+        }
     }
 
+    /**
+     * Almacenar nuevo miembro del personal
+     */
     public function store(StaffRequest $request)
     {
-        
-        Staff::create($request->validated());
+        try {
+            $validated = $request->validated();
+            
+            // Verificar si ya existe un staff con el mismo email
+            if (Staff::where('email', $validated['email'])->exists()) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['email' => 'Ya existe un miembro del personal con este correo electrónico.']);
+            }
 
-        return redirect()
-            ->route('staff.index')
-            ->with('success', 'Miembro creado correctamente.');
+            $staff = Staff::create($validated);
+
+            Log::info('Nuevo personal creado', ['staff_id' => $staff->id, 'nombre' => $staff->nombre]);
+
+            return redirect()
+                ->route('staff.index')
+                ->with('success', 'Miembro del personal "' . $staff->nombre . '" creado correctamente.');
+
+        } catch (Exception $e) {
+            Log::error('Error al crear personal: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al crear el miembro del personal. Por favor, inténtelo nuevamente.');
+        }
     }
 
+    /**
+     * Mostrar formulario de edición
+     */
     public function edit(Staff $staff)
     {
-        
-        return view('staff.edit', compact('staff'));
+        try {
+            return view('staff.edit', compact('staff'));
+        } catch (Exception $e) {
+            Log::error('Error al cargar formulario de edición de personal: ' . $e->getMessage());
+            return redirect()->route('staff.index')->with('error', 'Error al cargar el formulario de edición.');
+        }
     }
 
+    /**
+     * Actualizar miembro del personal
+     */
     public function update(StaffRequest $request, Staff $staff)
     {
-        
-        $staff->update($request->validated());
+        try {
+            $validated = $request->validated();
+            
+            // Verificar si el email ya existe en otro registro
+            if (Staff::where('email', $validated['email'])
+                     ->where('id', '!=', $staff->id)
+                     ->exists()) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['email' => 'Ya existe otro miembro del personal con este correo electrónico.']);
+            }
 
-        return redirect()
-            ->route('staff.index')
-            ->with('success', 'Miembro actualizado.');
+            $nombreAnterior = $staff->nombre;
+            $staff->update($validated);
+
+            Log::info('Personal actualizado', [
+                'staff_id' => $staff->id,
+                'nombre_anterior' => $nombreAnterior,
+                'nombre_nuevo' => $staff->nombre
+            ]);
+
+            return redirect()
+                ->route('staff.index')
+                ->with('success', 'Información de "' . $staff->nombre . '" actualizada correctamente.');
+
+        } catch (Exception $e) {
+            Log::error('Error al actualizar personal: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al actualizar la información. Por favor, inténtelo nuevamente.');
+        }
     }
 
+    /**
+     * Eliminar miembro del personal
+     */
     public function destroy(Staff $staff)
     {
-        
-        $staff->delete();
+        try {
+            $nombre = $staff->nombre;
+            $staff->delete();
 
-        return redirect()
-            ->route('staff.index')
-            ->with('success', 'Miembro eliminado.');
+            Log::info('Personal eliminado', ['nombre' => $nombre]);
+
+            return redirect()
+                ->route('staff.index')
+                ->with('success', 'Miembro del personal "' . $nombre . '" eliminado correctamente.');
+
+        } catch (Exception $e) {
+            Log::error('Error al eliminar personal: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Error al eliminar el miembro del personal. Es posible que tenga información relacionada.');
+        }
     }
 }

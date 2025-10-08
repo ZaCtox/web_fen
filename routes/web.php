@@ -8,18 +8,19 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\InformeController;
 use App\Http\Controllers\MagisterController;
+use App\Http\Controllers\NovedadController;
 use App\Http\Controllers\PeriodController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\BitacoraController;
 use Illuminate\Support\Facades\Route;
 
 
 // 🏠 Dashboard principal
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified', 'role:administrador,director_administrativo,docente,administrativo'])
+    ->middleware(['auth', 'verified', 'role:administrador,director_administrativo,docente,administrativo,asistente_postgrado'])
     ->name('dashboard');
 
 // 🧠 Demo de Principios HCI
@@ -34,6 +35,9 @@ Route::get('/microinteractions-demo', function () {
 
 // 🟡 Rutas protegidas
 Route::middleware(['auth'])->group(function () {
+
+    // 🔍 Búsqueda Global
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
 
     // 📚 Clases
     Route::get('/clases/exportar', [ClaseController::class, 'exportar'])
@@ -80,7 +84,13 @@ Route::middleware(['auth'])->group(function () {
         ->name('incidencias.exportar.pdf');
 
     Route::resource('incidencias', IncidentController::class)
-        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado');
+        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado')
+        ->except(['update']);
+    
+    // Ruta específica para actualización con middleware de permisos
+    Route::put('/incidencias/{incidencia}', [IncidentController::class, 'update'])
+        ->middleware(['auth', 'incident.modify'])
+        ->name('incidencias.update');
 
     // 🏛️ Salas
     Route::resource('rooms', RoomController::class)
@@ -127,6 +137,15 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('staff', StaffController::class)
         ->middleware('role:administrador');
 
+    // 📰 Novedades
+    Route::post('novedades/{novedad}/duplicate', [NovedadController::class, 'duplicate'])
+        ->middleware('role:administrador,director_administrativo,asistente_postgrado')
+        ->name('novedades.duplicate');
+    
+    Route::resource('novedades', NovedadController::class, [
+        'parameters' => ['novedades' => 'novedad']
+    ])->middleware('role:administrador,director_administrativo,asistente_postgrado');
+
     // 🚨 Emergencias
     Route::post('/emergency', [EmergencyController::class, 'store'])
         ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
@@ -143,11 +162,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('informes/download/{id}', [InformeController::class, 'download'])->name('informes.download');
 
-    Route::resource('bitacoras', BitacoraController::class)
+    
+    // Reportes Diarios (nuevo sistema)
+    Route::resource('daily-reports', App\Http\Controllers\DailyReportController::class)
         ->middleware('role:asistente_postgrado');
-
-    Route::get('bitacoras/download/{bitacora}', [BitacoraController::class, 'download'])
-        ->name('bitacoras.download')
+    Route::get('daily-reports/download/{dailyReport}', [App\Http\Controllers\DailyReportController::class, 'download'])
+        ->name('daily-reports.download')
         ->middleware('role:asistente_postgrado');
 
 });

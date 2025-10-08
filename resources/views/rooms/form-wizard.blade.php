@@ -5,15 +5,6 @@
     $editing = isset($room);
 @endphp
 
-{{-- Breadcrumb (Ley de Jakob) --}}
-<x-hci-breadcrumb 
-    :items="[
-        ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Salas', 'url' => route('rooms.index')],
-        ['label' => $editing ? 'Editar Sala' : 'Nueva Sala', 'url' => '#']
-    ]"
-/>
-
 {{-- Contenedor principal con principios HCI --}}
 <div class="hci-container">
     <div class="hci-section">

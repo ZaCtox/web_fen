@@ -33,6 +33,45 @@
     min-width: 48px;
 }
 
+/* ================================
+   🎯 Action Buttons - Botones de acción para tablas
+   ================================ */
+.action-button {
+    @apply inline-flex items-center justify-center;
+    @apply px-3 py-2 rounded-lg text-xs font-medium;
+    @apply transition-all duration-200;
+    width: 2.5rem; /* w-10 = 40px */
+    min-height: 2.5rem; /* Ley de Fitts - mínimo táctil */
+}
+
+.action-button-edit {
+    @apply bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white;
+}
+
+.action-button-delete {
+    @apply bg-[#e57373] hover:bg-[#f28b82] text-white;
+}
+
+.action-button-view {
+    @apply bg-[#4d82bc] hover:bg-[#005187] text-white;
+}
+
+.action-button-success {
+    @apply bg-[#66bb6a] hover:bg-[#4caf50] text-white;
+}
+
+.action-button-warning {
+    @apply bg-[#ffa726] hover:bg-[#ff9800] text-white;
+}
+
+.action-button-info {
+    @apply bg-[#42a5f5] hover:bg-[#2196f3] text-white;
+}
+
+.action-button-download {
+    @apply bg-[#005187] hover:bg-[#4d82bc] text-white;
+}
+
 .hci-button-primary {
     @apply bg-[#4d82bc] text-white hover:bg-[#005187] focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2;
 }
@@ -120,7 +159,7 @@
    🎯 Ley de Prägnanz: Diseño limpio y minimalista
    ================================ */
 .hci-container {
-    @apply w-full mx-auto p-1;
+    @apply w-full mx-auto px-6 py-4;
 }
 
 .hci-section {

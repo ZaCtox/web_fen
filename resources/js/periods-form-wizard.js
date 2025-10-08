@@ -18,6 +18,13 @@ function actualizarTrimestres() {
     
     const anio = parseInt(anioSelect.value);
     const trimestres = opcionesTrimestre[anio] || [];
+    const trimestreActual = numeroSelect.value; // Preservar valor actual
+    
+    console.log('🔄 Wizard actualizando trimestres:', {
+        anio: anio,
+        trimestres: trimestres,
+        trimestreActual: trimestreActual
+    });
     
     numeroSelect.innerHTML = '<option value="">-- Selecciona un trimestre --</option>';
     
@@ -25,6 +32,13 @@ function actualizarTrimestres() {
         const option = document.createElement('option');
         option.value = num;
         option.textContent = 'Trimestre ' + num;
+        
+        // Preservar el trimestre seleccionado si es válido para el año actual
+        if (trimestreActual && trimestreActual == num) {
+            option.selected = true;
+            console.log('✅ Wizard manteniendo trimestre:', num);
+        }
+        
         numeroSelect.appendChild(option);
     });
     

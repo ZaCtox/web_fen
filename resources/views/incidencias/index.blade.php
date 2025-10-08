@@ -17,13 +17,11 @@
     <div class="p-5 max-w-7xl mx-auto flex gap-3">
         <a href="{{ route('incidencias.create') }}"
             class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
-            <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5 mr-2">
-            <span>Nueva Incidencia</span>
+            <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
         </a>
         <a href="{{ route('incidencias.estadisticas') }}"
             class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#84b6f4] hover:bg-[#4d82bc] text-[#005187] px-4 py-2 rounded-lg shadow transition-all duration-200">
-            <img src="{{ asset('icons/estadistica.svg') }}" alt="Estadísticas" class="w-6 h-6 mr-2">
-            <span>Estadísticas</span>
+            <img src="{{ asset('icons/estadistica.svg') }}" alt="Estadísticas" class="w-6 h-6">
         </a>
     </div>
 
@@ -126,8 +124,9 @@
                 <input type="hidden" name="historico" x-bind:value="historico ? 1 : ''">
 
                 <button type="submit"
-                    class="bg-[#005187] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105 flex items-center gap-2">
-                    <img src="{{ asset('icons/download.svg') }}" alt="download" class="w-5 h-5">
+                    class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                    title="Descargar PDF">
+                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-4 h-4">
                 </button>
             </form>
         </div>
@@ -149,7 +148,7 @@
                         <th class="px-4 py-2">Estado</th>
                         <th class="px-4 py-2">Fecha</th>
                         <th class="px-4 py-2">Ticket Jira</th>
-                        <th class="px-4 py-2">Resuelta el</th>
+                        <th class="px-4 py-2">Resuelta</th>
                         <th class="px-4 py-2">Ver</th>
                     </tr>
                 </thead>
@@ -162,6 +161,7 @@
                                    transition-all duration-200 group cursor-pointer
                                    {{ $incidencia->estado === 'no_resuelta' ? 'von-restorff-critical' : '' }}
                                    {{ $incidencia->estado === 'pendiente' ? 'von-restorff-warning' : '' }}"
+                                    >
                             <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->id }}</td>
                             <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">{{ $incidencia->titulo }}</td>
                             <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $incidencia->room->name ?? 'Sin sala' }}</td>
@@ -188,10 +188,13 @@
                                 {{ $incidencia->resuelta_en ? $incidencia->resuelta_en->format('d/m/Y H:i') : '-' }}
                             </td>
                             <td class="px-4 py-2 space-x-2">
-                                <a href="{{ route('incidencias.show', $incidencia) }}"
-                                    class="hci-button hci-lift hci-focus-ring bg-blue-100 hover:bg-blue-200 text-blue-800 px-2 py-2 rounded-lg transition-all duration-200 inline-flex items-center">
-                                    <img src="{{ asset('icons/ver.svg') }}" alt="Ver" class="w-4 h-4">
-                                </a>
+                                {{-- Botón Ver --}}
+                                <x-action-button 
+                                    variant="view" 
+                                    type="link" 
+                                    :href="route('incidencias.show', $incidencia)" 
+                                    icon="verw.svg"
+                                    tooltip="Ver incidencia" />
                             </td>
                         </tr>
                     @empty

@@ -9,7 +9,7 @@ class Informe extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'mime', 'archivo', 'user_id', 'magister_id'];
+    protected $fillable = ['nombre', 'tipo', 'mime', 'archivo', 'user_id', 'magister_id'];
 
 
     // Relaciones

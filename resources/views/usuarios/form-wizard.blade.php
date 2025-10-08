@@ -5,15 +5,6 @@
     $editing = isset($usuario);
 @endphp
 
-{{-- Breadcrumb (Ley de Jakob) --}}
-<x-hci-breadcrumb 
-    :items="[
-        ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Usuarios', 'url' => route('usuarios.index')],
-        ['label' => $editing ? 'Editar Usuario' : 'Nuevo Usuario', 'url' => '#']
-    ]"
-/>
-
 {{-- Contenedor principal con principios HCI --}}
 <div class="hci-container">
     <div class="hci-section">

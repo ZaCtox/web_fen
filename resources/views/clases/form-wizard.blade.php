@@ -5,14 +5,6 @@
     $editing = isset($clase);
 @endphp
 
-<x-hci-breadcrumb 
-    :items="[
-        ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Clases', 'url' => route('clases.index')],
-        ['label' => $editing ? 'Editar Clase' : 'Nueva Clase', 'url' => '#']
-    ]"
-/>
-
 <div class="hci-container">
     <div class="hci-section">
         <h1 class="hci-heading-1 flex items-center">
@@ -124,25 +116,26 @@
                         @endforeach
                     </x-hci-field>
 
-                    <x-hci-field name="hora_inicio" type="time" label="Hora inicio" :required="true" />
-                    <x-hci-field name="hora_fin" type="time" label="Hora fin" :required="true" />
+                    <x-hci-field name="hora_inicio" type="time" label="Hora inicio" :required="true" value="{{ old('hora_inicio', $clase->hora_inicio ?? '') }}" />
+                    <x-hci-field name="hora_fin" type="time" label="Hora fin" :required="true" value="{{ old('hora_fin', $clase->hora_fin ?? '') }}" />
 
                     <div class="md:col-span-2 lg:col-span-3">
-                        <div class="flex items-center gap-3 mb-2 text-sm" id="help-huecos"></div>
                         <div class="flex items-center gap-4 mb-3">
-                            <label class="text-sm text-gray-600">Bloques (60 min)</label>
-                            <select id="block_count" class="hci-select w-28">
+                            <select id="block_count" class="hci-select text-xs" style="width: 70px !important; min-width: 70px !important;">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
                                 <option value="5">5</option>
                             </select>
-                            <button type="button" id="btn-horarios" class="hci-button hci-button-success" data-url-horarios="{{ route('salas.horarios') }}" @if($editing) data-exclude-id="{{ $clase->id }}" @endif>Ver horarios disponibles</button>
+                            <button type="button" id="btn-horarios" class="hci-button hci-button-success" data-url-horarios="{{ route('salas.horarios') }}" @if($editing) data-exclude-id="{{ $clase->id }}" @endif title="Ver horarios disponibles">
+                                <img src="{{ asset('icons/searchw.svg') }}" alt="Buscar horarios" class="w-4 h-4">
+                            </button>
                         </div>
                         <div id="slots-wrap" class="hidden">
                             <div id="slots" class="flex flex-wrap gap-2"></div>
                         </div>
+                        <div class="flex items-center gap-3 mb-2 text-sm" id="help-huecos"></div>
 
                         {{-- Disponibilidad en tiempo real (mismo comportamiento que create) --}}
                         <div x-data="{

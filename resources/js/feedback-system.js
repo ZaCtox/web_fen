@@ -16,41 +16,57 @@ class FeedbackSystem {
     }
 
     /**
-     * 🔔 Sistema de Notificaciones Global
+     * 🔔 Sistema de Notificaciones Global (Integrado con Toast System)
      */
     setupGlobalNotifications() {
-        // Función global para mostrar notificaciones
+        // Función global para mostrar notificaciones usando el sistema de toasts
         window.showNotification = (options) => {
-            const notification = {
-                type: options.type || 'info',
-                title: options.title || '',
-                message: options.message || '',
-                duration: options.duration || 5000,
-                dismissible: options.dismissible !== false,
-                ...options
-            };
+            const type = options.type || 'info';
+            const title = options.title || '';
+            const message = options.message || '';
+            const actions = options.actions || [];
+            
+            // Usar el sistema de toasts mejorado
+            if (window.toast) {
+                return window.toast.show(type, title, message, {
+                    duration: options.duration || 5000,
+                    actions: actions
+                });
+            }
 
-            // Disparar evento personalizado
+            // Fallback a evento personalizado si toast no está disponible
             window.dispatchEvent(new CustomEvent('notification', {
-                detail: notification
+                detail: { type, title, message, ...options }
             }));
         };
 
-        // Funciones de conveniencia
-        window.showSuccess = (message, title = 'Éxito') => {
-            this.showNotification({ type: 'success', title, message });
+        // Funciones de conveniencia que usan el sistema de toasts
+        window.showSuccess = (message, title = '¡Éxito!') => {
+            if (window.toast) {
+                return window.toast.success(title, message);
+            }
+            window.showNotification({ type: 'success', title, message });
         };
 
         window.showError = (message, title = 'Error') => {
-            this.showNotification({ type: 'error', title, message });
+            if (window.toast) {
+                return window.toast.error(title, message);
+            }
+            window.showNotification({ type: 'error', title, message });
         };
 
         window.showWarning = (message, title = 'Advertencia') => {
-            this.showNotification({ type: 'warning', title, message });
+            if (window.toast) {
+                return window.toast.warning(title, message);
+            }
+            window.showNotification({ type: 'warning', title, message });
         };
 
         window.showInfo = (message, title = 'Información') => {
-            this.showNotification({ type: 'info', title, message });
+            if (window.toast) {
+                return window.toast.info(title, message);
+            }
+            window.showNotification({ type: 'info', title, message });
         };
     }
 

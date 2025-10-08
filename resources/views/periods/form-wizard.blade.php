@@ -3,14 +3,6 @@
     $period = $period ?? null;
 @endphp
 
-{{-- Breadcrumb (Ley de Jakob) --}}
-<x-hci-breadcrumb 
-    :items="[
-        ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Períodos', 'url' => route('periods.index')],
-        ['label' => $editing ? 'Editar Período' : 'Nuevo Período', 'url' => '#']
-    ]"
-/>
 
 {{-- Contenedor principal con principios HCI --}}
 <div class="hci-container">
@@ -52,6 +44,8 @@
                     icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
                     section-id="informacion"
                     :editing="$editing ?? false"
+                    :isActive="true"
+                    :isFirst="true"
                 >
                     <div class="flex flex-col md:flex-row md:items-start md:gap-16">
                         <div class="w-full md:w-auto">
@@ -81,8 +75,18 @@
                                 help="Selecciona el trimestre del año"
                                 id="numero-select"
                                 style="width: 300px !important;"
+                                value="{{ old('numero', $period->numero ?? '') }}"
                             >
                                 <option value="">-- Selecciona un trimestre --</option>
+                                @php
+                                    $anioSeleccionado = old('anio', $period->anio ?? '');
+                                    $trimestres = $anioSeleccionado == '1' ? [1, 2, 3] : ($anioSeleccionado == '2' ? [4, 5, 6] : []);
+                                @endphp
+                                @foreach($trimestres as $trimestre)
+                                    <option value="{{ $trimestre }}" {{ old('numero', $period->numero ?? '') == $trimestre ? 'selected' : '' }}>
+                                        Trimestre {{ $trimestre }}
+                                    </option>
+                                @endforeach
                             </x-hci-field>
                         </div>
                     </div>
@@ -159,4 +163,6 @@
         </div>
     </div>
 </div>
+
+{{-- Script manejado por periods-form-wizard.js --}}
 

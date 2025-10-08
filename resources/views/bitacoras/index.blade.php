@@ -14,8 +14,9 @@
     <div class="p-6">
         <div class="mb-4 flex justify-end">
             <a href="{{ route('bitacoras.create') }}"
-               class="inline-flex items-center gap-2 bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
-                    <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
+               class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
+                <span>Nuevo Reporte</span>
             </a>
         </div>
 
@@ -39,7 +40,7 @@
                                    transition-all duration-200 group cursor-pointer">
                             <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
                                 @if($bitacora->room)
-                                    {{ $bitacora->room->nombre }}
+                                    {{ $bitacora->room->name }}
                                 @else
                                     {{ $bitacora->detalle_ubicacion ?? $bitacora->lugar }}
                                 @endif
@@ -55,13 +56,31 @@
                                     <a href="{{ route('bitacoras.download', $bitacora) }}" class="text-green-600 underline">Descargar</a>
                                 @endif
                             </td>
-                            <td class="px-4 py-2 flex gap-2">
-                                <a href="{{ route('bitacoras.show', $bitacora) }}" class="px-2 py-1 bg-blue-500 text-white rounded">👁</a>
-                                <a href="{{ route('bitacoras.edit', $bitacora) }}" class="px-2 py-1 bg-yellow-500 text-white rounded">✏</a>
-                                <form action="{{ route('bitacoras.destroy', $bitacora) }}" method="POST" onsubmit="return confirm('¿Eliminar?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="px-2 py-1 bg-red-600 text-white rounded">🗑</button>
-                                </form>
+                            <td class="px-4 py-2">
+                                <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    {{-- Botón Ver --}}
+                                    <x-action-button 
+                                        variant="view" 
+                                        type="link" 
+                                        :href="route('bitacoras.show', $bitacora)" 
+                                        icon="ver.svg"
+                                        tooltip="Ver detalles" />
+
+                                    {{-- Botón Editar --}}
+                                    <x-action-button 
+                                        variant="warning" 
+                                        type="link" 
+                                        :href="route('bitacoras.edit', $bitacora)" 
+                                        tooltip="Editar" />
+
+                                    {{-- Botón Eliminar --}}
+                                    <button type="button" 
+                                            onclick="confirmarEliminacion('{{ route('bitacoras.destroy', $bitacora) }}', '{{ $bitacora->titulo ?? 'este reporte' }}')"
+                                            class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition"
+                                            title="Eliminar">
+                                        <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-3 h-3">
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     @endforeach
@@ -69,8 +88,51 @@
             </table>
         </div>
 
-        <div class="mt-4">
-            {{ $bitacoras->links() }}
-        </div>
+        @if($bitacoras->isEmpty())
+            <x-empty-state 
+                type="no-data"
+                title="No hay reportes registrados"
+                message="Comienza creando tu primer reporte de bitácora para registrar observaciones y evidencias."
+                :action="['url' => route('bitacoras.create'), 'text' => 'Crear Primer Reporte']"
+            />
+        @else
+            <div class="mt-4">
+                {{ $bitacoras->links() }}
+            </div>
+        @endif
     </div>
+
+    @push('scripts')
+    <script>
+        function confirmarEliminacion(url, titulo) {
+            Swal.fire({
+                title: '¿Eliminar reporte?',
+                text: `¿Estás seguro de que quieres eliminar "${titulo}"? Esta acción no se puede deshacer.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'hci-button hci-lift hci-focus-ring px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all duration-200',
+                    cancelButton: 'hci-button hci-lift hci-focus-ring px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-all duration-200'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+    @endpush
 </x-app-layout>

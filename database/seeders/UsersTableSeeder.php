@@ -10,76 +10,149 @@ class UsersTableSeeder extends Seeder
 {
     public function run()
     {
-        // Usuario Administrador
-        User::firstOrCreate([
-            'email' => 'admin@webfen.cl',
-        ], [
-            'name' => 'Administrador FEN',
-            'password' => Hash::make('admin123'),
-            'rol' => 'administrador',
-        ]);
+        $usuarios = [
+            // Administrador del sistema
+            [
+                'name' => 'Arcadio Cerda',
+                'email' => 'acerda@utalca.cl',
+                'password' => Hash::make('admin123'),
+                'rol' => 'administrador',
+            ],
+            
+            // Director Administrativo
+            [
+                'name' => 'José Leonardo Castillo',
+                'email' => 'josecastillo@utalca.cl',
+                'password' => Hash::make('admin456'),
+                'rol' => 'director_administrativo',
+            ],
 
-        // Usuario Docente
-        User::firstOrCreate([
-            'email' => 'docente@webfen.cl',
-        ], [
-            'name' => 'Docente de Prueba',
-            'password' => Hash::make('docente123'),
-            'rol' => 'docente',
-        ]);
+            // Docentes de Economía
+            [
+                'name' => 'Dr. Fernando Muñoz González',
+                'email' => 'fmunoz@utalca.cl',
+                'password' => Hash::make('docente123'),
+                'rol' => 'docente',
+            ],
+            [
+                'name' => 'Dra. Claudia Sepúlveda Rojas',
+                'email' => 'csepulveda@utalca.cl',
+                'password' => Hash::make('docente123'),
+                'rol' => 'docente',
+            ],
+            [
+                'name' => 'Dr. Andrés Villalobos Cid',
+                'email' => 'avillalobos@utalca.cl',
+                'password' => Hash::make('docente123'),
+                'rol' => 'docente',
+            ],
 
-        // Usuario Asistente de Programa
-        User::firstOrCreate([
-            'email' => 'asistente.programa@webfen.cl',
-        ], [
-            'name' => 'Asistente de Programa',
-            'password' => Hash::make('asistente123'),
-            'rol' => 'asistente_programa',
-        ]);
+            // Docentes de Gestión y Finanzas
+            [
+                'name' => 'Dra. María José Retamal Silva',
+                'email' => 'mjretamal@utalca.cl',
+                'password' => Hash::make('docente123'),
+                'rol' => 'docente',
+            ],
+            [
+                'name' => 'Dr. Roberto Contreras Fuentes',
+                'email' => 'rcontreras@utalca.cl',
+                'password' => Hash::make('docente123'),
+                'rol' => 'docente',
+            ],
 
-        // Usuario Asistente de Postgrado
-        User::firstOrCreate([
-            'email' => 'asistente.postgrado@webfen.cl',
-        ], [
-            'name' => 'Asistente Postgrado',
-            'password' => Hash::make('postgrado123'),
-            'rol' => 'asistente_postgrado',
-        ]);
+            // Directores de Programa
+            [
+                'name' => 'Dr. Patricio Aroca Gonzalez',
+                'email' => 'paroca@utalca.cl',
+                'password' => Hash::make('director123'),
+                'rol' => 'director_programa',
+            ],
+            [
+                'name' => 'Dra. Verónica Mies Moreno',
+                'email' => 'vmies@utalca.cl',
+                'password' => Hash::make('director123'),
+                'rol' => 'director_programa',
+            ],
+            [
+                'name' => 'Luis Canales',
+                'email' => 'lcanales@utalca.cl',
+                'password' => Hash::make('director123'),
+                'rol' => 'director_programa',
+            ],
 
-        // Usuario Director de Magíster
-        User::firstOrCreate([
-            'email' => 'director.programa@webfen.cl',
-        ], [
-            'name' => 'Director de Programa',
-            'password' => Hash::make('director123'),
-            'rol' => 'director_programa',
-        ]);
+            // Asistentes de Programa
+            [
+                'name' => 'Carolina Balmaceda Rojas',
+                'email' => 'cbalmaceda@utalca.cl',
+                'password' => Hash::make('asistente123'),
+                'rol' => 'asistente_programa',
+            ],
+            [
+                'name' => 'Carolina Quitral',
+                'email' => 'cquitral@utalca.cl',
+                'password' => Hash::make('asistente123'),
+                'rol' => 'asistente_programa',
+            ],
+            [
+                'name' => 'Tamara Aravena',
+                'email' => 'tamara.aravena@utalca.cl',
+                'password' => Hash::make('asistente123'),
+                'rol' => 'asistente_programa',
+            ],
 
-        // Usuario Auxiliar
-        User::firstOrCreate([
-            'email' => 'auxiliar@webfen.cl',
-        ], [
-            'name' => 'Auxiliar FEN',
-            'password' => Hash::make('auxiliar123'),
-            'rol' => 'auxiliar',
-        ]);
+            // Asistentes de Postgrado
+            [
+                'name' => 'July Basoalto',
+                'email' => 'jbasoalto@utalca.cl',
+                'password' => Hash::make('postgrado123'),
+                'rol' => 'asistente_postgrado',
+            ],
+            [
+                'name' => 'Ivonne Henríquez Toro',
+                'email' => 'ivonne.henriquez@utalca.cl',
+                'password' => Hash::make('postgrado123'),
+                'rol' => 'asistente_postgrado',
+            ],
+            [
+                'name' => 'Camila González',
+                'email' => 'camila.gonzalezd@utalca.cl',
+                'password' => Hash::make('postgrado123'),
+                'rol' => 'asistente_postgrado',
+            ],
 
-        // Usuario Director Administrativo
-        User::firstOrCreate([
-            'email' => 'director.admin@webfen.cl',
-        ], [
-            'name' => 'Director Administrativo',
-            'password' => Hash::make('admin456'),
-            'rol' => 'director_administrativo',
-        ]);
+            // Técnico de soporte
+            [
+                'name' => 'Miguel Suárez',
+                'email' => 'msuarez@utalca.cl',
+                'password' => Hash::make('tecnico123'),
+                'rol' => 'técnico',
+            ],
 
-        // Usuario Técnico (por rutas de incidencias)
-        User::firstOrCreate([
-            'email' => 'tecnico@webfen.cl',
-        ], [
-            'name' => 'Técnico FEN',
-            'password' => Hash::make('tecnico123'),
-            'rol' => 'técnico',
-        ]);
+            // Auxiliares
+            [
+                'name' => 'Cristian Barrientos',
+                'email' => 'cristian.barrientos@utalca.cl',
+                'password' => Hash::make('auxiliar123'),
+                'rol' => 'auxiliar',
+            ],
+
+            // Personal adicional
+            [
+                'name' => 'Carolina Cáceres',
+                'email' => 'carolina.caceres@utalca.cl',
+                'password' => Hash::make('asistente123'),
+                'rol' => 'asistente_programa',
+            ],
+        ];
+
+        foreach ($usuarios as $userData) {
+            User::firstOrCreate(
+                ['email' => $userData['email']],
+                $userData
+            );
+        }
+
+        $this->command->info('✅ Usuarios creados correctamente con datos realistas de FEN.');
     }
 }

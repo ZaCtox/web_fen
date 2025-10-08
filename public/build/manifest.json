@@ -1,11 +1,11 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-KCIGuYCO.css",
+    "file": "assets/app-Dm9Ss3NO.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/hci-principles.css": {
-    "file": "assets/hci-principles-D1ct6uKI.css",
+    "file": "assets/hci-principles-DRMCHqYq.css",
     "src": "resources/css/hci-principles.css",
     "isEntry": true
   },
@@ -26,7 +26,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-B4Kb_aXm.js",
+    "file": "assets/app-ge_SEZol.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
@@ -56,7 +56,7 @@
     "isEntry": true
   },
   "resources/js/courses-form-wizard.js": {
-    "file": "assets/courses-form-wizard-CRXcC__l.js",
+    "file": "assets/courses-form-wizard-BbhSUIyi.js",
     "name": "courses-form-wizard",
     "src": "resources/js/courses-form-wizard.js",
     "isEntry": true
@@ -74,7 +74,7 @@
     "isEntry": true
   },
   "resources/js/feedback-system.js": {
-    "file": "assets/feedback-system-Ch6KlOzy.js",
+    "file": "assets/feedback-system-BRsPm8Fx.js",
     "name": "feedback-system",
     "src": "resources/js/feedback-system.js",
     "isEntry": true
@@ -92,7 +92,7 @@
     "isEntry": true
   },
   "resources/js/informes-form-wizard.js": {
-    "file": "assets/informes-form-wizard-BgKk0J_T.js",
+    "file": "assets/informes-form-wizard-C9jwqsu6.js",
     "name": "informes-form-wizard",
     "src": "resources/js/informes-form-wizard.js",
     "isEntry": true
@@ -109,8 +109,14 @@
     "src": "resources/js/microinteractions.js",
     "isEntry": true
   },
+  "resources/js/novedades-form-wizard.js": {
+    "file": "assets/novedades-form-wizard-D-Fp3XQt.js",
+    "name": "novedades-form-wizard",
+    "src": "resources/js/novedades-form-wizard.js",
+    "isEntry": true
+  },
   "resources/js/periods-form-wizard.js": {
-    "file": "assets/periods-form-wizard-DVIcc2Ff.js",
+    "file": "assets/periods-form-wizard-M7vb9XPP.js",
     "name": "periods-form-wizard",
     "src": "resources/js/periods-form-wizard.js",
     "isEntry": true

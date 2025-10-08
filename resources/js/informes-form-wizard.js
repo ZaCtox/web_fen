@@ -4,11 +4,16 @@ let currentStep = 1;
 const totalSteps = 3;
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Informes form wizard loaded');
+    
     const sections = document.querySelectorAll('.hci-form-section');
     const progressSteps = document.querySelectorAll('.hci-progress-step');
     const progressBar = document.getElementById('progress-bar');
     const progressPercentage = document.getElementById('progress-percentage');
     const currentStepText = document.getElementById('current-step');
+    
+    console.log('📋 Found sections:', sections.length);
+    console.log('📊 Found progress steps:', progressSteps.length);
     
     // Inicializar formulario
     showStep(1);
@@ -67,19 +72,30 @@ window.cancelForm = function() {
 }
 
 function showStep(step) {
+    console.log('🎯 Showing step:', step);
+    
     const sections = document.querySelectorAll('.hci-form-section');
     const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
+    
+    console.log('📋 Total sections found:', sections.length);
     
     // Ocultar todas las secciones
     sections.forEach(section => {
         section.classList.remove('active');
+        console.log('❌ Hiding section:', section.id);
     });
     
     // Mostrar sección actual
-    const currentSection = document.getElementById(getSectionId(step));
+    const sectionId = getSectionId(step);
+    console.log('🔍 Looking for section ID:', sectionId);
+    
+    const currentSection = document.getElementById(sectionId);
     if (currentSection) {
         currentSection.classList.add('active');
+        console.log('✅ Showing section:', sectionId);
         currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+        console.error('❌ Section not found:', sectionId);
     }
     
     // Actualizar pasos del progreso vertical
@@ -107,7 +123,7 @@ function updateProgress(step) {
 }
 
 function getSectionId(step) {
-    const sectionIds = ['informacion', 'destinatario', 'resumen'];
+    const sectionIds = ['informacion', 'archivo', 'resumen'];
     return sectionIds[step - 1];
 }
 

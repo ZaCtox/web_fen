@@ -5,14 +5,6 @@
     $editing = isset($course);
 @endphp
 
-{{-- Breadcrumb (Ley de Jakob) --}}
-<x-hci-breadcrumb 
-    :items="[
-        ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Cursos', 'url' => route('courses.index')],
-        ['label' => $editing ? 'Editar Curso' : 'Nuevo Curso', 'url' => '#']
-    ]"
-/>
 
 {{-- Contenedor principal con principios HCI --}}
 <div class="hci-container">

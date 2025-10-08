@@ -28,8 +28,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
             <a href="{{ route('rooms.create') }}"
                 class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5 mr-2">
-                <span>Nueva Sala</span>
+                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-4 h-4">
             </a>
 
             {{-- Filtro de búsqueda en tiempo real --}}
@@ -57,44 +56,44 @@
                     </thead>
                     <tbody>
                         <template x-for="room in filtradas" :key="room.id">
-                            <tr
-                                class="border-b border-[#c4dafa]/60 dark:border-gray-600 
+                            <tr class="border-b border-[#c4dafa]/60 dark:border-gray-600 
                                        hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
                                        hover:border-l-4 hover:border-l-[#4d82bc]
                                        hover:-translate-y-0.5 hover:shadow-md
                                        transition-all duration-200 group cursor-pointer">
-                                <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="room.name"></td>
-                                <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="room.location"></td>
+                                <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200"
+                                    x-text="room.name"></td>
+                                <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200"
+                                    x-text="room.location"></td>
                                 <td class="px-4 py-2">
                                     <a :href="`/rooms/${room.id}#ficha`"
                                         class="hci-button hci-lift hci-focus-ring inline-flex items-center text-sm hover:bg-[#84b6f4]/30 font-medium rounded-lg px-2 py-1 transition-all duration-200">
-                                        <img src="{{ asset('icons/ficha.svg') }}" alt="Ficha" class="w-5 h-5">
+                                        <img src="{{ asset('icons/ficha.svg') }}" alt="Ficha" class="w-4 h-4">
                                     </a>
                                 </td>
                                 <td class="px-4 py-2">
                                     <a :href="`/rooms/${room.id}#clases`"
                                         class="hci-button hci-lift hci-focus-ring inline-flex items-center text-sm hover:bg-[#4d82bc]/30 font-medium rounded-lg px-2 py-1 transition-all duration-200">
-                                        <img src="{{ asset('icons/class.svg') }}" alt="Clases" class="w-5 h-5">
+                                        <img src="{{ asset('icons/class.svg') }}" alt="Clases" class="w-4 h-4">
                                     </a>
                                 </td>
                                 <td class="px-4 py-2">
                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
-                                        <a :href="`/rooms/${room.id}/edit`"
-                                            class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center px-2 py-2 hover:bg-[#84b6f4]/30 rounded-lg text-xs font-medium transition-all duration-200">
-                                            <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-4 h-4">
+                                        {{-- Botón Editar --}}
+                                        <a :href="`/rooms/${room.id}/edit`" 
+                                           class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition"
+                                           title="Editar sala">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
 
-                                        {{-- Botón de eliminar con confirmación --}}
-                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar hci-confirm-button"
-                                            data-confirm-title="Eliminar Sala"
-                                            data-confirm-message="¿Estás seguro de que quieres eliminar esta sala? Esta acción no se puede deshacer."
-                                            data-confirm-type="danger">
+                                        {{-- Botón Eliminar --}}
+                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center px-2 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition-all duration-200">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Borrar"
-                                                    class="w-4 h-4">
+                                            <button type="submit" 
+                                                    class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition"
+                                                    title="Eliminar sala">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
                                             </button>
                                         </form>
                                     </div>
@@ -109,15 +108,10 @@
         {{-- Sin resultados --}}
         <template x-if="filtradas.length === 0">
             <div>
-                <x-empty-state
-                    type="no-results"
-                    icon="🔍"
-                    title="No se encontraron salas"
+                <x-empty-state type="no-results" icon="🔍" title="No se encontraron salas"
                     message="Intenta con otros términos de búsqueda o ajusta los filtros seleccionados."
-                    secondaryActionText="Limpiar Búsqueda"
-                    secondaryActionUrl="{{ route('rooms.index') }}"
-                    secondaryActionIcon="🔄"
-                />
+                    secondaryActionText="Limpiar Búsqueda" secondaryActionUrl="{{ route('rooms.index') }}"
+                    secondaryActionIcon="🔄" />
             </div>
         </template>
 

@@ -47,7 +47,7 @@
         {{-- 🔹 Acciones principales --}}
         <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
             <a href="{{ route('clases.create') }}"
-                class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
+                 class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
                 <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
             </a>
 
@@ -58,8 +58,9 @@
                 <input type="hidden" name="anio" value="{{ request('anio') }}">
                 <input type="hidden" name="trimestre" value="{{ request('trimestre') }}">
                 <button type="submit"
-                    class="bg-[#005187] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105 flex items-center gap-2">
-                    <img src="{{ asset('icons/download.svg') }}" alt="download" class="w-5 h-5">
+                    class="inline-flex items-center justify-center w-20 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                    title="Descargar Excel">
+                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-6 h-6">
                 </button>
             </form>
         </div>
@@ -184,25 +185,29 @@
 
                         {{-- Botones acción (siempre abajo) --}}
                         <div class="flex justify-end gap-2 mt-4">
-                            <a href="{{ route('clases.show', $clase) }}"
-                                class="inline-flex items-center justify-center px-3 py-1 bg-[#84b6f4] hover:bg-[#4d82bc] hover:text-white rounded-lg transition">
-                                <img src="{{ asset('icons/ver.svg') }}" alt="Ver" class="w-5 h-5">
-                            </a>
+                            {{-- Botón Ver --}}
+                            <x-action-button 
+                                variant="view" 
+                                type="link" 
+                                :href="route('clases.show', $clase)" 
+                                icon="verw.svg"
+                                tooltip="Ver clase" />
 
-                            <a href="{{ route('clases.edit', $clase) }}"
-                                class="inline-flex items-center justify-center px-3 py-1 bg-[#84b6f4] hover:bg-[#4d82bc] hover:text-white rounded-lg transition">
-                                <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-5 h-5">
-                            </a>
+                            {{-- Botón Editar --}}
+                            <x-action-button 
+                                variant="edit" 
+                                type="link" 
+                                :href="route('clases.edit', $clase)" 
+                                icon="editw.svg"
+                                tooltip="Editar clase" />
 
-                            <form action="{{ route('clases.destroy', $clase) }}" method="POST"
-                                onsubmit="return confirm('¿Seguro que deseas eliminar esta clase?')" class="inline-flex">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                   class="inline-flex items-center justify-center px-3 py-1 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto">
-                                    <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
-                                </button>
-                            </form>
+                            {{-- Botón Eliminar --}}
+                            <x-action-button 
+                                variant="delete" 
+                                :formAction="route('clases.destroy', $clase)" 
+                                formMethod="DELETE" 
+                                class="form-eliminar"
+                                tooltip="Eliminar clase" />
                         </div>
                     </div>
                 @endforeach

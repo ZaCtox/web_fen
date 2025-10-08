@@ -9,6 +9,12 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Calendario Académico</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Calendario Académico', 'url' => '#']
+    ]" />
+
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <x-filtros-calendario />
         <x-leyenda-magister />

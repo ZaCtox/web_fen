@@ -41,7 +41,7 @@
         <div class="mb-4 flex">
             <a href="{{ route('emergencies.create') }}"
                 class="inline-block bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="nuevo usuario" class="w-5 h-5">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="nuevo usuario" class="w-4 h-4">
             </a>
         </div>
 
@@ -76,6 +76,7 @@
                                            hover:-translate-y-0.5 hover:shadow-md
                                            transition-all duration-200 group cursor-pointer
                                            {{ $emergency->active && !$isExpired ? 'von-restorff-critical' : '' }}"
+                                            >
                                     <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">{{ $emergency->title }}</td>
                                     <td class="px-4 py-2">{{ Str::limit($emergency->message, 120) }}</td>
                                     <td class="px-4 py-2">
@@ -102,7 +103,7 @@
                                         <a href="{{ route('emergencies.edit', $emergency) }}" class="inline-flex items-center justify-center 
                           w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
                           rounded-lg text-xs font-medium transition">
-                                            <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-4 h-4">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
 
                                         {{-- Desactivar si está activa --}}
@@ -126,7 +127,7 @@
                                             <button type="submit" class="inline-flex items-center justify-center 
                                    w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] 
                                    rounded-lg text-xs font-medium transition">
-                                                <img src="{{ asset('icons/trash.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
                                             </button>
                                         </form>
                                     </td>

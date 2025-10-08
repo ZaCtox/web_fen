@@ -19,6 +19,16 @@ class IncidentController extends Controller
     {
         $query = Incident::with('room');
         $periodos = Period::all()->map(fn ($p) => ['anio' => Carbon::parse($p->fecha_inicio)->year] + $p->toArray());
+        
+        // Filtrar por rol del usuario
+        $user = Auth::user();
+        $rolesQueVenTodas = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+        
+        if (!in_array($user->rol, $rolesQueVenTodas)) {
+            // Los usuarios normales solo ven las incidencias que ellos crearon
+            $query->where('user_id', $user->id);
+        }
+        // Los roles autorizados ven todas las incidencias
 
         if ($request->filled('search')) {
             $query->where(fn ($q) => $q->where('titulo', 'like', '%'.$request->search.'%')
@@ -112,6 +122,7 @@ class IncidentController extends Controller
         \Log::info('Incident Update Request:', [
             'incident_id' => $incidencia->id,
             'current_estado' => $incidencia->estado,
+            'user_role' => Auth::user()->rol,
             'request_data' => $request->all()
         ]);
 
@@ -156,6 +167,14 @@ class IncidentController extends Controller
 
     public function show(Incident $incidencia)
     {
+        // Verificar permisos de acceso
+        $user = Auth::user();
+        $rolesQueVenTodas = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+        
+        if (!in_array($user->rol, $rolesQueVenTodas) && $incidencia->user_id !== $user->id) {
+            abort(403, 'No tienes permisos para ver esta incidencia.');
+        }
+
         $incidencia->load('room', 'user', 'logs.user');
 
         $dentroDePeriodo = Period::where('fecha_inicio', '<=', $incidencia->created_at)
@@ -177,6 +196,21 @@ class IncidentController extends Controller
         }
         if ($request->filled('room_id')) {
             $query->where('room_id', $request->room_id);
+        }
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+        if ($request->filled('trimestre')) {
+            $trimestre = $request->trimestre;
+            $query->whereRaw('QUARTER(created_at) = ?', [$trimestre]);
+        }
+        if ($request->filled('historico')) {
+            // Para modo histórico, excluir incidencias dentro de períodos definidos
+            $query->whereNotExists(function ($subquery) {
+                $subquery->select(\DB::raw(1))
+                    ->from('periods')
+                    ->whereRaw('incidents.created_at BETWEEN periods.fecha_inicio AND periods.fecha_fin');
+            });
         }
 
         $incidenciasFiltradas = $query->with('room')->get();
@@ -206,6 +240,7 @@ class IncidentController extends Controller
             'salas',
             'periodos',
             'anios',
+            'incidenciasFiltradas',
         ));
     }
 
@@ -258,6 +293,14 @@ class IncidentController extends Controller
 
     public function destroy(Incident $incidencia)
     {
+        // Verificar permisos de eliminación
+        $user = Auth::user();
+        $rolesQueVenTodas = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+        
+        if (!in_array($user->rol, $rolesQueVenTodas) && $incidencia->user_id !== $user->id) {
+            abort(403, 'No tienes permisos para eliminar esta incidencia.');
+        }
+
         if ($incidencia->public_id) {
             try {
                 (new UploadApi)->destroy($incidencia->public_id);

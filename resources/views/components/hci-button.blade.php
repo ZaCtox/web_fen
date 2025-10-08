@@ -13,12 +13,14 @@
 @php
     $baseClasses = 'hci-button';
     $variantClasses = match($variant) {
-        'primary' => 'hci-button-primary',
-        'secondary' => 'hci-button-secondary',
-        'danger' => 'hci-button-danger',
-        'success' => 'hci-button-success',
-        default => 'hci-button-primary'
+    'primary' => 'hci-button-primary',
+    'secondary' => 'hci-button-secondary',
+    'danger' => 'hci-button-danger',
+    'success' => 'hci-button-success',
+    'compact' => 'px-2 py-1 text-sm rounded-md flex items-center gap-1 bg-blue-100 hover:bg-blue-200 text-blue-800 transition-all duration-200',
+    default => 'hci-button-primary'
     };
+
     
     $fabClasses = $fab ? 'hci-button-fab' : '';
     $disabledClasses = $disabled ? 'opacity-50 cursor-not-allowed' : '';

@@ -5,6 +5,13 @@
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Editar Informe</h2>
     </x-slot>
 
+    {{-- Breadcrumb --}}
+    <x-hci-breadcrumb :items="[
+        ['label' => 'Inicio', 'url' => route('dashboard')],
+        ['label' => 'Registros', 'url' => route('informes.index')],
+        ['label' => 'Editar Registro', 'url' => '#']
+    ]" />
+
     <div class="p-6 max-w-full mx-auto">
         @include('informes.form-wizard', ['editing' => true, 'informe' => $informe, 'magisters' => $magisters])
     </div>
