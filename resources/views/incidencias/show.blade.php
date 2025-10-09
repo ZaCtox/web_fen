@@ -237,7 +237,8 @@
 
                                 <div class="pt-4">
                                     <button type="submit"
-                                        class="inline-flex items-center justify-center bg-[#3ba55d] hover:bg-[#2d864a] text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition transform hover:scale-105">
+                                        class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center gap-2 bg-[#3ba55d] hover:bg-[#2d864a] text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition-all duration-200"
+                                        title="Guardar cambios">
                                         <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
                                     </button>
                                 </div>
@@ -335,7 +336,8 @@
                 <div class="hci-form-actions">
                     <div class="flex justify-between items-center">
                         <a href="{{ route('incidencias.index') }}"
-                            class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium px-6 py-3 rounded-lg shadow transition-all duration-200">
+                            class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium px-6 py-3 rounded-lg shadow transition-all duration-200"
+                            title="Volver a incidencias">
                             <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
                         </a>
 
@@ -345,7 +347,8 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit"
-                                    class="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition transform hover:scale-105">
+                                    class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition-all duration-200"
+                                    title="Eliminar incidencia">
                                     <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
                                 </button>
                             </form>
@@ -356,6 +359,16 @@
             </div>
         </div>
     </div>
+
+    {{-- Botón flotante para volver arriba --}}
+    <button id="scrollToTop" 
+        class="fixed bottom-6 left-6 bg-[#4d82bc] hover:bg-[#005187] text-white p-3 rounded-full shadow-lg transition-all duration-300 opacity-0 invisible z-40 group"
+        title="Volver arriba"
+        aria-label="Volver arriba">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+        </svg>
+    </button>
 
     {{-- Modal para ver imagen en grande --}}
     <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4"
@@ -390,6 +403,30 @@
             if (event.key === 'Escape') {
                 closeImageModal();
             }
+        });
+
+        // Botón flotante para volver arriba
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollToTopBtn = document.getElementById('scrollToTop');
+            
+            // Mostrar/ocultar botón según el scroll
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.classList.remove('opacity-0', 'invisible');
+                    scrollToTopBtn.classList.add('opacity-100', 'visible');
+                } else {
+                    scrollToTopBtn.classList.add('opacity-0', 'invisible');
+                    scrollToTopBtn.classList.remove('opacity-100', 'visible');
+                }
+            });
+            
+            // Scroll suave al hacer clic
+            scrollToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
         });
     </script>
 </x-app-layout>

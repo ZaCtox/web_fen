@@ -151,7 +151,9 @@
                 </div>
                 
                 <div class="mt-4 text-center">
-                    <a href="#" class="text-sm text-[#4d82bc] hover:text-[#005187] dark:text-[#84b6f4] dark:hover:text-[#c4dafa] underline hover:no-underline transition-colors duration-200">
+                    <a href="{{ route('public.novedades') }}" 
+                       class="text-sm text-[#4d82bc] hover:text-[#005187] dark:text-[#84b6f4] dark:hover:text-[#c4dafa] underline hover:no-underline transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded px-2 py-1"
+                       title="Ver todas las novedades del sistema">
                         Ver todas las novedades
                     </a>
                 </div>
@@ -168,12 +170,14 @@
                             <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['incidencias_pendientes'] }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">de {{ $stats['incidencias_totales'] }} totales</p>
                         </div>
-                        <div class="text-4xl">⚠️</div>
+                        <div class="text-4xl" role="img" aria-label="Advertencia">⚠️</div>
                     </div>
                     @can('viewAny', App\Models\Incident::class)
-                    <a href="{{ route('incidencias.index') }}" class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200">
+                    <a href="{{ route('incidencias.index') }}" 
+                       class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded"
+                       title="Ver todas las incidencias">
                         Ver todas
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
@@ -188,12 +192,14 @@
                             <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['emergencias_activas'] }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">de {{ $stats['emergencias_totales'] }} totales</p>
                         </div>
-                        <div class="text-4xl">🚨</div>
+                        <div class="text-4xl" role="img" aria-label="Emergencia">🚨</div>
                     </div>
                     @can('viewAny', App\Models\Emergency::class)
-                    <a href="{{ route('emergencies.index') }}" class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200">
+                    <a href="{{ route('emergencies.index') }}" 
+                       class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded"
+                       title="Ver todas las emergencias">
                         Ver todas
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
@@ -208,11 +214,13 @@
                             <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['salas_totales'] }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">espacios registrados</p>
                         </div>
-                        <div class="text-4xl">🏫</div>
+                        <div class="text-4xl" role="img" aria-label="Edificio">🏫</div>
                     </div>
-                    <a href="{{ route('rooms.index') }}" class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200">
+                    <a href="{{ route('rooms.index') }}" 
+                       class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded"
+                       title="Ver todas las salas">
                         Ver todas
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
@@ -226,12 +234,14 @@
                             <p class="text-3xl font-bold text-gray-900 dark:text-white mt-2">{{ $stats['usuarios_totales'] }}</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">en el sistema</p>
                         </div>
-                        <div class="text-4xl">👥</div>
+                        <div class="text-4xl" role="img" aria-label="Usuarios">👥</div>
                     </div>
                     @can('viewAny', App\Models\User::class)
-                    <a href="{{ route('usuarios.index') }}" class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200">
+                    <a href="{{ route('usuarios.index') }}" 
+                       class="mt-4 text-sm text-[#4d82bc] hover:text-[#005187] font-medium inline-flex items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded"
+                       title="Ver todos los usuarios">
                         Ver todos
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
                     </a>
@@ -320,7 +330,9 @@
                             </svg>
                             Últimas Incidencias
                         </span>
-                        <a href="{{ route('incidencias.index') }}" class="text-sm text-[#4d82bc] hover:text-[#005187] font-medium">Ver todas</a>
+                        <a href="{{ route('incidencias.index') }}" 
+                           class="text-sm text-[#4d82bc] hover:text-[#005187] font-medium focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded px-2 py-1"
+                           title="Ver todas las incidencias">Ver todas</a>
                     </h3>
                     @if($actividadReciente['incidencias']->isEmpty())
                         <p class="text-gray-500 dark:text-gray-400 text-center py-8">No hay incidencias recientes</p>
@@ -366,7 +378,9 @@
                             </svg>
                             Reportes Recientes
                         </span>
-                        <a href="{{ route('daily-reports.index') }}" class="text-sm text-[#4d82bc] hover:text-[#005187] font-medium">Ver todos</a>
+                        <a href="{{ route('daily-reports.index') }}" 
+                           class="text-sm text-[#4d82bc] hover:text-[#005187] font-medium focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded px-2 py-1"
+                           title="Ver todos los reportes diarios">Ver todos</a>
                     </h3>
                     @if($actividadReciente['reportes']->isEmpty())
                         <p class="text-gray-500 dark:text-gray-400 text-center py-8">No hay reportes recientes</p>

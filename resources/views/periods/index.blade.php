@@ -31,7 +31,9 @@
                                         confirmButtonText:'Entendido'
                                     });
                                 "
-                    class="inline-block bg-gray-400 cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200">
+                    class="inline-block bg-gray-400 cursor-not-allowed text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200"
+                    aria-disabled="true"
+                    title="Máximo de 6 trimestres alcanzado">
                     <img src='{{ asset('icons/agregar.svg') }}' alt='nuevo' class='w-5 h-5 opacity-75'>
                 </button>
             @endif
@@ -105,9 +107,9 @@
                                             <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                                                 {{-- Botón Editar --}}
                                                 <a href="{{ route('periods.edit', $period) }}"
-                                                    class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition"
+                                                    class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                                     title="Editar período">
-                                                    <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-4 h-4">
+                                                    <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-6 h-6">
                                                 </a>
 
                                                 {{-- Botón Eliminar --}}
@@ -115,9 +117,9 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
-                                                            class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition"
+                                                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
                                                             title="Eliminar período">
-                                                        <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                                        <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
                                                     </button>
                                                 </form>
                                             </div>

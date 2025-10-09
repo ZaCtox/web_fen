@@ -8,6 +8,7 @@ use App\Models\Period;
 use App\Models\Room;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Cloudinary\Api\Upload\UploadApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,7 @@ class IncidentController extends Controller
     public function index(Request $request)
     {
         $query = Incident::with('room');
-        $periodos = Period::all()->map(fn ($p) => ['anio' => Carbon::parse($p->fecha_inicio)->year] + $p->toArray());
+        $periodos = Period::all();
         
         // Filtrar por rol del usuario
         $user = Auth::user();
@@ -72,14 +73,26 @@ class IncidentController extends Controller
         $incidencias = $query->latest()->paginate(10)->withQueryString();
         $salas = Room::orderBy('name')->get();
 
-        $anios = Incident::all()
-            ->pluck('created_at')
-            ->map(fn ($dt) => Carbon::parse($dt)->format('Y'))
+        // Obtener años reales de las fechas de inicio de los períodos
+        $anios = Period::all()
+            ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
-            ->sortDesc()
+            ->sort()
             ->values();
+            
+        // Obtener años históricos (años de incidencias que NO están en períodos actuales)
+        $aniosPeriodos = Period::all()
+            ->map(fn($p) => $p->fecha_inicio->year)
+            ->unique()
+            ->toArray();
+            
+        $aniosHistoricos = Incident::selectRaw('YEAR(created_at) as anio')
+            ->distinct()
+            ->whereNotIn(DB::raw('YEAR(created_at)'), $aniosPeriodos)
+            ->orderBy('anio', 'desc')
+            ->pluck('anio');
 
-        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'periodos'));
+        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'aniosHistoricos', 'periodos'));
     }
 
     public function create()
@@ -229,7 +242,25 @@ class IncidentController extends Controller
 
         $porTrimestre = $porTrimestre->sortKeys();
         $rangos = $periodos->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
-        $anios = Incident::selectRaw('YEAR(created_at) as anio')->distinct()->pluck('anio')->sortDesc();
+        
+        // Obtener años reales de las fechas de inicio de los períodos
+        $anios = Period::all()
+            ->map(fn($p) => $p->fecha_inicio->year)
+            ->unique()
+            ->sort()
+            ->values();
+            
+        // Obtener años históricos (años de incidencias que NO están en períodos actuales)
+        $aniosPeriodos = Period::all()
+            ->map(fn($p) => $p->fecha_inicio->year)
+            ->unique()
+            ->toArray();
+            
+        $aniosHistoricos = Incident::selectRaw('YEAR(created_at) as anio')
+            ->distinct()
+            ->whereNotIn(DB::raw('YEAR(created_at)'), $aniosPeriodos)
+            ->orderBy('anio', 'desc')
+            ->pluck('anio');
 
         $salas = Room::orderBy('name')->get();
 
@@ -240,6 +271,7 @@ class IncidentController extends Controller
             'salas',
             'periodos',
             'anios',
+            'aniosHistoricos',
             'incidenciasFiltradas',
         ));
     }

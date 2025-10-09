@@ -34,9 +34,20 @@
             periodos: @js($periodos),
             get periodosFiltrados() {
                 if (!this.anio) return this.periodos;
-                return this.periodos.filter(p => p.anio == this.anio);
+                return this.periodos.filter(p => {
+                    const year = new Date(p.fecha_inicio).getFullYear();
+                    return year == this.anio;
+                });
             },
             actualizarURL() {
+                // Si se activa histórico, limpiar trimestre
+                if (this.historico) {
+                    this.trimestre = '';
+                }
+                
+                // Actualizar opciones del select de año
+                this.toggleAnioOptions();
+                
                 const params = new URLSearchParams(window.location.search);
                 this.estado ? params.set('estado', this.estado) : params.delete('estado');
                 this.sala ? params.set('room_id', this.sala) : params.delete('room_id');
@@ -44,8 +55,30 @@
                 this.trimestre ? params.set('trimestre', this.trimestre) : params.delete('trimestre');
                 this.historico ? params.set('historico', '1') : params.delete('historico');
                 window.location.search = params.toString();
+            },
+            
+            toggleAnioOptions() {
+                const anioSelect = document.getElementById('anio-select');
+                const trimestreDiv = document.getElementById('trimestre-div');
+                
+                if (!anioSelect) return;
+                
+                const aniosNormales = anioSelect.querySelectorAll('.anio-normal');
+                const aniosHistoricos = anioSelect.querySelectorAll('.anio-historico');
+                
+                if (this.historico) {
+                    // Mostrar años históricos, ocultar normales y trimestre
+                    aniosNormales.forEach(option => option.style.display = 'none');
+                    aniosHistoricos.forEach(option => option.style.display = 'block');
+                    if (trimestreDiv) trimestreDiv.style.display = 'none';
+                } else {
+                    // Mostrar años normales, ocultar históricos y mostrar trimestre
+                    aniosNormales.forEach(option => option.style.display = 'block');
+                    aniosHistoricos.forEach(option => option.style.display = 'none');
+                    if (trimestreDiv) trimestreDiv.style.display = 'block';
+                }
             }
-        }">
+        }" x-init="toggleAnioOptions()">
 
         {{-- 🔍 Filtros --}}
         <div class="mb-4 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
@@ -74,16 +107,19 @@
 
             <div>
                 <label class="text-sm font-semibold text-[#005187]">Año:</label>
-                <select x-model="anio" @change="actualizarURL"
+                <select x-model="anio" @change="actualizarURL" id="anio-select"
                     class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
                     <option value="">Todos</option>
                     @foreach ($anios as $a)
-                        <option value="{{ $a }}">{{ $a }}</option>
+                        <option value="{{ $a }}" class="anio-normal">{{ $a }}</option>
+                    @endforeach
+                    @foreach ($aniosHistoricos as $a)
+                        <option value="{{ $a }}" class="anio-historico" style="display: none;">{{ $a }}</option>
                     @endforeach
                 </select>
             </div>
 
-            <div>
+            <div id="trimestre-div">
                 <label class="text-sm font-semibold text-[#005187]">Trimestre:</label>
                 <select x-model="trimestre" @change="actualizarURL"
                     class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
@@ -112,8 +148,10 @@
                 historico = false;
                 actualizarURL();
             "
-                class="bg-[#c4dafa] hover:bg-[#84b6f4] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105">
-                <img src="{{ asset('icons/filtro.svg') }}" alt="Filtro" class="w-5 h-5">
+                class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                title="Limpiar filtros"
+                aria-label="Limpiar filtros">
+                <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
             </button>
 
             <form action="{{ route('incidencias.exportar.pdf') }}" method="GET" class="flex gap-2 flex-wrap">
@@ -124,9 +162,9 @@
                 <input type="hidden" name="historico" x-bind:value="historico ? 1 : ''">
 
                 <button type="submit"
-                    class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                    class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                     title="Descargar PDF">
-                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-4 h-4">
+                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-6 h-6">
                 </button>
             </form>
         </div>

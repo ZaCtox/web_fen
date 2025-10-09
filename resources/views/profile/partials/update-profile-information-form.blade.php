@@ -48,7 +48,12 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button class="hci-button hci-lift hci-focus-ring min-h-[48px] min-w-[48px]">{{ __('Guardar') }}</x-primary-button>
+            <button type="submit" 
+                    class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#3ba55d] hover:bg-[#2d864a] text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition-all duration-200"
+                    title="Guardar cambios">
+                <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
+                {{ __('Guardar') }}
+            </button>
 
             @if (session('status') === 'profile-updated')
                 <p
@@ -56,7 +61,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
+                    class="text-sm text-green-600 dark:text-green-400"
                 >{{ __('Guardado.') }}</p>
             @endif
         </div>

@@ -27,11 +27,21 @@
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div class="flex w-full sm:w-auto gap-3 items-center">
-                <input x-model="search" type="text" placeholder="Buscar por nombre, cargo o email"
-                    class="w-full sm:w-[350px] px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
-                <button type="button" @click="search=''; sort='nombre_asc'; hasPhone=false"
-                    class="px-3 py-2 rounded-lg bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100">
-                    Limpiar
+                <div class="relative">
+                    <label for="search-staff" class="sr-only">Buscar en el equipo</label>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4 text-gray-400">
+                    </div>
+                    <input id="search-staff" 
+                           x-model="search" 
+                           type="text" 
+                           placeholder="Buscar por nombre, cargo o email"
+                           class="w-full sm:w-[350px] pl-10 pr-4 py-2 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+                </div>
+                <button type="button" @click="search=''"
+                    class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105"
+                    title="Limpiar búsqueda">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
                 </button>
             </div>
         </div>
@@ -76,8 +86,9 @@
         <div x-show="modalOpen" x-transition class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-xl relative">
                 <button @click="modalOpen = false"
-                    class="absolute top-2 right-2 text-gray-700 dark:text-gray-200 hover:text-red-500">
-                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="back" class="w-8 h-8">
+                    class="absolute top-2 right-2 text-gray-700 dark:text-gray-200 hover:text-red-500"
+                    title="Cerrar">
+                    <img src="{{ asset('icons/no_resuelta.svg') }}" alt="Cerrar modal" class="w-8 h-8">
                 </button>
 
                 <h2 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4] mb-2" x-text="seleccionado?.nombre"></h2>

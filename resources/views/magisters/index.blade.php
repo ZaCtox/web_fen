@@ -38,13 +38,15 @@
         <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
             <div class="flex gap-3">
                 <a href="{{ route('courses.index') }}"
-                    class="inline-block bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-md shadow-md transition">
-                    <img src="{{ asset('icons/back.svg') }}" alt="back" class="w-5 h-5">
+                    class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
+                    title="Volver a cursos">
+                    <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
                 </a>
 
                 <a href="{{ route('magisters.create') }}"
-                    class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] ml-4 text-white px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
-                    <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
+                    class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
+                    title="Agregar nuevo programa">
+                    <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
                 </a>
             </div>
 
@@ -120,23 +122,24 @@
 
                         {{-- Acciones --}}
                         <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
-                            <div class="flex gap-2">
+                            <div class="flex gap-3">
                                 {{-- Botón Editar --}}
-                                <x-action-button 
-                                    variant="edit" 
-                                    type="link" 
-                                    :href="route('magisters.edit', $magister)" 
-                                    icon="editw.svg"
-                                    tooltip="Editar programa" />
+                                <a href="{{ route('magisters.edit', $magister) }}"
+                                   class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
+                                   title="Editar programa">
+                                    <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
+                                </a>
 
                                 {{-- Botón Eliminar --}}
-                                <x-action-button 
-                                    variant="delete" 
-                                    :formAction="route('magisters.destroy', $magister)" 
-                                    formMethod="DELETE" 
-                                    class="form-eliminar"
-                                    data-confirm="{{ $msg }}"
-                                    tooltip="Eliminar programa" />
+                                <form action="{{ route('magisters.destroy', $magister) }}" method="POST" class="inline form-eliminar" data-confirm="{{ $msg }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                                            title="Eliminar programa">
+                                        <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>

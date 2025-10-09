@@ -13,56 +13,98 @@
     {{-- Botones superiores --}}
     <div class="p-5 max-w-7xl mx-auto flex gap-3">
         <a href="{{ route('novedades.create') }}"
-            class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
-            <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
+            class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
+            title="Crear nueva novedad">
+            <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
         </a>
     </div>
 
-    <div class="p-6 max-w-7xl mx-auto">
+    <div class="p-6 max-w-7xl mx-auto" x-data="{
+        search: '{{ request('search') }}',
+        tipo: '{{ request('tipo') }}',
+        estado: '{{ request('estado') }}',
+        actualizarURL() {
+            const params = new URLSearchParams();
+            if (this.search) params.set('search', this.search);
+            if (this.tipo) params.set('tipo', this.tipo);
+            if (this.estado) params.set('estado', this.estado);
+            window.location.href = '{{ route('novedades.index') }}' + (params.toString() ? '?' + params.toString() : '');
+        },
+        limpiarFiltros() {
+            this.search = '';
+            this.tipo = '';
+            this.estado = '';
+            window.location.href = '{{ route('novedades.index') }}';
+        }
+    }">
 
         {{-- 🔍 Filtros --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-            <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                {{-- Buscar --}}
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar</label>
-                    <input type="text" 
-                           name="search" 
-                           value="{{ request('search') }}"
-                           placeholder="Título o contenido..."
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] dark:bg-gray-700 dark:text-white">
+                    <label for="search" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                        Buscar:
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4">
+                        </div>
+                        <input type="text" 
+                               id="search"
+                               x-model="search"
+                               @keyup.enter="actualizarURL()"
+                               placeholder="Título o contenido..."
+                               class="w-full pl-10 pr-3 py-2.5 border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+                    </div>
                 </div>
+
+                {{-- Tipo --}}
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
-                    <select name="tipo" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] dark:bg-gray-700 dark:text-white">
+                    <label for="tipo" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                        Tipo:
+                    </label>
+                    <select id="tipo" 
+                            x-model="tipo"
+                            @change="actualizarURL()"
+                            class="w-full px-3 py-2.5 border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
                         <option value="">Todos los tipos</option>
-                        <option value="academica" {{ request('tipo') == 'academica' ? 'selected' : '' }}>Académica</option>
-                        <option value="evento" {{ request('tipo') == 'evento' ? 'selected' : '' }}>Evento</option>
-                        <option value="admision" {{ request('tipo') == 'admision' ? 'selected' : '' }}>Admisión</option>
-                        <option value="institucional" {{ request('tipo') == 'institucional' ? 'selected' : '' }}>Institucional</option>
-                        <option value="servicio" {{ request('tipo') == 'servicio' ? 'selected' : '' }}>Servicio</option>
-                        <option value="mantenimiento" {{ request('tipo') == 'mantenimiento' ? 'selected' : '' }}>Mantenimiento</option>
+                        <option value="academica">Académica</option>
+                        <option value="evento">Evento</option>
+                        <option value="admision">Admisión</option>
+                        <option value="institucional">Institucional</option>
+                        <option value="servicio">Servicio</option>
+                        <option value="mantenimiento">Mantenimiento</option>
                     </select>
                 </div>
+
+                {{-- Estado --}}
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado</label>
-                    <select name="estado" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] dark:bg-gray-700 dark:text-white">
+                    <label for="estado" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                        Estado:
+                    </label>
+                    <select id="estado" 
+                            x-model="estado"
+                            @change="actualizarURL()"
+                            class="w-full px-3 py-2.5 border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
                         <option value="">Todos los estados</option>
-                        <option value="activas" {{ request('estado') == 'activas' ? 'selected' : '' }}>Activas</option>
-                        <option value="expiradas" {{ request('estado') == 'expiradas' ? 'selected' : '' }}>Expiradas</option>
-                        <option value="urgentes" {{ request('estado') == 'urgentes' ? 'selected' : '' }}>Urgentes</option>
+                        <option value="activas">Activas</option>
+                        <option value="expiradas">Expiradas</option>
+                        <option value="urgentes">Urgentes</option>
                     </select>
                 </div>
-                <div class="flex items-end gap-2">
-                    <button type="submit" class="hci-button hci-focus-ring bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-md transition-all duration-200">
-                        Filtrar
+
+                {{-- Botón Limpiar --}}
+                <div class="flex items-end">
+                    <button type="button"
+                            @click="limpiarFiltros()" 
+                            class="px-3 py-2 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 transform hover:scale-105"
+                            title="Limpiar filtros"
+                            aria-label="Limpiar filtros">
+                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-5 h-5">
                     </button>
-                    @if(request()->hasAny(['search', 'tipo', 'estado']))
-                        <a href="{{ route('novedades.index') }}" class="hci-button hci-focus-ring bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-all duration-200">
-                            Limpiar
-                        </a>
-                    @endif
                 </div>
-            </form>
+            </div>
         </div>
 
         {{-- 📊 Estadísticas --}}
@@ -158,31 +200,40 @@
                                 </td>
                                 <td class="px-4 py-2">
                                     <div class="flex space-x-1">
+                                        {{-- Ver --}}
                                         <a href="{{ route('novedades.show', $novedad) }}" 
-                                           class="hci-button hci-focus-ring bg-[#84b6f4] hover:bg-[#4d82bc] text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                                           title="Ver">
-                                            <img src="{{ asset('icons/ver.svg') }}" alt="Ver" class="w-4 h-4">
+                                           class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
+                                           title="Ver novedad">
+                                            <img src="{{ asset('icons/verw.svg') }}" alt="Ver" class="w-6 h-6">
                                         </a>
+
+                                        {{-- Editar --}}
                                         <a href="{{ route('novedades.edit', $novedad) }}" 
-                                           class="hci-button hci-focus-ring bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                                           title="Editar">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
+                                           class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
+                                           title="Editar novedad">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
                                         </a>
+
+                                        {{-- Duplicar --}}
                                         <form method="POST" action="{{ route('novedades.duplicate', $novedad) }}" class="inline">
                                             @csrf
                                             <button type="submit" 
-                                                    class="hci-button hci-focus-ring bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                                                    title="Duplicar">
-                                                <img src="{{ asset('icons/duplicate.svg') }}" alt="Duplicar" class="w-4 h-4">
+                                                    class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#ffa726] hover:bg-[#ff9800] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-1"
+                                                    title="Duplicar novedad">
+                                                <img src="{{ asset('icons/duplicate.svg') }}" alt="Duplicar" class="w-6 h-6">
                                             </button>
                                         </form>
-                                        <form method="POST" action="{{ route('novedades.destroy', $novedad) }}" class="inline" onsubmit="return confirm('¿Estás seguro de eliminar esta novedad?')">
+
+                                        {{-- Eliminar --}}
+                                        <form method="POST" action="{{ route('novedades.destroy', $novedad) }}" 
+                                              class="form-eliminar inline"
+                                              data-confirm="¿Estás seguro de que quieres eliminar esta novedad? Esta acción no se puede deshacer.">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
-                                                    class="hci-button hci-focus-ring bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                                                    title="Eliminar">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                                    class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                                                    title="Eliminar novedad">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
                                             </button>
                                         </form>
                                     </div>

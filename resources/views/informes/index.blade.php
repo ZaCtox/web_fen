@@ -86,8 +86,10 @@
 
                 <div class="flex items-end">
                     <button type="button" @click="search=''; selectedMagister=''; selectedUser=''; selectedTipo=''"
-                        class="flex justify-center items-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-all duration-200">
-                        <img src="{{ asset('icons/filtro.svg') }}" class="w-6 h-6" alt="Filtro">
+                        class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                        title="Limpiar filtros"
+                        aria-label="Limpiar filtros">
+                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
                     </button>
                 </div>
             </div>
@@ -150,16 +152,16 @@
                                 <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                                     {{-- Descargar --}}
                                     <a :href="'{{ url('informes/download') }}/' + informe.id"
-                                        class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                                        class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                         title="Descargar informe">
-                                        <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-4 h-4">
+                                        <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-6 h-6">
                                     </a>
 
                                     {{-- Editar --}}
                                     <a :href="'{{ url('informes') }}/' + informe.id + '/edit'"
-                                        class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition"
+                                        class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                         title="Editar informe">
-                                        <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
+                                        <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
                                     </a>
 
                                     {{-- Eliminar --}}
@@ -168,9 +170,9 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition"
+                                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
                                             title="Eliminar informe">
-                                            <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                            <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
                                         </button>
                                     </form>
                                 </div>

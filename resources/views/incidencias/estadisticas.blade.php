@@ -19,36 +19,90 @@
         {{-- Volver --}}
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 mb-6">
             <a href="{{ route('incidencias.index') }}"
-               class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200 min-h-[48px]">
-                <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-4 h-4">
+               class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200 min-h-[48px]"
+               title="Volver a incidencias">
+                <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
             </a>
         </div>
 
         {{-- Filtros --}}
-        <form method="GET" id="form-filtros" class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
+        <form method="GET" id="form-filtros" class="max-w-6xl mx-auto sm:px-6 lg:px-8" x-data="{
+            estado: '{{ request('estado') }}',
+            sala: '{{ request('room_id') }}',
+            anio: '{{ request('anio') }}',
+            trimestre: '{{ request('trimestre') }}',
+            historico: {{ request()->filled('historico') ? 'true' : 'false' }},
+            periodos: @js($periodos),
+            get periodosFiltrados() {
+                if (!this.anio) return this.periodos;
+                return this.periodos.filter(p => {
+                    const year = new Date(p.fecha_inicio).getFullYear();
+                    return year == this.anio;
+                });
+            },
+            actualizarURL() {
+                // Si se activa histórico, limpiar trimestre
+                if (this.historico) {
+                    this.trimestre = '';
+                }
+                
+                // Actualizar opciones del select de año
+                this.toggleAnioOptions();
+                
+                const params = new URLSearchParams(window.location.search);
+                this.estado ? params.set('estado', this.estado) : params.delete('estado');
+                this.sala ? params.set('room_id', this.sala) : params.delete('room_id');
+                this.anio ? params.set('anio', this.anio) : params.delete('anio');
+                this.trimestre ? params.set('trimestre', this.trimestre) : params.delete('trimestre');
+                this.historico ? params.set('historico', '1') : params.delete('historico');
+                window.location.search = params.toString();
+            },
+            
+            toggleAnioOptions() {
+                const anioSelect = document.getElementById('anio-select');
+                const trimestreDiv = document.getElementById('trimestre-div');
+                
+                if (!anioSelect) return;
+                
+                const aniosNormales = anioSelect.querySelectorAll('.anio-normal');
+                const aniosHistoricos = anioSelect.querySelectorAll('.anio-historico');
+                
+                if (this.historico) {
+                    // Mostrar años históricos, ocultar normales y trimestre
+                    aniosNormales.forEach(option => option.style.display = 'none');
+                    aniosHistoricos.forEach(option => option.style.display = 'block');
+                    if (trimestreDiv) trimestreDiv.style.display = 'none';
+                } else {
+                    // Mostrar años normales, ocultar históricos y mostrar trimestre
+                    aniosNormales.forEach(option => option.style.display = 'block');
+                    aniosHistoricos.forEach(option => option.style.display = 'none');
+                    if (trimestreDiv) trimestreDiv.style.display = 'block';
+                }
+            }
+        }" x-init="toggleAnioOptions()">
+            <div class="mb-4 grid grid-cols-1 md:grid-cols-5 gap-4 items-end bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
 
                 {{-- Estado --}}
                 <div>
                     <label class="text-sm font-semibold text-[#005187]">Estado:</label>
-                    <select name="estado"
+                    <select x-model="estado" @change="actualizarURL"
                         class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
                         <option value="">Todos</option>
-                        <option value="pendiente" {{ request('estado') == 'pendiente' ? 'selected' : '' }}>Pendientes</option>
-                        <option value="en_revision" {{ request('estado') == 'en_revision' ? 'selected' : '' }}>Revisión</option>
-                        <option value="resuelta" {{ request('estado') == 'resuelta' ? 'selected' : '' }}>Resueltas</option>
-                        <option value="no_resuelta" {{ request('estado') == 'no_resuelta' ? 'selected' : '' }}>No resueltas</option>
+                        <option value="pendiente">Pendientes</option>
+                        <option value="en_revision">Revisión</option>
+                        <option value="resuelta">Resueltas</option>
+                        <option value="no_resuelta">No resueltas</option>
                     </select>
                 </div>
 
                 {{-- Sala --}}
                 <div>
                     <label class="text-sm font-semibold text-[#005187]">Sala:</label>
-                    <select name="room_id"
+                    <select x-model="sala" @change="actualizarURL"
                         class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
                         <option value="">Todas</option>
                         @foreach ($salas as $s)
-                            <option value="{{ $s->id }}" {{ request('room_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                            <option value="{{ $s->id }}">{{ $s->name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -56,44 +110,53 @@
                 {{-- Año --}}
                 <div>
                     <label class="text-sm font-semibold text-[#005187]">Año:</label>
-                    <select name="anio"
+                    <select x-model="anio" @change="actualizarURL" id="anio-select"
                         class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
                         <option value="">Todos</option>
                         @foreach ($anios as $a)
-                            <option value="{{ $a }}" {{ request('anio') == $a ? 'selected' : '' }}>{{ $a }}</option>
+                            <option value="{{ $a }}" class="anio-normal">{{ $a }}</option>
+                        @endforeach
+                        @foreach ($aniosHistoricos as $a)
+                            <option value="{{ $a }}" class="anio-historico" style="display: none;">{{ $a }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 {{-- Trimestre --}}
-                <div>
+                <div id="trimestre-div">
                     <label class="text-sm font-semibold text-[#005187]">Trimestre:</label>
-                    <select name="trimestre"
+                    <select x-model="trimestre" @change="actualizarURL"
                         class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
                         <option value="">Todos</option>
-                        <option value="1" {{ request('trimestre') == '1' ? 'selected' : '' }}>1</option>
-                        <option value="2" {{ request('trimestre') == '2' ? 'selected' : '' }}>2</option>
-                        <option value="3" {{ request('trimestre') == '3' ? 'selected' : '' }}>3</option>
+                        <template x-for="p in periodosFiltrados" :key="p.id">
+                            <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero">
+                            </option>
+                        </template>
                     </select>
                 </div>
 
                 {{-- Histórico --}}
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" name="historico" id="historico"
-                           class="rounded border-[#84b6f4] text-[#4d82bc] focus:ring-[#4d82bc]" {{ request('historico') ? 'checked' : '' }}>
+                    <input type="checkbox" x-model="historico" @change="actualizarURL" id="historico"
+                           class="rounded border-[#84b6f4] text-[#4d82bc] focus:ring-[#4d82bc]">
                     <label for="historico" class="text-sm font-semibold text-[#005187]">Registros Históricos</label>
                 </div>
 
-                {{-- Botones --}}
-                <div class="sm:col-span-5 flex gap-2 mt-2">
-                    <button type="submit"
-                            class="hci-button hci-lift hci-focus-ring flex-w bg-[#4d82bc] hover:bg-[#005187] text-white font-bold py-2 px-4 rounded-lg shadow transition-all duration-200 justify-center min-h-[48px]">
-                        Aplicar
+                {{-- Limpiar filtros --}}
+                <div class="flex items-end">
+                    <button type="button" @click="
+                        estado = '';
+                        sala = '';
+                        anio = '';
+                        trimestre = '';
+                        historico = false;
+                        actualizarURL();
+                    "
+                        class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                        title="Limpiar filtros"
+                        aria-label="Limpiar filtros">
+                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
                     </button>
-                    <a href="{{ route('incidencias.estadisticas') }}"
-                       class="hci-button hci-lift hci-focus-ring flex justify-center items-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-all duration-200 min-h-[48px]">
-                        <img src="{{ asset('icons/filtro.svg') }}" class="w-4 h-4" alt="Filtro">
-                    </a>
                 </div>
 
             </div>
@@ -217,9 +280,9 @@
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Incidencias por Sala</h3>
                         <button id="dlSala" 
-                                class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                                class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                 title="Descargar gráfico">
-                            <img src="{{ asset('icons/download.svg') }}" class="w-4 h-4" alt="Descargar">
+                            <img src="{{ asset('icons/download.svg') }}" class="w-6 h-6" alt="Descargar">
                         </button>
                     </div>
                     <canvas id="chartSala" height="220" style="max-height:350px;"></canvas>
@@ -230,9 +293,9 @@
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Estado de Incidencias</h3>
                         <button id="dlEstado" 
-                                class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                                class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                 title="Descargar gráfico">
-                            <img src="{{ asset('icons/download.svg') }}" class="w-4 h-4" alt="Descargar">
+                            <img src="{{ asset('icons/download.svg') }}" class="w-6 h-6" alt="Descargar">
                         </button>
                     </div>
                     <canvas id="chartEstado" height="220" style="max-height:350px;"></canvas>
@@ -245,9 +308,9 @@
                     <div class="flex items-center justify-between mb-2">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Incidencias por Trimestre y Año</h3>
                         <button id="dlTrimestre" 
-                                class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                                class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                 title="Descargar gráfico">
-                            <img src="{{ asset('icons/download.svg') }}" class="w-4 h-4" alt="Descargar">
+                            <img src="{{ asset('icons/download.svg') }}" class="w-6 h-6" alt="Descargar">
                         </button>
                     </div>
                     <canvas id="chartTrimestre" height="140" style="max-height:300px;"></canvas>
@@ -259,9 +322,9 @@
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Tiempos de Respuesta por Estado</h3>
                     <button id="dlTiempos" 
-                            class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
+                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                             title="Descargar gráfico">
-                        <img src="{{ asset('icons/download.svg') }}" class="w-4 h-4" alt="Descargar">
+                        <img src="{{ asset('icons/download.svg') }}" class="w-6 h-6" alt="Descargar">
                     </button>
                 </div>
                 <canvas id="chartTiempos" height="140" style="max-height:300px;"></canvas>
@@ -273,25 +336,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const historicoCheckbox = document.getElementById('historico');
-            const trimestreSelect = document.getElementsByName('trimestre')[0];
-            const form = document.getElementById('form-filtros');
-
-            function toggleTrimestre(disabled) {
-                if (!trimestreSelect) return;
-                if (disabled) {
-                    trimestreSelect.setAttribute('disabled', 'disabled');
-                    trimestreSelect.classList.add('bg-gray-100', 'cursor-not-allowed', 'dark:bg-gray-700/50');
-                } else {
-                    trimestreSelect.removeAttribute('disabled');
-                    trimestreSelect.classList.remove('bg-gray-100', 'cursor-not-allowed', 'dark:bg-gray-700/50');
-                }
-            }
-            toggleTrimestre(!!historicoCheckbox?.checked);
-            historicoCheckbox?.addEventListener('change', function () {
-                toggleTrimestre(this.checked);
-                form?.submit();
-            });
 
             const porSalaLabels = @json($porSala->keys());
             const porSalaValues = @json($porSala->values());

@@ -48,15 +48,24 @@
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <a href="{{ route('staff.create') }}"
-                class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] ml-4 text-white px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
+                class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
+                title="Agregar nuevo miembro">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
             </a>
             <div class="flex w-full sm:w-auto gap-3 items-center">
-                <input x-model="search" type="text" placeholder="Buscar por nombre, cargo o email"
-                    class="w-full sm:w-[350px] px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
-                <button type="button" @click="search=''; sort='nombre_asc'; hasPhone=false"
-                    class="px-3 py-2 rounded-lg bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100">
-                    Limpiar
+                <div class="relative flex-1 sm:flex-initial">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4">
+                    </div>
+                    <input x-model="search" type="text" placeholder="Buscar por nombre, cargo o email"
+                        class="w-full sm:w-[350px] pl-10 pr-4 py-2 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+                </div>
+                <button type="button" 
+                        @click="search=''; sort='nombre_asc'; hasPhone=false"
+                        class="px-3 py-2 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 transform hover:scale-105"
+                        title="Limpiar filtros"
+                        aria-label="Limpiar filtros">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-5 h-5">
                 </button>
             </div>
 

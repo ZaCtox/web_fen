@@ -137,42 +137,42 @@
             {{-- Acciones (Ley de Fitts: Botones grandes y accesibles) --}}
             <div class="hci-form-actions">
                 <div class="flex justify-between items-center">
+                    {{-- Botón Volver --}}
                     <a href="{{ route('novedades.index') }}"
-                        class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition"
-                        title="Volver">
-                        <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-4 h-4">
+                        class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium px-6 py-3 rounded-lg shadow transition-all duration-200"
+                        title="Volver a novedades">
+                        <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
                     </a>
 
-                    <div class="flex space-x-1">
-                        <a href="{{ route('novedades.show', $novedad) }}"
-                            class="hci-button hci-focus-ring bg-[#4d82bc] hover:bg-[#005187] text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                            title="Ver">
-                            <img src="{{ asset('icons/ver.svg') }}" alt="Ver" class="w-4 h-4">
-                        </a>
-
+                    {{-- Botones de acción --}}
+                    <div class="flex space-x-2">
+                        {{-- Editar --}}
                         <a href="{{ route('novedades.edit', $novedad) }}"
-                            class="hci-button hci-focus-ring bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                            title="Editar">
-                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
+                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
+                            title="Editar novedad">
+                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
                         </a>
                         
+                        {{-- Duplicar --}}
                         <form method="POST" action="{{ route('novedades.duplicate', $novedad) }}" class="inline">
                             @csrf
                             <button type="submit"
-                                    class="hci-button hci-focus-ring bg-[#ffa726] hover:bg-[#ff9800] text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                                    title="Duplicar">
-                                <img src="{{ asset('icons/edit.svg') }}" alt="Duplicar" class="w-4 h-4">
+                                    class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#ffa726] hover:bg-[#ff9800] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-1"
+                                    title="Duplicar novedad">
+                                <img src="{{ asset('icons/duplicate.svg') }}" alt="Duplicar" class="w-6 h-6">
                             </button>
                         </form>
                         
-                        <form method="POST" action="{{ route('novedades.destroy', $novedad) }}" class="inline"
-                              onsubmit="return confirm('¿Estás seguro de eliminar esta novedad?')">
+                        {{-- Eliminar --}}
+                        <form method="POST" action="{{ route('novedades.destroy', $novedad) }}" 
+                              class="form-eliminar inline"
+                              data-confirm="¿Estás seguro de que quieres eliminar esta novedad? Esta acción no se puede deshacer.">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                    class="hci-button hci-focus-ring bg-[#e57373] hover:bg-[#f28b82] text-white px-2 py-1 rounded text-xs transition-all duration-200"
-                                    title="Eliminar">
-                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                    class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                                    title="Eliminar novedad">
+                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
                             </button>
                         </form>
                     </div>

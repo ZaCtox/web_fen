@@ -31,9 +31,17 @@
         {{-- 🔍 Filtros --}}
         <div class="mb-4 grid grid-cols-1 sm:grid-cols-5 gap-4 items-end">
             <div>
-                <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4]">Buscar:</label>
-                <input type="text" x-model="search" placeholder="Nombre del archivo..."
-                    class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-[#84b6f4] px-3 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
+                <label for="search-informes" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">Buscar:</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4 text-gray-400">
+                    </div>
+                    <input id="search-informes" 
+                           type="text" 
+                           x-model="search" 
+                           placeholder="Nombre del archivo..."
+                           class="w-full pl-10 pr-3 py-2 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 text-[#005187] dark:text-[#84b6f4] focus:ring-[#4d82bc] focus:border-[#4d82bc] transition">
+                </div>
             </div>
 
             <div>
@@ -71,8 +79,9 @@
 
             <div class="flex items-center gap-2">
                 <button type="button" @click="search=''; selectedTipo=''; selectedMagister=''; selectedUser=''"
-                    class="flex justify-center items-center bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow transition-all duration-200">
-                    <img src="{{ asset('icons/filtro.svg') }}" class="w-6 h-6" alt="Filtro">
+                    class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105"
+                    title="Limpiar filtros">
+                    <img src="{{ asset('icons/filterw.svg') }}" class="w-5 h-5" alt="Limpiar filtros">
                 </button>
             </div>
         </div>

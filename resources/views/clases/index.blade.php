@@ -66,7 +66,7 @@
         </div>
 
         {{-- 🔍 Filtros --}}
-        <div class="mb-4 grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
             {{-- Magíster --}}
             <div>
                 <label class="text-sm font-semibold text-[#005187]">Programa:</label>
@@ -125,14 +125,16 @@
                     </template>
                 </select>
             </div>
-        </div>
 
-        {{-- Botón limpiar --}}
-        <div class="mb-6">
-            <button @click="limpiarFiltros" type="button"
-                class="bg-[#c4dafa] hover:bg-[#84b6f4] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105">
-                <img src="{{ asset('icons/filtro.svg') }}" alt="Filtro" class="w-5 h-5">
-            </button>
+            {{-- Botón limpiar --}}
+            <div class="flex items-end">
+                <button @click="limpiarFiltros" type="button"
+                    class="px-3 py-2 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                    title="Limpiar filtros"
+                    aria-label="Limpiar filtros">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
+                </button>
+            </div>
         </div>
 
         {{-- 📌 Resultados paginados --}}
@@ -140,13 +142,14 @@
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach ($clases as $clase)
                     <div class="bg-[#fcffff] dark:bg-gray-800 shadow-md rounded-xl p-4 flex flex-col justify-between 
-                                hci-card-hover hci-lift cursor-pointer
+                                hci-card-hover hci-lift cursor-pointer relative
                                 transition-all duration-300 hover:shadow-xl group"
-                        style="border-left: 4px solid {{ $clase->course->magister->color ?? '#4d82bc' }}">
+                        style="border-left: 4px solid {{ $clase->course->magister->color ?? '#4d82bc' }}"
+                        onclick="window.location='{{ route('clases.show', $clase) }}'">
 
                         <div class="space-y-3">
                             {{-- Nombre curso --}}
-                            <h3 class="font-semibold text-lg text-[#005187] dark:text-[#84b6f4]">
+                            <h3 class="font-semibold text-lg text-[#005187] dark:text-[#84b6f4] group-hover:text-[#4d82bc] dark:group-hover:text-[#c4dafa] transition-colors duration-200">
                                 {{ $clase->course->nombre ?? '—' }}
                             </h3>
 
@@ -184,14 +187,15 @@
                         </div>
 
                         {{-- Botones acción (siempre abajo) --}}
-                        <div class="flex justify-end gap-2 mt-4">
+                        <div class="flex justify-end gap-2 mt-4 relative z-10">
                             {{-- Botón Ver --}}
                             <x-action-button 
                                 variant="view" 
                                 type="link" 
                                 :href="route('clases.show', $clase)" 
                                 icon="verw.svg"
-                                tooltip="Ver clase" />
+                                tooltip="Ver clase"
+                                onclick="event.stopPropagation()" />
 
                             {{-- Botón Editar --}}
                             <x-action-button 
@@ -199,7 +203,8 @@
                                 type="link" 
                                 :href="route('clases.edit', $clase)" 
                                 icon="editw.svg"
-                                tooltip="Editar clase" />
+                                tooltip="Editar clase"
+                                onclick="event.stopPropagation()" />
 
                             {{-- Botón Eliminar --}}
                             <x-action-button 
@@ -207,7 +212,8 @@
                                 :formAction="route('clases.destroy', $clase)" 
                                 formMethod="DELETE" 
                                 class="form-eliminar"
-                                tooltip="Eliminar clase" />
+                                tooltip="Eliminar clase"
+                                onclick="event.stopPropagation()" />
                         </div>
                     </div>
                 @endforeach

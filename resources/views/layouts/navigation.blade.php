@@ -411,7 +411,10 @@
                     </div>
                     
                     <a href="{{ route('login') }}"
-                        class="text-sm bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded">Iniciar Sesión</a>
+                        class="inline-flex items-center gap-2 text-sm bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                        title="Acceder al sistema">
+                        Iniciar Sesión
+                    </a>
                 @endif
             </div>
 
@@ -566,7 +569,12 @@
                 <x-responsive-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Cursos</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Registros</x-responsive-nav-link>
                 
-                <a href="{{ route('login') }}" class="mt-4 block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-center">Iniciar Sesión</a>
+                <a href="{{ route('login') }}" 
+                   class="mt-4 inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                   title="Acceder al sistema">
+                    <img src="{{ asset('icons/check.svg') }}" alt="Iniciar" class="w-5 h-5">
+                    Iniciar Sesión
+                </a>
             @endif
 
             @if(Auth::check())

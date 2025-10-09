@@ -40,8 +40,9 @@
         {{-- Botón Nueva Emergencia --}}
         <div class="mb-4 flex">
             <a href="{{ route('emergencies.create') }}"
-                class="inline-block bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition duration-200">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="nuevo usuario" class="w-4 h-4">
+                class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200"
+                title="Registrar nueva emergencia">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
             </a>
         </div>
 
@@ -98,38 +99,41 @@
                                         {{ $emergency->expires_at ? $emergency->expires_at->format('d/m/Y H:i') : '—' }}
                                     </td>
                                     <td class="px-4 py-2">{{ $emergency->creator->name ?? '—' }}</td>
-                                    <td class="px-4 py-2 flex justify-center gap-2">
-                                        {{-- Editar --}}
-                                        <a href="{{ route('emergencies.edit', $emergency) }}" class="inline-flex items-center justify-center 
-                          w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
-                          rounded-lg text-xs font-medium transition">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
-                                        </a>
+                                    <td class="px-4 py-2">
+                                        <div class="flex justify-center gap-2">
+                                            {{-- Editar --}}
+                                            <a href="{{ route('emergencies.edit', $emergency) }}" 
+                                               class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
+                                               title="Editar emergencia">
+                                                <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
+                                            </a>
 
-                                        {{-- Desactivar si está activa --}}
-                                        @if($emergency->active && !$isExpired)
-                                                <form action="{{ route('emergencies.deactivate', $emergency) }}" method="POST">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="inline-flex items-center justify-center 
-                                               w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 
-                                               rounded-lg text-xs font-medium transition">
-                                                        <img src="{{ asset('icons/pause.svg') }}" alt="Pausar" class="w-4 h-4">
-                                                    </button>
-                                                </form>
-                                        @endif
+                                            {{-- Desactivar si está activa --}}
+                                            @if($emergency->active && !$isExpired)
+                                                    <form action="{{ route('emergencies.deactivate', $emergency) }}" method="POST" class="inline">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button type="submit" 
+                                                                class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#ffa726] hover:bg-[#ff9800] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-1"
+                                                                title="Desactivar emergencia">
+                                                            <img src="{{ asset('icons/desactivarw.svg') }}" alt="Desactivar" class="w-6 h-6">
+                                                        </button>
+                                                    </form>
+                                            @endif
 
-                                        {{-- Eliminar --}}
-                                        <form method="POST" action="{{ route('emergencies.destroy', $emergency) }}"
-                                            class="form-eliminar">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center justify-center 
-                                   w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] 
-                                   rounded-lg text-xs font-medium transition">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
-                                            </button>
-                                        </form>
+                                            {{-- Eliminar --}}
+                                            <form method="POST" action="{{ route('emergencies.destroy', $emergency) }}"
+                                                class="form-eliminar inline"
+                                                data-confirm="¿Estás seguro de que quieres eliminar esta emergencia? Esta acción no se puede deshacer.">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" 
+                                                        class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                                                        title="Eliminar emergencia">
+                                                    <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                     @empty

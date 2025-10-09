@@ -23,11 +23,21 @@
         <!-- Buscador -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
             <div class="flex w-full sm:w-auto gap-3 items-center">
-                <input x-model="search" type="text" placeholder="Buscar por nombre, ubicación o descripción..." class="w-full sm:w-[350px] px-4 py-2 rounded-lg border border-gray-300 
-                           dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
-                <button type="button" @click="search=''" class="px-3 py-2 rounded-lg bg-gray-200 text-gray-800 
-                           dark:bg-gray-700 dark:text-gray-100">
-                    Limpiar
+                <div class="relative">
+                    <label for="search-rooms" class="sr-only">Buscar salas</label>
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4 text-gray-400">
+                    </div>
+                    <input id="search-rooms" 
+                           x-model="search" 
+                           type="text" 
+                           placeholder="Buscar por nombre, ubicación o descripción..." 
+                           class="w-full sm:w-[350px] pl-10 pr-4 py-2 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+                </div>
+                <button type="button" @click="search=''" 
+                        class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105"
+                        title="Limpiar búsqueda">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
                 </button>
             </div>
         </div>
@@ -65,9 +75,9 @@
                             <td class="px-4 py-2 text-center text-sm text-gray-600 dark:text-gray-400" x-text="room.description"></td>
                             <td class="px-4 py-2 text-center">
                                 <a :href="'{{ route('public.rooms.show', ':id') }}'.replace(':id', room.id)"
-                                    class="inline-flex items-center justify-center px-3 py-2 rounded-full hover:bg-[#005187] text-white shadow transition-all duration-200"
+                                    class="inline-flex items-center justify-center px-3 py-2 rounded-full bg-[#84b6f4] hover:bg-[#005187] text-white shadow transition-all duration-200"
                                     title="Ver ficha de la sala">
-                                    <img src="{{ asset('icons/ficha.svg') }}" alt="back" class="w-5 h-5">
+                                    <img src="{{ asset('icons/ficha.svg') }}" alt="Ver ficha de la sala" class="w-5 h-5">
                                 </a>
                             </td>
                         </tr>

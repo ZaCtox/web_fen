@@ -17,8 +17,9 @@
     <div class="p-6 max-w-7xl mx-auto">
         <div class="mb-8">
             <a href="{{ route('rooms.index') }}"
-               class="inline-block bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-md shadow-md transition">
-                <img src="{{ asset('icons/back.svg') }}" alt="check" class="w-5 h-5">
+               class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
+               title="Volver a salas">
+                <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
             </a>
         </div>
 
@@ -30,15 +31,21 @@
             }
         }">
             {{-- Tabs --}}
-            <div class="flex space-x-4 mb-4 border-b border-[#84b6f4]">
+            <div class="flex space-x-4 mb-4 border-b border-[#84b6f4]" role="tablist">
                 <button @click="cambiarTab('ficha')"
-                        class="pb-2 font-semibold transition"
-                        :class="tab === 'ficha' ? 'border-b-2 border-[#005187] text-[#005187]' : 'text-[#4d82bc]'">
+                        role="tab"
+                        :aria-selected="tab === 'ficha'"
+                        class="pb-2 font-semibold transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded-t"
+                        :class="tab === 'ficha' ? 'border-b-2 border-[#005187] text-[#005187]' : 'text-[#4d82bc]'"
+                        title="Ver ficha técnica">
                         Ficha Técnica
                 </button>
                 <button @click="cambiarTab('clases')"
-                        class="pb-2 font-semibold transition"
-                        :class="tab === 'clases' ? 'border-b-2 border-[#005187] text-[#005187]' : 'text-[#4d82bc]'">
+                        role="tab"
+                        :aria-selected="tab === 'clases'"
+                        class="pb-2 font-semibold transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded-t"
+                        :class="tab === 'clases' ? 'border-b-2 border-[#005187] text-[#005187]' : 'text-[#4d82bc]'"
+                        title="Ver clases asignadas">
                         Clases Asignadas
                 </button>
             </div>
@@ -72,7 +79,7 @@
                                         <img src="https://img.icons8.com/ios-filled/50/4d82bc/checkmark.png" 
                                              alt="Sí" class="w-5 h-5 inline-block">
                                     @else
-                                        ❌
+                                        <span role="img" aria-label="No disponible">❌</span>
                                     @endif
                                 </span>
                             </div>
@@ -159,8 +166,10 @@
                         {{-- Botón limpiar --}}
                         <div class="self-end">
                             <button @click="limpiar"
-                                    class="bg-[#84b6f4] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-md shadow transition transform hover:scale-105">
-                                🧹
+                                    class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                                    title="Limpiar filtros"
+                                    aria-label="Limpiar filtros">
+                                <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
                             </button>
                         </div>
                     </div>

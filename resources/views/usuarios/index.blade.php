@@ -27,19 +27,38 @@
         }">
 
         {{-- Header con botón agregar y búsqueda --}}
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-            <x-agregar :href="route('register')">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="Volver" class="w-4 h-4">
-            </x-agregar>
-
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+            {{-- Botón Agregar --}}
+            <a href="{{ route('register') }}"
+                class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
+                title="Agregar nuevo usuario">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
+            </a>
 
             {{-- Búsqueda --}}
             <div class="w-full sm:w-1/2">
-                <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-1">
-                    Buscar por nombre, correo o rol:
+                <label for="search" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                    Buscar:
                 </label>
-                <input type="text" x-model="search" placeholder="Ej: Juan Pérez o docente" class="w-full px-3 py-2 border border-[#c4dafa] rounded-lg shadow-sm focus:ring-2 focus:ring-[#84b6f4] focus:outline-none
-                           dark:bg-gray-800 dark:text-white dark:border-gray-600" />
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4">
+                        </div>
+                        <input type="text" 
+                               id="search"
+                               x-model="search" 
+                               placeholder="Nombre, correo o rol..." 
+                               class="w-full pl-10 pr-3 py-2 border border-[#84b6f4] bg-[#fcffff] rounded-lg shadow-sm focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition dark:bg-gray-800 dark:text-white">
+                    </div>
+                    <button type="button" 
+                            @click="search=''"
+                            class="px-3 py-2 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 transform hover:scale-105"
+                            title="Limpiar búsqueda"
+                            aria-label="Limpiar búsqueda">
+                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-5 h-5">
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -71,22 +90,21 @@
                                         x-show="usuario.id !== authId">
                                         {{-- Editar --}}
                                         <a :href="`/usuarios/${usuario.id}/edit`"
-                                            class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition"
+                                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
                                             title="Editar usuario">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
                                         </a>
 
                                         {{-- Eliminar --}}
-                                        <form :action="`/usuarios/${usuario.id}`" method="POST" class="form-eliminar inline"
-                                            data-confirm-title="Eliminar Usuario"
-                                            data-confirm-message="¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer."
-                                            data-confirm-type="danger">
+                                        <form :action="`/usuarios/${usuario.id}`" method="POST" 
+                                              class="form-eliminar inline"
+                                              data-confirm="¿Estás seguro de que quieres eliminar este usuario? Esta acción no se puede deshacer.">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="inline-flex items-center justify-center w-10 px-3 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition"
+                                                class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
                                                 title="Eliminar usuario">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
                                             </button>
                                         </form>
                                     </div>

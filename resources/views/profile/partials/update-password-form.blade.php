@@ -42,11 +42,10 @@
 
         {{-- Botón y feedback --}}
         <div class="flex items-center gap-4">
-            <button type="submit" class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center 
-           bg-[#3ba55d] hover:bg-[#2d864a] 
-           text-white px-4 py-2 rounded-lg shadow text-sm font-medium 
-           transition transform hover:scale-105 min-h-[48px] min-w-[48px]">
-                <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-4 h-4">
+            <button type="submit" 
+                    class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#3ba55d] hover:bg-[#2d864a] text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition-all duration-200"
+                    title="Actualizar contraseña">
+                <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
             </button>
 
             @if (session('status') === 'password-updated')
