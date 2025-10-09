@@ -185,4 +185,9 @@
             </table>
         </div>
     </div>
+
+    {{-- Footer --}}
+    <footer>
+        @include('components.footer')
+    </footer>
 </x-app-layout>

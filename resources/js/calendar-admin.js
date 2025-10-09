@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const start = fmtTime(ev.start);
         const end = fmtTime(ev.end);
         const zoom = ev.extendedProps.url_zoom || null;
+        const grabacion = ev.extendedProps.url_grabacion || null;
         const desc = (ev.extendedProps.type === 'manual') ? (ev.extendedProps.description || '') : '';
 
         const zoomBtn = zoom
@@ -63,12 +64,28 @@ document.addEventListener('DOMContentLoaded', function () {
         const descBlock = desc
             ? `<div class="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">${desc}</div>` : '';
 
+        const grabacionBlock = grabacion
+            ? `<div class="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <p class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <span class="text-2xl">🎥</span>
+                  Grabación disponible
+                </p>
+                <a href="${grabacion}" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow transition-all duration-200 text-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  Ver Grabación en YouTube
+                </a>
+              </div>` : '';
+
         return `
       <div class="flex items-start justify-between gap-3">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">${ev.title}</h2>
         <div class="flex items-center gap-2">${zoomBtn}${lupaBtn}</div>
       </div>
       ${descBlock}
+      ${grabacionBlock}
       <div class="mt-3 space-y-1 text-sm">
         <div><span class="font-medium">Programa:</span> ${magister}</div>
         <div><span class="font-medium">Modalidad:</span> ${modalityBadge(modalidad)}</div>
@@ -396,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // Tooltip
+    // Tooltip y estilos para eventos pasados y manuales
     function setTooltip(info) {
         const ext = info.event.extendedProps || {};
         const programa =
@@ -406,8 +423,23 @@ document.addEventListener('DOMContentLoaded', function () {
         const sala = ext.room?.name || 'Sin sala';
         const start = fmtTime(info.event.start);
         const end = fmtTime(info.event.end);
-        const tooltip = `${info.event.title}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
+        
+        // Agregar indicador de evento manual al tooltip
+        const tipoEvento = ext.type === 'manual' ? '🚩 Evento Manual' : 'Clase';
+        const tooltip = `${info.event.title}\n📌 ${tipoEvento}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
         info.el.setAttribute('title', tooltip.trim());
+
+        // Marcar eventos manuales con clase especial
+        if (ext.type === 'manual') {
+            info.el.classList.add('evento-manual');
+        }
+
+        // Marcar eventos pasados con clase especial
+        const ahora = new Date();
+        const eventoFin = info.event.end || info.event.start;
+        if (eventoFin < ahora) {
+            info.el.classList.add('evento-pasado');
+        }
     }
 
     // Cerrar modales global

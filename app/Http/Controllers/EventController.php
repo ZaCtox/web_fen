@@ -245,7 +245,7 @@ class EventController extends Controller
             'Sábado' => 6,
         ];
 
-        $q = Clase::with(['room', 'period', 'course.magister'])
+        $q = Clase::with(['room', 'period', 'course.magister', 'sesiones'])
             ->when(!empty($magisterId), fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
             ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId));
 
@@ -299,6 +299,10 @@ class EventController extends Controller
                     $descripcion .= "\n🔗 " . $clase->url_zoom;
                 }
 
+                // Buscar si existe una sesión para esta fecha específica
+                $sesion = $clase->sesiones->firstWhere('fecha', $fecha->toDateString());
+                $urlGrabacion = $sesion && $sesion->url_grabacion ? $sesion->url_grabacion : null;
+
                 $eventos->push([
                     'id' => 'clase-' . $clase->id . '-' . $start->format('Ymd'),
                     'title' => $titulo,
@@ -315,6 +319,8 @@ class EventController extends Controller
                     'modality' => $modality,
                     'url_zoom' => $clase->url_zoom,
                     'profesor' => $clase->encargado ?? null,
+                    'url_grabacion' => $urlGrabacion,  // ✅ Agregado
+                    'clase_id' => $clase->id,  // ✅ Agregado para referencia
                 ]);
 
                 $fecha->addWeek();

@@ -109,7 +109,7 @@
                                                 <a href="{{ route('periods.edit', $period) }}"
                                                     class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                                     title="Editar período">
-                                                    <img src="{{ asset('icons/edit.svg') }}" alt="Editar" class="w-6 h-6">
+                                                    <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
                                                 </a>
 
                                                 {{-- Botón Eliminar --}}

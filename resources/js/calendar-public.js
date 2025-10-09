@@ -217,6 +217,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // Sala
     document.getElementById('modal-room').textContent = ext.room?.name || '—';
 
+    // Grabación de YouTube
+    const grabacionContainer = document.getElementById('modal-grabacion-container');
+    const grabacionLink = document.getElementById('modal-grabacion-link');
+    if (grabacionContainer && grabacionLink) {
+      if (ext.url_grabacion) {
+        grabacionLink.href = ext.url_grabacion;
+        grabacionContainer.classList.remove('hidden');
+      } else {
+        grabacionContainer.classList.add('hidden');
+        grabacionLink.removeAttribute('href');
+      }
+    }
+
     // Lupa: solo para clases
     const viewLink = document.getElementById('view-class-link');
     if (viewLink) {
@@ -243,8 +256,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const sala = ext.room?.name || 'Sin sala';
     const start = fmtTime(info.event.start);
     const end = fmtTime(info.event.end);
-    const tooltip = `${info.event.title}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
+    
+    // Agregar indicador de evento manual al tooltip
+    const tipoEvento = ext.type === 'manual' ? '🚩 Evento Especial' : 'Clase';
+    const tooltip = `${info.event.title}\n📌 ${tipoEvento}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
     info.el.setAttribute('title', tooltip.trim());
+
+    // Marcar eventos manuales con clase especial
+    if (ext.type === 'manual') {
+      info.el.classList.add('evento-manual');
+    }
+
+    // Marcar eventos pasados con clase especial
+    const ahora = new Date();
+    const eventoFin = info.event.end || info.event.start;
+    if (eventoFin < ahora) {
+      info.el.classList.add('evento-pasado');
+    }
   }
 
   // Cerrar modal

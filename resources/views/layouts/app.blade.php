@@ -127,6 +127,9 @@
     
     <!-- Sistema de Notificaciones Global -->
     <x-hci-notification-system />
+    
+    <!-- Botón Scroll to Top Global -->
+    <x-scroll-to-top position="bottom-left" :threshold="300" />
 </body>
 
 </html>

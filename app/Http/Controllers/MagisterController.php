@@ -77,9 +77,15 @@ class MagisterController extends Controller
                     ->withErrors(['color' => 'El color debe estar en formato hexadecimal (#RRGGBB).']);
             }
 
+            // Asignar automáticamente el siguiente número de orden
+            if (!isset($validated['orden'])) {
+                $maxOrden = Magister::max('orden') ?? 0;
+                $validated['orden'] = $maxOrden + 1;
+            }
+
             $magister = Magister::create($validated);
 
-            Log::info('Nuevo magíster creado', ['magister_id' => $magister->id, 'nombre' => $magister->nombre]);
+            Log::info('Nuevo magíster creado', ['magister_id' => $magister->id, 'nombre' => $magister->nombre, 'orden' => $magister->orden]);
 
             return redirect()
                 ->route('magisters.index')

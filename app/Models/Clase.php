@@ -38,6 +38,14 @@ class Clase extends Model
         return $this->belongsTo(Room::class);
     }
 
+    /**
+     * Relación con las sesiones de esta clase
+     */
+    public function sesiones()
+    {
+        return $this->hasMany(ClaseSesion::class)->orderBy('fecha', 'asc');
+    }
+
     // app/Models/Clase.php
     public function scopeFiltrar($q, array $f)
     {

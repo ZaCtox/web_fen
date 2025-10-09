@@ -88,14 +88,14 @@
                         <option value="online" {{ old('modality', $clase->modality ?? '') == 'online' ? 'selected' : '' }}>Online</option>
                     </x-hci-field>
 
-                    <x-hci-field name="room_id" type="select" label="Sala" id="room_id" help="Se deshabilita si es online">
+                    <x-hci-field name="room_id" type="select" label="Sala" id="room_id" help="Se oculta en modalidad Online">
                         <option value="">-- Sala --</option>
                         @foreach(($rooms ?? []) as $r)
                             <option value="{{ $r->id }}" {{ old('room_id', $clase->room_id ?? '') == $r->id ? 'selected' : '' }}>{{ $r->name }}</option>
                         @endforeach
                     </x-hci-field>
 
-                    <x-hci-field name="url_zoom" type="url" label="Enlace Zoom" placeholder="https://us02web.zoom.us/..." value="{{ old('url_zoom', $clase->url_zoom ?? '') }}" help="Obligatorio en Online; recomendado en Híbrida" />
+                    <x-hci-field name="url_zoom" type="url" label="Enlace Zoom" placeholder="https://us02web.zoom.us/..." value="{{ old('url_zoom', $clase->url_zoom ?? '') }}" help="Obligatorio en Online e Híbrida" />
 
                     <x-hci-field name="encargado" label="Encargado (Profesor)" placeholder="Ej: Prof. Juan Pérez" value="{{ old('encargado', $clase->encargado ?? '') }}" />
                 </x-hci-form-section>

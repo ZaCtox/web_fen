@@ -55,6 +55,27 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:administrador,asistente_programa,director_administrativo')
         ->name('salas.horarios');
 
+    // 📝 Sesiones de Clase
+    Route::post('/clases/{clase}/sesiones', [App\Http\Controllers\ClaseSesionController::class, 'store'])
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->name('clases.sesiones.store');
+    
+    Route::put('/sesiones/{sesion}', [App\Http\Controllers\ClaseSesionController::class, 'update'])
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->name('sesiones.update');
+    
+    Route::patch('/sesiones/{sesion}/grabacion', [App\Http\Controllers\ClaseSesionController::class, 'updateGrabacion'])
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->name('sesiones.update-grabacion');
+    
+    Route::delete('/sesiones/{sesion}', [App\Http\Controllers\ClaseSesionController::class, 'destroy'])
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->name('sesiones.destroy');
+    
+    Route::post('/clases/{clase}/sesiones/generar', [App\Http\Controllers\ClaseSesionController::class, 'generarSesiones'])
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->name('clases.sesiones.generar');
+
     // 📅 Calendario
     Route::get('/calendario', [EventController::class, 'calendario'])
         ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')

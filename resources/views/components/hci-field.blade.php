@@ -35,7 +35,7 @@
     $fieldStyles = $style;
 @endphp
 
-<div class="hci-field">
+<div class="hci-field" @if($fieldId) data-field-id="{{ $fieldId }}" @endif>
     @if($label)
         <label for="{{ $fieldId }}" class="hci-label">
             @if($icon)

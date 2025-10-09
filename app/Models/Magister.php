@@ -9,7 +9,7 @@ class Magister extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nombre', 'color',  'encargado', 'asistente', 'telefono','anexo', 'correo'];
+    protected $fillable = ['nombre', 'color', 'orden', 'encargado', 'asistente', 'telefono','anexo', 'correo'];
 
     public function courses()
     {

@@ -40,6 +40,12 @@ class MagisterController extends Controller
             'correo' => 'nullable|email|max:255',
         ]);
 
+        // Asignar automáticamente el siguiente número de orden
+        if (!isset($validated['orden'])) {
+            $maxOrden = Magister::max('orden') ?? 0;
+            $validated['orden'] = $maxOrden + 1;
+        }
+
         $magister = Magister::create($validated);
 
         return response()->json([

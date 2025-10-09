@@ -1,0 +1,150 @@
+/* 
+ * ====================================
+ * ESTILOS PERSONALIZADOS PARA CALENDARIO
+ * ====================================
+ */
+
+/* Eventos pasados - Achurado y opacidad reducida */
+.fc-event.evento-pasado {
+    opacity: 0.5;
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.15) 10px,
+        rgba(255, 255, 255, 0.15) 20px
+    );
+    filter: grayscale(30%);
+}
+
+.fc-event.evento-pasado:hover {
+    opacity: 0.7;
+    filter: grayscale(20%);
+}
+
+/* En vista de lista */
+.fc-list-event.evento-pasado .fc-list-event-title,
+.fc-list-event.evento-pasado .fc-list-event-time {
+    opacity: 0.6;
+    text-decoration: line-through;
+    color: #9ca3af !important;
+}
+
+.fc-list-event.evento-pasado {
+    background-color: #f3f4f6 !important;
+}
+
+/* En vista de mes (dayGrid) */
+.fc-daygrid-event.evento-pasado {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+/* Mejoras visuales generales */
+.fc-event {
+    transition: all 0.2s ease;
+}
+
+.fc-event:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Ajustes para modo oscuro */
+.dark .fc-list-event.evento-pasado {
+    background-color: #1f2937 !important;
+}
+
+.dark .fc-list-event.evento-pasado .fc-list-event-title,
+.dark .fc-list-event.evento-pasado .fc-list-event-time {
+    color: #6b7280 !important;
+}
+
+.dark .fc-event.evento-pasado {
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0, 0, 0, 0.3) 10px,
+        rgba(0, 0, 0, 0.3) 20px
+    );
+}
+
+/* Animación sutil al cargar */
+.fc-event {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Indicador visual para clases de hoy */
+.fc-event.evento-hoy {
+    border-left: 4px solid #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+/* Opcional: Badge para eventos con grabación */
+.fc-event.tiene-grabacion::after {
+    content: '🎥';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+/* ====================================
+ * EVENTOS MANUALES - Banderita distintiva
+ * ==================================== */
+
+/* Banderita en la esquina superior derecha */
+.fc-event.evento-manual::after {
+    content: '🚩';
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    font-size: 13px;
+    line-height: 1;
+    z-index: 10;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+    pointer-events: none;
+}
+
+/* Borde distintivo con línea punteada */
+.fc-event.evento-manual {
+    border-left: 3px dashed rgba(255, 255, 255, 0.7) !important;
+}
+
+/* En vista de lista */
+.fc-list-event.evento-manual .fc-list-event-dot {
+    border-width: 3px;
+    border-style: dashed;
+}
+
+.fc-list-event.evento-manual .fc-list-event-title::before {
+    content: '🚩 ';
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+/* Hover en eventos manuales - sombra más pronunciada */
+.fc-event.evento-manual:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* En vista de mes (dayGrid) - tamaño ajustado */
+.fc-daygrid-event.evento-manual::after {
+    font-size: 11px;
+    top: 0px;
+    right: 1px;
+}
+

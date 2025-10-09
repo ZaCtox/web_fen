@@ -23,8 +23,8 @@
                 </div>
                 <div class="flex-1">
                     <h3 class="text-3xl font-bold text-[#005187] dark:text-[#c4dafa] mb-2">
-                        {{ $clase->course->nombre }}
-                    </h3>
+                {{ $clase->course->nombre }}
+            </h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                         {{ $clase->course->magister?->nombre ?? 'Sin Programa Asignado' }}
                     </p>
@@ -48,9 +48,9 @@
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Horario</p>
                             <p class="text-base font-semibold text-gray-900 dark:text-white">
-                                {{ $clase->hora_inicio ? \Carbon\Carbon::parse($clase->hora_inicio)->format('H:i') : '--:--' }}
+                    {{ $clase->hora_inicio ? \Carbon\Carbon::parse($clase->hora_inicio)->format('H:i') : '--:--' }}
                                 - 
-                                {{ $clase->hora_fin ? \Carbon\Carbon::parse($clase->hora_fin)->format('H:i') : '--:--' }}
+                    {{ $clase->hora_fin ? \Carbon\Carbon::parse($clase->hora_fin)->format('H:i') : '--:--' }}
                             </p>
                         </div>
                     </div>
@@ -100,21 +100,245 @@
                         </div>
                     </div>
 
-                    @if($clase->url_zoom)
+                @if($clase->url_zoom)
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
                         <span class="text-2xl" role="img" aria-label="Zoom">📹</span>
                         <div class="flex-1 min-w-0">
                             <p class="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide">Enlace Zoom</p>
-                            <a href="{{ $clase->url_zoom }}" target="_blank"
+                        <a href="{{ $clase->url_zoom }}" target="_blank"
                                class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] hover:text-[#005187] dark:hover:text-[#c4dafa] underline break-all transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 rounded"
                                title="Abrir enlace de Zoom">
-                                {{ $clase->url_zoom }}
-                            </a>
+                            {{ $clase->url_zoom }}
+                        </a>
                         </div>
                     </div>
                     @endif
+
+                    {{-- 🎥 Grabaciones disponibles (modo público) --}}
+                    @if(!empty($public) && $public === true && $clase->sesiones->count() > 0)
+                        <div class="col-span-2">
+                            <div class="p-4 rounded-lg bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-2 border-red-200 dark:border-red-800">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <span class="text-3xl" role="img" aria-label="Grabaciones">🎥</span>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Grabaciones Disponibles</h4>
+                                        <p class="text-xs text-gray-600 dark:text-gray-400">{{ $clase->sesiones->count() }} {{ $clase->sesiones->count() === 1 ? 'sesión' : 'sesiones' }} grabada(s)</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 max-h-60 overflow-y-auto">
+                                    @foreach($clase->sesiones as $sesion)
+                                        <a href="{{ $sesion->url_grabacion }}" 
+                                           target="_blank" 
+                                           rel="noopener noreferrer"
+                                           class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700 hover:shadow-md hover:border-red-400 dark:hover:border-red-500 transition-all duration-200 group">
+                                            <div class="flex items-center gap-3 flex-1">
+                                                <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M8 5v14l11-7z"/>
+                                                    </svg>
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                                                        Sesión del {{ $sesion->fecha->format('d/m/Y') }}
+                                                    </p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                        {{ \Carbon\Carbon::parse($sesion->fecha)->locale('es')->isoFormat('dddd') }} • Click para ver en YouTube
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
+
+            {{-- 📅 Sesiones de la Clase --}}
+            @unless(!empty($public) && $public === true)
+                <div class="mt-8 pt-8 border-t-2 border-gray-200 dark:border-gray-700" x-data="{ 
+                    showModal: false, 
+                    modalMode: 'add',
+                    editingSesion: null,
+                    showGenerador: false
+                }">
+                    <div class="flex items-center justify-between mb-6">
+                        <h4 class="text-2xl font-bold text-[#005187] dark:text-[#c4dafa] flex items-center gap-3">
+                            <span class="text-3xl" role="img" aria-label="Calendario">📅</span>
+                            Sesiones de la Clase
+                        </h4>
+                        <div class="flex gap-2">
+                            <button @click="showGenerador = !showGenerador"
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2"
+                                    title="Generar sesiones automáticamente">
+                                <img src="{{ asset('icons/calendar.svg') }}" alt="Generar" class="w-5 h-5">
+                                <span class="hidden sm:inline">Generar</span>
+                            </button>
+                            <button @click="showModal = true; modalMode = 'add'; editingSesion = null"
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#3ba55d] hover:bg-[#2d864a] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#3ba55d] focus:ring-offset-2"
+                                    title="Agregar nueva sesión">
+                                <img src="{{ asset('icons/add.svg') }}" alt="Agregar" class="w-5 h-5">
+                                <span class="hidden sm:inline">Nueva Sesión</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Generador de sesiones automático --}}
+                    <div x-show="showGenerador" 
+                         x-transition
+                         class="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg shadow-md">
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl">
+                                🤖
+                            </div>
+                            <div class="flex-1">
+                                <h5 class="text-lg font-bold text-[#005187] dark:text-[#c4dafa] mb-2">
+                                    Generador Automático de Sesiones
+                                </h5>
+                                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 border border-blue-200 dark:border-blue-800">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                            <span class="text-gray-600 dark:text-gray-400">📅 Período:</span>
+                                            <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->period->nombre_completo ?? 'No asignado' }}</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600 dark:text-gray-400">📆 Día de clase:</span>
+                                            <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->dia }}</span>
+                                        </div>
+                                        @if($clase->period && $clase->period->fecha_inicio && $clase->period->fecha_fin)
+                                            <div>
+                                                <span class="text-gray-600 dark:text-gray-400">🗓️ Inicio:</span>
+                                                <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->period->fecha_inicio->format('d/m/Y') }}</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-gray-600 dark:text-gray-400">🏁 Fin:</span>
+                                                <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->period->fecha_fin->format('d/m/Y') }}</span>
+                                            </div>
+                                            @php
+                                                $inicio = \Carbon\Carbon::parse($clase->period->fecha_inicio);
+                                                $fin = \Carbon\Carbon::parse($clase->period->fecha_fin);
+                                                $diaSemana = $clase->dia === 'Viernes' ? 5 : 6;
+                                                $sesionesEstimadas = 0;
+                                                $current = $inicio->copy();
+                                                while ($current->dayOfWeek !== $diaSemana && $current->lte($fin)) {
+                                                    $current->addDay();
+                                                }
+                                                while ($current->lte($fin)) {
+                                                    $sesionesEstimadas++;
+                                                    $current->addWeek();
+                                                }
+                                            @endphp
+                                            <div class="sm:col-span-2">
+                                                <span class="text-gray-600 dark:text-gray-400">📊 Sesiones estimadas:</span>
+                                                <span class="font-bold text-[#4d82bc] dark:text-[#84b6f4] ml-2 text-lg">~{{ $sesionesEstimadas }} sesiones</span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                @if($clase->period && $clase->period->fecha_inicio && $clase->period->fecha_fin)
+                                    <form action="{{ route('clases.sesiones.generar', $clase) }}" method="POST" class="flex gap-3">
+                                        @csrf
+                                        <button type="submit"
+                                                class="flex-1 inline-flex justify-center items-center gap-2 px-6 py-3 bg-[#3ba55d] hover:bg-[#2d864a] text-white font-bold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
+                                            <img src="{{ asset('icons/calendar.svg') }}" alt="Generar" class="w-5 h-5">
+                                            Generar Todas las Sesiones
+                                        </button>
+                                        <button type="button"
+                                                @click="showGenerador = false"
+                                                class="px-4 py-3 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium rounded-lg transition-all duration-200">
+                                            Cancelar
+                                        </button>
+                                    </form>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-3 flex items-start gap-2">
+                                        <span>💡</span>
+                                        <span>Se generarán sesiones todos los <strong>{{ $clase->dia }}</strong> desde el {{ $clase->period->fecha_inicio->format('d/m/Y') }} hasta el {{ $clase->period->fecha_fin->format('d/m/Y') }}. Las sesiones que ya existan no se duplicarán.</span>
+                                    </p>
+                                @else
+                                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg">
+                                        <p class="text-sm text-yellow-800 dark:text-yellow-300 flex items-start gap-2">
+                                            <span>⚠️</span>
+                                            <span>El período asignado a esta clase no tiene fechas de inicio y fin configuradas. Por favor, configura las fechas del período primero.</span>
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Lista de sesiones --}}
+                    @if($clase->sesiones->count() > 0)
+                        <div class="space-y-3">
+                            @foreach($clase->sesiones as $sesion)
+                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200">
+                                    <div class="flex items-center gap-4 flex-1">
+                                        <div class="flex-shrink-0 w-16 h-16 rounded-lg flex flex-col items-center justify-center text-xs font-bold
+                                                    {{ $sesion->es_hoy ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300' }}">
+                                            <span class="text-2xl">{{ $sesion->fecha->format('d') }}</span>
+                                            <span class="uppercase">{{ \Carbon\Carbon::parse($sesion->fecha)->locale('es')->isoFormat('MMM') }}</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-gray-900 dark:text-white">
+                                                {{ \Carbon\Carbon::parse($sesion->fecha)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+                                            </p>
+                                            @if($sesion->observaciones)
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $sesion->observaciones }}</p>
+                                            @endif
+                                            <div class="mt-2">
+                                                {!! $sesion->estado_badge !!}
+                                            </div>
+                                        </div>
+                                        @if($sesion->tiene_grabacion)
+                                            <a href="{{ $sesion->url_grabacion }}" target="_blank"
+                                               class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                               title="Ver grabación en YouTube">
+                                                <img src="{{ asset('icons/play.svg') }}" alt="Ver" class="w-5 h-5">
+                                                Ver Grabación
+                                            </a>
+                                        @elseif($sesion->es_pasada)
+                                            <button @click="showModal = true; modalMode = 'grabacion'; editingSesion = {{ $sesion->id }}"
+                                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2"
+                                                    title="Agregar grabación">
+                                                <img src="{{ asset('icons/upload.svg') }}" alt="Subir" class="w-5 h-5">
+                                                Agregar Grabación
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div class="flex gap-2 ml-4">
+                                        <button @click="showModal = true; modalMode = 'edit'; editingSesion = {{ $sesion->id }}"
+                                                class="p-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                                                title="Editar sesión">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
+                                        </button>
+                                        <form action="{{ route('sesiones.destroy', $sesion) }}" method="POST" class="inline-flex form-eliminar"
+                                              data-confirm="¿Estás seguro de que quieres eliminar esta sesión?">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="p-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                                    title="Eliminar sesión">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-12 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+                            <span class="text-6xl" role="img" aria-label="Sin sesiones">📭</span>
+                            <p class="mt-4 text-gray-600 dark:text-gray-400 font-medium">No hay sesiones registradas</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">Agrega sesiones manualmente o usa el generador automático</p>
+                        </div>
+                @endif
+
+                    {{-- Modal para agregar/editar sesión --}}
+                    @include('clases.partials.sesion-modal')
+                </div>
+            @endunless
 
             {{-- 🔒 Botonera interna --}}
             @unless(!empty($public) && $public === true)

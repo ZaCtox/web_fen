@@ -30,7 +30,14 @@ class StoreClaseRequest extends FormRequest
         $validator->after(function ($v) {
             $data = $this->validated() ?: $this->all();
 
-            if (($data['modality'] ?? null) === 'online' || empty($data['room_id'])) {
+            // Validar que url_zoom sea requerido en online e híbrida
+            $modality = $data['modality'] ?? null;
+            if (($modality === 'online' || $modality === 'hibrida') && empty($data['url_zoom'])) {
+                $v->errors()->add('url_zoom', 'El enlace de Zoom es obligatorio para clases Online e Híbridas.');
+            }
+
+            // Validar sala solo si no es online
+            if ($modality === 'online' || empty($data['room_id'])) {
                 return; // no aplica sala
             }
 

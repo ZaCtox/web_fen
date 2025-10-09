@@ -360,16 +360,6 @@
         </div>
     </div>
 
-    {{-- Botón flotante para volver arriba --}}
-    <button id="scrollToTop" 
-        class="fixed bottom-6 left-6 bg-[#4d82bc] hover:bg-[#005187] text-white p-3 rounded-full shadow-lg transition-all duration-300 opacity-0 invisible z-40 group"
-        title="Volver arriba"
-        aria-label="Volver arriba">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-        </svg>
-    </button>
-
     {{-- Modal para ver imagen en grande --}}
     <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4"
         onclick="closeImageModal()">
@@ -405,28 +395,5 @@
             }
         });
 
-        // Botón flotante para volver arriba
-        document.addEventListener('DOMContentLoaded', function() {
-            const scrollToTopBtn = document.getElementById('scrollToTop');
-            
-            // Mostrar/ocultar botón según el scroll
-            window.addEventListener('scroll', function() {
-                if (window.pageYOffset > 300) {
-                    scrollToTopBtn.classList.remove('opacity-0', 'invisible');
-                    scrollToTopBtn.classList.add('opacity-100', 'visible');
-                } else {
-                    scrollToTopBtn.classList.add('opacity-0', 'invisible');
-                    scrollToTopBtn.classList.remove('opacity-100', 'visible');
-                }
-            });
-            
-            // Scroll suave al hacer clic
-            scrollToTopBtn.addEventListener('click', function() {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-        });
     </script>
 </x-app-layout>

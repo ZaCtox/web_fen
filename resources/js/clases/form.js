@@ -126,22 +126,28 @@
         const zoom = qs('input[name="url_zoom"]');
         if (!modality || !roomSel) return;
 
+        // Obtener el wrapper del campo de sala
+        const roomField = document.querySelector('[data-field-id="room_id"]');
+
         const apply = () => {
-            // Sala: limpia y deshabilita si es online
+            // Sala: oculta, limpia y deshabilita si es online
             if (modality.value === 'online') {
                 roomSel.value = '';
                 roomSel.disabled = true;
+                if (roomField) {
+                    roomField.classList.add('hidden');
+                }
             } else {
                 roomSel.disabled = false;
+                if (roomField) {
+                    roomField.classList.remove('hidden');
+                }
             }
 
-            // Zoom requerido en online; visible en híbrida
+            // Zoom requerido en online e híbrida
             if (zoom) {
-                if (modality.value === 'online') {
+                if (modality.value === 'online' || modality.value === 'hibrida') {
                     zoom.required = true;
-                    zoom.parentElement.classList.remove('hidden');
-                } else if (modality.value === 'hibrida') {
-                    zoom.required = false;
                     zoom.parentElement.classList.remove('hidden');
                 } else {
                     zoom.required = false;

@@ -39,13 +39,24 @@ class ClaseController extends Controller
             'tipo' => 'required|string|max:50',
             'period_id' => 'required|exists:periods,id',
             'room_id' => 'nullable|exists:rooms,id',
-            'modality' => 'required|string|in:online,presencial,mixto',
+            'modality' => 'required|string|in:online,presencial,hibrida',
             'dia' => 'required|in:Viernes,Sábado',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'url_zoom' => 'nullable|url',
             'encargado' => 'nullable|string|max:255'
         ]);
+
+        // Validar que url_zoom sea requerido en online e híbrida
+        if (($validated['modality'] === 'online' || $validated['modality'] === 'hibrida') && empty($validated['url_zoom'])) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El enlace de Zoom es obligatorio para clases Online e Híbridas.',
+                'errors' => [
+                    'url_zoom' => ['El enlace de Zoom es obligatorio para clases Online e Híbridas.']
+                ]
+            ], 422);
+        }
 
         $clase = Clase::create($validated);
 
@@ -77,13 +88,24 @@ class ClaseController extends Controller
             'tipo' => 'required|string|max:50',
             'period_id' => 'required|exists:periods,id',
             'room_id' => 'nullable|exists:rooms,id',
-            'modality' => 'required|string|in:online,presencial,mixto',
+            'modality' => 'required|string|in:online,presencial,hibrida',
             'dia' => 'required|in:Viernes,Sábado',
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'url_zoom' => 'nullable|url',
             'encargado' => 'nullable|string|max:255'
         ]);
+
+        // Validar que url_zoom sea requerido en online e híbrida
+        if (($validated['modality'] === 'online' || $validated['modality'] === 'hibrida') && empty($validated['url_zoom'])) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El enlace de Zoom es obligatorio para clases Online e Híbridas.',
+                'errors' => [
+                    'url_zoom' => ['El enlace de Zoom es obligatorio para clases Online e Híbridas.']
+                ]
+            ], 422);
+        }
 
         $clase->update($validated);
 
