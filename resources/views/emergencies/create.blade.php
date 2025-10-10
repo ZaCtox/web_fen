@@ -15,3 +15,5 @@
         @include('emergencies.form')
     </div>
 </x-app-layout>
+
+

@@ -314,3 +314,6 @@
 @push('scripts')
     @vite('resources/js/novedades-form-wizard.js')
 @endpush
+
+
+

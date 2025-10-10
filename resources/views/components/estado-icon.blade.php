@@ -17,3 +17,6 @@
         <img src="{{ asset('icons/no_resuelta.svg') }}" alt="No Resuelta" class="inline w-7 h-7">
         @break
 @endswitch
+
+
+

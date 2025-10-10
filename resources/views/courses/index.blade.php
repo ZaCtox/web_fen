@@ -14,13 +14,54 @@
     ]" />
 
     <div class="py-6 max-w-7xl mx-auto px-4">
-        {{-- Botón global --}}
-        <div class="flex justify-start mb-3">
-            <a href="{{ route('magisters.index') }}"
-                class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
-                <img src="{{ asset('icons/searchw.svg') }}" alt="Detalles" class="w-5 h-5 mr-2">
-                <span>Detalles de Programas</span>
-            </a>
+        {{-- Filtros y Botones --}}
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                {{-- Selector de ciclo --}}
+                <div class="flex-1">
+                    <form method="GET" action="{{ route('courses.index') }}" class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                        <div class="w-full sm:w-auto">
+                            <label for="cohorte" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
+                                📅 Cohorte:
+                            </label>
+                            <select name="cohorte" 
+                                    id="cohorte"
+                                    onchange="this.form.submit()"
+                                    class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                                @foreach($cohortes as $cohorte)
+                                    <option value="{{ $cohorte }}" {{ $cohorteSeleccionada == $cohorte ? 'selected' : '' }}>
+                                        {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                {{-- Botones de Acción --}}
+                <div class="flex gap-3">
+                    <a href="{{ route('mallas-curriculares.index') }}"
+                        class="inline-flex items-center gap-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
+                        <img src="{{ asset('icons/searchw.svg') }}" alt="Mallas" class="w-5 h-5">
+                        <span>Mallas Curriculares</span>
+                    </a>
+                    
+                    <a href="{{ route('magisters.index') }}"
+                        class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
+                        <img src="{{ asset('icons/searchw.svg') }}" alt="Programas" class="w-5 h-5">
+                        <span>Detalles de Programas</span>
+                    </a>
+                </div>
+            </div>
+            
+            {{-- Indicador de filtro activo --}}
+            @if($cohorteSeleccionada != $cohortes->first())
+                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ Mostrando cursos de la ciclo <strong>{{ $cohorteSeleccionada }}</strong> (Periodo Pasado)
+                    </p>
+                </div>
+            @endif
         </div>
 
         <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg shadow p-6 border border-[#c4dafa]">
@@ -75,7 +116,8 @@
                                         <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
-                                                    <th class="px-4 py-2 text-left"></th>
+                                                    <th class="px-4 py-2 text-left">Curso</th>
+                                                    <th class="px-4 py-2 text-left">Malla</th>
                                                     <th class="px-4 py-2 text-right w-32">Acciones</th>
                                                 </tr>
                                             </thead>
@@ -86,9 +128,18 @@
                                                                                    hover:border-l-4 hover:border-l-[#4d82bc]
                                                                                    hover:-translate-y-0.5 hover:shadow-md
                                                                                    transition-all duration-200 group cursor-pointer">
-                                                        <td
-                                                            class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
+                                                        <td class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
                                                             {{ $course->nombre }}
+                                                        </td>
+                                                        <td class="px-4 py-2">
+                                                            @if($course->mallaCurricular)
+                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
+                                                                      title="{{ $course->mallaCurricular->descripcion }}">
+                                                                    {{ $course->mallaCurricular->codigo }}
+                                                                </span>
+                                                            @else
+                                                                <span class="text-xs text-gray-400 dark:text-gray-500">Sin malla</span>
+                                                            @endif
                                                         </td>
                                                         <td class="px-3 py-2 text-right">
                                                             <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
@@ -112,7 +163,7 @@
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="2" class="px-4 py-8">
+                                                        <td colspan="3" class="px-4 py-8">
                                                             <x-empty-state type="no-data" icon="📚" title="No hay cursos registrados"
                                                                 message="Crea tu primer curso para comenzar a gestionar el contenido académico."
                                                                 actionText="Crear Curso" actionUrl="{{ route('courses.create') }}"
@@ -155,3 +206,8 @@
         });
     </script>
 </x-app-layout>
+
+
+
+
+

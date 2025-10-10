@@ -60,6 +60,29 @@
             </button>
         </div>
 
+                {{-- Selector de ciclo --}}
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div class="flex-1">
+                    <label for="cohorte-select" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
+                        📅 Cohorte:
+                    </label>
+                    <form method="GET" action="{{ route('periods.index') }}" id="cohorte-form">
+                        <select name="cohorte" 
+                                id="cohorte-select"
+                                onchange="document.getElementById('cohorte-form').submit()"
+                                class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                            @foreach($cohortes as $cohorte)
+                                <option value="{{ $cohorte }}" {{ $cohorte == $cohorteSeleccionada ? 'selected' : '' }}>
+                                    {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         @php
             $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI'];
             $agrupados = $periods->sortBy([['anio', 'asc'], ['numero', 'asc']])->groupBy('anio');
@@ -134,3 +157,8 @@
         @endif
     </div>
 </x-app-layout>
+
+
+
+
+

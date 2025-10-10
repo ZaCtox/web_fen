@@ -19,3 +19,5 @@
 <script>
     window.PERIODS = @json($periods);
 </script>
+
+

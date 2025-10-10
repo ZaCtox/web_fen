@@ -2,3 +2,6 @@
      class="h-8 w-auto block dark:hidden">
 <img src="{{ asset('images/FEN1.png') }}" alt="Logo FEN Blanco"
      class="h-8 w-auto hidden dark:block">
+
+
+

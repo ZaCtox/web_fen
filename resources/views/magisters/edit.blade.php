@@ -8,3 +8,6 @@
         @include('magisters.form-wizard', ['magister' => $magister])
     </div>
 </x-app-layout>
+
+
+

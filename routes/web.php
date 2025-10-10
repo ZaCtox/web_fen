@@ -154,6 +154,14 @@ Route::middleware(['auth'])->group(function () {
         ->except(['show'])
         ->middleware('role:administrador,director_programa,asistente_programa');
 
+    // 📚 Mallas Curriculares
+    Route::resource('mallas-curriculares', App\Http\Controllers\MallaCurricularController::class)
+        ->middleware('role:administrador,director_programa,director_administrativo');
+    
+    Route::post('/mallas-curriculares/{mallaCurricular}/toggle-estado', [App\Http\Controllers\MallaCurricularController::class, 'toggleEstado'])
+        ->middleware('role:administrador,director_programa,director_administrativo')
+        ->name('mallas-curriculares.toggle-estado');
+
     // 👨‍🏫 Staff
     Route::resource('staff', StaffController::class)
         ->middleware('role:administrador');

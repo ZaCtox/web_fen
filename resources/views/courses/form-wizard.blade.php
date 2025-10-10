@@ -79,12 +79,33 @@
                             :required="true"
                             icon=""
                             help="Selecciona el programa al que pertenece el curso"
+                            id="magister_id"
                             style="width: 300px !important;"
                         >
                             <option value="">-- Selecciona un Programa --</option>
                             @foreach($magisters as $magister)
                                 <option value="{{ $magister->id }}" {{ old('magister_id', $course->magister_id ?? $selectedMagisterId ?? '') == $magister->id ? 'selected' : '' }}>
                                     {{ $magister->nombre }}
+                                </option>
+                            @endforeach
+                        </x-hci-field>
+
+                        <x-hci-field 
+                            name="malla_curricular_id"
+                            type="select"
+                            label="Malla Curricular"
+                            icon=""
+                            help="Opcional: Asigna este curso a una versión específica de malla curricular"
+                            id="malla_curricular_id"
+                            style="width: 400px !important;"
+                        >
+                            <option value="">-- Sin malla específica --</option>
+                            @foreach($mallas as $malla)
+                                <option value="{{ $malla->id }}" 
+                                        data-magister="{{ $malla->magister_id }}"
+                                        {{ old('malla_curricular_id', $course->malla_curricular_id ?? $selectedMallaId ?? '') == $malla->id ? 'selected' : '' }}
+                                        style="display: none;">
+                                    {{ $malla->nombre }} ({{ $malla->codigo }})
                                 </option>
                             @endforeach
                         </x-hci-field>
@@ -141,7 +162,7 @@
                     :editing="$editing"
                 >
                     <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Nombre del Curso - 2 columnas -->
                             <div class="md:col-span-2 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                 <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Nombre del Curso</span>
@@ -152,6 +173,12 @@
                             <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                 <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Programa</span>
                                 <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-programa">{{ old('magister_id', $course->magister_id ?? '') }}</p>
+                            </div>
+
+                            <!-- Malla Curricular - 1 columna -->
+                            <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                                <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Malla Curricular</span>
+                                <p class="text-gray-900 dark:text-white font-medium text-sm" id="resumen-malla">Sin malla específica</p>
                             </div>
 
                             <!-- Año - 1 columna -->
@@ -192,3 +219,6 @@
 @push('scripts')
     @vite('resources/js/courses-form-wizard.js')
 @endpush
+
+
+

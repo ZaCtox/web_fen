@@ -11,6 +11,7 @@
     ]" />
 
     <div class="p-6 max-w-7xl mx-auto" x-data="{
+            cohorte: '{{ $cohorteSeleccionada }}',
             magister: '{{ request('magister') }}',
             sala: '{{ request('room_id') }}',
             dia: '{{ request('dia') }}',
@@ -26,11 +27,19 @@
 
             actualizarURL() {
                 const params = new URLSearchParams(window.location.search);
+                this.cohorte ? params.set('cohorte', this.cohorte) : params.delete('cohorte');
                 this.magister ? params.set('magister', this.magister) : params.delete('magister');
                 this.sala ? params.set('room_id', this.sala) : params.delete('room_id');
                 this.dia ? params.set('dia', this.dia) : params.delete('dia');
                 this.anio ? params.set('anio', this.anio) : params.delete('anio');
                 this.trimestre ? params.set('trimestre', this.trimestre) : params.delete('trimestre');
+                
+                // Si cambió la ciclo, limpiar filtros de año y trimestre
+                if (this.cohorte !== '{{ $cohorteSeleccionada }}') {
+                    params.delete('anio');
+                    params.delete('trimestre');
+                }
+                
                 window.location.search = params.toString();
             },
 
@@ -44,25 +53,57 @@
             },
         }">
 
-        {{-- 🔹 Acciones principales --}}
-        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-            <a href="{{ route('clases.create') }}"
-                 class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
-            </a>
+        {{-- 🔹 Selector de ciclo --}}
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div class="flex-1">
+                    <label for="cohorte-select" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
+                        📅 Cohorte:
+                    </label>
+                    <select x-model="cohorte" 
+                            @change="actualizarURL()"
+                            id="cohorte-select"
+                            class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                        @foreach($cohortes as $cohorte)
+                            <option value="{{ $cohorte }}">
+                                {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-            <form method="GET" action="{{ route('clases.exportar') }}">
-                <input type="hidden" name="magister" value="{{ request('magister') }}">
-                <input type="hidden" name="room_id" value="{{ request('room_id') }}">
-                <input type="hidden" name="dia" value="{{ request('dia') }}">
-                <input type="hidden" name="anio" value="{{ request('anio') }}">
-                <input type="hidden" name="trimestre" value="{{ request('trimestre') }}">
-                <button type="submit"
-                    class="inline-flex items-center justify-center w-20 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition"
-                    title="Descargar Excel">
-                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-6 h-6">
-                </button>
-            </form>
+                <div class="flex gap-3">
+                    <a href="{{ route('clases.create') }}"
+                       class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
+                        <img src="{{ asset('icons/agregar.svg') }}" alt="Nueva clase" class="w-5 h-5">
+                        Nueva Clase
+                    </a>
+
+                    <form method="GET" action="{{ route('clases.exportar') }}">
+                        <input type="hidden" name="ciclo" :value="ciclo">
+                        <input type="hidden" name="magister" :value="magister">
+                        <input type="hidden" name="room_id" :value="sala">
+                        <input type="hidden" name="dia" :value="dia">
+                        <input type="hidden" name="anio" :value="anio">
+                        <input type="hidden" name="trimestre" :value="trimestre">
+                        <button type="submit"
+                            class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
+                            title="Descargar Excel">
+                            <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-5 h-5">
+                            Exportar
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Indicador de ciclo --}}
+            @if($cohorteSeleccionada != $cohortes->first())
+                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ Mostrando clases de un Periodo Pasado
+                    </p>
+                </div>
+            @endif
         </div>
 
         {{-- 🔍 Filtros --}}
@@ -236,3 +277,9 @@
         @endif
     </div>
 </x-app-layout>
+
+
+
+
+
+

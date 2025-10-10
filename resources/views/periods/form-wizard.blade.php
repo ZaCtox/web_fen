@@ -67,6 +67,24 @@
 
                         <div class="w-full md:w-auto">
                             <x-hci-field 
+                                name="cohorte" 
+                                type="select" 
+                                label="ciclo Académica" 
+                                :required="true"
+                                icon=""
+                                help="Selecciona la ciclo académica (período completo del programa)"
+                                id="ciclo-select"
+                                style="width: 250px !important;"
+                            >
+                                <option value="">-- Selecciona una ciclo --</option>
+                                <option value="2025-2026" {{ old('cohorte', $period->cohorte ?? '') == '2025-2026' ? 'selected' : '' }}>2025-2026 (Actual)</option>
+                                <option value="2024-2025" {{ old('cohorte', $period->cohorte ?? '') == '2024-2025' ? 'selected' : '' }}>2024-2025 (Pasada)</option>
+                                <option value="2026-2027" {{ old('cohorte', $period->cohorte ?? '') == '2026-2027' ? 'selected' : '' }}>2026-2027 (Futura)</option>
+                            </x-hci-field>
+                        </div>
+
+                        <div class="w-full md:w-auto">
+                            <x-hci-field 
                                 name="numero" 
                                 type="select" 
                                 label="Trimestre" 
@@ -165,4 +183,9 @@
 </div>
 
 {{-- Script manejado por periods-form-wizard.js --}}
+
+
+
+
+
 

@@ -12,6 +12,7 @@ class Period extends Model
     protected $fillable = [
         'numero',
         'anio',
+        'cohorte',
         'fecha_inicio',
         'fecha_fin'
     ];
@@ -36,5 +37,28 @@ class Period extends Model
         return $this->hasMany(Course::class);
     }
 
+    // Scopes útiles
+    public function scopeDeCohorte($query, $cohorte)
+    {
+        return $query->where('cohorte', $cohorte);
+    }
+
+    public function scopeActual($query)
+    {
+        $fechaHoy = now();
+        return $query->where('fecha_inicio', '<=', $fechaHoy)
+                     ->where('fecha_fin', '>=', $fechaHoy);
+    }
+
+    public function scopePasados($query)
+    {
+        return $query->where('fecha_fin', '<', now());
+    }
+
+    public function scopeFuturos($query)
+    {
+        return $query->where('fecha_inicio', '>', now());
+    }
 
 }
+

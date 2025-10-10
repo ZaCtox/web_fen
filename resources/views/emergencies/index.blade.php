@@ -159,3 +159,5 @@
         <div class="mt-4">{{ $emergencies->links() }}</div>
     </div>
 </x-app-layout>
+
+

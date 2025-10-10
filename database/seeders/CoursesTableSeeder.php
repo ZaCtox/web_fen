@@ -6,12 +6,16 @@ use Illuminate\Database\Seeder;
 use App\Models\Course;
 use App\Models\Magister;
 use App\Models\Period;
+use App\Models\MallaCurricular;
 
 class CoursesTableSeeder extends Seeder
 {
     public function run()
     {
-        $data = [
+        // ========================================
+        // CURSOS DEL PERIODO ACTUAL 2025-2026
+        // ========================================
+        $cursosActuales = [
             'Economía' => [
                 [1, 1, "Matemáticas Avanzadas para Economía"],
                 [1, 1, "Microeconomía Avanzada I"],
@@ -111,26 +115,122 @@ class CoursesTableSeeder extends Seeder
             ]
         ];
 
-        foreach ($data as $magisterNombre => $cursos) {
+        // ========================================
+        // CURSOS DEL PERIODO PASADO 2024-2025
+        // (Cursos al azar, menos cantidad)
+        // ========================================
+        $cursosPasados = [
+            'Economía' => [
+                [1, 1, "Matemáticas Avanzadas para Economía"],
+                [1, 2, "Econometría I"],
+                [1, 3, "Microeconomía Avanzada III"],
+                [2, 4, "Proyecto de Tesis"],
+                [2, 5, "Tesis"],
+            ],
+            'Dirección y Planificación Tributaria' => [
+                [1, 1, "Contabilidad y Tributación"],
+                [1, 2, "Finanzas Públicas"],
+                [1, 3, "Impuestos Directos en Empresas"],
+                [2, 4, "Administración Financiera"],
+                [2, 5, "Tributación Internacional"],
+                [2, 6, "Planificación Tributaria"],
+            ],
+            'Gestión de Sistemas de Salud' => [
+                [1, 1, "Economía"],
+                [1, 1, "Contabilidad"],
+                [1, 2, "Estadística para la gestión"],
+                [1, 3, "Aspectos Legales en Salud"],
+                [2, 4, "Gestión de Operaciones, Logística y Calidad"],
+                [2, 5, "Calidad y Acreditación en Salud"],
+            ],
+            'Gestión y Políticas Públicas' => [
+                [1, 1, "Administración"],
+                [1, 2, "Estadística para la Gestión"],
+                [1, 3, "Control de Gestión"],
+                [2, 4, "Dirección Estratégica"],
+                [2, 5, "Finanzas Públicas"],
+                [2, 6, "Gestión Pública III"],
+            ]
+        ];
+
+        // Cachear periodos por cohorte
+        $periodos2024_2025 = Period::where('cohorte', '2024-2025')
+            ->get()
+            ->keyBy(function($p) {
+                return $p->anio . '-' . $p->numero;
+            });
+
+        $periodos2025_2026 = Period::where('cohorte', '2025-2026')
+            ->get()
+            ->keyBy(function($p) {
+                return $p->anio . '-' . $p->numero;
+            });
+
+        $this->command->info('📚 Creando cursos del periodo ACTUAL (cohorte 2025-2026)...');
+        
+        foreach ($cursosActuales as $magisterNombre => $cursos) {
             $magister = Magister::where('nombre', $magisterNombre)->first();
 
             if (!$magister) {
                 throw new \Exception("❌ Magíster no encontrado: $magisterNombre");
             }
 
+            // Obtener la malla actual del magíster (2025-2026 vigente)
+            $mallaActual = MallaCurricular::where('magister_id', $magister->id)
+                ->where('codigo', 'LIKE', '%-2025-%')
+                ->first();
+
             foreach ($cursos as [$anio, $trimestre, $nombreCurso]) {
-                $period = Period::where('anio', $anio)->where('numero', $trimestre)->first();
+                $key = $anio . '-' . $trimestre;
+                $period = $periodos2025_2026->get($key);
 
                 if (!$period) {
-                    throw new \Exception("❌ Periodo no encontrado para año $anio, trimestre $trimestre");
+                    $this->command->warn("⚠️ Periodo no encontrado para año $anio, trimestre $trimestre (cohorte 2025-2026)");
+                    continue;
                 }
 
                 Course::create([
                     'nombre' => $nombreCurso,
                     'magister_id' => $magister->id,
                     'period_id' => $period->id,
+                    'malla_curricular_id' => $mallaActual?->id,
                 ]);
             }
         }
+
+        $this->command->info('📜 Creando cursos del periodo PASADO (cohorte 2024-2025)...');
+        
+        foreach ($cursosPasados as $magisterNombre => $cursos) {
+            $magister = Magister::where('nombre', $magisterNombre)->first();
+
+            if (!$magister) {
+                continue;
+            }
+
+            // Obtener la malla del periodo pasado (2024-2025)
+            $mallaPasada = MallaCurricular::where('magister_id', $magister->id)
+                ->where('codigo', 'LIKE', '%-2024-%')
+                ->first();
+
+            foreach ($cursos as [$anio, $trimestre, $nombreCurso]) {
+                $key = $anio . '-' . $trimestre;
+                $period = $periodos2024_2025->get($key);
+
+                if (!$period) {
+                    continue;
+                }
+
+                Course::create([
+                    'nombre' => $nombreCurso,
+                    'magister_id' => $magister->id,
+                    'period_id' => $period->id,
+                    'malla_curricular_id' => $mallaPasada?->id,
+                ]);
+            }
+        }
+
+        $this->command->info('✅ Cursos creados correctamente para ambos periodos.');
     }
 }
+
+

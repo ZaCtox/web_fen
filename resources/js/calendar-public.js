@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
   const magisterFilter = document.getElementById('magister-filter');
   const roomFilter = document.getElementById('room-filter');
+  const cohorteFilter = document.getElementById('cohorte-filter');
+  const anioFilter = document.getElementById('anio-filter');
+  const trimestreFilter = document.getElementById('trimestre-filter');
 
   // Helpers UI
   const fmtTime = (dt) =>
@@ -45,6 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
     slotMinTime: '08:30:00',
     slotMaxTime: '21:00:00',
     slotDuration: '01:10:00',
+    slotLabelFormat: {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: false
+    },
+    slotLabelInterval: '01:10:00',
     allDaySlot: false,
     expandRows: true,
     editable: false,
@@ -54,7 +63,10 @@ document.addEventListener('DOMContentLoaded', function () {
       url: calendarEl.dataset.url,
       extraParams: () => ({
         magister_id: magisterFilter.value || '',
-        room_id: roomFilter.value || ''
+        room_id: roomFilter.value || '',
+        cohorte: cohorteFilter.value || '',
+        anio: anioFilter.value || '',
+        trimestre: trimestreFilter.value || ''
       }),
       failure: (err) => console.error('Error cargando eventos:', err)
     },
@@ -92,11 +104,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const sabado = new Date(start);
       sabado.setDate(start.getDate() + offset);
       actualizarTextoTrimestre(sabado);
+      
     }
   });
 
 
   calendar.render();
+
 
   if (!magisterFilter.value) {
     Swal.fire({
@@ -109,63 +123,184 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Navegación por trimestres
-  document.getElementById('btnAnterior').addEventListener('click', () => irATrimestre('anterior'));
-  document.getElementById('btnSiguiente').addEventListener('click', () => irATrimestre('siguiente'));
-
-  async function irATrimestre(direccion) {
-    const fechaActual = calendar.getDate().toISOString().split('T')[0];
-    try {
-      const res = await fetch(`/api/trimestre-${direccion}?fecha=${fechaActual}`);
-      if (res.status === 404) {
-        const fallbackRes = await fetch(`/api/trimestres-todos`);
-        const todos = await fallbackRes.json();
-        if (!todos.length) {
-          Swal.fire({ icon: 'warning', title: 'Sin trimestres registrados', text: 'No hay ningún período académico cargado en el sistema.' });
-          return;
-        }
-        const fechas = todos.map(p => new Date(p.fecha_inicio));
-        const fechaRef = new Date(fechaActual);
-        let cercana = null;
-        if (direccion === 'anterior') {
-          cercana = fechas.filter(f => f < fechaRef).sort((a, b) => b - a)[0];
-        } else {
-          cercana = fechas.filter(f => f > fechaRef).sort((a, b) => a - b)[0];
-        }
-        if (cercana) {
-          calendar.gotoDate(cercana.toISOString().split('T')[0]);
-        } else {
-          Swal.fire({ icon: 'info', title: 'Trimestre no disponible', text: direccion === 'anterior' ? 'Ya estás en el trimestre más antiguo registrado.' : 'Ya estás en el trimestre más reciente registrado.' });
-        }
-        return;
-      }
-      const data = await res.json();
-      if (data.fecha_inicio) calendar.gotoDate(data.fecha_inicio);
-    } catch (error) {
-      console.error('Error consultando trimestre:', error);
-      Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo consultar los trimestres. Intenta nuevamente.' });
-    }
-  }
 
   // Filtros → recargar
-  [magisterFilter, roomFilter].forEach(select => {
-    select.addEventListener('change', () => calendar.refetchEvents());
+  [magisterFilter, roomFilter, cohorteFilter].forEach(select => {
+    select.addEventListener('change', () => {
+      // Validar cohorte antes de recargar
+      if (select === cohorteFilter) {
+        validarCohorte(select.value);
+      }
+      calendar.refetchEvents();
+    });
   });
-  // Botón para limpiar filtros
+
+  // Función para validar cohorte seleccionada
+  function validarCohorte(cohorteSeleccionada) {
+    const statusElement = document.getElementById('cohorte-status');
+    const selectElement = document.getElementById('cohorte-filter');
+    
+    if (!cohorteSeleccionada) {
+      // cohorte no seleccionada - error
+      selectElement.classList.add('border-red-500');
+      selectElement.classList.remove('border-[#84b6f4]');
+      
+      statusElement.innerHTML = `
+        <span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded text-xs">
+          ❌ Selecciona
+        </span>
+      `;
+      return false;
+    }
+    
+    // Validación exitosa
+    selectElement.classList.remove('border-red-500');
+    selectElement.classList.add('border-[#84b6f4]');
+    
+    // Determinar si es cohorte actual o pasada
+    const cohortes = Array.from(document.querySelectorAll('#cohorte-filter option')).map(opt => opt.value);
+    const esActual = cohorteSeleccionada === cohortes[0];
+    
+    if (esActual) {
+      statusElement.innerHTML = `
+      `;
+    } else {
+      statusElement.innerHTML = `
+        <span class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded text-xs">
+          ⚠️ Pasado
+        </span>
+      `;
+    }
+    
+    return true;
+  }
+
+  // Validar cohorte al cargar la página
+  if (cohorteFilter) {
+    validarCohorte(cohorteFilter.value);
+  }
+
+  // Filtro de año → actualizar trimestres disponibles
+  if (anioFilter) {
+    anioFilter.addEventListener('change', () => {
+      actualizarTrimestresDisponibles();
+      // Si ambos filtros tienen valor, navegar al trimestre
+      if (anioFilter.value && trimestreFilter.value) {
+        navegarAlTrimestre(parseInt(anioFilter.value), parseInt(trimestreFilter.value));
+      }
+      calendar.refetchEvents();
+    });
+  }
+
+  // Filtro de trimestre → navegar al trimestre
+  if (trimestreFilter) {
+    trimestreFilter.addEventListener('change', () => {
+      // Si ambos filtros tienen valor, navegar al trimestre
+      if (anioFilter.value && trimestreFilter.value) {
+        navegarAlTrimestre(parseInt(anioFilter.value), parseInt(trimestreFilter.value));
+      }
+      calendar.refetchEvents();
+    });
+  }
+  // Botón Limpiar Filtros (no limpia cohorte)
   const clearBtn = document.getElementById('clear-filters');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
+      // Limpiar solo magister, sala, año y trimestre (NO cohorte)
       magisterFilter.value = '';
       roomFilter.value = '';
+      anioFilter.value = '';
+      if (trimestreFilter) {
+        trimestreFilter.innerHTML = '<option value="">Todos</option>';
+        for (let i = 1; i <= 6; i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = `Trimestre ${i}`;
+          trimestreFilter.appendChild(option);
+        }
+      }
+      // Refrescar el calendario
       calendar.refetchEvents();
     });
   }
 
 
-  async function actualizarTextoTrimestre(fecha) {
-    const fechaISO = fecha.toISOString().split('T')[0];
+  function actualizarTrimestresDisponibles() {
+    if (!trimestreFilter || !anioFilter) return;
+    
+    const anioSeleccionado = parseInt(anioFilter.value);
+    const trimestreActual = trimestreFilter.value;
+    
+    // Limpiar opciones actuales
+    trimestreFilter.innerHTML = '<option value="">Todos</option>';
+    
+    // Agregar trimestres según el año
+    if (anioSeleccionado === 1) {
+      // Año 1: Trimestres 1, 2, 3
+      for (let i = 1; i <= 3; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `Trimestre ${i}`;
+        if (i.toString() === trimestreActual) {
+          option.selected = true;
+        }
+        trimestreFilter.appendChild(option);
+      }
+    } else if (anioSeleccionado === 2) {
+      // Año 2: Trimestres 4, 5, 6
+      for (let i = 4; i <= 6; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `Trimestre ${i}`;
+        if (i.toString() === trimestreActual) {
+          option.selected = true;
+        }
+        trimestreFilter.appendChild(option);
+      }
+    } else {
+      // Si no hay año seleccionado, mostrar todos los trimestres
+      for (let i = 1; i <= 6; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = `Trimestre ${i}`;
+        trimestreFilter.appendChild(option);
+      }
+    }
+  }
+
+  async function navegarAlTrimestre(anio, trimestre) {
     try {
-      const res = await fetch(`/api/periodo-por-fecha?fecha=${fechaISO}`);
+      // Obtener la fecha de inicio del trimestre
+      const res = await fetch(`/api/periodo-fecha-inicio?anio=${anio}&trimestre=${trimestre}&cohorte=${cohorteFilter.value}`);
+      const data = await res.json();
+      
+      if (data.fecha_inicio) {
+        const fechaInicio = new Date(data.fecha_inicio);
+        calendar.changeView('timeGridWeek', fechaInicio);
+        await actualizarTextoTrimestre(fechaInicio);
+      }
+    } catch (error) {
+      console.error("Error navegando al trimestre:", error);
+      Swal.fire({ icon: 'error', title: 'Error de navegación', text: 'No se pudo navegar al trimestre seleccionado.' });
+    }
+  }
+
+  async function actualizarTextoTrimestre(fecha) {
+    // Si hay filtros de año y trimestre seleccionados, usar esos valores directamente
+    if (anioFilter && trimestreFilter && anioFilter.value && trimestreFilter.value) {
+      const romanos = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI' };
+      const texto = `Trimestre ${romanos[trimestreFilter.value] || trimestreFilter.value} del año ${anioFilter.value}`;
+      document.getElementById('current-period-text').textContent = texto;
+      return;
+    }
+
+    // Si no hay filtros específicos, buscar por fecha y cohorte
+    const fechaISO = fecha.toISOString().split('T')[0];
+    const cohorte = cohorteFilter ? cohorteFilter.value : '';
+    
+    try {
+      const url = `/api/periodo-por-fecha?fecha=${fechaISO}${cohorte ? `&cohorte=${cohorte}` : ''}`;
+      const res = await fetch(url);
       const data = await res.json();
       const romanos = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI' };
       const texto = data.periodo
@@ -288,3 +423,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (e.key === 'Escape') window.closeModal();
   });
 });
+
+
+
+
+
+
+
+

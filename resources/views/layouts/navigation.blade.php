@@ -14,9 +14,10 @@
                     @php
                         $canClases = tieneRol(['administrador','director_programa','asistente_programa','director_administrativo','asistente_postgrado']);
                         $canCourses = tieneRol(['administrador','director_programa','asistente_programa']);
+                        $canMallas = tieneRol(['administrador','director_programa','director_administrativo']);
                         $canPeriods = tieneRol('administrador');
                         $canRooms = tieneRol(['administrador','asistente_programa']);
-                        $showAcademica = $canClases || $canCourses || $canPeriods || $canRooms;
+                        $showAcademica = $canClases || $canCourses || $canMallas || $canPeriods || $canRooms;
 
                         $canIncidencias = tieneRol(['administrador','director_programa','asistente_programa','técnico','auxiliar','asistente_postgrado']);
                         $canInformes = tieneRol(['administrador','director_programa','asistente_programa','asistente_postgrado']);
@@ -61,6 +62,9 @@
                                 @endif
                                 @if($canCourses)
                                     <a href="{{ route('courses.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cursos</a>
+                                @endif
+                                @if($canMallas)
+                                    <a href="{{ route('mallas-curriculares.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Mallas Curriculares</a>
                                 @endif
                                 @if($canPeriods)
                                     <a href="{{ route('periods.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Periodos</a>
@@ -452,9 +456,10 @@
                 @php
                     $canClases = tieneRol(['administrador','director_programa','asistente_programa','director_administrativo','asistente_postgrado']);
                     $canCourses = tieneRol(['administrador','director_programa','asistente_programa']);
+                    $canMallas = tieneRol(['administrador','director_programa','director_administrativo']);
                     $canPeriods = tieneRol('administrador');
                     $canRooms = tieneRol(['administrador','asistente_programa']);
-                    $showAcademica = $canClases || $canCourses || $canPeriods || $canRooms;
+                    $showAcademica = $canClases || $canCourses || $canMallas || $canPeriods || $canRooms;
 
                     $canIncidencias = tieneRol(['administrador','director_programa','asistente_programa','técnico','auxiliar','asistente_postgrado']);
                     $canInformes = tieneRol(['administrador','director_programa','asistente_programa','asistente_postgrado']);
@@ -479,6 +484,9 @@
                     @endif
                     @if($canCourses)
                         <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
+                    @endif
+                    @if($canMallas)
+                        <x-responsive-nav-link :href="route('mallas-curriculares.index')" :active="request()->routeIs('mallas-curriculares.*')">Mallas Curriculares</x-responsive-nav-link>
                     @endif
                     @if($canPeriods)
                         <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-responsive-nav-link>
@@ -593,3 +601,6 @@
         </div>
     </div>
 </nav>
+
+
+

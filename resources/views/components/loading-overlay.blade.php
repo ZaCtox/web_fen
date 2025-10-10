@@ -12,3 +12,6 @@
         <p class="text-gray-700 dark:text-gray-300 font-medium">{{ $message }}</p>
     </div>
 </div>
+
+
+

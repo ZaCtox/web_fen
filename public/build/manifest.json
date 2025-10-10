@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-C5gmSePN.css",
+    "file": "assets/app-CSfNmQhD.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -32,13 +32,13 @@
     "isEntry": true
   },
   "resources/js/calendar-admin.js": {
-    "file": "assets/calendar-admin-CHkgOoBr.js",
+    "file": "assets/calendar-admin-pIfCtFqj.js",
     "name": "calendar-admin",
     "src": "resources/js/calendar-admin.js",
     "isEntry": true
   },
   "resources/js/calendar-public.js": {
-    "file": "assets/calendar-public-kSr-F1Kv.js",
+    "file": "assets/calendar-public-CsOyMpAa.js",
     "name": "calendar-public",
     "src": "resources/js/calendar-public.js",
     "isEntry": true
@@ -56,7 +56,7 @@
     "isEntry": true
   },
   "resources/js/courses-form-wizard.js": {
-    "file": "assets/courses-form-wizard-BbhSUIyi.js",
+    "file": "assets/courses-form-wizard-DIakE-1M.js",
     "name": "courses-form-wizard",
     "src": "resources/js/courses-form-wizard.js",
     "isEntry": true

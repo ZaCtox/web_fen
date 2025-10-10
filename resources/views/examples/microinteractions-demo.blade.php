@@ -15,3 +15,6 @@
         @vite('resources/js/microinteractions.js')
     @endpush
 </x-app-layout>
+
+
+

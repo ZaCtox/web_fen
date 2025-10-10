@@ -9,12 +9,27 @@ use Illuminate\Support\Carbon;
 
 class PeriodController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        
+        // Obtener cohortes disponibles
+        $cohortes = Period::select('cohorte')
+            ->distinct()
+            ->whereNotNull('cohorte')
+            ->orderBy('cohorte', 'desc')
+            ->pluck('cohorte');
 
-        $periods = Period::orderByDesc('anio')->orderBy('numero')->get();
-        return view('periods.index', compact('periods'));
+        // cohorte seleccionada (por defecto la más reciente)
+        $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
+
+        // Filtrar períodos por cohorte
+        $query = Period::query();
+        if ($cohorteSeleccionada) {
+            $query->where('cohorte', $cohorteSeleccionada);
+        }
+
+        $periods = $query->orderByDesc('anio')->orderBy('numero')->get();
+        
+        return view('periods.index', compact('periods', 'cohortes', 'cohorteSeleccionada'));
     }
 
     public function create()
@@ -132,3 +147,12 @@ class PeriodController extends Controller
     }
 
 }
+
+
+
+
+
+
+
+
+

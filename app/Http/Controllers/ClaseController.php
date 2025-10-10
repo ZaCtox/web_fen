@@ -18,7 +18,30 @@ class ClaseController extends Controller
 
     public function index(Request $request)
     {
-        $query = Clase::with(['course.magister', 'period', 'room']);
+        // Obtener cohortes disponibles
+        $cohortes = Period::select('cohorte')
+            ->distinct()
+            ->whereNotNull('cohorte')
+            ->orderBy('cohorte', 'desc')
+            ->pluck('cohorte');
+
+        // cohorte seleccionada (por defecto la más reciente)
+        $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
+
+        $query = Clase::with(['course.magister', 'course.mallaCurricular', 'period', 'room']);
+
+        // Filtros de periodo (cohorte, año, trimestre) - todos juntos en una sola consulta
+        $query->whereHas('period', function($q) use ($cohorteSeleccionada, $request) {
+            if ($cohorteSeleccionada) {
+                $q->where('cohorte', $cohorteSeleccionada);
+            }
+            if ($request->filled('anio')) {
+                $q->where('anio', $request->anio);
+            }
+            if ($request->filled('trimestre')) {
+                $q->where('numero', $request->trimestre);
+            }
+        });
 
         if ($request->filled('magister')) {
             $query->whereHas('course.magister', fn($q) => $q->where('nombre', $request->magister));
@@ -36,14 +59,6 @@ class ClaseController extends Controller
             $query->where('estado', $request->estado);
         }
 
-        if ($request->filled('anio')) {
-            $query->whereHas('period', fn($q) => $q->where('anio', $request->anio));
-        }
-
-        if ($request->filled('trimestre')) {
-            $query->whereHas('period', fn($q) => $q->where('numero', $request->trimestre));
-        }
-
         $clases = $query
             ->orderBy('period_id')
             ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
@@ -51,15 +66,17 @@ class ClaseController extends Controller
             ->paginate(12)
             ->appends($request->query());
 
-        $anios = Period::distinct()->orderByDesc('anio')->pluck('anio');
-        $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
+        $anios = Period::where('cohorte', $cohorteSeleccionada)->distinct()->orderByDesc('anio')->pluck('anio');
+        $periodos = Period::where('cohorte', $cohorteSeleccionada)->orderByDesc('anio')->orderBy('numero')->get();
 
         return view('clases.index', [
             'clases'    => $clases,
             'rooms'     => Room::orderBy('name')->get(),
-            'magisters' => Magister::orderBy('nombre')->get(),
+            'magisters' => Magister::orderBy('orden')->get(),
             'anios'     => $anios,
             'periodos'  => $periodos,
+            'cohortes'  => $cohortes,
+            'cohorteSeleccionada' => $cohorteSeleccionada,
         ]);
     }
 
@@ -288,3 +305,8 @@ class ClaseController extends Controller
         return [$agrupados, $courses, Room::orderBy('name')->get(), Period::orderByDesc('anio')->orderBy('numero')->get()];
     }
 }
+
+
+
+
+

@@ -18,3 +18,5 @@
         @include('novedades.form', ['novedad' => null])
     </div>
 </x-app-layout>
+
+

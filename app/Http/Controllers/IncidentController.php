@@ -19,6 +19,14 @@ class IncidentController extends Controller
     public function index(Request $request)
     {
         $query = Incident::with('room');
+        
+        // 🔹 Obtener cohorte actual automáticamente
+        $cohorteActual = Period::select('cohorte')
+            ->distinct()
+            ->orderBy('cohorte', 'desc')
+            ->first()->cohorte ?? null;
+        
+        // Obtener TODOS los períodos para el sistema
         $periodos = Period::all();
         
         // Filtrar por rol del usuario
@@ -73,15 +81,17 @@ class IncidentController extends Controller
         $incidencias = $query->latest()->paginate(10)->withQueryString();
         $salas = Room::orderBy('name')->get();
 
-        // Obtener años reales de las fechas de inicio de los períodos
-        $anios = Period::all()
+        // Obtener años SOLO de la cohorte actual (para filtro normal)
+        $anios = Period::where('cohorte', $cohorteActual)
+            ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
             ->sort()
             ->values();
             
-        // Obtener años históricos (años de incidencias que NO están en períodos actuales)
-        $aniosPeriodos = Period::all()
+        // Obtener años históricos (años de incidencias que NO están en la cohorte actual)
+        $aniosPeriodos = Period::where('cohorte', $cohorteActual)
+            ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
             ->toArray();
@@ -199,8 +209,15 @@ class IncidentController extends Controller
 
     public function estadisticas(Request $request)
     {
-
-        $periodos = Period::orderBy('fecha_inicio')->orderBy('numero')->get();
+        // 🔹 Obtener cohorte actual automáticamente
+        $cohorteActual = Period::select('cohorte')
+            ->distinct()
+            ->orderBy('cohorte', 'desc')
+            ->first()->cohorte ?? null;
+        
+        $periodos = Period::orderBy('fecha_inicio')
+            ->orderBy('numero')
+            ->get();
         $aniosUnicos = $periodos->map(fn ($p) => Carbon::parse($p->fecha_inicio)->year)->unique()->sort()->values();
 
         $query = Incident::query();
@@ -243,15 +260,17 @@ class IncidentController extends Controller
         $porTrimestre = $porTrimestre->sortKeys();
         $rangos = $periodos->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
         
-        // Obtener años reales de las fechas de inicio de los períodos
-        $anios = Period::all()
+        // Obtener años SOLO de la cohorte actual (para filtro normal)
+        $anios = Period::where('cohorte', $cohorteActual)
+            ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
             ->sort()
             ->values();
             
-        // Obtener años históricos (años de incidencias que NO están en períodos actuales)
-        $aniosPeriodos = Period::all()
+        // Obtener años históricos (años de incidencias que NO están en la cohorte actual)
+        $aniosPeriodos = Period::where('cohorte', $cohorteActual)
+            ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
             ->toArray();
@@ -272,7 +291,7 @@ class IncidentController extends Controller
             'periodos',
             'anios',
             'aniosHistoricos',
-            'incidenciasFiltradas',
+            'incidenciasFiltradas'
         ));
     }
 
@@ -346,3 +365,7 @@ class IncidentController extends Controller
         return redirect()->route('incidencias.index')->with('success', 'Incidencia eliminada correctamente.');
     }
 }
+
+
+
+

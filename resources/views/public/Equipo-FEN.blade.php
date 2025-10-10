@@ -114,3 +114,5 @@
     @include('components.footer')
 
 </x-app-layout>
+
+

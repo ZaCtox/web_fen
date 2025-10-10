@@ -16,3 +16,5 @@
         @include('emergencies.form', ['emergency' => $emergency])
     </div>
 </x-app-layout>
+
+

@@ -21,6 +21,9 @@ class EventController extends Controller
         try {
             $magisterId = $request->query('magister_id');
             $roomId = $request->query('room_id');
+            $cohorte = $request->query('cohorte');
+            $anio = $request->query('anio');
+            $trimestre = $request->query('trimestre');
 
             $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
             $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
@@ -59,7 +62,7 @@ class EventController extends Controller
                 });
 
             // Eventos generados desde clases
-            $classEvents = $this->generarEventosDesdeClases($magisterId, $roomId, $rangeStart, $rangeEnd);
+            $classEvents = $this->generarEventosDesdeClases($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, $anio, $trimestre);
 
             return response()->json(collect($manualEvents)->concat(collect($classEvents))->values());
 
@@ -72,13 +75,29 @@ class EventController extends Controller
     /**
      * Mostrar vista del calendario
      */
-    public function calendario()
+    public function calendario(Request $request)
     {
         try {
+            // Obtener cohortes disponibles
+            $cohortes = Period::select('cohorte')
+                ->distinct()
+                ->whereNotNull('cohorte')
+                ->orderBy('cohorte', 'desc')
+                ->pluck('cohorte');
+
+            // cohorte seleccionada (por defecto la más reciente)
+            $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
+
             $periodoActual = Period::orderByDesc('anio')->orderByDesc('numero')->first();
             $fechaInicio = optional($periodoActual)->fecha_inicio?->format('Y-m-d') ?? now()->format('Y-m-d');
+            
+            // Obtener períodos de la cohorte seleccionada
+            $periodos = Period::where('cohorte', $cohorteSeleccionada)
+                ->orderBy('anio')
+                ->orderBy('numero')
+                ->get();
 
-            return view('calendario.index', compact('fechaInicio'));
+            return view('calendario.index', compact('fechaInicio', 'cohortes', 'cohorteSeleccionada', 'periodos'));
 
         } catch (Exception $e) {
             Log::error('Error al cargar vista de calendario: ' . $e->getMessage());
@@ -233,7 +252,7 @@ class EventController extends Controller
         }
     }
 
-    private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null)
+    private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $cohorte = null, ?string $anio = null, ?string $trimestre = null)
     {
         $dias = [
             'Domingo' => 0,
@@ -247,7 +266,8 @@ class EventController extends Controller
 
         $q = Clase::with(['room', 'period', 'course.magister', 'sesiones'])
             ->when(!empty($magisterId), fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
-            ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId));
+            ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId))
+            ->when(!empty($cohorte), fn($q) => $q->whereHas('period', fn($qq) => $qq->where('cohorte', $cohorte)));
 
         if ($rangeStart && $rangeEnd) {
             $q->whereHas('period', fn($qq) => $qq
@@ -330,3 +350,12 @@ class EventController extends Controller
         return $eventos;
     }
 }
+
+
+
+
+
+
+
+
+

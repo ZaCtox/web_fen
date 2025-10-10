@@ -49,3 +49,5 @@
         © {{ date('Y') }} Facultad de Economía y Negocios - Universidad de Talca. Todos los derechos reservados.
     </div>
 </footer>
+
+

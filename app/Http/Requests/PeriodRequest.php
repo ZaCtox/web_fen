@@ -23,6 +23,7 @@ class PeriodRequest extends FormRequest
     {
         return [
             'anio' => 'required|integer|min:1|max:2',
+            'cohorte' => 'required|string|in:2024-2025,2025-2026,2026-2027',
             'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after:fecha_inicio',
@@ -42,6 +43,9 @@ class PeriodRequest extends FormRequest
             'anio.integer' => 'El año académico debe ser un número entero.',
             'anio.min' => 'El año académico debe ser al menos 1.',
             'anio.max' => 'El año académico no puede ser mayor a 2.',
+            'cohorte.required' => 'La cohorte académica es requerida.',
+            'cohorte.string' => 'La cohorte académica debe ser texto.',
+            'cohorte.in' => 'La cohorte académica debe ser válida.',
             'numero.required' => 'El trimestre es requerido.',
             'numero.integer' => 'El trimestre debe ser un número entero.',
             'numero.between' => 'El trimestre debe estar entre 1 y 6.',
@@ -54,3 +58,4 @@ class PeriodRequest extends FormRequest
         ];
     }
 }
+

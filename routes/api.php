@@ -51,12 +51,35 @@ Route::name('api.')->group(function () {
 
     Route::get('/periodo-por-fecha', function (Request $request) {
         $fecha = Carbon::parse($request->query('fecha'));
-        $periodo = Period::where('fecha_inicio', '<=', $fecha)
-            ->where('fecha_fin', '>=', $fecha)
-            ->first();
+        $cohorte = $request->query('cohorte');
+        
+        $query = Period::where('fecha_inicio', '<=', $fecha)
+            ->where('fecha_fin', '>=', $fecha);
+        
+        if ($cohorte) {
+            $query->where('cohorte', $cohorte);
+        }
+        
+        $periodo = $query->first();
 
         return response()->json(['periodo' => $periodo]);
     })->name('periodo-por-fecha');
+
+    Route::get('/periodo-fecha-inicio', function (Request $request) {
+        $anio = $request->query('anio');
+        $trimestre = $request->query('trimestre');
+        $cohorte = $request->query('cohorte');
+
+        $periodo = Period::where('anio', $anio)
+            ->where('numero', $trimestre)
+            ->when($cohorte, fn($q) => $q->where('cohorte', $cohorte))
+            ->first();
+
+        return response()->json([
+            'fecha_inicio' => $periodo?->fecha_inicio?->toDateString(),
+            'periodo' => $periodo
+        ]);
+    })->name('periodo-fecha-inicio');
 
     Route::get('/trimestres-todos', function () {
         return Period::orderBy('fecha_inicio')->get(['fecha_inicio']);

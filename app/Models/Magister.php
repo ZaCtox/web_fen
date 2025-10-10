@@ -18,6 +18,16 @@ class Magister extends Model
             ->orderBy('period_id');
     }
 
+    public function mallasCurriculares()
+    {
+        return $this->hasMany(MallaCurricular::class)->orderBy('año_inicio', 'desc');
+    }
+
+    public function mallasActivas()
+    {
+        return $this->hasMany(MallaCurricular::class)->where('activa', true)->orderBy('año_inicio', 'desc');
+    }
+
     public function novedades()
     {
         return $this->hasMany(Novedad::class);

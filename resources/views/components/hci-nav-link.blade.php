@@ -31,3 +31,6 @@ $classes = ($active ?? false) ? $baseClasses . ' ' . $activeClasses : $baseClass
     <!-- Indicador de hover -->
     <div class="absolute inset-0 rounded-lg bg-gradient-to-r from-[#4d82bc] to-[#005187] opacity-0 group-hover:opacity-10 transition-opacity duration-200"></div>
 </a>
+
+
+
