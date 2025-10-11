@@ -6,7 +6,7 @@
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div class="flex-1">
                 <label for="cohorte-filter" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                    📅 Cohorte:
+                    Ciclo Académico:
                 </label>
                 <select id="cohorte-filter" name="cohorte" required
                     onchange="const params = new URLSearchParams(); params.set('cohorte', this.value); window.location.search = params.toString();"
@@ -27,10 +27,6 @@
                     @if($cohorteSeleccionada != $cohortes->first())
                         <span class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded text-xs">
                             ⚠️ Pasado
-                        </span>
-                    @else
-                        <span class="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded text-xs">
-                            ✅ Actual
                         </span>
                     @endif
                 @endif

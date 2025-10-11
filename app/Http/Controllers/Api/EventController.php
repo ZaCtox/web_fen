@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clase;
+use App\Models\ClaseSesion;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -25,8 +26,17 @@ class EventController extends Controller
     {
         $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
+        $cohorte = $request->query('cohorte');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
+
+        \Log::info('📅 API EventController@index', [
+            'magister_id' => $magisterId,
+            'room_id' => $roomId,
+            'cohorte' => $cohorte,
+            'start' => $rangeStart?->toDateString(),
+            'end' => $rangeEnd?->toDateString(),
+        ]);
 
         // Límites para evitar JSON demasiado grande
         $maxEvents = 50; // Máximo 50 eventos por respuesta (reducido)
@@ -78,25 +88,22 @@ class EventController extends Controller
             });
 
         // Obtener eventos de clases con límites
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, 25);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 25);
 
-        $allEvents = collect($manualEvents)->concat(collect($classEvents))->values();
+        // Obtener sesiones de clase
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 50);
+
+        $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
         // Limitar el total de eventos
         if ($allEvents->count() > $maxEvents) {
             $allEvents = $allEvents->take($maxEvents);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $allEvents,
-            'meta' => [
-                'total' => $allEvents->count(),
-                'max_events' => $maxEvents,
-                'range_start' => $rangeStart?->toDateString(),
-                'range_end' => $rangeEnd?->toDateString(),
-            ],
-        ]);
+        \Log::info('📤 Enviando eventos al calendario admin: ' . $allEvents->count());
+
+        // FullCalendar espera un array directo, no un objeto con 'data'
+        return response()->json($allEvents);
     }
 
     /**
@@ -181,7 +188,7 @@ class EventController extends Controller
     /**
      * Generar eventos desde clases con optimizaciones para evitar JSON demasiado grande.
      */
-    private function generarEventosDesdeClasesOptimizado(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, int $maxEvents = 50)
+    private function generarEventosDesdeClasesOptimizado(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $cohorte = null, int $maxEvents = 50)
     {
         $dias = [
             'Domingo' => 0,
@@ -201,6 +208,7 @@ class EventController extends Controller
         $q = Clase::with(['room', 'period', 'course.magister'])
             ->when(! empty($magisterId), fn ($q) => $q->whereHas('course', fn ($qq) => $qq->where('magister_id', $magisterId)))
             ->when(! empty($roomId), fn ($q) => $q->where('room_id', $roomId))
+            ->when(! empty($cohorte), fn ($q) => $q->whereHas('period', fn ($qq) => $qq->where('cohorte', $cohorte)))
             ->whereHas('period', fn ($qq) => $qq
                 ->whereDate('fecha_fin', '>=', $rangeStart->toDateString())
                 ->whereDate('fecha_inicio', '<=', $rangeEnd->toDateString()));
@@ -289,6 +297,7 @@ class EventController extends Controller
     {
         $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
+        $cohorte = $request->query('cohorte');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
 
@@ -348,9 +357,12 @@ class EventController extends Controller
             });
 
         // Obtener eventos de clases
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, 50);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 50);
 
-        $allEvents = collect($manualEvents)->concat(collect($classEvents))->values();
+        // Obtener sesiones de clase
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 50);
+
+        $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
         // Limitar el total de eventos
         if ($allEvents->count() > $maxEvents) {
@@ -428,9 +440,12 @@ class EventController extends Controller
             });
 
         // Obtener eventos de clases
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, 25);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, null, 25);
 
-        $allEvents = collect($manualEvents)->concat(collect($classEvents))->values();
+        // Obtener sesiones de clase
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, null, 50);
+
+        $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
         // Limitar el total de eventos
         if ($allEvents->count() > $maxEvents) {
@@ -448,5 +463,83 @@ class EventController extends Controller
                 'public_view' => true,
             ],
         ]);
+    }
+
+    /**
+     * Generar eventos desde las sesiones de clase (ClaseSesion)
+     */
+    private function generarEventosDesdeSesiones(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $cohorte = null, int $maxEvents = 50)
+    {
+        if (!$rangeStart || !$rangeEnd) {
+            return collect();
+        }
+
+        \Log::info('🔍 Buscando sesiones de clase', [
+            'magister_id' => $magisterId,
+            'room_id' => $roomId,
+            'cohorte' => $cohorte,
+            'fecha_inicio' => $rangeStart->toDateString(),
+            'fecha_fin' => $rangeEnd->toDateString(),
+        ]);
+
+        $sesiones = ClaseSesion::with(['clase.room', 'clase.period', 'clase.course.magister'])
+            ->whereBetween('fecha', [$rangeStart->toDateString(), $rangeEnd->toDateString()])
+            ->when(!empty($magisterId), fn($q) => $q->whereHas('clase.course', fn($qq) => $qq->where('magister_id', $magisterId)))
+            ->when(!empty($roomId), fn($q) => $q->whereHas('clase', fn($qq) => $qq->where('room_id', $roomId)))
+            ->when(!empty($cohorte), fn($q) => $q->whereHas('clase.period', fn($qq) => $qq->where('cohorte', $cohorte)))
+            ->limit($maxEvents)
+            ->get();
+
+        \Log::info('✅ Sesiones encontradas: ' . $sesiones->count());
+
+        return $sesiones->map(function ($sesion) {
+            $clase = $sesion->clase;
+            $magister = $clase->course->magister ?? null;
+            $magisterNombre = $magister ? $magister->nombre : 'Sin magíster';
+            $magisterColor = $magister ? ($magister->color ?? '#6b7280') : '#6b7280';
+
+            // Extraer hora_inicio y hora_fin de las observaciones
+            preg_match('/\((\d{2}:\d{2}:\d{2})-(\d{2}:\d{2}:\d{2})\)/', $sesion->observaciones ?? '', $matches);
+            $horaInicio = $matches[1] ?? $clase->hora_inicio ?? '09:00:00';
+            $horaFin = $matches[2] ?? $clase->hora_fin ?? '13:00:00';
+
+            $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($horaInicio);
+            $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($horaFin);
+
+            $titulo = $clase->course->nombre;
+            $modality = 'presencial';
+            
+            // Verificar primero si es híbrida (prioridad), luego online
+            if (str_contains($sesion->observaciones ?? '', 'híbrida')) {
+                $titulo .= ' [HÍBRIDA]';
+                $modality = 'híbrida';
+            } elseif (str_contains($sesion->observaciones ?? '', 'Clase online')) {
+                $titulo .= ' [ONLINE]';
+                $modality = 'online';
+            }
+
+            $descripcion = 'Magíster: ' . $magisterNombre;
+            if (!empty($clase->url_zoom)) {
+                $descripcion .= "\n🔗 " . $clase->url_zoom;
+            }
+
+            return [
+                'id' => 'sesion-' . $sesion->id,
+                'title' => $titulo,
+                'description' => $descripcion,
+                'start' => $start->toDateTimeString(),
+                'end' => $end->toDateTimeString(),
+                'room_id' => $clase->room_id,
+                'room' => $clase->room ? ['id' => $clase->room->id, 'name' => $clase->room->name] : null,
+                'editable' => false,
+                'backgroundColor' => $magisterColor,
+                'borderColor' => $magisterColor,
+                'type' => 'clase',
+                'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
+                'modality' => $modality,
+                'url_zoom' => $clase->url_zoom,
+                'profesor' => $clase->encargado ?? null,
+            ];
+        });
     }
 }

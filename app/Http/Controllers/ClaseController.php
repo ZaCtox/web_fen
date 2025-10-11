@@ -28,7 +28,7 @@ class ClaseController extends Controller
         // cohorte seleccionada (por defecto la más reciente)
         $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
 
-        $query = Clase::with(['course.magister', 'course.mallaCurricular', 'period', 'room']);
+        $query = Clase::with(['course.magister', 'course.mallaCurricular', 'period', 'room', 'sesiones']);
 
         // Filtros de periodo (cohorte, año, trimestre) - todos juntos en una sola consulta
         $query->whereHas('period', function($q) use ($cohorteSeleccionada, $request) {
@@ -52,7 +52,7 @@ class ClaseController extends Controller
         }
 
         if ($request->filled('dia')) {
-            $query->where('dia', $request->dia);
+            $query->whereHas('sesiones', fn($q) => $q->where('dia', $request->dia));
         }
 
         if ($request->filled('estado')) {
@@ -60,9 +60,9 @@ class ClaseController extends Controller
         }
 
         $clases = $query
+            ->with('sesiones') // Eager load sesiones para ordenar
             ->orderBy('period_id')
-            ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
-            ->orderBy('hora_inicio')
+            ->orderBy('course_id')
             ->paginate(12)
             ->appends($request->query());
 
@@ -82,36 +82,47 @@ class ClaseController extends Controller
 
     public function create()
     {
-        $courses = Course::with('magister', 'period')->get();
-        $agrupados = [];
-        foreach ($courses as $course) {
-            $agrupados[$course->magister->nombre][] = [
-                'id' => $course->id,
-                'nombre' => $course->nombre,
-                'period_id' => $course->period_id,
-                'periodo' => $course->period?->nombre_completo ?? 'Sin período',
-                'anio' => $course->period?->anio ?? null,
-                'numero' => $course->period?->numero ?? null,
-            ];
-        }
+        [$agrupados, $courses, $rooms, $periods] = $this->referencias();
 
         return view('clases.create', [
             'agrupados' => $agrupados,
-            'rooms' => Room::orderBy('name')->get(),
-            'periods' => Period::orderBy('anio', 'desc')->orderBy('numero')->get(),
-            'anios' => Period::distinct()->orderByDesc('anio')->pluck('anio'),
-            'trimestres' => Period::distinct()->orderBy('numero')->pluck('numero'),
-            'tipos' => ['cátedra', 'taller', 'laboratorio', 'ayudantía'],
-            'action' => route('clases.store'),
-            'method' => 'POST',
-            'submitText' => '💾 Crear Clase',
+            'rooms' => $rooms,
+            'periods' => $periods,
         ]);
     }
 
     public function store(StoreClaseRequest $request)
     {
-        Clase::create($request->validated());
-        return redirect()->route('clases.index')->with('success', 'Clase creada correctamente.');
+        $validated = $request->validated();
+        
+        // Crear la clase (módulo)
+        $clase = Clase::create([
+            'course_id' => $validated['course_id'],
+            'period_id' => $validated['period_id'],
+            'room_id' => $validated['room_id'] ?? null,
+            'url_zoom' => $validated['url_zoom'] ?? null,
+            'encargado' => $validated['encargado'],
+        ]);
+
+        // Crear las sesiones
+        foreach ($validated['sesiones'] as $sesionData) {
+            // Usar room_id de la sesión o el global si no está definido
+            if (empty($sesionData['room_id'])) {
+                $sesionData['room_id'] = $validated['room_id'] ?? null;
+            }
+            
+            // Usar url_zoom de la sesión o el global si no está definido
+            if (empty($sesionData['url_zoom'])) {
+                $sesionData['url_zoom'] = $validated['url_zoom'] ?? null;
+            }
+            
+            // Agregar estado por defecto
+            $sesionData['estado'] = $sesionData['estado'] ?? 'pendiente';
+            
+            $clase->sesiones()->create($sesionData);
+        }
+
+        return redirect()->route('clases.show', $clase)->with('success', 'Clase y sesiones creadas correctamente.');
     }
 
     public function edit(Clase $clase)
@@ -124,16 +135,18 @@ class ClaseController extends Controller
             'courses' => $courses,
             'rooms' => $rooms,
             'periods' => $periods,
-            'anios' => Period::distinct()->orderByDesc('anio')->pluck('anio'),
-            'trimestres' => Period::distinct()->orderBy('numero')->pluck('numero'),
-            'tipos' => ['cátedra', 'taller', 'laboratorio', 'ayudantía'],
         ]);
     }
 
     public function update(UpdateClaseRequest $request, Clase $clase)
     {
-        $clase->update($request->validated());
-        return redirect()->route('clases.index')->with('success', 'Clase actualizada correctamente.');
+        $validated = $request->validated();
+        
+        // Actualizar solo los datos generales de la clase (módulo)
+        $clase->update($validated);
+        
+        // Las sesiones se editan desde el show.blade.php individualmente
+        return redirect()->route('clases.show', $clase)->with('success', 'Clase actualizada correctamente.');
     }
 
     public function destroy(Clase $clase)
@@ -177,41 +190,42 @@ class ClaseController extends Controller
         $horaInicio = $request->query('hora_inicio');
         $horaFin = $request->query('hora_fin');
         $modality = $request->query('modality');
-        $excludeId = $request->query('exclude_id');
+        $excludeSesionId = $request->query('exclude_sesion_id');
 
         // Si es online, siempre disponible
         if ($modality === 'online') {
             return response()->json(['available' => true, 'conflicts' => []]);
         }
 
-        if (!$periodId || !$dia || !$horaInicio || !$horaFin || !$roomId) {
+        if (!$dia || !$horaInicio || !$horaFin || !$roomId) {
             return response()->json(['available' => true, 'conflicts' => []]);
         }
 
-        $conflicts = Clase::with(['course.magister', 'room'])
-            ->where('period_id', $periodId)
+        // Buscar conflictos en ClaseSesion
+        $conflicts = \App\Models\ClaseSesion::with(['clase.course.magister', 'room'])
             ->where('room_id', $roomId)
             ->where('dia', $dia)
-            ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
+            ->when($excludeSesionId, fn ($q) => $q->where('id', '!=', $excludeSesionId))
             ->where(function ($q) use ($horaInicio, $horaFin) {
-                // Solapamiento de rangos de tiempo
-                $q->whereBetween('hora_inicio', [$horaInicio, $horaFin])
-                  ->orWhereBetween('hora_fin', [$horaInicio, $horaFin])
-                  ->orWhere(function ($qq) use ($horaInicio, $horaFin) {
-                      $qq->where('hora_inicio', '<=', $horaInicio)
-                         ->where('hora_fin', '>=', $horaFin);
-                  });
+                // Solapamiento de rangos de tiempo: (A.inicio < B.fin) AND (A.fin > B.inicio)
+                $q->where('hora_inicio', '<', $horaFin)
+                  ->where('hora_fin', '>', $horaInicio);
             })
             ->get()
-            ->map(function ($c) {
+            ->map(function ($sesion) {
+                $clase = $sesion->clase;
                 return [
-                    'id' => $c->id,
-                    'programa' => optional($c->course->magister)->nombre,
-                    'curso' => $c->course->nombre ?? 'Curso',
-                    'dia' => $c->dia,
-                    'hora_inicio' => $c->hora_inicio,
-                    'hora_fin' => $c->hora_fin,
-                    'sala' => $c->room->name ?? '-',
+                    'id' => $sesion->id,
+                    'clase_id' => $clase->id,
+                    'programa' => optional($clase->course->magister)->nombre ?? 'Sin programa',
+                    'course_nombre' => $clase->course->nombre ?? 'Sin asignatura',
+                    'encargado' => $clase->encargado ?? 'Sin encargado',
+                    'dia' => $sesion->dia,
+                    'fecha' => $sesion->fecha,
+                    'hora_inicio' => substr($sesion->hora_inicio, 0, 5), // HH:MM
+                    'hora_fin' => substr($sesion->hora_fin, 0, 5), // HH:MM
+                    'modalidad' => $sesion->modalidad,
+                    'sala' => $sesion->room->name ?? 'Sin sala',
                 ];
             })
             ->values();
@@ -248,9 +262,8 @@ class ClaseController extends Controller
             return response()->json(['slots' => []]);
         }
 
-        // Traer clases existentes de ese día/periodo/sala
-        $ocupadas = Clase::where('period_id', $periodId)
-            ->where('room_id', $roomId)
+        // Traer sesiones existentes de ese día/sala
+        $ocupadas = \App\Models\ClaseSesion::where('room_id', $roomId)
             ->where('dia', $dia)
             ->when($excludeId, fn ($q) => $q->where('id', '!=', $excludeId))
             ->orderBy('hora_inicio')
@@ -289,18 +302,67 @@ class ClaseController extends Controller
         return ($h2 * 60 + $m2) - ($h1 * 60 + $m1);
     }
 
+    // Sugerir salas alternativas disponibles
+    public function salasDisponibles(Request $request)
+    {
+        $dia = $request->query('dia');
+        $horaInicio = $request->query('hora_inicio');
+        $horaFin = $request->query('hora_fin');
+        $modalidad = $request->query('modalidad');
+
+        if (!$dia || !$horaInicio || !$horaFin) {
+            return response()->json(['salas' => []]);
+        }
+
+        // Si es online, no necesita sala
+        if ($modalidad === 'online') {
+            return response()->json(['salas' => []]);
+        }
+
+        // Obtener todas las salas
+        $todasLasSalas = Room::orderBy('name')->get();
+
+        // Obtener salas ocupadas en ese horario/día
+        $salasOcupadas = \App\Models\ClaseSesion::where('dia', $dia)
+            ->where(function ($q) use ($horaInicio, $horaFin) {
+                $q->where('hora_inicio', '<', $horaFin)
+                  ->where('hora_fin', '>', $horaInicio);
+            })
+            ->pluck('room_id')
+            ->unique()
+            ->toArray();
+
+        // Filtrar salas disponibles
+        $salasDisponibles = $todasLasSalas->filter(function ($sala) use ($salasOcupadas) {
+            return !in_array($sala->id, $salasOcupadas);
+        })->map(function ($sala) {
+            return [
+                'id' => $sala->id,
+                'name' => $sala->name,
+                'location' => $sala->location ?? 'Sin ubicación',
+                'capacity' => $sala->capacity ?? 0,
+            ];
+        })->values();
+
+        return response()->json(['salas' => $salasDisponibles]);
+    }
+
     private function referencias()
     {
         $courses = Course::with('magister', 'period')->get();
+        
+        // Convertir cursos a arrays con las propiedades que espera el JavaScript
         $agrupados = $courses->groupBy(fn ($c) => $c->magister->nombre ?? 'Sin Magíster')
-            ->map(fn ($group) => $group->map(fn ($c) => [
-                'id' => $c->id,
-                'nombre' => $c->nombre,
-                'period_id' => $c->period_id,
-                'periodo' => $c->period?->nombre_completo ?? 'Sin periodo',
-                'anio' => $c->period?->anio ?? null,
-                'numero' => $c->period?->numero ?? null,
-            ])->values());
+            ->map(fn ($group) => $group->map(function ($curso) {
+                return [
+                    'id' => $curso->id,
+                    'nombre' => $curso->nombre,
+                    'period_id' => $curso->period_id,
+                    'periodo' => $curso->period ? "{$curso->period->anio} - Trimestre {$curso->period->numero}" : '',
+                    'numero' => $curso->period->numero ?? '',
+                    'anio' => $curso->period->anio ?? '',
+                ];
+            })->values());
 
         return [$agrupados, $courses, Room::orderBy('name')->get(), Period::orderByDesc('anio')->orderBy('numero')->get()];
     }

@@ -23,8 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Lupa: base para /clases/{id}
   const showBase = document.querySelector('meta[name="clases-show-base"]')?.content || null;
-  // ids de clases: "clase-<ID>-YYYYMMDD"
+  // ids de clases: "clase-<ID>-sesion-<ID>" o "clase-<ID>-YYYYMMDD" (legacy)
   const getClaseIdFromEventId = (id) => {
+    // Nuevo formato: "clase-123-sesion-456" o "sesion-456"
+    // Antiguo formato: "clase-123-20250101"
     const m = String(id).match(/^clase-(\d+)-/);
     return m ? m[1] : null;
   };

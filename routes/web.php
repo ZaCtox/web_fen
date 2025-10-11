@@ -55,6 +55,10 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:administrador,asistente_programa,director_administrativo')
         ->name('salas.horarios');
 
+    Route::get('/salas/disponibles', [ClaseController::class, 'salasDisponibles'])
+        ->middleware('role:administrador,asistente_programa,director_administrativo')
+        ->name('salas.disponibles');
+
     // 📝 Sesiones de Clase
     Route::post('/clases/{clase}/sesiones', [App\Http\Controllers\ClaseSesionController::class, 'store'])
         ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
@@ -156,6 +160,7 @@ Route::middleware(['auth'])->group(function () {
 
     // 📚 Mallas Curriculares
     Route::resource('mallas-curriculares', App\Http\Controllers\MallaCurricularController::class)
+        ->parameters(['mallas-curriculares' => 'mallaCurricular'])
         ->middleware('role:administrador,director_programa,director_administrativo');
     
     Route::post('/mallas-curriculares/{mallaCurricular}/toggle-estado', [App\Http\Controllers\MallaCurricularController::class, 'toggleEstado'])

@@ -15,9 +15,16 @@ class ClaseSesion extends Model
     protected $fillable = [
         'clase_id',
         'fecha',
+        'dia',
+        'hora_inicio',
+        'hora_fin',
+        'modalidad',
+        'room_id',
+        'url_zoom',
         'url_grabacion',
         'estado',
-        'observaciones'
+        'observaciones',
+        'numero_sesion',
     ];
 
     protected $casts = [
@@ -25,11 +32,19 @@ class ClaseSesion extends Model
     ];
 
     /**
-     * Relación con la clase (plantilla)
+     * Relación con la clase (módulo)
      */
     public function clase()
     {
         return $this->belongsTo(Clase::class);
+    }
+
+    /**
+     * Relación con la sala
+     */
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
     }
 
     /**

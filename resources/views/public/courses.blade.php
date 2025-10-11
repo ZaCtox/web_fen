@@ -10,6 +10,38 @@
     <div class="py-6 max-w-7xl mx-auto px-4" x-data="{
         expandedMagisters: {}
     }">
+        {{-- Selector de Cohorte --}}
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div class="flex-1">
+                    <form method="GET" action="{{ route('public.courses.index') }}">
+                        <label for="cohorte" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
+                            Ciclo Académico:
+                        </label>
+                        <select name="cohorte" 
+                                id="cohorte"
+                                onchange="this.form.submit()"
+                                class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                            @foreach($cohortes as $cohorte)
+                                <option value="{{ $cohorte }}" {{ $cohorteSeleccionada == $cohorte ? 'selected' : '' }}>
+                                    {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Indicador de cohorte --}}
+            @if($cohorteSeleccionada != $cohortes->first())
+                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <p class="text-sm text-yellow-800 dark:text-yellow-300">
+                        ⚠️ Estás visualizando cursos de la cohorte <strong>{{ $cohorteSeleccionada }}</strong> (período pasado).
+                    </p>
+                </div>
+            @endif
+        </div>
+
         <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg shadow p-6 border border-[#c4dafa]">
 
             @php

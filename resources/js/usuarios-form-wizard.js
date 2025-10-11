@@ -1,45 +1,34 @@
 // JavaScript para el formulario wizard de Usuarios
 // Ley de Hick-Hyman: Navegación por pasos del formulario
 let currentStep = 1;
-let totalSteps = 4; // Se ajustará dinámicamente según si es edición o registro
+let totalSteps = 3; // Se ajustará dinámicamente según si es edición o registro
 
 document.addEventListener('DOMContentLoaded', function() {
-    const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step');
-    const progressBar = document.getElementById('progress-bar');
-    const progressPercentage = document.getElementById('progress-percentage');
-    const currentStepText = document.getElementById('current-step');
+    // Solo buscar errores de validación de Laravel, no errores de UI
+    const laravelErrors = document.querySelector('.hci-form-section .hci-field-error');
+    if (laravelErrors) {
+        const errorSection = laravelErrors.closest('.hci-form-section');
+        if (errorSection && errorSection.dataset.step) {
+            const errorStep = parseInt(errorSection.dataset.step) || 1;
+            currentStep = errorStep;
+        }
+    }
     
     // Detectar si estamos en modo edición
     const isEditing = document.querySelector('form').action.includes('usuarios/');
-    totalSteps = isEditing ? 3 : 4;
+    totalSteps = isEditing ? 2 : 3;
     
-    // En modo edición, desactivar el paso 3 en el progreso lateral
+    // En modo edición, ocultar el paso 3
     if (isEditing) {
         const step3Element = document.querySelector('[data-step="3"]');
         if (step3Element) {
-            step3Element.style.opacity = '0.5';
-            step3Element.style.pointerEvents = 'none';
-            step3Element.style.cursor = 'not-allowed';
-            
-            // Agregar mensaje de que no hay cambios
-            const step3Content = step3Element.querySelector('.hci-progress-step-content-vertical');
-            if (step3Content) {
-                const originalTitle = step3Content.querySelector('.hci-progress-step-title');
-                if (originalTitle) {
-                    originalTitle.textContent = 'Sin cambios (Edición)';
-                }
-                const originalDesc = step3Content.querySelector('.hci-progress-step-desc');
-                if (originalDesc) {
-                    originalDesc.textContent = 'No aplica en edición';
-                }
-            }
+            step3Element.style.display = 'none';
         }
     }
     
     // Inicializar formulario
-    showStep(1);
-    updateProgress(1);
+    showStep(currentStep);
+    updateProgress(currentStep);
     
     // Validación en tiempo real
     const inputs = document.querySelectorAll('.hci-input, .hci-select, .hci-textarea');
@@ -77,13 +66,6 @@ window.nextStep = function() {
 window.prevStep = function() {
     if (currentStep > 1) {
         currentStep--;
-        
-        // En modo edición, si estamos en el resumen (paso 4), ir al paso 2 (contacto)
-        const isEditing = document.querySelector('form').action.includes('usuarios/');
-        if (isEditing && currentStep === 3) {
-            currentStep = 2; // Saltar el paso 3 y ir al paso 2
-        }
-        
         showStep(currentStep);
         updateProgress(currentStep);
     }
@@ -93,12 +75,8 @@ window.prevStep = function() {
 window.navigateToStep = function(step) {
     const isEditing = document.querySelector('form').action.includes('usuarios/');
     
-    // En modo edición, si se intenta ir al paso 3, ir al paso 4 (resumen)
+    // En modo edición, no permitir navegar al paso 3 (no existe)
     if (isEditing && step === 3) {
-        showStepNotification('En modo edición, el paso 3 no es necesario. Redirigiendo al resumen...');
-        setTimeout(() => {
-            navigateToStep(4);
-        }, 1000);
         return;
     }
     
@@ -119,20 +97,8 @@ window.cancelForm = function() {
 }
 
 function showStep(step) {
-    const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
-    
-    // Detectar si estamos en modo edición
-    const isEditing = document.querySelector('form').action.includes('usuarios/');
-    
-    // En modo edición, si se intenta ir al paso 3, redirigir al paso 4 y mostrar notificación
-    if (isEditing && step === 3) {
-        showStep(4); // Ir al resumen
-        showStepNotification('Este paso no es necesario en modo edición. Se ha redirigido al resumen.');
-        return;
-    }
-    
     // Ocultar todas las secciones
+    const sections = document.querySelectorAll('.hci-form-section');
     sections.forEach(section => {
         section.classList.remove('active');
     });
@@ -146,16 +112,15 @@ function showStep(step) {
         console.warn(`No se encontró la sección para el paso ${step}: ${getSectionId(step)}`);
     }
     
-    // Actualizar pasos del progreso vertical
-    progressSteps.forEach((progressStep, index) => {
-        if (index + 1 <= step) {
-            progressStep.classList.add('completed');
-            progressStep.classList.add('active');
-        } else {
-            progressStep.classList.remove('completed');
-            progressStep.classList.remove('active');
-        }
-    });
+    // Usar el helper global para actualizar el progreso visual
+    if (window.updateWizardProgressSteps) {
+        window.updateWizardProgressSteps(step);
+    }
+    
+    // Si estamos en el paso del resumen, actualizar el contenido
+    if (getSectionId(step) === 'resumen') {
+        updateSummary();
+    }
 }
 
 function updateProgress(step) {
@@ -168,6 +133,15 @@ function updateProgress(step) {
     if (progressBar) progressBar.style.height = percentage + '%';
     if (progressPercentage) progressPercentage.textContent = Math.round(percentage) + '%';
     if (currentStepText) currentStepText.textContent = `Paso ${step} de ${totalSteps}`;
+    
+    // Controlar visibilidad de botones
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (prevBtn) prevBtn.style.display = step > 1 ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = step < totalSteps ? 'flex' : 'none';
+    if (submitBtn) submitBtn.style.display = step === totalSteps ? 'flex' : 'none';
 }
 
 function getSectionId(step) {
@@ -175,13 +149,12 @@ function getSectionId(step) {
     const isEditing = document.querySelector('form').action.includes('usuarios/');
     
     if (isEditing) {
-        // En edición: personal, contacto, resumen (3 pasos)
-        // Paso 1: personal, Paso 2: contacto, Paso 3: resumen
-        const sectionIds = ['personal', 'contacto', 'resumen'];
+        // En edición: personal (con rol incluido), resumen (2 pasos)
+        const sectionIds = ['personal', 'resumen'];
         return sectionIds[step - 1];
     } else {
-        // En registro: personal, contacto, adicional, resumen (4 pasos)
-        const sectionIds = ['personal', 'contacto', 'adicional', 'resumen'];
+        // En registro: personal (con rol incluido), notificacion, resumen (3 pasos)
+        const sectionIds = ['personal', 'notificacion', 'resumen'];
         return sectionIds[step - 1];
     }
 }
@@ -305,9 +278,22 @@ function updateSummary() {
 
 // Función para enviar el formulario
 window.submitForm = function() {
-    // Validar el paso actual antes de enviar
     if (validateCurrentStep()) {
-        // Enviar el formulario
+        // Mostrar overlay de loading global
+        if (!document.getElementById('form-loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'form-loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-overlay-content">
+                    <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                    <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        // Submit del formulario
         document.querySelector('.hci-form').submit();
     }
 }

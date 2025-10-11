@@ -22,7 +22,7 @@
                     <form method="GET" action="{{ route('courses.index') }}" class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
                         <div class="w-full sm:w-auto">
                             <label for="cohorte" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                                📅 Cohorte:
+                                Ciclo Académico:
                             </label>
                             <select name="cohorte" 
                                     id="cohorte"
@@ -40,16 +40,10 @@
 
                 {{-- Botones de Acción --}}
                 <div class="flex gap-3">
-                    <a href="{{ route('mallas-curriculares.index') }}"
-                        class="inline-flex items-center gap-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
-                        <img src="{{ asset('icons/searchw.svg') }}" alt="Mallas" class="w-5 h-5">
-                        <span>Mallas Curriculares</span>
-                    </a>
-                    
                     <a href="{{ route('magisters.index') }}"
                         class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
                         <img src="{{ asset('icons/searchw.svg') }}" alt="Programas" class="w-5 h-5">
-                        <span>Detalles de Programas</span>
+                        <span>Ver Programas</span>
                     </a>
                 </div>
             </div>
@@ -58,7 +52,7 @@
             @if($cohorteSeleccionada != $cohortes->first())
                 <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                     <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                        ⚠️ Mostrando cursos de la ciclo <strong>{{ $cohorteSeleccionada }}</strong> (Periodo Pasado)
+                        ⚠️ Mostrando cursos de la cohorte <strong>{{ $cohorteSeleccionada }}</strong> (Periodo Pasado)
                     </p>
                 </div>
             @endif
@@ -82,7 +76,7 @@
                             {{-- Botón añadir curso --}}
                             <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
                                 class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-3 py-2 rounded-lg shadow transition transform hover:scale-105">
-                                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-3 h-3">
+                                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
                             </a>
                             <span class="text-sm text-[#4d82bc] flex items-center">
                                 <svg class="ml-2 w-5 h-5 transition-transform" fill="none" stroke="currentColor"
@@ -117,7 +111,6 @@
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
                                                     <th class="px-4 py-2 text-left">Curso</th>
-                                                    <th class="px-4 py-2 text-left">Malla</th>
                                                     <th class="px-4 py-2 text-right w-32">Acciones</th>
                                                 </tr>
                                             </thead>
@@ -130,16 +123,6 @@
                                                                                    transition-all duration-200 group cursor-pointer">
                                                         <td class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
                                                             {{ $course->nombre }}
-                                                        </td>
-                                                        <td class="px-4 py-2">
-                                                            @if($course->mallaCurricular)
-                                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300"
-                                                                      title="{{ $course->mallaCurricular->descripcion }}">
-                                                                    {{ $course->mallaCurricular->codigo }}
-                                                                </span>
-                                                            @else
-                                                                <span class="text-xs text-gray-400 dark:text-gray-500">Sin malla</span>
-                                                            @endif
                                                         </td>
                                                         <td class="px-3 py-2 text-right">
                                                             <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">

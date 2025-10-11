@@ -5,49 +5,17 @@
     $editing = isset($novedad);
 @endphp
 
-{{-- Contenedor principal con principios HCI --}}
-<div class="hci-container">
-    <div class="hci-section">
-        <h1 class="hci-heading-1 flex items-center">
-            @if($editing)
-                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                </svg>
-                Editar Novedad
-            @else
-                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-                </svg>
-                Nueva Novedad
-            @endif
-        </h1>
-        <p class="hci-text">
-            {{ $editing ? 'Modifica la información de la novedad.' : 'Registra una nueva novedad con información organizada.' }}
-        </p>
-    </div>
-
-    {{-- Layout principal con progreso lateral --}}
-    <div class="hci-wizard-layout">
-        {{-- Barra de progreso lateral izquierda --}}
-        <x-novedades-progress-sidebar />
-
-        {{-- Contenido principal del formulario --}}
-        <div class="hci-form-content">
-            {{-- Mostrar errores de validación --}}
-            @if ($errors->any())
-                <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
-                    <h4 class="text-red-800 font-medium mb-2">Por favor corrige los siguientes errores:</h4>
-                    <ul class="text-red-700 text-sm space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>• {{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form class="hci-form" method="POST" action="{{ $editing ? route('novedades.update', $novedad) : route('novedades.store') }}" enctype="multipart/form-data">
-                @csrf
-                @if($editing) @method('PUT') @endif
+{{-- Layout genérico del wizard --}}
+<x-hci-wizard-layout 
+    title="Novedad"
+    :editing="$editing"
+    createDescription="Registra una nueva novedad con información organizada."
+    editDescription="Modifica la información de la novedad."
+    sidebarComponent="novedades-progress-sidebar"
+    :formAction="$editing ? route('novedades.update', $novedad) : route('novedades.store')"
+    :formMethod="$editing ? 'PUT' : 'POST'"
+    formEnctype="multipart/form-data"
+>
 
                 {{-- Sección 1: Información Básica --}}
                 <x-hci-form-section 
@@ -297,18 +265,7 @@
                         </div>
                     </div>
                 </x-hci-form-section>
-            </form>
-        </div>
-    </div>
-</div>
-
-{{-- FAB para ayuda (Ley de Fitts) --}}
-<x-hci-button 
-    fab="true" 
-    icon="❓"
-    href="#"
-    aria-label="Ayuda con el formulario"
-/>
+</x-hci-wizard-layout>
 
 {{-- Incluir JavaScript del wizard --}}
 @push('scripts')

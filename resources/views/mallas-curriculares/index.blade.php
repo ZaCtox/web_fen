@@ -109,115 +109,95 @@
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-[#c4dafa] dark:bg-gray-700">
                         <tr>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
                                 Código
                             </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
                                 Nombre
                             </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
                                 Programa
                             </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
-                                Vigencia
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
-                                Cursos
-                            </th>
-                            <th
-                                class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
                                 Estado
                             </th>
-                            <th
-                                class="px-6 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                                Cursos
+                            </th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
                                 Acciones
                             </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         @foreach($mallas as $malla)
-                            <tr class="hover:bg-[#e3f2fd] dark:hover:bg-gray-700 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm font-mono font-semibold text-[#005187] dark:text-[#84b6f4]">
+                            <tr class="border-b border-[#c4dafa]/60 dark:border-gray-600 
+                                       hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                       hover:border-l-4 hover:border-l-[#4d82bc]
+                                       hover:-translate-y-0.5 hover:shadow-md
+                                       transition-all duration-200 group cursor-pointer"
+                                onclick="window.location='{{ route('mallas-curriculares.show', $malla) }}'">
+                                
+                                {{-- Código --}}
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    <span class="text-sm font-mono font-semibold text-[#005187] dark:text-[#84b6f4] group-hover:text-[#4d82bc] transition-colors duration-200">
                                         {{ $malla->codigo }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                
+                                {{-- Nombre --}}
+                                <td class="px-4 py-3">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
                                         {{ $malla->nombre }}
                                     </div>
                                     @if($malla->descripcion)
                                         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                            {{ Str::limit($malla->descripcion, 60) }}
+                                            {{ Str::limit($malla->descripcion, 50) }}
                                         </div>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                
+                                {{-- Programa --}}
+                                <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
                                         <span class="w-3 h-3 rounded-full"
-                                            style="background-color: {{ $malla->magister->color ?? '#6b7280' }}"></span>
-                                        <span class="text-sm text-gray-900 dark:text-white">
-                                            {{ $malla->magister->nombre }}
+                                            style="background-color: {{ $malla->magister ? $malla->magister->color : '#6b7280' }}"></span>
+                                        <span class="text-sm text-gray-900 dark:text-white group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
+                                            {{ $malla->magister ? $malla->magister->nombre : 'Sin programa' }}
                                         </span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-gray-900 dark:text-white">
-                                        {{ $malla->periodo_vigencia }}
-                                    </span>
+                                
+                                {{-- Estado --}}
+                                <td class="px-4 py-3 whitespace-nowrap">
+                                    {!! $malla->estado_badge !!}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <span
-                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                
+                                {{-- Cursos --}}
+                                <td class="px-4 py-3 whitespace-nowrap text-center">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
                                         {{ $malla->courses_count }} curso{{ $malla->courses_count != 1 ? 's' : '' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    {!! $malla->estado_badge !!}
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center gap-2">
-                                        {{-- Ver --}}
-                                        <a href="{{ route('mallas-curriculares.show', $malla) }}"
-                                            class="inline-flex items-center justify-center w-10 h-10 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                                            title="Ver detalle">
-                                            <img src="{{ asset('icons/verw.svg') }}" alt="Ver" class="w-5 h-5">
-                                        </a>
-
+                                
+                                {{-- Acciones --}}
+                                <td class="px-4 py-3 whitespace-nowrap text-center">
+                                    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
                                         {{-- Editar --}}
                                         <a href="{{ route('mallas-curriculares.edit', $malla) }}"
-                                            class="inline-flex items-center justify-center w-10 h-10 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                                            class="inline-flex items-center justify-center w-8 h-8 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                                             title="Editar">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
 
                                         {{-- Activar/Desactivar --}}
-                                        <form action="{{ route('mallas-curriculares.toggle-estado', $malla) }}" method="POST"
-                                            class="inline">
+                                        <form action="{{ route('mallas-curriculares.toggle-estado', $malla) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit"
-                                                class="inline-flex items-center justify-center w-10 h-10 {{ $malla->activa ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600' }} text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                                class="inline-flex items-center justify-center w-8 h-8 {{ $malla->activa ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600' }} text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
                                                 title="{{ $malla->activa ? 'Desactivar' : 'Activar' }}">
                                                 <img src="{{ asset($malla->activa ? 'icons/desactivarw.svg' : 'icons/activarw.svg') }}"
-                                                    alt="{{ $malla->activa ? 'Desactivar' : 'Activar' }}" class="w-5 h-5">
-                                            </button>
-                                        </form>
-
-                                        {{-- Eliminar --}}
-                                        <form action="{{ route('mallas-curriculares.destroy', $malla) }}" method="POST"
-                                            class="inline form-eliminar"
-                                            data-confirm="¿Eliminar la malla curricular '{{ $malla->nombre }}'?">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="inline-flex items-center justify-center w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                                                title="Eliminar">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
+                                                    alt="{{ $malla->activa ? 'Desactivar' : 'Activar' }}" class="w-4 h-4">
                                             </button>
                                         </form>
                                     </div>

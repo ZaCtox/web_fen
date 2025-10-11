@@ -9,59 +9,152 @@ use App\Models\Period;
 use App\Models\Course;
 use App\Models\Magister;
 use App\Models\Clase;
+use App\Models\ClaseSesion;
+use App\Models\User;
 
 class ClaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $periodos = Period::pluck('id')->toArray();
-        $salas = Room::pluck('id')->toArray();
+        // Obtener datos necesarios
+        $magisterSalud = Magister::where('nombre', 'Gestión de Sistemas de Salud')->first();
+        $periodo = Period::where('cohorte', '2025-2026')->where('anio', 1)->where('numero', 1)->first();
+        $salaFEN1 = Room::where('name', 'Sala FEN 1')->first();
 
-        $bloques = [
-            'Viernes' => [
-                ['15:00:00', '16:30:00'],
-                ['17:00:00', '18:30:00'],
-            ],
-            'Sábado' => [
-                ['08:30:00', '10:00:00'],
-                ['10:15:00', '11:45:00'],
-                ['12:00:00', '13:30:00'],
-            ]
+        if (!$magisterSalud || !$periodo || !$salaFEN1) {
+            $this->command->warn('⚠️ Faltan datos necesarios (Magíster, Período o Sala).');
+            return;
+        }
+
+        // Crear usuarios docentes
+        $docentes = [
+            'Margarita Pereira' => User::firstOrCreate(
+                ['email' => 'mpereira@utalca.cl'],
+                ['name' => 'Margarita Pereira', 'password' => bcrypt('docente123'), 'rol' => 'docente']
+            ),
+            'Andrés Riquelme' => User::firstOrCreate(
+                ['email' => 'ariquelme@utalca.cl'],
+                ['name' => 'Andrés Riquelme', 'password' => bcrypt('docente123'), 'rol' => 'docente']
+            ),
+            'Milton Inostroza' => User::firstOrCreate(
+                ['email' => 'minostroza@utalca.cl'],
+                ['name' => 'Milton Inostroza', 'password' => bcrypt('docente123'), 'rol' => 'docente']
+            ),
+            'Sandra Alvear' => User::firstOrCreate(
+                ['email' => 'salvear@utalca.cl'],
+                ['name' => 'Sandra Alvear', 'password' => bcrypt('docente123'), 'rol' => 'docente']
+            ),
         ];
 
-        $modalidades = ['presencial', 'online', 'híbrida'];
-        $tipos = ['cátedra', 'taller', 'laboratorio', 'ayudantía'];
-        $total = 0;
+        // URL de Zoom compartida
+        $zoomUrl = 'https://reuna.zoom.us/j/82980173545';
+        $zoomInfo = 'ID: 829 8017 3545 | Código: 712683';
 
-        foreach (Magister::with('courses')->get() as $magister) {
-            $cursos = $magister->courses->filter(fn($c) => $c->period_id !== null);
+        $modulos = [
+            // MÓDULO 1: HABILIDADES DE APRENDIZAJE
+            [
+                'nombre' => 'Taller 1 – Habilidades de Aprendizaje: Presentación Efectiva, Trabajo en Equipo, Metodología de Casos',
+                'responsable' => 'Margarita Pereira',
+                'sesiones' => [
+                    ['fecha' => '2025-10-03', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-10-04', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '16:30:00'],
+                    ['fecha' => '2025-10-10', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-10-11', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '16:30:00'],
+                ],
+            ],
+            // MÓDULO 2: ECONOMÍA
+            [
+                'nombre' => 'Economía',
+                'responsable' => 'Andrés Riquelme',
+                'sesiones' => [
+                    ['fecha' => '2025-10-17', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-10-18', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '16:30:00'],
+                    ['fecha' => '2025-10-24', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-10-25', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '16:30:00'],
+                    ['fecha' => '2025-11-07', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                ],
+            ],
+            // MÓDULO 3: ADMINISTRACIÓN
+            [
+                'nombre' => 'Administración',
+                'responsable' => 'Milton Inostroza',
+                'sesiones' => [
+                    ['fecha' => '2025-11-08', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '13:30:00'],
+                    ['fecha' => '2025-11-14', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-11-15', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '16:30:00'],
+                    ['fecha' => '2025-11-21', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-11-22', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '13:30:00'],
+                ],
+            ],
+            // MÓDULO 4: CONTABILIDAD
+            [
+                'nombre' => 'Contabilidad',
+                'responsable' => 'Sandra Alvear',
+                'sesiones' => [
+                    ['fecha' => '2025-11-28', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-11-29', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '16:30:00'],
+                    ['fecha' => '2025-12-05', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                    ['fecha' => '2025-12-06', 'dia' => 'Sábado', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '16:30:00'],
+                    ['fecha' => '2025-12-12', 'dia' => 'Viernes', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
+                ],
+            ],
+        ];
 
-            foreach ($cursos as $curso) {
-                foreach (range(1, 2) as $i) {
-                    $dia = array_rand($bloques);
-                    $horario = $bloques[$dia][array_rand($bloques[$dia])];
-                    $modality = $modalidades[array_rand($modalidades)];
-                    $tipo = $tipos[array_rand($tipos)];
+        $totalClases = 0;
+        $totalSesiones = 0;
 
-                    Clase::create([
-                        'course_id' => $curso->id,
-                        'period_id' => $curso->period_id,
-                        'room_id' => $modality === 'online' ? null : $salas[array_rand($salas)],
-                        'modality' => $modality,
-                        'tipo' => $tipo,
-                        'dia' => $dia,
-                        'hora_inicio' => $horario[0],
-                        'hora_fin' => $horario[1],
-                        'url_zoom' => $modality !== 'presencial' ? 'https://us02web.zoom.us/fake' . rand(1, 100) : null,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ]);
+        foreach ($modulos as $modulo) {
+            // Buscar el curso correspondiente
+            $curso = Course::where('nombre', $modulo['nombre'])
+                ->where('magister_id', $magisterSalud->id)
+                ->where('period_id', $periodo->id)
+                ->first();
 
-                    $total++;
-                }
+            if (!$curso) {
+                $this->command->warn("⚠️ Curso no encontrado: {$modulo['nombre']}");
+                continue;
+            }
+
+            $responsable = $docentes[$modulo['responsable']];
+
+            // Crear la clase general
+            $clase = Clase::create([
+                'course_id' => $curso->id,
+                'period_id' => $periodo->id,
+                'room_id' => $salaFEN1->id,
+                'user_id' => $responsable->id,
+                'modality' => 'híbrida', // Modalidad general (mixta)
+                'tipo' => 'cátedra',
+                'dia' => 'Viernes/Sábado',
+                'hora_inicio' => '18:30:00',
+                'hora_fin' => '21:30:00',
+                'url_zoom' => $zoomUrl,
+                'descripcion' => "Viernes: Online vía Zoom | Sábados: Híbrida (FEN 1 + Zoom)\n{$zoomInfo}",
+            ]);
+
+            $totalClases++;
+
+            // Crear las sesiones individuales
+            foreach ($modulo['sesiones'] as $index => $sesion) {
+                ClaseSesion::create([
+                    'clase_id' => $clase->id,
+                    'fecha' => $sesion['fecha'],
+                    'hora_inicio' => $sesion['hora_inicio'],
+                    'hora_fin' => $sesion['hora_fin'],
+                    'modalidad' => $sesion['modalidad'],
+                    'room_id' => $sesion['modalidad'] !== 'online' ? $salaFEN1->id : null,
+                    'url_zoom' => $zoomUrl,
+                    'tema' => $modulo['nombre'],
+                    'descripcion' => $sesion['modalidad'] === 'online' 
+                        ? "Clase online vía Zoom\n{$zoomInfo}" 
+                        : "Clase híbrida: Presencial en FEN 1 + transmisión online\n{$zoomInfo}",
+                    'numero_sesion' => $index + 1,
+                ]);
+
+                $totalSesiones++;
             }
         }
 
-        $this->command->info("✅ Se generaron $total clases en la tabla 'clases' con tipos asignados.");
+        $this->command->info("✅ Se crearon $totalClases clases y $totalSesiones sesiones del 1er Trimestre 2025 - Magíster en Gestión de Sistemas de Salud.");
     }
 }

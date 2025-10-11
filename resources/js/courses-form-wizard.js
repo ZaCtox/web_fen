@@ -10,9 +10,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressPercentage = document.getElementById('progress-percentage');
     const currentStepText = document.getElementById('current-step');
     
+    // Si hay errores de validación (JS o Laravel), ir al primer paso con error
+    const firstErrorSection = document.querySelector('.hci-form-section .hci-field-error, .hci-form-section .text-red-600, .hci-form-section .border-red-500');
+    if (firstErrorSection) {
+        const errorSection = firstErrorSection.closest('.hci-form-section');
+        if (errorSection && errorSection.dataset.step) {
+            const errorStep = parseInt(errorSection.dataset.step) || 1;
+            currentStep = errorStep;
+        }
+    }
+    
     // Inicializar formulario
-    showStep(1);
-    updateProgress(1);
+    showStep(currentStep);
+    updateProgress(currentStep);
     
     // Lógica de períodos (copiada del formulario original)
     const periods = window.PERIODS || [];
@@ -196,16 +206,10 @@ function showStep(step) {
         currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
-    // Actualizar pasos del progreso vertical
-    progressSteps.forEach((progressStep, index) => {
-        if (index + 1 <= step) {
-            progressStep.classList.add('completed');
-            progressStep.classList.add('active');
-        } else {
-            progressStep.classList.remove('completed');
-            progressStep.classList.remove('active');
-        }
-    });
+    // Actualizar estado visual del sidebar (verde=completado, azul=actual, gris=pendiente)
+    if (window.updateWizardProgressSteps) {
+        window.updateWizardProgressSteps(step);
+    }
 }
 
 function updateProgress(step) {
@@ -341,6 +345,20 @@ function updateSummary() {
             // Asegurar que period_id esté actualizado antes de enviar
             if (typeof window.actualizarPeriodId === 'function') {
                 window.actualizarPeriodId();
+            }
+            
+            // Mostrar overlay de loading global
+            if (!document.getElementById('form-loading-overlay')) {
+                const overlay = document.createElement('div');
+                overlay.id = 'form-loading-overlay';
+                overlay.className = 'loading-overlay';
+                overlay.innerHTML = `
+                    <div class="loading-overlay-content">
+                        <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                        <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
             }
             
             // Enviar el formulario

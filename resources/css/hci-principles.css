@@ -475,7 +475,21 @@
 }
 
 .hci-progress-step-vertical.completed .hci-progress-step-circle-vertical {
-    @apply border-[#005187] bg-[#005187] text-white;
+    @apply border-green-500 bg-green-500 text-white;
+}
+
+/* Mostrar checkmark y ocultar número en pasos completados */
+.hci-progress-step-vertical.completed .hci-progress-step-number {
+    @apply hidden;
+}
+
+.hci-progress-step-vertical.completed .hci-progress-step-circle-vertical svg {
+    @apply block w-5 h-5;
+}
+
+/* Ocultar checkmark en pasos no completados */
+.hci-progress-step-vertical:not(.completed) .hci-progress-step-circle-vertical svg {
+    @apply hidden;
 }
 
 .hci-progress-step-content-vertical {

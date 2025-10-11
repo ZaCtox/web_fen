@@ -15,20 +15,20 @@ class MagistersTableSeeder extends Seeder
                 'color' => '#10b981',
                 'orden' => 1,
                 'encargado' => 'Luis Canales',
-                'asistente' => 'Camila González',
-                'telefono' => '+56 71 220 0321',
-                'anexo' => '3321',
-                'correo' => 'cgonzales@utalca.cl'
+                'asistente' => 'Mary Isabel Sepúlveda G.',
+                'telefono' => '+56 712200313',
+                'anexo' => '0313',
+                'correo' => 'msepulveda@utalca.cl'
             ],
             [
                 'nombre' => 'Economía',
                 'color' => '#3b82f6',
                 'orden' => 2,
-                'encargado' => 'Patricio Aroca Gonzalez',
-                'asistente' => 'Juan Parra',
-                'telefono' => '+56 71 220 0312',
-                'anexo' => '3312',
-                'correo' => 'jparra@utalca.cl'
+                'encargado' => 'Pablo Neudörfer, PhD',
+                'asistente' => 'July Basoalto Riveros',
+                'telefono' => '+56 712200312',
+                'anexo' => '0312',
+                'correo' => 'jbasoalto@utalca.cl'
             ],
             [
                 'nombre' => 'Dirección y Planificación Tributaria',
@@ -44,11 +44,11 @@ class MagistersTableSeeder extends Seeder
                 'nombre' => 'Gestión y Políticas Públicas',
                 'color' => '#f97316',
                 'orden' => 4,
-                'encargado' => 'María José Retamal Silva',
-                'asistente' => 'July Basoalto',
-                'telefono' => '+56 71 220 0312',
-                'anexo' => '3312',
-                'correo' => 'jbasoalto@utalca.cl'
+                'encargado' => 'Dr. Jorge Navarrete',
+                'asistente' => 'Mary Isabel Sepúlveda G.',
+                'telefono' => '+56 712200313',
+                'anexo' => '0313',
+                'correo' => 'msepulveda@utalca.cl'
             ]
         ];
 

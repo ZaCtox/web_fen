@@ -53,12 +53,37 @@
             },
         }">
 
+        {{-- Botones superiores (WCAG 2.1 AA: 44x44px mínimo) --}}
+        <div class="mb-6 flex justify-between items-center">
+            <a href="{{ route('clases.create') }}"
+               class="inline-flex items-center justify-center w-11 h-11 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+               title="Nueva Clase"
+               aria-label="Crear nueva clase">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="Nueva clase" class="w-6 h-6">
+            </a>
+
+            <form method="GET" action="{{ route('clases.exportar') }}">
+                <input type="hidden" name="cohorte" :value="cohorte">
+                <input type="hidden" name="magister" :value="magister">
+                <input type="hidden" name="room_id" :value="sala">
+                <input type="hidden" name="dia" :value="dia">
+                <input type="hidden" name="anio" :value="anio">
+                <input type="hidden" name="trimestre" :value="trimestre">
+                <button type="submit"
+                    class="inline-flex items-center justify-center w-11 h-11 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    title="Exportar a Excel"
+                    aria-label="Descargar datos en Excel">
+                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-6 h-6">
+                </button>
+            </form>
+        </div>
+
         {{-- 🔹 Selector de ciclo --}}
         <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div class="flex-1">
                     <label for="cohorte-select" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                        📅 Cohorte:
+                        Ciclo Académico:
                     </label>
                     <select x-model="cohorte" 
                             @change="actualizarURL()"
@@ -72,28 +97,6 @@
                     </select>
                 </div>
 
-                <div class="flex gap-3">
-                    <a href="{{ route('clases.create') }}"
-                       class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
-                        <img src="{{ asset('icons/agregar.svg') }}" alt="Nueva clase" class="w-5 h-5">
-                        Nueva Clase
-                    </a>
-
-                    <form method="GET" action="{{ route('clases.exportar') }}">
-                        <input type="hidden" name="ciclo" :value="ciclo">
-                        <input type="hidden" name="magister" :value="magister">
-                        <input type="hidden" name="room_id" :value="sala">
-                        <input type="hidden" name="dia" :value="dia">
-                        <input type="hidden" name="anio" :value="anio">
-                        <input type="hidden" name="trimestre" :value="trimestre">
-                        <button type="submit"
-                            class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
-                            title="Descargar Excel">
-                            <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-5 h-5">
-                            Exportar
-                        </button>
-                    </form>
-                </div>
             </div>
 
             {{-- Indicador de ciclo --}}
@@ -170,7 +173,7 @@
             {{-- Botón limpiar --}}
             <div class="flex items-end">
                 <button @click="limpiarFiltros" type="button"
-                    class="px-3 py-2 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                    class="px-4 py-3 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                     title="Limpiar filtros"
                     aria-label="Limpiar filtros">
                     <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
@@ -200,20 +203,35 @@
                                     {{ $clase->course->magister->nombre ?? 'Programa' }}
                                 </span>
                                 <span class="px-2 py-0.5 rounded bg-[#84b6f4] text-[#005187] capitalize">
-                                    {{ $clase->tipo ?? 'Tipo' }}
+                                    {{ $clase->sesiones->count() }} {{ $clase->sesiones->count() === 1 ? 'sesión' : 'sesiones' }}
                                 </span>
-                                <span class="px-2 py-0.5 rounded bg-[#4d82bc] text-white capitalize">
-                                    {{ $clase->modality ?? 'Modalidad' }}
-                                </span>
+                                @php
+                                    $modalidades = $clase->sesiones->pluck('modalidad')->unique();
+                                @endphp
+                                @foreach($modalidades as $modalidad)
+                                    <span class="px-2 py-0.5 rounded bg-[#4d82bc] text-white capitalize">
+                                        {{ $modalidad }}
+                                    </span>
+                                @endforeach
                             </div>
 
-                            {{-- Día y hora --}}
-                            <p class="text-sm text-gray-700 dark:text-gray-300">
-                                <strong class="text-[#005187]">{{ $clase->dia ?? '—' }}</strong>
-                                •
-                                {{ $clase->hora_inicio ? substr($clase->hora_inicio, 0, 5) : '--:--' }} -
-                                {{ $clase->hora_fin ? substr($clase->hora_fin, 0, 5) : '--:--' }}
-                            </p>
+                            {{-- Días de las sesiones --}}
+                            @if($clase->sesiones->count() > 0)
+                                @php
+                                    $primeraSession = $clase->sesiones->first();
+                                    $ultimaSesion = $clase->sesiones->last();
+                                    $dias = $clase->sesiones->pluck('dia')->unique()->join(', ');
+                                @endphp
+                                <p class="text-sm text-gray-700 dark:text-gray-300">
+                                    <strong class="text-[#005187]">{{ $dias }}</strong>
+                                    @if($primeraSession && $ultimaSesion)
+                                        <br>
+                                        <span class="text-xs">
+                                            {{ $primeraSession->fecha->format('d/m/Y') }} - {{ $ultimaSesion->fecha->format('d/m/Y') }}
+                                        </span>
+                                    @endif
+                                </p>
+                            @endif
 
                             {{-- Sala y periodo --}}
                             <div class="flex flex-wrap items-center gap-2 text-sm text-gray-600 dark:text-gray-300">

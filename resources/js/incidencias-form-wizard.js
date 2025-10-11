@@ -82,16 +82,10 @@ function showStep(step) {
         currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
-    // Actualizar pasos del progreso vertical
-    progressSteps.forEach((progressStep, index) => {
-        if (index + 1 <= step) {
-            progressStep.classList.add('completed');
-            progressStep.classList.add('active');
-        } else {
-            progressStep.classList.remove('completed');
-            progressStep.classList.remove('active');
-        }
-    });
+    // Usar el helper global para actualizar el progreso
+    if (window.updateWizardProgressSteps) {
+        window.updateWizardProgressSteps(step);
+    }
 }
 
 function updateProgress(step) {

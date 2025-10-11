@@ -4,15 +4,19 @@ let currentStep = 1;
 const totalSteps = 4;
 
 document.addEventListener('DOMContentLoaded', function() {
-    const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step');
-    const progressBar = document.getElementById('progress-bar');
-    const progressPercentage = document.getElementById('progress-percentage');
-    const currentStepText = document.getElementById('current-step');
+    // Solo buscar errores de validación de Laravel, no errores de UI
+    const laravelErrors = document.querySelector('.hci-form-section .hci-field-error');
+    if (laravelErrors) {
+        const errorSection = laravelErrors.closest('.hci-form-section');
+        if (errorSection && errorSection.dataset.step) {
+            const errorStep = parseInt(errorSection.dataset.step) || 1;
+            currentStep = errorStep;
+        }
+    }
     
     // Inicializar formulario
-    showStep(1);
-    updateProgress(1);
+    showStep(currentStep);
+    updateProgress(currentStep);
     
     // Validación en tiempo real
     const inputs = document.querySelectorAll('.hci-input, .hci-select, .hci-textarea');
@@ -38,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (contenidoInput) contenidoInput.addEventListener('input', updatePreview);
     if (iconoInput) iconoInput.addEventListener('input', updatePreview);
     if (colorInput) colorInput.addEventListener('change', updatePreview);
+    
+    updateSummary();
 });
 
 // Navegación entre pasos
@@ -78,44 +84,30 @@ window.cancelForm = function() {
 }
 
 function showStep(step) {
-    console.log(`🎬 showStep() llamado con paso: ${step}`);
-    const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
-    
-    console.log(`📄 Secciones encontradas: ${sections.length}`);
-    console.log(`📊 Pasos de progreso encontrados: ${progressSteps.length}`);
-    
     // Ocultar todas las secciones
+    const sections = document.querySelectorAll('.hci-form-section');
     sections.forEach(section => {
         section.classList.remove('active');
     });
     
     // Mostrar sección actual
     const sectionId = getSectionId(step);
-    console.log(`🔍 Buscando sección con ID: ${sectionId}`);
     const currentSection = document.getElementById(sectionId);
-    console.log(`📄 Sección encontrada:`, currentSection);
     
     if (currentSection) {
         currentSection.classList.add('active');
-        console.log(`✅ Sección ${sectionId} marcada como activa`);
         currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        console.log(`📜 Scroll realizado`);
-    } else {
-        console.error(`❌ No se encontró la sección con ID: ${sectionId}`);
     }
     
-    // Actualizar pasos del progreso vertical
-    progressSteps.forEach((progressStep, index) => {
-        if (index + 1 <= step) {
-            progressStep.classList.add('completed');
-            progressStep.classList.add('active');
-        } else {
-            progressStep.classList.remove('completed');
-            progressStep.classList.remove('active');
-        }
-    });
-    console.log(`📊 Progreso vertical actualizado`);
+    // Usar el helper global para actualizar el progreso visual
+    if (window.updateWizardProgressSteps) {
+        window.updateWizardProgressSteps(step);
+    }
+    
+    // Si estamos en el paso del resumen, actualizar el contenido
+    if (sectionId === 'resumen') {
+        updateSummary();
+    }
 }
 
 function updateProgress(step) {
@@ -128,6 +120,15 @@ function updateProgress(step) {
     if (progressBar) progressBar.style.height = percentage + '%';
     if (progressPercentage) progressPercentage.textContent = Math.round(percentage) + '%';
     if (currentStepText) currentStepText.textContent = `Paso ${step} de ${totalSteps}`;
+    
+    // Controlar visibilidad de botones
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (prevBtn) prevBtn.style.display = step > 1 ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = step < totalSteps ? 'flex' : 'none';
+    if (submitBtn) submitBtn.style.display = step === totalSteps ? 'flex' : 'none';
 }
 
 function getSectionId(step) {
@@ -295,9 +296,22 @@ function updatePreview() {
 
 // Función para enviar el formulario
 window.submitForm = function() {
-    // Validar el paso actual antes de enviar
     if (validateCurrentStep()) {
-        // Enviar el formulario
+        // Mostrar overlay de loading global
+        if (!document.getElementById('form-loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'form-loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-overlay-content">
+                    <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                    <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        // Submit del formulario
         document.querySelector('.hci-form').submit();
     }
 }

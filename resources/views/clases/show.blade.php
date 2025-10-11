@@ -38,49 +38,59 @@
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                         <span class="text-2xl" role="img" aria-label="Calendario">📅</span>
                         <div>
-                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Día</p>
-                            <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $clase->dia ?? '—' }}</p>
+                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Total Sesiones</p>
+                            <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $clase->sesiones->count() }} {{ $clase->sesiones->count() === 1 ? 'sesión' : 'sesiones' }}</p>
                         </div>
                     </div>
 
+                    @php
+                        $dias = $clase->sesiones->pluck('dia')->unique();
+                    @endphp
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                        <span class="text-2xl" role="img" aria-label="Reloj">🕐</span>
+                        <span class="text-2xl" role="img" aria-label="Días">📆</span>
                         <div>
-                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Horario</p>
-                            <p class="text-base font-semibold text-gray-900 dark:text-white">
-                    {{ $clase->hora_inicio ? \Carbon\Carbon::parse($clase->hora_inicio)->format('H:i') : '--:--' }}
-                                - 
-                    {{ $clase->hora_fin ? \Carbon\Carbon::parse($clase->hora_fin)->format('H:i') : '--:--' }}
-                            </p>
+                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Días de clase</p>
+                            <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $dias->join(', ') ?: '—' }}</p>
                         </div>
                     </div>
 
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                         <span class="text-2xl" role="img" aria-label="Edificio">🏫</span>
                         <div>
-                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Sala</p>
+                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Sala Principal</p>
                             <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $clase->room?->name ?? 'No asignada' }}</p>
                         </div>
                     </div>
 
+                    @php
+                        $modalidades = $clase->sesiones->pluck('modalidad')->unique();
+                    @endphp
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                         <span class="text-2xl" role="img" aria-label="Monitor">💻</span>
                         <div>
-                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Modalidad</p>
-                            <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $clase->modality ? ucfirst($clase->modality) : '—' }}</p>
+                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Modalidades</p>
+                            <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $modalidades->map(fn($m) => ucfirst($m))->join(', ') ?: '—' }}</p>
                         </div>
                     </div>
                 </div>
 
                 {{-- Columna derecha --}}
                 <div class="space-y-4">
-                    <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                        <span class="text-2xl" role="img" aria-label="Tipo">📝</span>
-                        <div>
-                            <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Tipo</p>
-                            <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $clase->tipo ? ucfirst($clase->tipo) : '—' }}</p>
+                    @if($clase->sesiones->count() > 0)
+                        @php
+                            $primeraSesion = $clase->sesiones->first();
+                            $ultimaSesion = $clase->sesiones->last();
+                        @endphp
+                        <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                            <span class="text-2xl" role="img" aria-label="Inicio">🗓️</span>
+                            <div>
+                                <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Período</p>
+                                <p class="text-base font-semibold text-gray-900 dark:text-white">
+                                    {{ $primeraSesion->fecha->format('d/m/Y') }} - {{ $ultimaSesion->fecha->format('d/m/Y') }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    @endif
 
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                         <span class="text-2xl" role="img" aria-label="Año">📊</span>
@@ -93,7 +103,7 @@
                     </div>
 
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                        <span class="text-2xl" role="img" aria-label="Persona">👤</span>
+                        <span class="text-2xl" role="img" aria-label="Profesor">👨‍🏫</span>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Encargado</p>
                             <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $clase->encargado ?? '—' }}</p>

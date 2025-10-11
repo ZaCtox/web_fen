@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PublicSite;
 
 use App\Http\Controllers\Controller;
 use App\Models\Clase;
+use App\Models\ClaseSesion;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -43,7 +44,7 @@ class GuestEventController extends Controller
             ];
 
             // 🔵 CLASES
-            $clases = Clase::with(['room', 'period', 'course.magister'])
+            $clases = Clase::with(['room', 'period', 'course.magister', 'sesiones'])
                 ->when($magisterId, fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
                 ->when($roomId, fn($q) => $q->where('room_id', $roomId))
                 ->when($cohorte, fn($q) => $q->whereHas('period', fn($qq) => $qq->where('cohorte', $cohorte)))
@@ -57,55 +58,60 @@ class GuestEventController extends Controller
             $classEvents = collect();
 
             foreach ($clases as $clase) {
-                if (!$clase->period || !$clase->course || !$clase->hora_inicio || !$clase->hora_fin || !isset($dias[$clase->dia]))
+                if (!$clase->period || !$clase->course) {
                     continue;
-
-                $dayNumber = $dias[$clase->dia];
-                $inicio = Carbon::parse($clase->period->fecha_inicio);
-                $fin = Carbon::parse($clase->period->fecha_fin);
-                $desde = $rangeStart ? $rangeStart->copy()->max($inicio) : $inicio->copy();
-                $hasta = $rangeEnd ? $rangeEnd->copy()->min($fin) : $fin->copy();
-
-                if ($desde->gt($hasta))
-                    continue;
-
-                $fecha = $desde->copy();
-                if ($fecha->dayOfWeek !== $dayNumber) {
-                    $fecha = $fecha->next($dayNumber);
                 }
 
-                $modality = $clase->modality;
                 $magister = $clase->course->magister;
                 $magisterNombre = is_object($magister) ? $magister->nombre : 'Sin magíster';
                 $magisterColor = is_object($magister) ? ($magister->color ?? '#6b7280') : '#6b7280';
 
-                $titulo = $clase->course->nombre;
-                if ($modality === 'online') $titulo .= ' [ONLINE]';
-                elseif ($modality === 'hibrida') $titulo .= ' [HIBRIDA]';
+                // Iterar sobre las sesiones de esta clase
+                foreach ($clase->sesiones as $sesion) {
+                    // Filtrar por rango de fechas si se especifica
+                    if ($rangeStart && $rangeEnd) {
+                        $fechaSesion = Carbon::parse($sesion->fecha);
+                        if ($fechaSesion->lt($rangeStart) || $fechaSesion->gt($rangeEnd)) {
+                            continue;
+                        }
+                    }
 
-                while ($fecha->lte($hasta)) {
-                    $start = $fecha->copy()->setTimeFromTimeString($clase->hora_inicio);
-                    $end = $fecha->copy()->setTimeFromTimeString($clase->hora_fin);
+                    // Filtrar por sala si se especifica
+                    if (!empty($roomId) && $sesion->room_id != $roomId) {
+                        continue;
+                    }
+
+                    $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_inicio);
+                    $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_fin);
+
+                    $modality = $sesion->modalidad ?? 'presencial';
+                    $online = $modality === 'online';
+                    $hibrida = $modality === 'hibrida';
+
+                    $titulo = $clase->course->nombre;
+                    if ($online) $titulo .= ' [ONLINE]';
+                    elseif ($hibrida) $titulo .= ' [HÍBRIDA]';
 
                     $classEvents->push([
-                        'id' => 'clase-' . $clase->id . '-' . $start->format('Ymd'),
+                        'id' => 'clase-' . $clase->id . '-sesion-' . $sesion->id,
                         'title' => $titulo,
                         'description' => 'Magíster: ' . $magisterNombre,
                         'start' => $start->toDateTimeString(),
                         'end' => $end->toDateTimeString(),
-                        'room_id' => $clase->room_id,
-                        'room' => $clase->room ? ['name' => $clase->room->name] : null,
+                        'room_id' => $sesion->room_id,
+                        'room' => $sesion->room ? ['name' => $sesion->room->name] : null,
                         'editable' => false,
                         'backgroundColor' => $magisterColor,
                         'borderColor' => $magisterColor,
                         'type' => 'clase',
                         'magister' => $magisterNombre,
                         'modality' => $modality,
-                        'url_zoom' => $clase->url_zoom,
+                        'url_zoom' => $sesion->url_zoom,
                         'profesor' => $clase->encargado ?? null,
+                        'url_grabacion' => $sesion->url_grabacion,
+                        'clase_id' => $clase->id,
+                        'sesion_id' => $sesion->id,
                     ]);
-
-                    $fecha->addWeek();
                 }
             }
 
@@ -140,9 +146,9 @@ class GuestEventController extends Controller
                 });
 
             \Log::debug('📦 Eventos manuales:', $manualEvents->toArray());
-            \Log::debug('📦 Eventos de clases:', $classEvents->toArray());
+            \Log::debug('📦 Eventos de clases/sesiones:', $classEvents->toArray());
 
-           return response()->json(collect($manualEvents)->merge(collect($classEvents))->values());
+           return response()->json(collect($manualEvents)->merge($classEvents)->values());
 
         } catch (\Throwable $e) {
             \Log::error('🛑 Error en GuestEventController@index', [

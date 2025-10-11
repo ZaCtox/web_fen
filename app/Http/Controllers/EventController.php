@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Clase;
+use App\Models\ClaseSesion;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -18,6 +19,16 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
+        Log::info('🟢 EventController@index llamado (calendario logueado)', [
+            'magister_id' => $request->get('magister_id'),
+            'room_id' => $request->get('room_id'),
+            'cohorte' => $request->get('cohorte'),
+            'anio' => $request->get('anio'),
+            'trimestre' => $request->get('trimestre'),
+            'start' => $request->get('start'),
+            'end' => $request->get('end'),
+        ]);
+
         try {
             $magisterId = $request->query('magister_id');
             $roomId = $request->query('room_id');
@@ -61,8 +72,11 @@ class EventController extends Controller
                     ];
                 });
 
-            // Eventos generados desde clases
+            // Eventos generados desde clases (que ahora incluyen sus sesiones)
             $classEvents = $this->generarEventosDesdeClases($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, $anio, $trimestre);
+
+            Log::debug('📦 Eventos manuales (logueado):', ['count' => $manualEvents->count()]);
+            Log::debug('📦 Eventos de clases/sesiones (logueado):', ['count' => $classEvents->count()]);
 
             return response()->json(collect($manualEvents)->concat(collect($classEvents))->values());
 
@@ -88,8 +102,13 @@ class EventController extends Controller
             // cohorte seleccionada (por defecto la más reciente)
             $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
 
-            $periodoActual = Period::orderByDesc('anio')->orderByDesc('numero')->first();
-            $fechaInicio = optional($periodoActual)->fecha_inicio?->format('Y-m-d') ?? now()->format('Y-m-d');
+            // Obtener el primer período de la cohorte seleccionada
+            $primerPeriodo = Period::where('cohorte', $cohorteSeleccionada)
+                ->orderBy('anio')
+                ->orderBy('numero')
+                ->first();
+            
+            $fechaInicio = optional($primerPeriodo)->fecha_inicio?->format('Y-m-d') ?? now()->format('Y-m-d');
             
             // Obtener períodos de la cohorte seleccionada
             $periodos = Period::where('cohorte', $cohorteSeleccionada)
@@ -279,76 +298,72 @@ class EventController extends Controller
         $eventos = collect();
 
         foreach ($clases as $clase) {
-            if (!$clase->period || !$clase->course || !$clase->hora_inicio || !$clase->hora_fin || !isset($dias[$clase->dia])) {
+            if (!$clase->period || !$clase->course) {
                 continue;
             }
 
-            $dayNumber = $dias[$clase->dia];
-            $inicioPeriodo = Carbon::parse($clase->period->fecha_inicio);
-            $finPeriodo = Carbon::parse($clase->period->fecha_fin);
-            $desde = $rangeStart ? $rangeStart->copy()->max($inicioPeriodo) : $inicioPeriodo->copy();
-            $hasta = $rangeEnd ? $rangeEnd->copy()->min($finPeriodo) : $finPeriodo->copy();
-
-            if ($desde->gt($hasta))
-                continue;
-
-            $fecha = $desde->copy();
-            if ($fecha->dayOfWeek !== $dayNumber)
-                $fecha = $fecha->next($dayNumber);
-            if ($fecha->lt($desde))
-                $fecha->addWeek();
-
             $magister = $clase->course->magister;
             $color = $magister->color ?? '#6b7280';
-            $modality = $clase->modality;
-            $online = $modality === 'online';
-            $hibrida = $modality === 'hibrida';
 
-            while ($fecha->lte($hasta)) {
-                $start = $fecha->copy()->setTimeFromTimeString($clase->hora_inicio);
-                $end = $fecha->copy()->setTimeFromTimeString($clase->hora_fin);
+            // Iterar sobre las sesiones de esta clase
+            foreach ($clase->sesiones as $sesion) {
+                // Filtrar por rango de fechas si se especifica
+                if ($rangeStart && $rangeEnd) {
+                    $fechaSesion = Carbon::parse($sesion->fecha);
+                    if ($fechaSesion->lt($rangeStart) || $fechaSesion->gt($rangeEnd)) {
+                        continue;
+                    }
+                }
+
+                // Filtrar por sala si se especifica
+                if (!empty($roomId) && $sesion->room_id != $roomId) {
+                    continue;
+                }
+
+                $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_inicio);
+                $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_fin);
+
+                $modality = $sesion->modalidad ?? 'presencial';
+                $online = $modality === 'online';
+                $hibrida = $modality === 'hibrida';
 
                 $titulo = $clase->course->nombre;
                 if ($online)
                     $titulo .= ' [ONLINE]';
                 elseif ($hibrida)
-                    $titulo .= ' [HIBRIDA]';
+                    $titulo .= ' [HÍBRIDA]';
 
                 $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
-                if (!empty($clase->url_zoom)) {
-                    $descripcion .= "\n🔗 " . $clase->url_zoom;
+                if (!empty($sesion->url_zoom)) {
+                    $descripcion .= "\n🔗 " . $sesion->url_zoom;
                 }
 
-                // Buscar si existe una sesión para esta fecha específica
-                $sesion = $clase->sesiones->firstWhere('fecha', $fecha->toDateString());
-                $urlGrabacion = $sesion && $sesion->url_grabacion ? $sesion->url_grabacion : null;
-
                 $eventos->push([
-                    'id' => 'clase-' . $clase->id . '-' . $start->format('Ymd'),
+                    'id' => 'clase-' . $clase->id . '-sesion-' . $sesion->id,
                     'title' => $titulo,
                     'description' => $descripcion,
                     'start' => $start->toDateTimeString(),
                     'end' => $end->toDateTimeString(),
-                    'room_id' => $clase->room_id,
-                    'room' => $clase->room ? ['id' => $clase->room->id, 'name' => $clase->room->name] : null,
+                    'room_id' => $sesion->room_id,
+                    'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
                     'editable' => false,
                     'backgroundColor' => $color,
                     'borderColor' => $color,
                     'type' => 'clase',
                     'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
                     'modality' => $modality,
-                    'url_zoom' => $clase->url_zoom,
-                    'profesor' => $clase->encargado ?? null,
-                    'url_grabacion' => $urlGrabacion,  // ✅ Agregado
-                    'clase_id' => $clase->id,  // ✅ Agregado para referencia
+                    'url_zoom' => $sesion->url_zoom,
+                    'profesor' => $magister->nombre ?? null,
+                    'url_grabacion' => $sesion->url_grabacion,
+                    'clase_id' => $clase->id,
+                    'sesion_id' => $sesion->id,
                 ]);
-
-                $fecha->addWeek();
             }
         }
 
         return $eventos;
     }
+
 }
 
 

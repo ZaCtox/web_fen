@@ -1,11 +1,11 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CSfNmQhD.css",
+    "file": "assets/app-CpNwFygF.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/hci-principles.css": {
-    "file": "assets/hci-principles-DRMCHqYq.css",
+    "file": "assets/hci-principles-I9En6Mt3.css",
     "src": "resources/css/hci-principles.css",
     "isEntry": true
   },
@@ -26,13 +26,13 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-ge_SEZol.js",
+    "file": "assets/app-D1dJYjO0.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
   },
   "resources/js/calendar-admin.js": {
-    "file": "assets/calendar-admin-pIfCtFqj.js",
+    "file": "assets/calendar-admin-C-liyS94.js",
     "name": "calendar-admin",
     "src": "resources/js/calendar-admin.js",
     "isEntry": true
@@ -44,7 +44,7 @@
     "isEntry": true
   },
   "resources/js/clases-form-wizard.js": {
-    "file": "assets/clases-form-wizard-CyLKojQY.js",
+    "file": "assets/clases-form-wizard-Bix-WiuC.js",
     "name": "clases-form-wizard",
     "src": "resources/js/clases-form-wizard.js",
     "isEntry": true
@@ -56,7 +56,7 @@
     "isEntry": true
   },
   "resources/js/courses-form-wizard.js": {
-    "file": "assets/courses-form-wizard-DIakE-1M.js",
+    "file": "assets/courses-form-wizard-BKdUmMcE.js",
     "name": "courses-form-wizard",
     "src": "resources/js/courses-form-wizard.js",
     "isEntry": true
@@ -68,7 +68,7 @@
     "isEntry": true
   },
   "resources/js/emergency-form-wizard.js": {
-    "file": "assets/emergency-form-wizard-iWD_gzbt.js",
+    "file": "assets/emergency-form-wizard-Cc6hViqc.js",
     "name": "emergency-form-wizard",
     "src": "resources/js/emergency-form-wizard.js",
     "isEntry": true
@@ -86,13 +86,13 @@
     "isEntry": true
   },
   "resources/js/incidencias-form-wizard.js": {
-    "file": "assets/incidencias-form-wizard-DB_GKGMi.js",
+    "file": "assets/incidencias-form-wizard-CvTtjEfE.js",
     "name": "incidencias-form-wizard",
     "src": "resources/js/incidencias-form-wizard.js",
     "isEntry": true
   },
   "resources/js/informes-form-wizard.js": {
-    "file": "assets/informes-form-wizard-ORbolZ0E.js",
+    "file": "assets/informes-form-wizard-hdH6eetm.js",
     "name": "informes-form-wizard",
     "src": "resources/js/informes-form-wizard.js",
     "isEntry": true
@@ -110,7 +110,7 @@
     "isEntry": true
   },
   "resources/js/novedades-form-wizard.js": {
-    "file": "assets/novedades-form-wizard-D-Fp3XQt.js",
+    "file": "assets/novedades-form-wizard-Se-iRdqc.js",
     "name": "novedades-form-wizard",
     "src": "resources/js/novedades-form-wizard.js",
     "isEntry": true
@@ -122,19 +122,19 @@
     "isEntry": true
   },
   "resources/js/rooms-form-wizard.js": {
-    "file": "assets/rooms-form-wizard-DVY1avYv.js",
+    "file": "assets/rooms-form-wizard-DxYGUVKG.js",
     "name": "rooms-form-wizard",
     "src": "resources/js/rooms-form-wizard.js",
     "isEntry": true
   },
   "resources/js/staff-form-wizard.js": {
-    "file": "assets/staff-form-wizard-EKxYrzFR.js",
+    "file": "assets/staff-form-wizard-D_WjGYy1.js",
     "name": "staff-form-wizard",
     "src": "resources/js/staff-form-wizard.js",
     "isEntry": true
   },
   "resources/js/usuarios-form-wizard.js": {
-    "file": "assets/usuarios-form-wizard-BAUyHVhn.js",
+    "file": "assets/usuarios-form-wizard-CBTGW4g7.js",
     "name": "usuarios-form-wizard",
     "src": "resources/js/usuarios-form-wizard.js",
     "isEntry": true

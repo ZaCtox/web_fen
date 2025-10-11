@@ -5,37 +5,16 @@
     $editing = isset($staff);
 @endphp
 
-{{-- Contenedor principal con principios HCI --}}
-<div class="hci-container">
-    <div class="hci-section">
-        <h1 class="hci-heading-1 flex items-center">
-            @if($editing)
-                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                </svg>
-                Editar Miembro del Equipo
-            @else
-                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-                </svg>
-                Crear Miembro del Equipo
-            @endif
-        </h1>
-        <p class="hci-text">
-            {{ $editing ? 'Modifica la información del miembro del equipo.' : 'Registra un nuevo miembro del equipo con información organizada.' }}
-        </p>
-    </div>
-
-    {{-- Layout principal con progreso lateral --}}
-    <div class="hci-wizard-layout">
-        {{-- Barra de progreso lateral izquierda --}}
-        <x-staff-progress-sidebar />
-
-        {{-- Contenido principal del formulario --}}
-        <div class="hci-form-content">
-            <form class="hci-form" method="POST" action="{{ $editing ? route('staff.update', $staff) : route('staff.store') }}">
-    @csrf
-    @if($editing) @method('PUT') @endif
+{{-- Layout genérico del wizard --}}
+<x-hci-wizard-layout 
+    title="Miembro del Equipo"
+    :editing="$editing"
+    createDescription="Registra un nuevo miembro del equipo con información organizada."
+    editDescription="Modifica la información del miembro del equipo."
+    sidebarComponent="staff-progress-sidebar"
+    :formAction="$editing ? route('staff.update', $staff) : route('staff.store')"
+    :formMethod="$editing ? 'PUT' : 'POST'"
+>
 
                 {{-- Sección 1: Información Personal --}}
                 <x-hci-form-section 
@@ -176,18 +155,7 @@
                         </div>
                     </div>
                 </x-hci-form-section>
-            </form>
-        </div>
-    </div>
-    </div>
-
-{{-- FAB para ayuda (Ley de Fitts) --}}
-<x-hci-button 
-    fab="true" 
-    icon="❓"
-    href="#"
-    aria-label="Ayuda con el formulario"
-/>
+</x-hci-wizard-layout>
 
 {{-- Incluir JavaScript del wizard --}}
 @push('scripts')

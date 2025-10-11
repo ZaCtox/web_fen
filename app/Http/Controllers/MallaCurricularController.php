@@ -103,8 +103,15 @@ class MallaCurricularController extends Controller
     public function show(MallaCurricular $mallaCurricular)
     {
         try {
-            $mallaCurricular->load(['magister', 'courses.period', 'courses.clases']);
-            $mallaCurricular->loadCount('courses');
+            // Cargar relaciones de forma segura
+            $mallaCurricular->load(['magister', 'courses' => function($query) {
+                $query->with(['period', 'clases']);
+            }]);
+            
+            // Solo cargar count si hay cursos
+            if ($mallaCurricular->courses()->exists()) {
+                $mallaCurricular->loadCount('courses');
+            }
 
             return view('mallas-curriculares.show', compact('mallaCurricular'));
 

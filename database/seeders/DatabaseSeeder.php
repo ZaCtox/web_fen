@@ -34,19 +34,9 @@ class DatabaseSeeder extends Seeder
         // 🔒 Reactivar claves foráneas
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // 🌱 Ejecutar seeders en orden de dependencias
+        // 🌱 Ejecutar seeder consolidado
         $this->call([
-            PeriodSeeder::class,               // 1. Primero los periodos
-            UsersTableSeeder::class,           // 2. Usuarios
-            MagistersTableSeeder::class,       // 3. Magísteres
-            MallasCurricularesSeeder::class,   // 4. Mallas (depende de magisters)
-            CoursesTableSeeder::class,         // 5. Cursos (depende de magisters, mallas y periods)
-            RoomsTableSeeder::class,           // 6. Salas
-            ClaseSeeder::class,                // 7. Clases (depende de courses, periods, rooms)
-            IncidentsTableSeeder::class,       // 8. Incidencias (depende de rooms)
-            StaffSeeder::class,                // 9. Staff
-            EventSeeder::class,                // 10. Eventos
-            NovedadesSeeder::class,            // 11. Novedades
+            MagisterSaludSeeder::class,        // Seeder unificado con todos los datos del Magíster en Gestión de Sistemas de Salud
         ]);
     }
 }

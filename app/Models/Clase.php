@@ -12,15 +12,10 @@ class Clase extends Model
 
     protected $fillable = [
         'course_id',
-        'tipo',
         'period_id',
         'room_id',
-        'modality',
-        'dia',
-        'hora_inicio',
-        'hora_fin',
         'url_zoom',
-        'encargado'
+        'encargado',
     ];
 
     public function course()
@@ -54,6 +49,7 @@ class Clase extends Model
                 $q->whereHas('course.magister', fn($q2) => $q2->where('nombre', $v)))
             ->when($f['sala'] ?? null, fn($q, $v) =>
                 $q->whereHas('room', fn($q2) => $q2->where('name', $v)))
-            ->when($f['dia'] ?? null, fn($q, $v) => $q->where('dia', $v));
+            ->when($f['dia'] ?? null, fn($q, $v) =>
+                $q->whereHas('sesiones', fn($q2) => $q2->where('dia', $v)));
     }
 }

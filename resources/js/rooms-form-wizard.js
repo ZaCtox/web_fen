@@ -3,8 +3,18 @@ let currentStep = 1;
 const totalSteps = 4; // 4 pasos para salas
 
 document.addEventListener('DOMContentLoaded', function() {
-    showStep(1);
-    updateProgress(1);
+    // Si hay errores de validación (JS o Laravel), ir al primer paso con error
+    const firstErrorSection = document.querySelector('.hci-form-section .hci-field-error, .hci-form-section .text-red-600, .hci-form-section .border-red-500');
+    if (firstErrorSection) {
+        const errorSection = firstErrorSection.closest('.hci-form-section');
+        if (errorSection && errorSection.dataset.step) {
+            const errorStep = parseInt(errorSection.dataset.step) || 1;
+            currentStep = errorStep;
+        }
+    }
+    
+    showStep(currentStep);
+    updateProgress(currentStep);
 
     const inputs = document.querySelectorAll('.hci-input, .hci-select, .hci-textarea');
     inputs.forEach(input => {
@@ -55,13 +65,27 @@ window.cancelForm = function() {
 
 window.submitForm = function() {
     if (validateCurrentStep()) {
+        // Mostrar overlay de loading global
+        if (!document.getElementById('form-loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'form-loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-overlay-content">
+                    <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                    <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        // Submit del formulario
         document.querySelector('.hci-form').submit();
     }
 }
 
 function showStep(step) {
     const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
 
     sections.forEach(s => s.classList.remove('active'));
     const currentSection = document.getElementById(getSectionId(step));
@@ -70,15 +94,10 @@ function showStep(step) {
         currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    progressSteps.forEach((p, i) => {
-        if (i + 1 <= step) {
-            p.classList.add('completed');
-            p.classList.add('active');
-        } else {
-            p.classList.remove('completed');
-            p.classList.remove('active');
-        }
-    });
+    // Actualizar estado visual del sidebar (verde=completado, azul=actual, gris=pendiente)
+    if (window.updateWizardProgressSteps) {
+        window.updateWizardProgressSteps(step);
+    }
 }
 
 function updateProgress(step) {
@@ -91,11 +110,21 @@ function updateProgress(step) {
     if (progressPercentage) progressPercentage.textContent = Math.round(percentage) + '%';
     if (currentStepText) currentStepText.textContent = `Paso ${step} de ${totalSteps}`;
 
+    // Controlar visibilidad de botones
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
     const submitBtn = document.getElementById('submit-btn');
-    if (submitBtn) {
+    
+    if (prevBtn) {
+        prevBtn.style.display = step > 1 ? 'flex' : 'none';
+    }
+    
+    if (nextBtn && submitBtn) {
         if (step === totalSteps) {
+            nextBtn.classList.add('hidden');
             submitBtn.classList.remove('hidden');
         } else {
+            nextBtn.classList.remove('hidden');
             submitBtn.classList.add('hidden');
         }
     }

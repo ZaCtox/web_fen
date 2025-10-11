@@ -13,136 +13,42 @@ class UsersTableSeeder extends Seeder
         $usuarios = [
             // Administrador del sistema
             [
-                'name' => 'Arcadio Cerda',
-                'email' => 'acerda@utalca.cl',
+                'name' => 'Administrador',
+                'email' => 'admin@utalca.cl',
                 'password' => Hash::make('admin123'),
                 'rol' => 'administrador',
             ],
             
             // Director Administrativo
             [
-                'name' => 'José Leonardo Castillo',
-                'email' => 'josecastillo@utalca.cl',
+                'name' => 'Director Administrativo',
+                'email' => 'director@utalca.cl',
                 'password' => Hash::make('admin456'),
                 'rol' => 'director_administrativo',
             ],
 
-            // Docentes de Economía
-            [
-                'name' => 'Dr. Fernando Muñoz González',
-                'email' => 'fmunoz@utalca.cl',
-                'password' => Hash::make('docente123'),
-                'rol' => 'docente',
-            ],
-            [
-                'name' => 'Dra. Claudia Sepúlveda Rojas',
-                'email' => 'csepulveda@utalca.cl',
-                'password' => Hash::make('docente123'),
-                'rol' => 'docente',
-            ],
-            [
-                'name' => 'Dr. Andrés Villalobos Cid',
-                'email' => 'avillalobos@utalca.cl',
-                'password' => Hash::make('docente123'),
-                'rol' => 'docente',
-            ],
-
-            // Docentes de Gestión y Finanzas
-            [
-                'name' => 'Dra. María José Retamal Silva',
-                'email' => 'mjretamal@utalca.cl',
-                'password' => Hash::make('docente123'),
-                'rol' => 'docente',
-            ],
-            [
-                'name' => 'Dr. Roberto Contreras Fuentes',
-                'email' => 'rcontreras@utalca.cl',
-                'password' => Hash::make('docente123'),
-                'rol' => 'docente',
-            ],
-
-            // Directores de Programa
-            [
-                'name' => 'Dr. Patricio Aroca Gonzalez',
-                'email' => 'paroca@utalca.cl',
-                'password' => Hash::make('director123'),
-                'rol' => 'director_programa',
-            ],
-            [
-                'name' => 'Dra. Verónica Mies Moreno',
-                'email' => 'vmies@utalca.cl',
-                'password' => Hash::make('director123'),
-                'rol' => 'director_programa',
-            ],
+            // Luis Canales - Director de programa
             [
                 'name' => 'Luis Canales',
                 'email' => 'lcanales@utalca.cl',
-                'password' => Hash::make('director123'),
+                'password' => Hash::make('luis123'),
                 'rol' => 'director_programa',
             ],
 
-            // Asistentes de Programa
+            // Mary Sepúlveda - Coordinadora del programa Magíster Salud
             [
-                'name' => 'Carolina Balmaceda Rojas',
-                'email' => 'cbalmaceda@utalca.cl',
-                'password' => Hash::make('asistente123'),
-                'rol' => 'asistente_programa',
-            ],
-            [
-                'name' => 'Carolina Quitral',
-                'email' => 'cquitral@utalca.cl',
-                'password' => Hash::make('asistente123'),
-                'rol' => 'asistente_programa',
-            ],
-            [
-                'name' => 'Tamara Aravena',
-                'email' => 'tamara.aravena@utalca.cl',
-                'password' => Hash::make('asistente123'),
+                'name' => 'Mary Sepúlveda G.',
+                'email' => 'msepulveda@utalca.cl',
+                'password' => Hash::make('mary123'),
                 'rol' => 'asistente_programa',
             ],
 
-            // Asistentes de Postgrado
+            // María Castillo - Apoyo logístico y operacional
             [
-                'name' => 'July Basoalto',
-                'email' => 'jbasoalto@utalca.cl',
-                'password' => Hash::make('postgrado123'),
+                'name' => 'María Castillo',
+                'email' => 'maria.castillob@utalca.cl',
+                'password' => Hash::make('maria123'),
                 'rol' => 'asistente_postgrado',
-            ],
-            [
-                'name' => 'Ivonne Henríquez Toro',
-                'email' => 'ivonne.henriquez@utalca.cl',
-                'password' => Hash::make('postgrado123'),
-                'rol' => 'asistente_postgrado',
-            ],
-            [
-                'name' => 'Camila González',
-                'email' => 'camila.gonzalezd@utalca.cl',
-                'password' => Hash::make('postgrado123'),
-                'rol' => 'asistente_postgrado',
-            ],
-
-            // Técnico de soporte
-            [
-                'name' => 'Miguel Suárez',
-                'email' => 'msuarez@utalca.cl',
-                'password' => Hash::make('tecnico123'),
-                'rol' => 'técnico',
-            ],
-
-            // Auxiliares
-            [
-                'name' => 'Cristian Barrientos',
-                'email' => 'cristian.barrientos@utalca.cl',
-                'password' => Hash::make('auxiliar123'),
-                'rol' => 'auxiliar',
-            ],
-
-            // Personal adicional
-            [
-                'name' => 'Carolina Cáceres',
-                'email' => 'carolina.caceres@utalca.cl',
-                'password' => Hash::make('asistente123'),
-                'rol' => 'asistente_programa',
             ],
         ];
 
@@ -153,6 +59,6 @@ class UsersTableSeeder extends Seeder
             );
         }
 
-        $this->command->info('✅ Usuarios creados correctamente con datos realistas de FEN.');
+        $this->command->info('✅ Usuarios principales creados correctamente.');
     }
 }

@@ -1,52 +1,38 @@
+{{-- Formulario de Períodos con Wizard Genérico --}}
+@section('title', isset($period) ? 'Editar Período' : 'Crear Período')
+
 @php
-    $editing = $editing ?? false;
-    $period = $period ?? null;
+    $editing = isset($period);
+    
+    // Definir los pasos del wizard
+    $wizardSteps = [
+        ['title' => 'Información Básica', 'description' => 'Año y trimestre'],
+        ['title' => 'Fechas del Período', 'description' => 'Inicio y término'],
+        ['title' => 'Resumen', 'description' => 'Revisar información']
+    ];
 @endphp
 
+<x-hci-wizard-layout
+    title="Período"
+    :editing="$editing"
+    createDescription="Registra un nuevo período académico con información organizada."
+    editDescription="Modifica la información del período académico."
+    :steps="$wizardSteps"
+    :formAction="$editing ? route('periods.update', $period) : route('periods.store')"
+    :formMethod="$editing ? 'PUT' : 'POST'"
+>
 
-{{-- Contenedor principal con principios HCI --}}
-<div class="hci-container">
-    <div class="hci-section">
-        <h1 class="hci-heading-1 flex items-center">
-            @if($editing)
-                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                </svg>
-                Editar Período Académico
-            @else
-                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-                </svg>
-                Crear Período Académico
-            @endif
-        </h1>
-        <p class="hci-text">
-            {{ $editing ? 'Modifica la información del período académico.' : 'Registra un nuevo período académico con información organizada.' }}
-        </p>
-    </div>
-
-    {{-- Layout principal con progreso lateral --}}
-    <div class="hci-wizard-layout">
-        {{-- Barra de progreso lateral izquierda --}}
-        <x-periods-progress-sidebar />
-
-        {{-- Contenido principal del formulario --}}
-        <div class="hci-form-content">
-            <form class="hci-form" method="POST" action="{{ $editing ? route('periods.update', $period) : route('periods.store') }}">
-                @csrf
-                @if($editing) @method('PUT') @endif
-
-                {{-- Paso 1: Información Básica --}}
-                <x-hci-form-section 
-                    :step="1" 
-                    title="Información Básica" 
-                    description="Define el año académico y trimestre del período"
-                    icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
-                    section-id="informacion"
-                    :editing="$editing ?? false"
-                    :isActive="true"
-                    :isFirst="true"
-                >
+    {{-- Sección 1: Información Básica --}}
+    <x-hci-form-section 
+        :step="1" 
+        title="Información Básica" 
+        description="Define el año académico y trimestre del período"
+        icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
+        section-id="informacion"
+        :is-active="true"
+        :is-first="true"
+        :editing="$editing"
+    >
                     <div class="flex flex-col md:flex-row md:items-start md:gap-16">
                         <div class="w-full md:w-auto">
                             <x-hci-field 
@@ -57,7 +43,7 @@
                                 icon=""
                                 help="Selecciona el año del programa (Año 1: Trimestres I, II, III | Año 2: Trimestres IV, V, VI)"
                                 id="anio-select"
-                                style="width: 250px !important;"
+                                style="width: 200px !important;"
                             >
                                 <option value="">-- Selecciona un Año --</option>
                                 <option value="1" {{ old('anio', $period->anio ?? '') == '1' ? 'selected' : '' }}>Año 1</option>
@@ -110,15 +96,15 @@
                     </div>
                 </x-hci-form-section>
 
-                {{-- Paso 2: Fechas --}}
-                <x-hci-form-section 
-                    :step="2" 
-                    title="Fechas del Período" 
-                    description="Establece las fechas de inicio y término del período académico"
-                    icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zM4 7h12v9a1 1 0 01-1 1H5a1 1 0 01-1-1V7z'/></svg>"
-                    section-id="fechas"
-                    :editing="$editing ?? false"
-                >
+    {{-- Sección 2: Fechas del Período --}}
+    <x-hci-form-section 
+        :step="2" 
+        title="Fechas del Período" 
+        description="Establece las fechas de inicio y término del período académico"
+        icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zM4 7h12v9a1 1 0 01-1 1H5a1 1 0 01-1-1V7z'/></svg>"
+        section-id="fechas"
+        :editing="$editing"
+    >
                     <div class="flex flex-col md:flex-row md:items-start md:gap-16">
                         <div class="w-full md:w-auto">
                             <x-hci-field 
@@ -148,16 +134,16 @@
                     </div>
                 </x-hci-form-section>
 
-                {{-- Paso 3: Resumen --}}
-                <x-hci-form-section 
-                    :step="3" 
-                    title="Resumen" 
-                    description="Revisa la información antes de guardar"
-                    icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
-                    section-id="resumen"
-                    :editing="$editing ?? false"
-                    :isLast="true"
-                >
+    {{-- Sección 3: Resumen --}}
+    <x-hci-form-section 
+        :step="3" 
+        title="Resumen" 
+        description="Revisa la información antes de guardar"
+        icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
+        section-id="resumen"
+        :is-last="true"
+        :editing="$editing"
+    >
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                             <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Año Académico</h4>
@@ -176,13 +162,12 @@
                             <p id="summary-fecha-fin" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
                         </div>
                     </div>
-                </x-hci-form-section>
-            </form>
-        </div>
-    </div>
-</div>
+    </x-hci-form-section>
+</x-hci-wizard-layout>
 
-{{-- Script manejado por periods-form-wizard.js --}}
+@push('scripts')
+    @vite('resources/js/periods-form-wizard.js')
+@endpush
 
 
 

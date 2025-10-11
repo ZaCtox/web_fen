@@ -61,29 +61,35 @@ class CoursesTableSeeder extends Seeder
                 [2, 6, "Trabajo de Grado III"],
             ],
             'Gestión de Sistemas de Salud' => [
-                [1, 1, "Taller 1 - Habilidad e Aprendizaje: Presentación efectiva, Trabajo en Equipo, Metodología de Casos"],
+                // Año 1 - Trimestre I
+                [1, 1, "Taller 1 – Habilidades de Aprendizaje: Presentación Efectiva, Trabajo en Equipo, Metodología de Casos"],
                 [1, 1, "Economía"],
                 [1, 1, "Contabilidad"],
                 [1, 1, "Administración"],
-                [1, 2, "Estadística para la gestión"],
+                // Año 1 - Trimestre II
+                [1, 2, "Estadística para la Gestión"],
                 [1, 2, "Entorno Económico"],
-                [1, 2, "Entorno Socio Cultural"],
-                [1, 2, "Taller 2: Herramientas para el trabajo de grado: Métodos y técnicas para la investigación en gestión"],
+                [1, 2, "Entorno Social Cultural"],
+                [1, 2, "Taller 2: Herramientas para el Trabajo de Grado: Métodos y Técnicas para la Investigación en Gestión"],
+                // Año 1 - Trimestre III
                 [1, 3, "Aspectos Legales en Salud"],
-                [1, 3, "Desarrollo de Competencia Relaciónales"],
-                [1, 3, "Dirección Estratégica en Sistemas de Salud"],
+                [1, 3, "Desarrollo de Competencias Relacionales"],
+                [1, 3, "Dirección Estratégica de Sistemas de Salud"],
                 [1, 3, "Sistema de Salud y Gestión en Red"],
+                // Año 2 - Trimestre I
                 [2, 4, "Dirección Estratégica de Recursos Humanos"],
                 [2, 4, "Gestión de Operaciones, Logística y Calidad"],
                 [2, 4, "Epidemiología y Salud Pública para la Gestión"],
                 [2, 4, "Trabajo de Grado I"],
+                // Año 2 - Trimestre II
                 [2, 5, "Calidad y Acreditación en Salud"],
                 [2, 5, "Formulación y Evaluación de Proyectos en Salud"],
                 [2, 5, "Control Estratégico de Instituciones de Salud"],
                 [2, 5, "Trabajo de Grado II"],
+                // Año 2 - Trimestre III
                 [2, 6, "Electivo I"],
                 [2, 6, "Electivo II"],
-                [2, 6, "Taller 3: Desarrollo y crecimiento personal"],
+                [2, 6, "Taller 3: Desarrollo y Crecimiento Personal"],
                 [2, 6, "Trabajo de Grado III"],
             ],
             'Gestión y Políticas Públicas' => [

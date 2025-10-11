@@ -4,15 +4,24 @@ let currentStep = 1;
 const totalSteps = 3;
 
 document.addEventListener('DOMContentLoaded', function() {
-    const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step');
-    const progressBar = document.getElementById('progress-bar');
-    const progressPercentage = document.getElementById('progress-percentage');
-    const currentStepText = document.getElementById('current-step');
+    // Verificar si hay errores de validación de Laravel
+    const hasErrors = document.querySelector('.error, .invalid-feedback, [class*="error"]');
+    if (hasErrors) {
+        // Encontrar el primer paso con errores
+        const firstErrorField = document.querySelector('input.error, select.error, textarea.error');
+        if (firstErrorField) {
+            const errorSection = firstErrorField.closest('.hci-form-section');
+            if (errorSection) {
+                const stepAttr = errorSection.getAttribute('data-step');
+                if (stepAttr) {
+                    currentStep = parseInt(stepAttr);
+                }
+            }
+        }
+    }
     
     // Inicializar formulario
-    showStep(1);
-    updateProgress(1);
+    showStep(currentStep);
     
     // Validación en tiempo real
     const inputs = document.querySelectorAll('.hci-input, .hci-select, .hci-textarea');
@@ -27,6 +36,17 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSummary(); // Actualizar resumen en tiempo real
         });
     });
+    
+    // Event listeners para los selects
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    const magisterSelect = document.querySelector('select[name="magister_id"]');
+    
+    if (tipoSelect) {
+        tipoSelect.addEventListener('change', updateSummary);
+    }
+    if (magisterSelect) {
+        magisterSelect.addEventListener('change', updateSummary);
+    }
 });
 
 // Navegación entre pasos
@@ -35,7 +55,7 @@ window.nextStep = function() {
         if (currentStep < totalSteps) {
             currentStep++;
             showStep(currentStep);
-            updateProgress(currentStep);
+            updateProgress();
         }
     }
 }
@@ -44,7 +64,7 @@ window.prevStep = function() {
     if (currentStep > 1) {
         currentStep--;
         showStep(currentStep);
-        updateProgress(currentStep);
+        updateProgress();
     }
 }
 
@@ -53,7 +73,7 @@ window.navigateToStep = function(step) {
     if (step <= currentStep || validateCurrentStep()) {
         currentStep = step;
         showStep(currentStep);
-        updateProgress(currentStep);
+        updateProgress();
     }
 }
 
@@ -67,10 +87,8 @@ window.cancelForm = function() {
 }
 
 function showStep(step) {
-    const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
-    
     // Ocultar todas las secciones
+    const sections = document.querySelectorAll('.hci-form-section');
     sections.forEach(section => {
         section.classList.remove('active');
     });
@@ -83,28 +101,36 @@ function showStep(step) {
         currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
-    // Actualizar pasos del progreso vertical
-    progressSteps.forEach((progressStep, index) => {
-        if (index + 1 <= step) {
-            progressStep.classList.add('completed');
-            progressStep.classList.add('active');
-        } else {
-            progressStep.classList.remove('completed');
-            progressStep.classList.remove('active');
-        }
-    });
+    // Usar el helper global para actualizar el progreso
+    if (window.updateWizardProgressSteps) {
+        window.updateWizardProgressSteps(step);
+    }
+    
+    // Si estamos en el paso del resumen, actualizar el contenido
+    if (sectionId === 'resumen') {
+        updateSummary();
+    }
 }
 
-function updateProgress(step) {
+function updateProgress() {
     const progressBar = document.getElementById('progress-bar');
     const progressPercentage = document.getElementById('progress-percentage');
     const currentStepText = document.getElementById('current-step');
     
-    const percentage = (step / totalSteps) * 100;
+    const percentage = (currentStep / totalSteps) * 100;
     
     if (progressBar) progressBar.style.height = percentage + '%';
     if (progressPercentage) progressPercentage.textContent = Math.round(percentage) + '%';
-    if (currentStepText) currentStepText.textContent = `Paso ${step} de ${totalSteps}`;
+    if (currentStepText) currentStepText.textContent = `Paso ${currentStep} de ${totalSteps}`;
+    
+    // Controlar visibilidad de botones
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    if (prevBtn) prevBtn.style.display = currentStep > 1 ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = currentStep < totalSteps ? 'flex' : 'none';
+    if (submitBtn) submitBtn.style.display = currentStep === totalSteps ? 'flex' : 'none';
 }
 
 function getSectionId(step) {
@@ -191,29 +217,59 @@ function clearFieldError(field) {
 
 // Función para actualizar el resumen en tiempo real
 function updateSummary() {
-    const nombre = document.querySelector('input[name="nombre"]')?.value || '';
-    const archivo = document.querySelector('input[name="archivo"]')?.files?.[0]?.name || '';
-    const magister = document.querySelector('select[name="magister_id"]')?.selectedOptions?.[0]?.text || '';
+    const nombreInput = document.querySelector('input[name="nombre"]');
+    const tipoSelect = document.querySelector('select[name="tipo"]');
+    const archivoInput = document.querySelector('input[name="archivo"]');
+    const magisterSelect = document.querySelector('select[name="magister_id"]');
+    
+    const nombre = nombreInput?.value || '';
+    const archivo = archivoInput?.files?.[0]?.name || '';
+    
+    // Obtener el texto del tipo seleccionado
+    let tipoText = 'No especificado';
+    if (tipoSelect && tipoSelect.value) {
+        const selectedOption = tipoSelect.options[tipoSelect.selectedIndex];
+        tipoText = selectedOption?.text || tipoSelect.value;
+    }
+    
+    // Obtener el texto del magister seleccionado
+    let magisterText = 'Todos los programas';
+    if (magisterSelect && magisterSelect.value) {
+        const selectedOption = magisterSelect.options[magisterSelect.selectedIndex];
+        magisterText = selectedOption?.text || magisterSelect.value;
+    }
     
     // Actualizar elementos del resumen
     const resumenNombre = document.getElementById('summary-nombre');
+    const resumenTipo = document.getElementById('summary-tipo');
     const resumenArchivo = document.getElementById('summary-archivo');
     const resumenDestinatario = document.getElementById('summary-destinatario');
     
     if (resumenNombre) resumenNombre.textContent = nombre || 'No especificado';
+    if (resumenTipo) resumenTipo.textContent = tipoText;
     if (resumenArchivo) resumenArchivo.textContent = archivo || 'Sin archivo seleccionado';
-    if (resumenDestinatario) resumenDestinatario.textContent = magister || 'Todos los programas';
+    if (resumenDestinatario) resumenDestinatario.textContent = magisterText;
 }
 
 // Función para enviar el formulario
 window.submitForm = function() {
-    // Validar el paso actual antes de enviar
     if (validateCurrentStep()) {
-        // Enviar el formulario normalmente
-        const form = document.querySelector('.hci-form');
-        if (form) {
-            form.submit();
+        // Mostrar overlay de loading global
+        if (!document.getElementById('form-loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'form-loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-overlay-content">
+                    <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                    <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
         }
+        
+        // Submit del formulario
+        document.querySelector('.hci-form').submit();
     }
 }
 

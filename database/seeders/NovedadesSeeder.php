@@ -20,185 +20,81 @@ class NovedadesSeeder extends Seeder
             return;
         }
 
+        $magisterSalud = $magisters->where('nombre', 'Gestión de Sistemas de Salud')->first();
+
         $novedades = [
-            // Novedades Públicas (visibles para todos)
+            // ==========================================
+            // NOVEDADES PROCESO DE ADMISIÓN 2025-2026
+            // ==========================================
             [
-                'titulo' => 'Inicio del Año Académico 2025',
-                'contenido' => 'La Facultad de Economía y Negocios da la bienvenida a todos los estudiantes de postgrado para el año académico 2025. Las clases del primer trimestre inician el 7 de marzo.',
-                'tipo_novedad' => 'academica',
-                'visible_publico' => true,
-                'es_urgente' => false,
-                'color' => 'blue',
-                'icono' => '🎓',
-                'fecha_expiracion' => Carbon::now()->addMonths(2),
-            ],
-            [
-                'titulo' => 'Proceso de Admisión 2025 Abierto',
-                'contenido' => 'Están abiertas las postulaciones para los programas de Magíster 2025. Revisa los requisitos y plazos en nuestra página de admisión. Cupos limitados.',
+                'titulo' => 'Inicio de Postulaciones - Magíster en Gestión de Sistemas de Salud',
+                'contenido' => 'Se encuentran abiertas las postulaciones para el Magíster en Gestión de Sistemas de Salud, cohorte 2025-2026. Revisa los requisitos y documentación necesaria en nuestra página web. ¡No pierdas esta oportunidad!',
                 'tipo_novedad' => 'admision',
                 'visible_publico' => true,
+                'magister_id' => $magisterSalud?->id,
                 'es_urgente' => true,
-                'color' => 'red',
-                'icono' => '📝',
-                'fecha_expiracion' => Carbon::now()->addMonth(),
-            ],
-            [
-                'titulo' => 'Seminario Internacional de Economía Digital',
-                'contenido' => 'Los invitamos al seminario internacional "Economía Digital y Transformación de Mercados" que se realizará el 15 de abril. Inscripciones abiertas para estudiantes y público general.',
-                'tipo_novedad' => 'evento',
-                'visible_publico' => true,
-                'es_urgente' => false,
                 'color' => 'green',
-                'icono' => '🌐',
-                'fecha_expiracion' => Carbon::now()->addDays(40),
+                'icono' => '📝',
+                'fecha_expiracion' => Carbon::create(2026, 7, 10), // Cierra el 10 de julio 2026
             ],
             [
-                'titulo' => 'Acreditación Internacional Renovada',
-                'contenido' => 'Nos complace informar que nuestros programas de Magíster han renovado su acreditación internacional por 5 años más, destacando la calidad académica y pertinencia de nuestros programas.',
-                'tipo_novedad' => 'institucional',
+                'titulo' => 'Término de Postulaciones - Magíster en Gestión de Sistemas de Salud',
+                'contenido' => 'Recordatorio: Las postulaciones para el Magíster en Gestión de Sistemas de Salud cierran el 10 de julio de 2026. Asegúrate de completar todos los documentos requeridos antes de esta fecha.',
+                'tipo_novedad' => 'admision',
                 'visible_publico' => true,
-                'es_urgente' => false,
-                'color' => 'yellow',
-                'icono' => '🏆',
-                'fecha_expiracion' => Carbon::now()->addMonths(6),
-            ],
-            [
-                'titulo' => 'Nuevo Centro de Investigación en Políticas Públicas',
-                'contenido' => 'La facultad inaugura su nuevo Centro de Investigación en Políticas Públicas, que realizará estudios aplicados sobre desarrollo económico regional.',
-                'tipo_novedad' => 'institucional',
-                'visible_publico' => true,
-                'es_urgente' => false,
-                'color' => 'purple',
-                'icono' => '🔬',
-                'fecha_expiracion' => null,
-            ],
-
-            // Novedades para Estudiantes
-            [
-                'titulo' => 'Calendario de Exámenes Primer Trimestre',
-                'contenido' => 'Se ha publicado el calendario de exámenes del primer trimestre 2025. Revísalo en el portal del estudiante. Las fechas son del 25 de mayo al 5 de junio.',
-                'tipo_novedad' => 'academica',
-                'visible_publico' => false,
-                'roles_visibles' => ['docente', 'asistente_postgrado', 'director_programa'],
-                'es_urgente' => true,
-                'color' => 'orange',
-                'icono' => '📅',
-                'fecha_expiracion' => Carbon::now()->addDays(60),
-            ],
-            [
-                'titulo' => 'Plazo de Entrega de Trabajos de Grado',
-                'contenido' => 'Recordatorio: El plazo para entregar los trabajos de grado del segundo año es el 30 de noviembre. Coordina con tu profesor guía.',
-                'tipo_novedad' => 'academica',
-                'visible_publico' => false,
-                'roles_visibles' => ['docente', 'director_programa'],
+                'magister_id' => $magisterSalud?->id,
                 'es_urgente' => true,
                 'color' => 'red',
                 'icono' => '⏰',
-                'fecha_expiracion' => Carbon::now()->addMonths(8),
+                'fecha_expiracion' => Carbon::create(2026, 7, 10), // Cierra el 10 de julio 2026
             ],
             [
-                'titulo' => 'Actualización de Biblioteca Digital',
-                'contenido' => 'La biblioteca digital de la universidad ha actualizado su plataforma. Ahora cuenta con acceso a 15 nuevas bases de datos especializadas en economía y gestión.',
-                'tipo_novedad' => 'servicio',
-                'visible_publico' => false,
-                'roles_visibles' => ['docente', 'asistente_postgrado'],
+                'titulo' => 'Inicio de Clases - Magíster en Gestión de Sistemas de Salud',
+                'contenido' => 'Las clases del Magíster en Gestión de Sistemas de Salud cohorte 2025-2026 dan inicio el 17 de julio de 2026. ¡Te esperamos para comenzar esta nueva etapa académica!',
+                'tipo_novedad' => 'academica',
+                'visible_publico' => true,
+                'magister_id' => $magisterSalud?->id,
                 'es_urgente' => false,
                 'color' => 'blue',
-                'icono' => '📚',
-                'fecha_expiracion' => null,
+                'icono' => '🎓',
+                'fecha_expiracion' => Carbon::create(2026, 8, 31), // Expira al final del primer mes de clases
             ],
 
-            // Novedades para Personal Administrativo
+            // ==========================================
+            // NOVEDADES EXPIRADAS (PROCESO 2024-2025)
+            // ==========================================
             [
-                'titulo' => 'Reunión de Coordinación Académica',
-                'contenido' => 'Se convoca a reunión de coordinación académica el próximo viernes 12 a las 10:00 hrs en sala de reuniones. Asistencia obligatoria para directores y coordinadores.',
-                'tipo_novedad' => 'administrativa',
-                'visible_publico' => false,
-                'roles_visibles' => ['director_programa', 'director_administrativo', 'asistente_programa'],
-                'es_urgente' => true,
-                'color' => 'red',
-                'icono' => '👥',
-                'fecha_expiracion' => Carbon::now()->addDays(5),
-            ],
-            [
-                'titulo' => 'Nuevo Sistema de Gestión de Salas',
-                'contenido' => 'A partir del lunes 10 de marzo, todas las reservas de salas deben realizarse a través del nuevo sistema Web FEN. Solicita tus credenciales con el área de informática.',
-                'tipo_novedad' => 'sistema',
-                'visible_publico' => false,
-                'roles_visibles' => ['asistente_programa', 'asistente_postgrado', 'director_programa'],
-                'es_urgente' => true,
-                'color' => 'yellow',
-                'icono' => '💻',
-                'fecha_expiracion' => Carbon::now()->addDays(15),
-            ],
-
-            // Novedades por Magíster
-            [
-                'titulo' => 'Charla Magistral: Economía Circular',
-                'contenido' => 'El programa de Economía invita a la charla magistral "Economía Circular y Desarrollo Sostenible" a cargo del Dr. Roberto Silva (U. de Concepción). Martes 20 de marzo, 18:00 hrs.',
-                'tipo_novedad' => 'evento',
+                'titulo' => 'Inicio de Postulaciones 2024-2025 (CERRADO)',
+                'contenido' => 'Se abrieron las postulaciones para el Magíster en Gestión de Sistemas de Salud, cohorte 2024-2025. Este proceso ya finalizó.',
+                'tipo_novedad' => 'admision',
                 'visible_publico' => true,
-                'magister_id' => $magisters->where('nombre', 'Economía')->first()?->id,
+                'magister_id' => $magisterSalud?->id,
                 'es_urgente' => false,
-                'color' => 'blue',
-                'icono' => '♻️',
-                'fecha_expiracion' => Carbon::now()->addDays(25),
+                'color' => 'gray',
+                'icono' => '📝',
+                'fecha_expiracion' => Carbon::create(2024, 10, 1), // Ya expiró
             ],
             [
-                'titulo' => 'Workshop: Nuevas Normativas Tributarias 2025',
-                'contenido' => 'Taller práctico sobre las modificaciones al Código Tributario vigentes desde enero 2025. Dictado por expertos del SII. Sábado 15 de marzo, 9:00-13:00 hrs.',
-                'tipo_novedad' => 'evento',
+                'titulo' => 'Cierre de Postulaciones 2024-2025 (FINALIZADO)',
+                'contenido' => 'Las postulaciones para la cohorte 2024-2025 del Magíster en Gestión de Sistemas de Salud cerraron el 12 de septiembre de 2025.',
+                'tipo_novedad' => 'admision',
                 'visible_publico' => true,
-                'magister_id' => $magisters->where('nombre', 'Dirección y Planificación Tributaria')->first()?->id,
-                'es_urgente' => true,
-                'color' => 'red',
-                'icono' => '💼',
-                'fecha_expiracion' => Carbon::now()->addDays(10),
-            ],
-            [
-                'titulo' => 'Pasantía en Hospital Regional',
-                'contenido' => 'Abierta convocatoria para pasantía opcional en gestión hospitalaria en el Hospital Regional. Cupos limitados. Inscripciones hasta el 30 de marzo.',
-                'tipo_novedad' => 'oportunidad',
-                'visible_publico' => false,
-                'magister_id' => $magisters->where('nombre', 'Gestión de Sistemas de Salud')->first()?->id,
-                'roles_visibles' => ['docente'],
-                'es_urgente' => true,
-                'color' => 'green',
-                'icono' => '🏥',
-                'fecha_expiracion' => Carbon::now()->addDays(25),
-            ],
-            [
-                'titulo' => 'Seminario: Reforma al Estado y Modernización',
-                'contenido' => 'Seminario sobre procesos de reforma y modernización del Estado en América Latina. Participan destacados académicos y funcionarios públicos. Jueves 28 de marzo.',
-                'tipo_novedad' => 'evento',
-                'visible_publico' => true,
-                'magister_id' => $magisters->where('nombre', 'Gestión y Políticas Públicas')->first()?->id,
+                'magister_id' => $magisterSalud?->id,
                 'es_urgente' => false,
-                'color' => 'purple',
-                'icono' => '🏛️',
-                'fecha_expiracion' => Carbon::now()->addDays(23),
+                'color' => 'gray',
+                'icono' => '⏰',
+                'fecha_expiracion' => Carbon::create(2025, 9, 12), // Ya expiró
             ],
-
-            // Novedades de Servicios
             [
-                'titulo' => 'Horario de Atención Vacaciones de Invierno',
-                'contenido' => 'Durante el período de vacaciones de invierno (15-26 de julio), la secretaría de postgrado atenderá en horario reducido: 9:00 a 14:00 hrs.',
-                'tipo_novedad' => 'servicio',
+                'titulo' => 'Inicio de Clases 2024-2025 (FINALIZADO)',
+                'contenido' => 'Las clases de la cohorte 2024-2025 iniciaron el 29 de septiembre de 2025.',
+                'tipo_novedad' => 'academica',
                 'visible_publico' => true,
+                'magister_id' => $magisterSalud?->id,
                 'es_urgente' => false,
-                'color' => 'blue',
-                'icono' => '🏢',
-                'fecha_expiracion' => Carbon::now()->addMonths(4),
-            ],
-            [
-                'titulo' => 'Mantención Sistema Eléctrico',
-                'contenido' => 'Se informa que el día sábado 25 de marzo se realizará mantención del sistema eléctrico en el edificio FEN entre 8:00 y 14:00 hrs. No habrá clases programadas.',
-                'tipo_novedad' => 'mantenimiento',
-                'visible_publico' => true,
-                'es_urgente' => true,
-                'color' => 'orange',
-                'icono' => '⚡',
-                'fecha_expiracion' => Carbon::now()->addDays(20),
+                'color' => 'gray',
+                'icono' => '🎓',
+                'fecha_expiracion' => Carbon::create(2025, 9, 29), // Ya expiró
             ],
         ];
 
@@ -219,7 +115,7 @@ class NovedadesSeeder extends Seeder
             $totalCreadas++;
         }
 
-        $this->command->info("✅ Se crearon $totalCreadas novedades realistas para la facultad.");
+        $this->command->info("✅ Se crearon $totalCreadas novedades del Magíster en Gestión de Sistemas de Salud.");
     }
 }
 

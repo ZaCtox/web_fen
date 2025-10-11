@@ -101,8 +101,13 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // FullCalendar
+    // Obtener fecha inicial desde meta tag
+    const fechaInicio = document.querySelector('meta[name="inicio-trimestre"]')?.content || null;
+    console.log('📅 Fecha inicial del calendario:', fechaInicio);
+    
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek',
+        initialDate: fechaInicio || undefined,
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
@@ -134,14 +139,22 @@ document.addEventListener('DOMContentLoaded', function () {
         eventClick: onEventClick,
         events: {
             url: calendarEl.dataset.url,
-            extraParams: () => ({
-                magister_id: magisterFilter.value || '',
-                room_id: roomFilter.value || '',
-                cohorte: cohorteFilter.value || '',
-                anio: anioFilter.value || '',
-                trimestre: trimestreFilter.value || ''
-            }),
-            failure: (err) => console.error('Error cargando eventos:', err)
+            extraParams: () => {
+                const params = {
+                    magister_id: magisterFilter.value || '',
+                    room_id: roomFilter.value || '',
+                    cohorte: cohorteFilter.value || '',
+                    anio: anioFilter.value || '',
+                    trimestre: trimestreFilter.value || ''
+                };
+                console.log('📤 Enviando parámetros al API:', params);
+                return params;
+            },
+            success: (events) => {
+                console.log('✅ Eventos recibidos:', events.length);
+                console.log('📦 Detalle eventos:', events);
+            },
+            failure: (err) => console.error('❌ Error cargando eventos:', err)
         },
         eventDidMount: setTooltip,
 
@@ -232,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
         select.addEventListener('change', () => {
             // Validar cohorte antes de recargar
             if (select === cohorteFilter) {
-                validarciclo(select.value);
+                validarCohorte(select.value);
             }
             calendar.refetchEvents();
         });
@@ -243,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const statusElement = document.getElementById('cohorte-status');
         const selectElement = document.getElementById('cohorte-filter');
         
-        if (!cicloSeleccionado) {
+        if (!cohorteSeleccionada) {
             // cohorte no seleccionada - error
             selectElement.classList.add('border-red-500');
             selectElement.classList.remove('border-[#84b6f4]');
@@ -261,8 +274,8 @@ document.addEventListener('DOMContentLoaded', function () {
         selectElement.classList.add('border-[#84b6f4]');
         
         // Determinar si es cohorte actual o pasada
-        const ciclos = Array.from(document.querySelectorAll('#cohorte-filter option')).map(opt => opt.value);
-        const esActual = cicloSeleccionado === ciclos[0];
+        const cohortes = Array.from(document.querySelectorAll('#cohorte-filter option')).map(opt => opt.value);
+        const esActual = cohorteSeleccionada === cohortes[0];
         
         if (esActual) {
             statusElement.innerHTML = `
@@ -280,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Validar cohorte al cargar la página
     if (cohorteFilter) {
-        validarciclo(cohorteFilter.value);
+        validarCohorte(cohorteFilter.value);
     }
 
     // Filtro de año → actualizar trimestres disponibles

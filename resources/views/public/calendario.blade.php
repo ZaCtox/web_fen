@@ -20,8 +20,8 @@
         <div id="calendar" data-url="{{ route('guest.events.index') }}" class="mt-6"></div>
     </div>
     {{-- Modal de evento (público) --}}
-    {{-- Agrega esta meta (base para el botón lupa). Ej: /clases --}}
-    <meta name="clases-show-base" content="{{ url('/clases') }}">
+    {{-- Agrega esta meta (base para el botón lupa). Ej: /public/clases --}}
+    <meta name="clases-show-base" content="{{ url('/public/clases') }}">
 
     <div id="eventModal" class="fixed inset-0 z-50 hidden bg-black/50 flex justify-center items-center" role="dialog"
         aria-modal="true">

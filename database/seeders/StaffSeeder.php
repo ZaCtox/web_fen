@@ -90,6 +90,45 @@ class StaffSeeder extends Seeder
                 'email' => 'tamara.aravena@utalca.cl'
             ],
 
+            // Directores de Magíster
+            [
+                'nombre' => 'Pablo Neudörfer, PhD',
+                'cargo' => 'Director Magíster en Economía',
+                'telefono' => '+56 712200350',
+                'anexo' => '0350',
+                'email' => 'pneudorfer@utalca.cl'
+            ],
+            [
+                'nombre' => 'Dr. Jorge Navarrete',
+                'cargo' => 'Director Magíster en Gestión y Políticas Públicas',
+                'telefono' => '+56 712200351',
+                'anexo' => '0351',
+                'email' => 'jnavarrete@utalca.cl'
+            ],
+            [
+                'nombre' => 'Luis Canales',
+                'cargo' => 'Director Magíster en Gestión de Sistemas de Salud',
+                'telefono' => '+56 712200352',
+                'anexo' => '0352',
+                'email' => 'lcanales@utalca.cl'
+            ],
+
+            // Coordinadoras de Programas de Magíster
+            [
+                'nombre' => 'July Basoalto Riveros',
+                'cargo' => 'Coordinadora Magíster en Economía',
+                'telefono' => '+56 712200312',
+                'anexo' => '0312',
+                'email' => 'jbasoalto@utalca.cl'
+            ],
+            [
+                'nombre' => 'Mary Isabel Sepúlveda G.',
+                'cargo' => 'Coordinadora Magíster en Gestión y Políticas Públicas',
+                'telefono' => '+56 712200313',
+                'anexo' => '0313',
+                'email' => 'msepulveda@utalca.cl'
+            ],
+
             // Oficina de Postgrado
             [
                 'nombre' => 'Patricia Muñoz',
@@ -99,11 +138,11 @@ class StaffSeeder extends Seeder
                 'email' => 'pamunoz@utalca.cl'
             ],
             [
-                'nombre' => 'July Basoalto',
-                'cargo' => 'Asistente Oficina de Postgrados FEN',
-                'telefono' => '+56 712200312',
-                'anexo' => '0312',
-                'email' => 'jbasoalto@utalca.cl'
+                'nombre' => 'María Castillo',
+                'cargo' => 'Apoyo Logístico y Operacional - Oficina de Postgrado',
+                'telefono' => '+56 712200314',
+                'anexo' => '0314',
+                'email' => 'maria.castillob@utalca.cl'
             ],
             [
                 'nombre' => 'Ivonne Henríquez Toro',

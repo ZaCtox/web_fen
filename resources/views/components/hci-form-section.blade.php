@@ -13,7 +13,7 @@
     'contentClass' => ''
 ])
 
-<div id="{{ $sectionId }}" class="hci-form-section {{ $isActive ? 'active' : '' }}">
+<div id="{{ $sectionId }}" class="hci-form-section {{ $isActive ? 'active' : '' }}" data-step="{{ $step }}">
     <div class="hci-step-card">
         <div class="hci-step-header">
             <div class="hci-step-icon">
@@ -40,12 +40,22 @@
                 <div class="w-full {{ $contentClass }}">
                     {{ $slot }}
                 </div>
+            @elseif($sectionId === 'notificacion')
+                {{-- Excepción: notificación con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
             @elseif($sectionId === 'equipamiento')
                 {{-- Excepción: equipamiento con contenedor ancho tipo tarjeta --}}
                 <div class="w-full {{ $contentClass }}">
                     <div class="rounded-xl border border-[#c4dafa]/60 bg-[#fcffff] p-6 shadow-sm">
                         {{ $slot }}
                     </div>
+                </div>
+            @elseif($sectionId === 'detalles-sesiones')
+                {{-- Excepción: detalles de sesiones con ancho completo --}}
+                <div class="{{ $contentClass ?: 'w-full' }}">
+                    {{ $slot }}
                 </div>
             @else
                 <div class="hci-form-grid {{ $contentClass }}">
@@ -66,7 +76,7 @@
             </button>
 
             @if($isLast)
-                <button type="submit" class="hci-button hci-button-primary hci-button-success" onclick="submitForm()">
+                <button type="button" class="hci-button hci-button-primary hci-button-success" onclick="submitForm()">
                     <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-6 h-6">
                 </button>
             @else

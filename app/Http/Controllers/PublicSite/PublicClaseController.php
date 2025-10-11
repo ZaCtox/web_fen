@@ -8,11 +8,9 @@ class PublicClaseController extends Controller
 {
     public function show(Clase $clase)
     {
-        // Cargar relaciones necesarias incluyendo sesiones
+        // Cargar relaciones necesarias incluyendo todas las sesiones
         $clase->load(['course.magister', 'period', 'room', 'sesiones' => function($query) {
-            $query->where('estado', 'completada')
-                  ->whereNotNull('url_grabacion')
-                  ->orderBy('fecha', 'desc');
+            $query->orderBy('fecha', 'asc');
         }]);
         
         // Reutiliza la misma vista "show" pasando un flag $public = true
