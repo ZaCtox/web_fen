@@ -24,13 +24,21 @@
     <div class="p-6 max-w-5xl mx-auto">
         <div
             class="rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            
+            {{-- Foto de perfil centrada --}}
+            <div class="flex justify-center pt-8 pb-4">
+                <img src="{{ $staff->foto_perfil }}" 
+                     alt="Foto de {{ $staff->nombre }}" 
+                     class="w-40 h-40 rounded-full object-cover border-4 border-[#84b6f4] dark:border-[#4d82bc] shadow-xl">
+            </div>
+
             <div class="flex flex-col md:flex-row">
 
                 {{-- Información principal --}}
                 <div class="flex-1 p-6 flex flex-col justify-between">
                     <div>
-                        <h3 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4]">{{ $staff->nombre }}</h3>
-                        <p class="text-[#4d82bc] dark:text-[#84b6f4] mb-4">{{ $staff->cargo }}</p>
+                        <h3 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4] text-center md:text-left">{{ $staff->nombre }}</h3>
+                        <p class="text-[#4d82bc] dark:text-[#84b6f4] mb-4 text-center md:text-left">{{ $staff->cargo }}</p>
                     </div>
 
                     {{-- Botones (siempre al fondo) --}}

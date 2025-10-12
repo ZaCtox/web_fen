@@ -21,6 +21,7 @@
                 'cargo' => $p->cargo,
                 'telefono' => $p->telefono,
                 'email' => $p->email,
+                'foto_perfil' => $p->foto_perfil,
                 'show_url' => route('staff.show', $p),
             ])),
             get filtrados() {
@@ -92,21 +93,32 @@
         </template>
 
         <!-- Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <template x-for="p in filtrados" :key="p.id">
                 <a :href="p.show_url" class="group hci-card-hover">
                     <div
                         class="cursor-pointer hci-lift transition-all duration-300 rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-xl">
-                        <div class="flex">
-                            <div class="w-2/3 p-4">
-                                <h3 class="text-lg font-bold text-[#005187] dark:text-[#84b6f4] group-hover:text-[#4d82bc] transition-colors duration-200" x-text="p.nombre"></h3>
-                                <p class="text-sm text-[#4d82bc] dark:text-[#84b6f4] group-hover:text-[#005187] transition-colors duration-200" x-text="p.cargo"></p>
-                            </div>
-                            <div class="w-1/3 bg-[#4d82bc] group-hover:bg-[#005187] text-white p-4 transition-colors duration-200">
-                                <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
-                                <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
-                                <div class="text-[13px] tracking-wide opacity-90">Email</div>
-                                <div class="text-sm truncate" x-text="p.email" :title="p.email"></div>
+                        
+                        {{-- Foto de perfil --}}
+                        <div class="flex justify-center pt-6 pb-4">
+                            <img :src="p.foto_perfil" 
+                                 :alt="'Foto de ' + p.nombre" 
+                                 class="w-24 h-24 rounded-full object-cover border-4 border-[#84b6f4] shadow-lg group-hover:border-[#4d82bc] transition-colors duration-200">
+                        </div>
+
+                        <div class="p-4 text-center">
+                            <h3 class="text-lg font-bold text-[#005187] dark:text-[#84b6f4] group-hover:text-[#4d82bc] transition-colors duration-200" x-text="p.nombre"></h3>
+                            <p class="text-sm text-[#4d82bc] dark:text-[#84b6f4] group-hover:text-[#005187] transition-colors duration-200 mb-4" x-text="p.cargo"></p>
+                            
+                            <div class="bg-[#4d82bc]/10 rounded-lg p-3 text-left space-y-1">
+                                <div class="text-xs text-gray-600 dark:text-gray-400">
+                                    <span class="font-semibold">Email:</span>
+                                    <span class="text-xs break-all" x-text="p.email"></span>
+                                </div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400">
+                                    <span class="font-semibold">Teléfono:</span>
+                                    <span x-text="p.telefono || '—'"></span>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -6,6 +6,7 @@ use App\Http\Requests\StaffRequest;
 use App\Models\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Cloudinary\Api\Upload\UploadApi;
 use Exception;
 
 class StaffController extends Controller
@@ -85,6 +86,23 @@ class StaffController extends Controller
                     ->withErrors(['email' => 'Ya existe un miembro del personal con este correo electrónico.']);
             }
 
+            // Manejar la subida de la foto a Cloudinary
+            if ($request->hasFile('foto')) {
+                try {
+                    $cloudinaryUpload = (new UploadApi)->upload(
+                        $request->file('foto')->getRealPath(),
+                        ['folder' => 'staff']
+                    );
+                    $validated['foto'] = $cloudinaryUpload['secure_url'];
+                    $validated['public_id'] = $cloudinaryUpload['public_id'];
+                } catch (Exception $e) {
+                    Log::error('Error al subir foto a Cloudinary: ' . $e->getMessage());
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['foto' => 'Error al subir la foto. Por favor, inténtelo nuevamente.']);
+                }
+            }
+
             $staff = Staff::create($validated);
 
             Log::info('Nuevo personal creado', ['staff_id' => $staff->id, 'nombre' => $staff->nombre]);
@@ -131,6 +149,33 @@ class StaffController extends Controller
                     ->withErrors(['email' => 'Ya existe otro miembro del personal con este correo electrónico.']);
             }
 
+            // Manejar la subida de nueva foto a Cloudinary
+            if ($request->hasFile('foto')) {
+                try {
+                    // Eliminar la foto anterior de Cloudinary si existe
+                    if ($staff->public_id) {
+                        try {
+                            (new UploadApi)->destroy($staff->public_id);
+                        } catch (Exception $e) {
+                            Log::warning('No se pudo eliminar foto anterior de Cloudinary: ' . $e->getMessage());
+                        }
+                    }
+                    
+                    // Subir nueva foto a Cloudinary
+                    $cloudinaryUpload = (new UploadApi)->upload(
+                        $request->file('foto')->getRealPath(),
+                        ['folder' => 'staff']
+                    );
+                    $validated['foto'] = $cloudinaryUpload['secure_url'];
+                    $validated['public_id'] = $cloudinaryUpload['public_id'];
+                } catch (Exception $e) {
+                    Log::error('Error al subir foto a Cloudinary: ' . $e->getMessage());
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['foto' => 'Error al subir la foto. Por favor, inténtelo nuevamente.']);
+                }
+            }
+
             $nombreAnterior = $staff->nombre;
             $staff->update($validated);
 
@@ -159,6 +204,16 @@ class StaffController extends Controller
     {
         try {
             $nombre = $staff->nombre;
+            
+            // Eliminar la foto de Cloudinary si existe
+            if ($staff->public_id) {
+                try {
+                    (new UploadApi)->destroy($staff->public_id);
+                } catch (Exception $e) {
+                    Log::warning('No se pudo eliminar foto de Cloudinary: ' . $e->getMessage());
+                }
+            }
+            
             $staff->delete();
 
             Log::info('Personal eliminado', ['nombre' => $nombre]);

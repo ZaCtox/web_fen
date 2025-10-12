@@ -10,6 +10,7 @@
 @import "./focus-mode.css";
 @import "./global-search.css";
 @import "./calendar.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

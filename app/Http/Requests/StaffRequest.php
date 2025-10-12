@@ -27,6 +27,7 @@ class StaffRequest extends FormRequest
                 'max:150',
                 Rule::unique('staff', 'email')->ignore($staffId),
             ],
+            'foto' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
         ];
     }
 
@@ -38,6 +39,16 @@ class StaffRequest extends FormRequest
             'telefono' => 'teléfono',
             'anexo' => 'anexo',
             'email' => 'correo electrónico',
+            'foto' => 'foto de perfil',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'foto.image' => 'El archivo debe ser una imagen.',
+            'foto.mimes' => 'La foto debe ser un archivo tipo: jpeg, jpg, png o webp.',
+            'foto.max' => 'La foto no debe pesar más de 2MB.',
         ];
     }
 }

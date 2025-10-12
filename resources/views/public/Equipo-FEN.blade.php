@@ -9,7 +9,17 @@
             search: '',
             modalOpen: false,
             seleccionado: null,
-            staff: @js($staff),
+            staff: @js($staff->map(function($s) {
+                return [
+                    'id' => $s->id,
+                    'nombre' => $s->nombre,
+                    'cargo' => $s->cargo,
+                    'telefono' => $s->telefono,
+                    'anexo' => $s->anexo,
+                    'email' => $s->email,
+                    'foto_perfil' => $s->foto_perfil
+                ];
+            })),
             get filtrados() {
                 const q = this.search.toLowerCase();
                 return this.staff.filter(p =>
@@ -60,21 +70,32 @@
             </div>
         </template>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <template x-for="p in filtrados" :key="p.id">
                 <div @click="openModal(p)" class="group hci-card-hover">
                     <div
                         class="cursor-pointer hci-lift transition-all duration-300 rounded-2xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-xl">
-                        <div class="flex">
-                            <div class="w-2/3 p-4">
-                                <h3 class="text-lg font-bold text-[#005187] dark:text-[#84b6f4] group-hover:text-[#4d82bc] transition-colors duration-200" x-text="p.nombre"></h3>
-                                <p class="text-sm text-[#4d82bc] dark:text-[#84b6f4] group-hover:text-[#005187] transition-colors duration-200" x-text="p.cargo"></p>
-                            </div>
-                            <div class="w-1/3 bg-[#4d82bc] group-hover:bg-[#005187] text-white p-4 transition-colors duration-200">
-                                <div class="text-[13px] tracking-wide opacity-90">Teléfono</div>
-                                <div class="text-sm mb-2 break-words" x-text="p.telefono || '—'"></div>
-                                <div class="text-[13px] tracking-wide opacity-90">Email</div>
-                                <div class="text-sm truncate" x-text="p.email" :title="p.email"></div>
+                        
+                        {{-- Foto de perfil --}}
+                        <div class="flex justify-center pt-6 pb-4">
+                            <img :src="p.foto_perfil" 
+                                 :alt="'Foto de ' + p.nombre" 
+                                 class="w-24 h-24 rounded-full object-cover border-4 border-[#84b6f4] shadow-lg group-hover:border-[#4d82bc] transition-colors duration-200">
+                        </div>
+
+                        <div class="p-4 text-center">
+                            <h3 class="text-lg font-bold text-[#005187] dark:text-[#84b6f4] group-hover:text-[#4d82bc] transition-colors duration-200" x-text="p.nombre"></h3>
+                            <p class="text-sm text-[#4d82bc] dark:text-[#84b6f4] group-hover:text-[#005187] transition-colors duration-200 mb-4" x-text="p.cargo"></p>
+                            
+                            <div class="bg-[#4d82bc]/10 rounded-lg p-3 text-left space-y-1">
+                                <div class="text-xs text-gray-600 dark:text-gray-400">
+                                    <span class="font-semibold">Email:</span>
+                                    <span class="text-xs break-all" x-text="p.email"></span>
+                                </div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400">
+                                    <span class="font-semibold">Teléfono:</span>
+                                    <span x-text="p.telefono || '—'"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,7 +104,7 @@
         </div>
 
         {{-- Modal detalle --}}
-        <div x-show="modalOpen" x-transition class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div x-show="modalOpen" x-transition class="fixed inset-0 z-50 flex items-center justify-center bg-black/50" @click.self="modalOpen = false">
             <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-xl relative">
                 <button @click="modalOpen = false"
                     class="absolute top-2 right-2 text-gray-700 dark:text-gray-200 hover:text-red-500"
@@ -91,8 +112,15 @@
                     <img src="{{ asset('icons/no_resuelta.svg') }}" alt="Cerrar modal" class="w-8 h-8">
                 </button>
 
-                <h2 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4] mb-2" x-text="seleccionado?.nombre"></h2>
-                <p class="text-[#4d82bc] dark:text-[#84b6f4] mb-4" x-text="seleccionado?.cargo"></p>
+                {{-- Foto de perfil en modal --}}
+                <div class="flex justify-center mb-4">
+                    <img :src="seleccionado?.foto_perfil" 
+                         :alt="'Foto de ' + seleccionado?.nombre" 
+                         class="w-32 h-32 rounded-full object-cover border-4 border-[#84b6f4] shadow-xl">
+                </div>
+
+                <h2 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4] mb-2 text-center" x-text="seleccionado?.nombre"></h2>
+                <p class="text-[#4d82bc] dark:text-[#84b6f4] mb-4 text-center" x-text="seleccionado?.cargo"></p>
 
                 <div class="bg-[#4d82bc] text-white p-4 rounded-lg space-y-2">
                     <div>

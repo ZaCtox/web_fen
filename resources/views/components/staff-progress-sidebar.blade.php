@@ -8,15 +8,15 @@
             Progreso
         </h3>
                 <div class="hci-progress-stats">
-            <span id="current-step">Paso 1 de 4</span>
-            <span id="progress-percentage">25%</span>
+            <span id="current-step">Paso 1 de 5</span>
+            <span id="progress-percentage">20%</span>
         </div>
     </div>
     
     {{-- Barra de progreso vertical --}}
     <div class="hci-progress-vertical">
         <div class="hci-progress-line">
-            <div id="progress-bar" class="hci-progress-fill-vertical" style="height: 25%"></div>
+            <div id="progress-bar" class="hci-progress-fill-vertical" style="height: 20%"></div>
         </div>
         
         {{-- Pasos del progreso vertical --}}
@@ -42,8 +42,8 @@
                     </svg>
                 </div>
                 <div class="hci-progress-step-content-vertical">
-                    <span class="hci-progress-step-title">Información de Contacto</span>
-                    <span class="hci-progress-step-desc">Datos de contacto</span>
+                    <span class="hci-progress-step-title">Foto de Perfil</span>
+                    <span class="hci-progress-step-desc">Imagen del miembro</span>
                 </div>
             </div>
             
@@ -55,14 +55,27 @@
                     </svg>
                 </div>
                 <div class="hci-progress-step-content-vertical">
-                    <span class="hci-progress-step-title">Información Adicional</span>
-                    <span class="hci-progress-step-desc">Datos complementarios</span>
+                    <span class="hci-progress-step-title">Información de Contacto</span>
+                    <span class="hci-progress-step-desc">Datos de contacto</span>
                 </div>
             </div>
             
             <div class="hci-progress-step-vertical" data-step="4" onclick="navigateToStep(4)">
                 <div class="hci-progress-step-circle-vertical">
                     <span class="hci-progress-step-number">4</span>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="hci-progress-step-content-vertical">
+                    <span class="hci-progress-step-title">Información Adicional</span>
+                    <span class="hci-progress-step-desc">Datos complementarios</span>
+                </div>
+            </div>
+            
+            <div class="hci-progress-step-vertical" data-step="5" onclick="navigateToStep(5)">
+                <div class="hci-progress-step-circle-vertical">
+                    <span class="hci-progress-step-number">5</span>
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                     </svg>

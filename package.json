@@ -22,6 +22,7 @@
     "@fullcalendar/resource-timegrid": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
     "animate.css": "^4.1.1",
+    "cropperjs": "^2.0.1",
     "sweetalert2": "^11.22.4"
   }
 }

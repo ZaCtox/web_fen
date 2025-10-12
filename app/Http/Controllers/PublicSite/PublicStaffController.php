@@ -13,7 +13,7 @@ public function index(Request $request)
     // Trae todo. Para aligerar, selecciona solo las columnas que usas.
     $staff = Staff::query()
         ->orderBy('nombre')
-        ->get(['id','nombre','cargo','telefono','email']);
+        ->get(['id','nombre','cargo','telefono','anexo','email','foto','public_id']);
 
     // Ya no necesitamos $q ni paginate()
     return view('public.Equipo-FEN', compact('staff'));

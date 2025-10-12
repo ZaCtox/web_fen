@@ -1,7 +1,9 @@
 // JavaScript para el formulario wizard de Staff
 // Ley de Hick-Hyman: Navegación por pasos del formulario
+// import Cropper from 'cropperjs'; // Ya no necesitamos cropper
+
 let currentStep = 1;
-const totalSteps = 4;
+const totalSteps = 5;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Solo buscar errores de validación de Laravel, no errores de UI
@@ -119,7 +121,7 @@ function updateProgress(step) {
 }
 
 function getSectionId(step) {
-    const sectionIds = ['personal', 'contacto', 'adicional', 'resumen'];
+    const sectionIds = ['personal', 'foto', 'contacto', 'adicional', 'resumen'];
     return sectionIds[step - 1];
 }
 
@@ -242,4 +244,88 @@ window.submitForm = function() {
         // Submit del formulario
         document.querySelector('.hci-form').submit();
     }
+}
+
+// ===== FUNCIONES PARA FOTO CON CROPPER =====
+
+// Drag & Drop handlers
+window.handleDragOver = function(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+window.handleDragLeave = function(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+}
+
+window.handleFotoDrop = function(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        handleFotoFile(file);
+    }
+}
+
+window.handleFotoSelect = function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        handleFotoFile(file);
+    }
+}
+
+function validateImageFile(file) {
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Por favor, selecciona una imagen JPG, PNG o WEBP.');
+        return false;
+    }
+    
+    // Validar tamaño (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('La imagen no puede exceder los 2MB.');
+        return false;
+    }
+    
+    return true;
+}
+
+function handleFotoFile(file) {
+    if (validateImageFile(file)) {
+        // Actualizar el input file directamente
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('foto-input').files = dataTransfer.files;
+        
+        // Crear preview URL
+        const previewUrl = URL.createObjectURL(file);
+        document.getElementById('foto-preview').src = previewUrl;
+        
+        // Mostrar información del archivo
+        document.getElementById('foto-name').textContent = file.name;
+        document.getElementById('foto-preview-info').classList.remove('hidden');
+        document.getElementById('foto-drop-text').textContent = 'Foto seleccionada';
+        
+        showToast('Foto seleccionada correctamente', 'success');
+    }
+}
+
+// Función eliminada - ya no necesitamos el cropper
+
+// Todas las funciones del cropper eliminadas
+
+window.clearFoto = function() {
+    document.getElementById('foto-input').value = '';
+    document.getElementById('foto-preview-info').classList.add('hidden');
+    document.getElementById('foto-drop-text').textContent = 'Arrastra tu foto aquí';
+    
+    // Restablecer preview a avatar por defecto
+    const defaultAvatar = 'https://ui-avatars.com/api/?name=Foto&background=84b6f4&color=000000&size=300&bold=true&font-size=0.4';
+    document.getElementById('foto-preview').src = defaultAvatar;
+    
+    currentFile = null;
 }
