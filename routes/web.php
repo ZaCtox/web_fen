@@ -167,8 +167,18 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:administrador,director_programa,director_administrativo')
         ->name('mallas-curriculares.toggle-estado');
 
-    // 👨‍🏫 Staff
-    Route::resource('staff', StaffController::class)
+    // 👨‍🏫 Equipo
+    Route::resource('equipo', StaffController::class)
+        ->parameters(['equipo' => 'staff'])
+        ->names([
+            'index' => 'staff.index',
+            'create' => 'staff.create',
+            'store' => 'staff.store',
+            'show' => 'staff.show',
+            'edit' => 'staff.edit',
+            'update' => 'staff.update',
+            'destroy' => 'staff.destroy'
+        ])
         ->middleware('role:administrador');
 
     // 📰 Novedades
@@ -191,6 +201,10 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])
         ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
         ->name('emergencies.deactivate');
+
+    Route::patch('emergencies/{id}/toggle-active', [EmergencyController::class, 'toggleActive'])
+        ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
+        ->name('emergencies.toggleActive');
 
     Route::resource('informes', InformeController::class)->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado');
 

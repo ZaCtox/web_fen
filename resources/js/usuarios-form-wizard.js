@@ -14,15 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Detectar si estamos en modo edición
-    const isEditing = document.querySelector('form').action.includes('usuarios/');
+    // Detectar si estamos en modo edición usando el campo oculto
+    const isEditingInput = document.getElementById('is-editing');
+    const isEditing = isEditingInput && isEditingInput.value === '1';
     totalSteps = isEditing ? 2 : 3;
     
-    // En modo edición, ocultar el paso 3
+    // En modo edición, ocultar el paso 3 del sidebar si existe
     if (isEditing) {
-        const step3Element = document.querySelector('[data-step="3"]');
-        if (step3Element) {
-            step3Element.style.display = 'none';
+        const step3Sidebar = document.querySelector('.hci-progress-sidebar [data-step="3"]');
+        if (step3Sidebar) {
+            step3Sidebar.style.display = 'none';
         }
     }
     
@@ -50,13 +51,6 @@ window.nextStep = function() {
     if (validateCurrentStep()) {
         if (currentStep < totalSteps) {
             currentStep++;
-            
-            // En modo edición, saltar el paso 3 (adicional) y ir directo al resumen
-            const isEditing = document.querySelector('form').action.includes('usuarios/');
-            if (isEditing && currentStep === 3) {
-                currentStep = 4; // Saltar al resumen
-            }
-            
             showStep(currentStep);
             updateProgress(currentStep);
         }
@@ -73,10 +67,16 @@ window.prevStep = function() {
 
 // Navegación directa por clic en el progreso lateral
 window.navigateToStep = function(step) {
-    const isEditing = document.querySelector('form').action.includes('usuarios/');
+    const isEditingInput = document.getElementById('is-editing');
+    const isEditing = isEditingInput && isEditingInput.value === '1';
     
     // En modo edición, no permitir navegar al paso 3 (no existe)
-    if (isEditing && step === 3) {
+    if (isEditing && step > 2) {
+        return;
+    }
+    
+    // No permitir navegar a pasos que no existen
+    if (step > totalSteps) {
         return;
     }
     
@@ -145,17 +145,18 @@ function updateProgress(step) {
 }
 
 function getSectionId(step) {
-    // Detectar si estamos en modo edición
-    const isEditing = document.querySelector('form').action.includes('usuarios/');
+    // Detectar si estamos en modo edición usando el campo oculto
+    const isEditingInput = document.getElementById('is-editing');
+    const isEditing = isEditingInput && isEditingInput.value === '1';
     
     if (isEditing) {
         // En edición: personal (con rol incluido), resumen (2 pasos)
         const sectionIds = ['personal', 'resumen'];
-        return sectionIds[step - 1];
+        return sectionIds[step - 1] || 'resumen';
     } else {
         // En registro: personal (con rol incluido), notificacion, resumen (3 pasos)
         const sectionIds = ['personal', 'notificacion', 'resumen'];
-        return sectionIds[step - 1];
+        return sectionIds[step - 1] || 'resumen';
     }
 }
 
@@ -248,8 +249,9 @@ function updateSummary() {
     const email = document.querySelector('input[name="email"]')?.value || '';
     const rol = document.querySelector('select[name="rol"]')?.value || '';
     
-    // Detectar si estamos en modo edición
-    const isEditing = document.querySelector('form').action.includes('usuarios/');
+    // Detectar si estamos en modo edición usando el campo oculto
+    const isEditingInput = document.getElementById('is-editing');
+    const isEditing = isEditingInput && isEditingInput.value === '1';
     
     // Actualizar elementos del resumen
     const resumenName = document.getElementById('summary-name');

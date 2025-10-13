@@ -52,7 +52,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         return redirect()
-            ->route('login')
-            ->with('success', 'Cuenta creada. Ahora inicia sesión.');
+            ->route('usuarios.index')
+            ->with('success', 'Usuario creado exitosamente. Se ha enviado un correo con las credenciales de acceso.');
     }
 }

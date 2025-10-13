@@ -236,14 +236,27 @@ class RoomController extends Controller
     {
         try {
             $room->loadCount(['clases', 'incidents']);
-            $clases = $room->clases()->with(['course.magister', 'period'])->get();
+            
+            // Obtener sesiones con sus relaciones
+            $sesiones = \App\Models\ClaseSesion::where('room_id', $room->id)
+                ->with(['clase.course.magister', 'clase.period'])
+                ->orderBy('fecha', 'asc')
+                ->get();
 
             // Filtros dinámicos para vista
             $magisters = Magister::orderBy('nombre')->get();
-            $dias = ['Viernes', 'Sábado'];
+            
+            // Obtener días únicos desde las sesiones
+            $dias = \App\Models\ClaseSesion::where('room_id', $room->id)
+                ->distinct()
+                ->pluck('dia')
+                ->filter()
+                ->sort()
+                ->values();
+            
             $trimestres = Period::orderBy('anio')->orderBy('numero')->get();
 
-            return view('rooms.show', compact('room', 'clases', 'magisters', 'dias', 'trimestres'));
+            return view('rooms.show', compact('room', 'sesiones', 'magisters', 'dias', 'trimestres'));
 
         } catch (Exception $e) {
             Log::error('Error al mostrar detalle de sala: ' . $e->getMessage());

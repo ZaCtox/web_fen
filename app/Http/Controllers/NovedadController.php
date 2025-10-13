@@ -57,7 +57,15 @@ class NovedadController extends Controller
 
             $magisters = Magister::orderBy('nombre')->get();
 
-            return view('novedades.index', compact('novedades', 'magisters'));
+            // Estadísticas calculadas sobre toda la tabla (no solo paginación)
+            $estadisticas = [
+                'total' => Novedad::count(),
+                'publicas' => Novedad::where('visible_publico', true)->count(),
+                'urgentes' => Novedad::where('es_urgente', true)->count(),
+                'expiradas' => Novedad::where('fecha_expiracion', '<', now())->whereNotNull('fecha_expiracion')->count(),
+            ];
+
+            return view('novedades.index', compact('novedades', 'magisters', 'estadisticas'));
 
         } catch (Exception $e) {
             Log::error('Error al cargar novedades: ' . $e->getMessage());

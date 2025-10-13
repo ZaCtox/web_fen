@@ -173,110 +173,19 @@
                 <div class="mt-8 pt-8 border-t-2 border-gray-200 dark:border-gray-700" x-data="{ 
                     showModal: false, 
                     modalMode: 'add',
-                    editingSesion: null,
-                    showGenerador: false
+                    editingSesion: null
                 }">
                     <div class="flex items-center justify-between mb-6">
                         <h4 class="text-2xl font-bold text-[#005187] dark:text-[#c4dafa] flex items-center gap-3">
                             <span class="text-3xl" role="img" aria-label="Calendario">📅</span>
                             Sesiones de la Clase
                         </h4>
-                        <div class="flex gap-2">
-                            <button @click="showGenerador = !showGenerador"
-                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2"
-                                    title="Generar sesiones automáticamente">
-                                <img src="{{ asset('icons/calendar.svg') }}" alt="Generar" class="w-5 h-5">
-                                <span class="hidden sm:inline">Generar</span>
-                            </button>
-                            <button @click="showModal = true; modalMode = 'add'; editingSesion = null"
-                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#3ba55d] hover:bg-[#2d864a] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#3ba55d] focus:ring-offset-2"
-                                    title="Agregar nueva sesión">
-                                <img src="{{ asset('icons/add.svg') }}" alt="Agregar" class="w-5 h-5">
-                                <span class="hidden sm:inline">Nueva Sesión</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Generador de sesiones automático --}}
-                    <div x-show="showGenerador" 
-                         x-transition
-                         class="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-lg shadow-md">
-                        <div class="flex items-start gap-4">
-                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-2xl">
-                                🤖
-                            </div>
-                            <div class="flex-1">
-                                <h5 class="text-lg font-bold text-[#005187] dark:text-[#c4dafa] mb-2">
-                                    Generador Automático de Sesiones
-                                </h5>
-                                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 border border-blue-200 dark:border-blue-800">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                        <div>
-                                            <span class="text-gray-600 dark:text-gray-400">📅 Período:</span>
-                                            <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->period->nombre_completo ?? 'No asignado' }}</span>
-                                        </div>
-                                        <div>
-                                            <span class="text-gray-600 dark:text-gray-400">📆 Día de clase:</span>
-                                            <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->dia }}</span>
-                                        </div>
-                                        @if($clase->period && $clase->period->fecha_inicio && $clase->period->fecha_fin)
-                                            <div>
-                                                <span class="text-gray-600 dark:text-gray-400">🗓️ Inicio:</span>
-                                                <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->period->fecha_inicio->format('d/m/Y') }}</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-gray-600 dark:text-gray-400">🏁 Fin:</span>
-                                                <span class="font-semibold text-gray-900 dark:text-white ml-2">{{ $clase->period->fecha_fin->format('d/m/Y') }}</span>
-                                            </div>
-                                            @php
-                                                $inicio = \Carbon\Carbon::parse($clase->period->fecha_inicio);
-                                                $fin = \Carbon\Carbon::parse($clase->period->fecha_fin);
-                                                $diaSemana = $clase->dia === 'Viernes' ? 5 : 6;
-                                                $sesionesEstimadas = 0;
-                                                $current = $inicio->copy();
-                                                while ($current->dayOfWeek !== $diaSemana && $current->lte($fin)) {
-                                                    $current->addDay();
-                                                }
-                                                while ($current->lte($fin)) {
-                                                    $sesionesEstimadas++;
-                                                    $current->addWeek();
-                                                }
-                                            @endphp
-                                            <div class="sm:col-span-2">
-                                                <span class="text-gray-600 dark:text-gray-400">📊 Sesiones estimadas:</span>
-                                                <span class="font-bold text-[#4d82bc] dark:text-[#84b6f4] ml-2 text-lg">~{{ $sesionesEstimadas }} sesiones</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                                @if($clase->period && $clase->period->fecha_inicio && $clase->period->fecha_fin)
-                                    <form action="{{ route('clases.sesiones.generar', $clase) }}" method="POST" class="flex gap-3">
-                                        @csrf
-                                        <button type="submit"
-                                                class="flex-1 inline-flex justify-center items-center gap-2 px-6 py-3 bg-[#3ba55d] hover:bg-[#2d864a] text-white font-bold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105">
-                                            <img src="{{ asset('icons/calendar.svg') }}" alt="Generar" class="w-5 h-5">
-                                            Generar Todas las Sesiones
-                                        </button>
-                                        <button type="button"
-                                                @click="showGenerador = false"
-                                                class="px-4 py-3 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium rounded-lg transition-all duration-200">
-                                            Cancelar
-                                        </button>
-                                    </form>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-3 flex items-start gap-2">
-                                        <span>💡</span>
-                                        <span>Se generarán sesiones todos los <strong>{{ $clase->dia }}</strong> desde el {{ $clase->period->fecha_inicio->format('d/m/Y') }} hasta el {{ $clase->period->fecha_fin->format('d/m/Y') }}. Las sesiones que ya existan no se duplicarán.</span>
-                                    </p>
-                                @else
-                                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg">
-                                        <p class="text-sm text-yellow-800 dark:text-yellow-300 flex items-start gap-2">
-                                            <span>⚠️</span>
-                                            <span>El período asignado a esta clase no tiene fechas de inicio y fin configuradas. Por favor, configura las fechas del período primero.</span>
-                                        </p>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
+                        <button @click="showModal = true; modalMode = 'add'; editingSesion = null"
+                                class="inline-flex items-center gap-2 px-6 py-3 bg-[#3ba55d] hover:bg-[#2d864a] text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#3ba55d] focus:ring-offset-2 text-sm hci-button-ripple hci-glow"
+                                title="Agregar nueva sesión">
+                            <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                            <span>Nueva Sesión</span>
+                        </button>
                     </div>
 
                     {{-- Lista de sesiones --}}
@@ -312,7 +221,7 @@
                                             <button @click="showModal = true; modalMode = 'grabacion'; editingSesion = {{ $sesion->id }}"
                                                     class="inline-flex items-center gap-2 px-4 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2"
                                                     title="Agregar grabación">
-                                                <img src="{{ asset('icons/upload.svg') }}" alt="Subir" class="w-5 h-5">
+                                                <img src="{{ asset('icons/agregar.svg') }}" alt="Subir" class="w-5 h-5">
                                                 Agregar Grabación
                                             </button>
                                         @endif
@@ -341,7 +250,7 @@
                         <div class="text-center py-12 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
                             <span class="text-6xl" role="img" aria-label="Sin sesiones">📭</span>
                             <p class="mt-4 text-gray-600 dark:text-gray-400 font-medium">No hay sesiones registradas</p>
-                            <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">Agrega sesiones manualmente o usa el generador automático</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">Agrega sesiones usando el botón "Nueva Sesión"</p>
                         </div>
                 @endif
 

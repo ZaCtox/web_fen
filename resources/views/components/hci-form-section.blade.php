@@ -57,6 +57,46 @@
                 <div class="{{ $contentClass ?: 'w-full' }}">
                     {{ $slot }}
                 </div>
+            @elseif($sectionId === 'basica')
+                {{-- Excepción: información básica de novedades con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
+            @elseif($sectionId === 'diseno')
+                {{-- Excepción: diseño de novedades con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
+            @elseif($sectionId === 'configuracion')
+                {{-- Excepción: configuración de novedades con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
+            @elseif($sectionId === 'informacion')
+                {{-- Excepción: información básica de informes con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
+            @elseif($sectionId === 'archivo')
+                {{-- Excepción: archivo de informes con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
+            @elseif(in_array($sectionId, ['basica', 'ubicacion', 'evidencia']))
+                {{-- Excepción: secciones de incidencias con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
+            @elseif($sectionId === 'programa')
+                {{-- Excepción: programa de cursos con grid personalizado --}}
+                <div class="grid {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
+            @elseif(in_array($sectionId, ['general', 'config-sesiones']))
+                {{-- Excepción: secciones de clases con grid personalizado --}}
+                <div class="grid {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
             @else
                 <div class="hci-form-grid {{ $contentClass }}">
                     {{ $slot }}

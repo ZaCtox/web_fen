@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar formulario
     showStep(currentStep);
+    updateProgress();
     
     // Validación en tiempo real
     const inputs = document.querySelectorAll('.hci-input, .hci-select, .hci-textarea');
@@ -139,17 +140,41 @@ function getSectionId(step) {
 }
 
 function validateCurrentStep() {
-    const currentSection = document.getElementById(getSectionId(currentStep));
+    const sectionId = getSectionId(currentStep);
+    const currentSection = document.getElementById(sectionId);
+    
+    if (!currentSection) {
+        console.error('No se encontró la sección para el paso:', currentStep, sectionId);
+        return false;
+    }
+    
     const requiredFields = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
     
     let isValid = true;
     
     requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            validateField(field);
-            isValid = false;
+        // Saltar validación de campos ocultos
+        if (field.offsetParent === null) {
+            return;
+        }
+        
+        // Para campos de archivo, verificar si tienen archivos seleccionados
+        if (field.type === 'file') {
+            if (field.hasAttribute('required') && field.files.length === 0) {
+                validateField(field);
+                isValid = false;
+            } else {
+                clearFieldError(field);
+            }
         } else {
-            clearFieldError(field);
+            // Para otros campos, verificar el valor
+            const value = field.value ? field.value.trim() : '';
+            if (!value) {
+                validateField(field);
+                isValid = false;
+            } else {
+                clearFieldError(field);
+            }
         }
     });
     

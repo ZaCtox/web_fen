@@ -208,7 +208,128 @@ function updateSummary() {
 window.submitForm = function() {
     // Validar el paso actual antes de enviar
     if (validateCurrentStep()) {
+        // Mostrar overlay de loading
+        if (!document.getElementById('form-loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'form-loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-overlay-content">
+                    <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                    <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
         // Enviar el formulario
         document.querySelector('.hci-form').submit();
     }
 }
+
+// Funciones para drag & drop de imágenes
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleImageDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        handleImageFile(file);
+    }
+}
+
+function handleImageSelect(e) {
+    const file = e.target.files[0];
+    if (file) {
+        handleImageFile(file);
+    }
+}
+
+function validateImageFile(file) {
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Por favor, selecciona una imagen JPG, PNG o WEBP.');
+        return false;
+    }
+    
+    // Validar tamaño (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('La imagen no puede exceder los 2MB.');
+        return false;
+    }
+    
+    return true;
+}
+
+function handleImageFile(file) {
+    if (validateImageFile(file)) {
+        // Actualizar el input file
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('imagen-input').files = dataTransfer.files;
+        
+        // Crear preview URL
+        const previewUrl = URL.createObjectURL(file);
+        const thumbnail = document.getElementById('preview-thumbnail');
+        if (thumbnail) {
+            thumbnail.src = previewUrl;
+        }
+        
+        // Mostrar información del archivo
+        const imageName = document.getElementById('image-name');
+        if (imageName) {
+            imageName.textContent = file.name;
+        }
+        
+        const imagePreview = document.getElementById('image-preview');
+        if (imagePreview) {
+            imagePreview.classList.remove('hidden');
+        }
+        
+        const dropText = document.getElementById('image-drop-text');
+        if (dropText) {
+            dropText.textContent = 'Imagen seleccionada';
+        }
+        
+        // Actualizar resumen
+        updateSummary();
+    }
+}
+
+function clearImage() {
+    const imageInput = document.getElementById('imagen-input');
+    if (imageInput) {
+        imageInput.value = '';
+    }
+    
+    const imagePreview = document.getElementById('image-preview');
+    if (imagePreview) {
+        imagePreview.classList.add('hidden');
+    }
+    
+    const dropText = document.getElementById('image-drop-text');
+    if (dropText) {
+        dropText.textContent = 'Arrastra tu imagen aquí';
+    }
+    
+    updateSummary();
+}
+
+// Hacer funciones globales
+window.handleDragOver = handleDragOver;
+window.handleDragLeave = handleDragLeave;
+window.handleImageDrop = handleImageDrop;
+window.handleImageSelect = handleImageSelect;
+window.clearImage = clearImage;

@@ -33,72 +33,68 @@
             }
         }">
 
-        {{-- Encabezado --}}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div>
-                <h2 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4]">
-                    Gestión de Mallas Curriculares
-                </h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Administra las versiones de mallas curriculares por programa
-                </p>
-            </div>
+        {{-- Botones superiores --}}
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+            {{-- Lado izquierdo: Botón Agregar --}}
             <a href="{{ route('mallas-curriculares.create') }}"
-                class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 font-medium"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow"
                 title="Crear nueva malla curricular">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                <span>Agregar Malla Curricular</span>
             </a>
-        </div>
 
-        {{-- Filtros Dinámicos --}}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                {{-- Filtro Programa --}}
-                <div>
-                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                        Programa:
-                    </label>
-                    <select x-model="magisterId" @change="actualizarURL()"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors">
-                        <option value="">Todos los programas</option>
-                        @foreach($magisters as $magister)
-                            <option value="{{ $magister->id }}">
-                                {{ $magister->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            {{-- Lado derecho: Filtros --}}
+            <div class="w-full sm:w-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 items-end">
+                        {{-- Filtro Programa --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                                Programa:
+                            </label>
+                            <select x-model="magisterId" @change="actualizarURL()"
+                                class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                                <option value="">Todos</option>
+                                @foreach($magisters as $magister)
+                                    <option value="{{ $magister->id }}">
+                                        {{ $magister->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                {{-- Filtro Estado --}}
-                <div>
-                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                        Estado:
-                    </label>
-                    <select x-model="activa" @change="actualizarURL()"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors">
-                        <option value="">Todas</option>
-                        <option value="1">Activas</option>
-                        <option value="0">Inactivas</option>
-                    </select>
-                </div>
+                        {{-- Filtro Estado --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                                Estado:
+                            </label>
+                            <select x-model="activa" @change="actualizarURL()"
+                                class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                                <option value="">Todas</option>
+                                <option value="1">Activas</option>
+                                <option value="0">Inactivas</option>
+                            </select>
+                        </div>
 
-                {{-- Filtro Año --}}
-                <div>
-                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                        Año:
-                    </label>
-                    <input type="number" x-model="año" @input.debounce.500ms="actualizarURL()" placeholder="Ej: 2025"
-                        min="2020" max="2100"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors">
-                </div>
+                        {{-- Filtro Año --}}
+                        <div>
+                            <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                                Año:
+                            </label>
+                            <input type="number" x-model="año" @input.debounce.500ms="actualizarURL()" placeholder="Ej: 2025"
+                                min="2020" max="2100"
+                                class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                        </div>
 
-                {{-- Botón Limpiar Filtros --}}
-                <div>
-                    <button @click="limpiarFiltros()"
-                        class="mt-1 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105"
-                        title="Limpiar filtros">
-                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-5 h-5">
-                    </button>
+                        {{-- Botón Limpiar Filtros --}}
+                        <div>
+                            <button @click="limpiarFiltros()"
+                                class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
+                                title="Limpiar filtros">
+                                <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -181,23 +177,23 @@
                                 </td>
                                 
                                 {{-- Acciones --}}
-                                <td class="px-4 py-3 whitespace-nowrap text-center">
-                                    <div class="flex items-center justify-center gap-1" onclick="event.stopPropagation()">
+                                <td class="px-4 py-3 whitespace-nowrap text-center" onclick="event.stopPropagation()">
+                                    <div class="flex items-center justify-center gap-2">
                                         {{-- Editar --}}
                                         <a href="{{ route('mallas-curriculares.edit', $malla) }}"
-                                            class="inline-flex items-center justify-center w-8 h-8 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                                            title="Editar">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
+                                            class="inline-flex items-center justify-center p-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
+                                            title="Editar malla curricular">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5">
                                         </a>
 
                                         {{-- Activar/Desactivar --}}
                                         <form action="{{ route('mallas-curriculares.toggle-estado', $malla) }}" method="POST" class="inline">
                                             @csrf
                                             <button type="submit"
-                                                class="inline-flex items-center justify-center w-8 h-8 {{ $malla->activa ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600' }} text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2"
-                                                title="{{ $malla->activa ? 'Desactivar' : 'Activar' }}">
+                                                class="inline-flex items-center justify-center p-2.5 {{ $malla->activa ? 'bg-orange-500 hover:bg-orange-600' : 'bg-green-500 hover:bg-green-600' }} text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-1"
+                                                title="{{ $malla->activa ? 'Desactivar malla' : 'Activar malla' }}">
                                                 <img src="{{ asset($malla->activa ? 'icons/desactivarw.svg' : 'icons/activarw.svg') }}"
-                                                    alt="{{ $malla->activa ? 'Desactivar' : 'Activar' }}" class="w-4 h-4">
+                                                    alt="" class="w-5 h-5">
                                             </button>
                                         </form>
                                     </div>

@@ -25,32 +25,36 @@
         }">
 
         {{-- Header acciones --}}
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            {{-- Botón Agregar (Izquierda) --}}
             <a href="{{ route('rooms.create') }}"
-                class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200"
-                title="Agregar nueva sala">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar sala" class="w-5 h-5">
+                class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
+                aria-label="Agregar nueva sala">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                Agregar Sala
             </a>
 
-            {{-- Filtro de búsqueda en tiempo real --}}
-            <div class="flex w-full sm:w-auto gap-3 items-end">
-                <div class="w-full sm:w-[350px]">
-                    <label for="search-rooms" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-1">
-                        Buscar por nombre o ubicación:
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4 text-gray-400">
-                        </div>
-                        <input id="search-rooms" type="text" x-model="search" placeholder="Ej: Edificio Norte o Sala 101" 
-                               class="w-full pl-10 pr-3 py-2 border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 text-[#005187] dark:text-white focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent rounded-lg shadow-sm transition" />
+            {{-- Filtros (Derecha) --}}
+            <div class="flex gap-3 items-center w-full sm:w-auto">
+                <div class="relative flex-1 sm:flex-initial">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <img src="{{ asset('icons/filtro.svg') }}" alt="" class="h-5 w-5 opacity-60">
                     </div>
+                    <input x-model="search" 
+                           type="text" 
+                           id="search-rooms"
+                           role="search"
+                           aria-label="Buscar salas por nombre o ubicación"
+                           placeholder="Buscar por nombre o ubicación"
+                           class="w-full sm:w-[350px] pl-10 pr-4 py-3 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
                 </div>
-                <button type="button" @click="search=''"
-                        class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105"
+                
+                <button type="button" 
+                        @click="search=''"
+                        class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
                         title="Limpiar búsqueda"
                         aria-label="Limpiar búsqueda">
-                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-5 h-5">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
                 </button>
             </div>
         </div>
@@ -74,32 +78,33 @@
                                        hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
                                        hover:border-l-4 hover:border-l-[#4d82bc]
                                        hover:-translate-y-0.5 hover:shadow-md
-                                       transition-all duration-200 group cursor-pointer">
+                                       transition-all duration-200 group cursor-pointer"
+                                @click="window.location=`/rooms/${room.id}`">
                                 <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200"
                                     x-text="room.name"></td>
                                 <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200"
                                     x-text="room.location"></td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2" @click.stop>
                                     <a :href="`/rooms/${room.id}#ficha`"
-                                        class="hci-button hci-lift hci-focus-ring inline-flex items-center text-sm hover:bg-[#84b6f4]/30 font-medium rounded-lg px-2 py-1 transition-all duration-200"
+                                        class="inline-flex items-center justify-center p-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
                                         title="Ver ficha técnica">
-                                        <img src="{{ asset('icons/ficha.svg') }}" alt="Ver ficha técnica" class="w-5 h-5">
+                                        <img src="{{ asset('icons/ficha.svg') }}" alt="" class="w-5 h-5">
                                     </a>
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2" @click.stop>
                                     <a :href="`/rooms/${room.id}#clases`"
-                                        class="hci-button hci-lift hci-focus-ring inline-flex items-center text-sm hover:bg-[#4d82bc]/30 font-medium rounded-lg px-2 py-1 transition-all duration-200"
+                                        class="inline-flex items-center justify-center p-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                         title="Ver clases asignadas">
-                                        <img src="{{ asset('icons/class.svg') }}" alt="Ver clases asignadas" class="w-5 h-5">
+                                        <img src="{{ asset('icons/class.svg') }}" alt="" class="w-5 h-5">
                                     </a>
                                 </td>
-                                <td class="px-4 py-2">
+                                <td class="px-4 py-2" @click.stop>
                                     <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
                                         {{-- Botón Editar --}}
                                         <a :href="`/rooms/${room.id}/edit`" 
-                                           class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
+                                           class="inline-flex items-center justify-center p-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
                                            title="Editar sala">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5">
                                         </a>
 
                                         {{-- Botón Eliminar --}}
@@ -107,9 +112,9 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
-                                                    class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                                                    class="inline-flex items-center justify-center p-2.5 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                                                     title="Eliminar sala">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-5 h-5">
                                             </button>
                                         </form>
                                     </div>

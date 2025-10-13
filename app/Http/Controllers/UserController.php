@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,7 +11,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $usuarios = User::select('id', 'name', 'email', 'rol')->get();
+        $usuarios = User::select('id', 'name', 'email', 'rol', 'created_at', 'last_login_at')->get();
         return view('usuarios.index', compact('usuarios'));
     }
 

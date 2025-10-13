@@ -17,8 +17,5 @@
     </div>
 </x-app-layout>
 
-{{-- Cargar JavaScript del wizard --}}
-@vite('resources/js/informes-form-wizard.js')
-
 
 

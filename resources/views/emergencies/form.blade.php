@@ -31,19 +31,20 @@
         :is-active="true"
         :is-first="true"
         :editing="$editing"
+        contentClass="grid-cols-1 gap-6"
     >
-                     <x-hci-field 
-                         name="title"
-                         label="Título de la Emergencia"
-                         placeholder="Ej: Mantenimiento programado del sistema"
-                         value="{{ old('title', $emergency->title ?? '') }}"
-                         :required="true"
-                         icon=""
-                         help=""
-                         maxlength="100"
-                         style="width: 450px !important;"
-                     />
-                </x-hci-form-section>
+        <div class="w-full">
+            <x-hci-field 
+                name="title"
+                label="Título de la Emergencia"
+                placeholder="Ej: Mantenimiento programado del sistema"
+                value="{{ old('title', $emergency->title ?? '') }}"
+                :required="true"
+                help="Título breve y descriptivo de la emergencia"
+                maxlength="100"
+            />
+        </div>
+    </x-hci-form-section>
 
     {{-- Sección 2: Detalles del Mensaje --}}
     <x-hci-form-section 
@@ -53,26 +54,21 @@
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z' clip-rule='evenodd'/></svg>"
         section-id="mensaje"
         :editing="$editing"
+        contentClass="grid-cols-1 gap-6"
     >
-                    <div class="hci-field">
-                        <label for="message" class="hci-label">
-                            Mensaje de Emergencia
-                            <span class="text-red-500">*</span>
-                        </label>
-                        <textarea 
-                            id="message" 
-                            name="message" 
-                            required 
-                            class="hci-textarea w-full" 
-                            placeholder="Describe detalladamente la situación de emergencia, incluyendo instrucciones específicas para la comunidad..."
-                            rows="6"
-                        >{{ old('message', $emergency->message ?? '') }}</textarea>
-                        <p class="hci-help-text">Proporciona información clara y detallada sobre la emergencia y las acciones que debe tomar la comunidad.</p>
-                        @error('message')
-                            <p class="hci-field-error">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </x-hci-form-section>
+        <div class="w-full">
+            <x-hci-field 
+                name="message"
+                type="textarea"
+                label="Mensaje de Emergencia"
+                placeholder="Describe detalladamente la situación de emergencia, incluyendo instrucciones específicas para la comunidad..."
+                value="{{ old('message', $emergency->message ?? '') }}"
+                :required="true"
+                help="Proporciona información clara y detallada sobre la emergencia y las acciones que debe tomar la comunidad."
+                rows="8"
+            />
+        </div>
+    </x-hci-form-section>
 
     {{-- Sección 3: Resumen y Confirmación --}}
     <x-hci-form-section 
@@ -84,27 +80,55 @@
         :is-last="true"
         :editing="$editing"
     >
-                    <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">                        
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <!-- Título - 1 columna -->
-                            <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                                <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Título</span>
-                                <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-titulo">{{ old('title', $emergency->title ?? '') }}</p>
-                            </div>
-
-                            <!-- Mensaje - 1 columna -->
-                            <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                                <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Mensaje</span>
-                                <p class="text-gray-900 dark:text-white font-medium text-lg whitespace-pre-wrap" id="resumen-mensaje">{{ old('message', $emergency->message ?? '') }}</p>
-                            </div>
+        <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">
+            <div class="space-y-6">
+                {{-- Título --}}
+                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-10 h-10 bg-[#4d82bc]/10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#4d82bc]" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
                         </div>
-                        
-                        <div class="mt-6 p-4 bg-[#fcffff] dark:bg-gray-800 rounded-lg border border-[#84b6f4]/20">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                <strong>Nota:</strong> Revisa que toda la información sea correcta antes de proceder. 
-                                {{ $editing ? 'Los cambios se aplicarán inmediatamente.' : 'Se creará una nueva alerta de emergencia que será visible para toda la comunidad.' }}
+                        <div class="flex-1">
+                            <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-1">Título de la Emergencia</span>
+                            <p class="text-gray-900 dark:text-white font-semibold text-lg" id="resumen-titulo">{{ old('title', $emergency->title ?? 'Sin título') }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Mensaje --}}
+                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-10 h-10 bg-[#4d82bc]/10 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-[#4d82bc]" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-1">Mensaje Detallado</span>
+                            <p class="text-gray-900 dark:text-white whitespace-pre-wrap leading-relaxed" id="resumen-mensaje">{{ old('message', $emergency->message ?? 'Sin mensaje') }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Nota de Advertencia --}}
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-yellow-800 dark:text-yellow-300 mb-1">
+                                <strong>⚠️ Importante:</strong>
+                            </p>
+                            <p class="text-sm text-yellow-700 dark:text-yellow-400">
+                                {{ $editing ? 'Los cambios se aplicarán inmediatamente y serán visibles para toda la comunidad.' : 'Se creará una nueva alerta de emergencia que será visible para toda la comunidad de forma inmediata.' }}
                             </p>
                         </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </x-hci-form-section>
 </x-hci-wizard-layout>

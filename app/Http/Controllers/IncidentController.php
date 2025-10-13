@@ -39,9 +39,9 @@ class IncidentController extends Controller
         }
         // Los roles autorizados ven todas las incidencias
 
-        if ($request->filled('search')) {
-            $query->where(fn ($q) => $q->where('titulo', 'like', '%'.$request->search.'%')
-                ->orWhere('descripcion', 'like', '%'.$request->search.'%'));
+        if ($request->filled('busqueda')) {
+            $query->where(fn ($q) => $q->where('titulo', 'like', '%'.$request->busqueda.'%')
+                ->orWhere('descripcion', 'like', '%'.$request->busqueda.'%'));
         }
 
         if ($request->filled('estado')) {
@@ -81,6 +81,20 @@ class IncidentController extends Controller
         $incidencias = $query->latest()->paginate(10)->withQueryString();
         $salas = Room::orderBy('name')->get();
 
+        // Calcular estadísticas sobre TODAS las incidencias del usuario (sin filtros)
+        $queryEstadisticas = Incident::query();
+        if (!in_array($user->rol, $rolesQueVenTodas)) {
+            $queryEstadisticas->where('user_id', $user->id);
+        }
+        
+        $estadisticas = [
+            'total' => $queryEstadisticas->count(),
+            'pendientes' => $queryEstadisticas->where('estado', 'pendiente')->count(),
+            'en_revision' => $queryEstadisticas->where('estado', 'en_revision')->count(),
+            'resueltas' => $queryEstadisticas->where('estado', 'resuelta')->count(),
+            'no_resueltas' => $queryEstadisticas->where('estado', 'no_resuelta')->count(),
+        ];
+
         // Obtener años SOLO de la cohorte actual (para filtro normal)
         $anios = Period::where('cohorte', $cohorteActual)
             ->get()
@@ -102,7 +116,7 @@ class IncidentController extends Controller
             ->orderBy('anio', 'desc')
             ->pluck('anio');
 
-        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'aniosHistoricos', 'periodos'));
+        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'aniosHistoricos', 'periodos', 'estadisticas'));
     }
 
     public function create()
@@ -300,6 +314,10 @@ class IncidentController extends Controller
 
         $query = Incident::with('room', 'user');
 
+        if ($request->filled('busqueda')) {
+            $query->where(fn ($q) => $q->where('titulo', 'like', '%'.$request->busqueda.'%')
+                ->orWhere('descripcion', 'like', '%'.$request->busqueda.'%'));
+        }
         if ($request->filled('anio')) {
             $query->whereYear('created_at', $request->anio);
         }

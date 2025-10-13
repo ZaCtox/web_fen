@@ -16,17 +16,18 @@
 
     <div class="py-6 space-y-8">
 
-        {{-- Volver --}}
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 mb-6">
-            <a href="{{ route('incidencias.index') }}"
-               class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium px-4 py-2 rounded-lg shadow transition-all duration-200 min-h-[48px]"
-               title="Volver a incidencias">
-                <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
-            </a>
-        </div>
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            {{-- Botón Volver --}}
+            <div class="mb-6">
+                <a href="{{ route('incidencias.index') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                   aria-label="Volver a incidencias">
+                    <img src="{{ asset('icons/back.svg') }}" alt="" class="w-5 h-5">
+                </a>
+            </div>
 
-        {{-- Filtros --}}
-        <form method="GET" id="form-filtros" class="max-w-6xl mx-auto sm:px-6 lg:px-8" x-data="{
+            {{-- Filtros --}}
+            <form method="GET" id="form-filtros" x-data="{
             estado: '{{ request('estado') }}',
             sala: '{{ request('room_id') }}',
             anio: '{{ request('anio') }}',
@@ -80,195 +81,236 @@
                 }
             }
         }" x-init="toggleAnioOptions()">
-            <div class="mb-4 grid grid-cols-1 md:grid-cols-5 gap-4 items-end bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg p-6">
+                <div class="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
+                    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
+                        {{-- Filtros --}}
+                        <div class="flex flex-wrap gap-3 items-end w-full">
+                            {{-- Estado --}}
+                            <div>
+                                <label for="estado" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
+                                    Estado
+                                </label>
+                                <select x-model="estado" 
+                                        @change="actualizarURL()"
+                                        id="estado"
+                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px] hci-focus-ring"
+                                        aria-label="Filtrar por estado">
+                                    <option value="">Todos</option>
+                                    <option value="pendiente">Pendientes</option>
+                                    <option value="en_revision">En Revisión</option>
+                                    <option value="resuelta">Resueltas</option>
+                                    <option value="no_resuelta">No Resueltas</option>
+                                </select>
+                            </div>
 
-                {{-- Estado --}}
-                <div>
-                    <label class="text-sm font-semibold text-[#005187]">Estado:</label>
-                    <select x-model="estado" @change="actualizarURL"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
-                        <option value="">Todos</option>
-                        <option value="pendiente">Pendientes</option>
-                        <option value="en_revision">Revisión</option>
-                        <option value="resuelta">Resueltas</option>
-                        <option value="no_resuelta">No resueltas</option>
-                    </select>
+                            {{-- Sala --}}
+                            <div>
+                                <label for="sala" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
+                                    Sala
+                                </label>
+                                <select x-model="sala" 
+                                        @change="actualizarURL()"
+                                        id="sala"
+                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px] hci-focus-ring"
+                                        aria-label="Filtrar por sala">
+                                    <option value="">Todas</option>
+                                    @foreach ($salas as $s)
+                                        <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Año --}}
+                            <div>
+                                <label for="anio-select" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
+                                    Año
+                                </label>
+                                <select x-model="anio" 
+                                        @change="actualizarURL()" 
+                                        id="anio-select"
+                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[120px] hci-focus-ring"
+                                        aria-label="Filtrar por año">
+                                    <option value="">Todos</option>
+                                    @foreach ($anios as $a)
+                                        <option value="{{ $a }}" class="anio-normal">{{ $a }}</option>
+                                    @endforeach
+                                    @foreach ($aniosHistoricos as $a)
+                                        <option value="{{ $a }}" class="anio-historico" style="display: none;">{{ $a }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Trimestre --}}
+                            <div id="trimestre-div">
+                                <label for="trimestre" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
+                                    Trimestre
+                                </label>
+                                <select x-model="trimestre" 
+                                        @change="actualizarURL()"
+                                        id="trimestre"
+                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[130px] hci-focus-ring"
+                                        aria-label="Filtrar por trimestre">
+                                    <option value="">Todos</option>
+                                    <template x-for="p in periodosFiltrados" :key="p.id">
+                                        <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero">
+                                        </option>
+                                    </template>
+                                </select>
+                            </div>
+
+                            {{-- Histórico --}}
+                            <div class="flex items-end">
+                                <label class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                    <input type="checkbox" 
+                                           x-model="historico" 
+                                           @change="actualizarURL()" 
+                                           id="historico"
+                                           class="rounded border-[#84b6f4] text-[#4d82bc] focus:ring-[#4d82bc]">
+                                    <span class="text-sm font-semibold text-[#005187] dark:text-gray-300">Histórico</span>
+                                </label>
+                            </div>
+                            
+                            {{-- Limpiar --}}
+                            <button type="button" 
+                                    @click="estado = ''; sala = ''; anio = ''; trimestre = ''; historico = false; actualizarURL();"
+                                    class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
+                                    title="Limpiar filtros"
+                                    aria-label="Limpiar filtros">
+                                <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
+                            </button>
+                        </div>
+                    </div>
                 </div>
+            </form>
 
-                {{-- Sala --}}
-                <div>
-                    <label class="text-sm font-semibold text-[#005187]">Sala:</label>
-                    <select x-model="sala" @change="actualizarURL"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
-                        <option value="">Todas</option>
-                        @foreach ($salas as $s)
-                            <option value="{{ $s->id }}">{{ $s->name }}</option>
-                        @endforeach
-                    </select>
+            {{-- Mensaje histórico --}}
+            @if(request('historico'))
+                <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 px-4 py-3 rounded mb-4 text-sm">
+                    Mostrando solo incidencias fuera de los períodos académicos actuales (modo histórico).
                 </div>
+            @endif
 
-                {{-- Año --}}
-                <div>
-                    <label class="text-sm font-semibold text-[#005187]">Año:</label>
-                    <select x-model="anio" @change="actualizarURL" id="anio-select"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
-                        <option value="">Todos</option>
-                        @foreach ($anios as $a)
-                            <option value="{{ $a }}" class="anio-normal">{{ $a }}</option>
-                        @endforeach
-                        @foreach ($aniosHistoricos as $a)
-                            <option value="{{ $a }}" class="anio-historico" style="display: none;">{{ $a }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Trimestre --}}
-                <div id="trimestre-div">
-                    <label class="text-sm font-semibold text-[#005187]">Trimestre:</label>
-                    <select x-model="trimestre" @change="actualizarURL"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
-                        <option value="">Todos</option>
-                        <template x-for="p in periodosFiltrados" :key="p.id">
-                            <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero">
-                            </option>
-                        </template>
-                    </select>
-                </div>
-
-                {{-- Histórico --}}
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" x-model="historico" @change="actualizarURL" id="historico"
-                           class="rounded border-[#84b6f4] text-[#4d82bc] focus:ring-[#4d82bc]">
-                    <label for="historico" class="text-sm font-semibold text-[#005187]">Registros Históricos</label>
-                </div>
-
-                {{-- Limpiar filtros --}}
-                <div class="flex items-end">
-                    <button type="button" @click="
-                        estado = '';
-                        sala = '';
-                        anio = '';
-                        trimestre = '';
-                        historico = false;
-                        actualizarURL();
-                    "
-                        class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                        title="Limpiar filtros"
-                        aria-label="Limpiar filtros">
-                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
-                    </button>
-                </div>
-
-            </div>
-        </form>
-
-        {{-- Mensaje histórico --}}
-        @if(request('historico'))
-            <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-                <div class="rounded border border-yellow-300 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 px-4 py-2 text-sm">
-                    Mostrando solo incidencias fuera de los períodos definidos (modo histórico).
-                </div>
-            </div>
-        @endif
-
-        {{-- KPIs --}}
-        @php
-            $totalInc = ($porEstado->sum()) ?? 0;
-            $pendientes = $porEstado->get('Pendiente', $porEstado->get('pendiente', 0)) ?? 0;
-            $resueltas = $porEstado->get('Resuelta', $porEstado->get('resuelta', 0)) ?? 0;
-            $pctResueltas = $totalInc > 0 ? round(($resueltas / $totalInc) * 100) : 0;
-            
-            // Nuevas métricas de tiempo de respuesta
-            $incidenciasResueltas = $incidenciasFiltradas->where('estado', 'resuelta')->whereNotNull('resuelta_en');
-            $tiempoPromedioResolucion = $incidenciasResueltas->avg(function($inc) {
-                return $inc->created_at->diffInHours($inc->resuelta_en);
-            });
-            $tiempoPromedioResolucion = $tiempoPromedioResolucion ? round($tiempoPromedioResolucion, 1) : 0;
-            
-            // Tiempo promedio por estado
-            $tiempoPorEstado = [];
-            foreach (['pendiente', 'en_revision', 'resuelta'] as $estado) {
-                $incidenciasEstado = $incidenciasFiltradas->where('estado', $estado);
-                if ($estado === 'resuelta') {
-                    $incidenciasEstado = $incidenciasEstado->whereNotNull('resuelta_en');
-                }
-                $tiempoPromedio = $incidenciasEstado->avg(function($inc) {
-                    if ($inc->estado === 'resuelta' && $inc->resuelta_en) {
-                        return $inc->created_at->diffInHours($inc->resuelta_en);
-                    }
-                    return $inc->created_at->diffInHours(now());
+            {{-- KPIs --}}
+            @php
+                $totalInc = ($porEstado->sum()) ?? 0;
+                $pendientes = $porEstado->get('Pendiente', $porEstado->get('pendiente', 0)) ?? 0;
+                $resueltas = $porEstado->get('Resuelta', $porEstado->get('resuelta', 0)) ?? 0;
+                $pctResueltas = $totalInc > 0 ? round(($resueltas / $totalInc) * 100) : 0;
+                
+                // Nuevas métricas de tiempo de respuesta
+                $incidenciasResueltas = $incidenciasFiltradas->where('estado', 'resuelta')->whereNotNull('resuelta_en');
+                $tiempoPromedioResolucion = $incidenciasResueltas->avg(function($inc) {
+                    return $inc->created_at->diffInHours($inc->resuelta_en);
                 });
-                $tiempoPorEstado[$estado] = $tiempoPromedio ? round($tiempoPromedio, 1) : 0;
-            }
-        @endphp
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                $tiempoPromedioResolucion = $tiempoPromedioResolucion ? round($tiempoPromedioResolucion, 1) : 0;
+                
+                // Tiempo promedio por estado
+                $tiempoPorEstado = [];
+                foreach (['pendiente', 'en_revision', 'resuelta'] as $estado) {
+                    $incidenciasEstado = $incidenciasFiltradas->where('estado', $estado);
+                    if ($estado === 'resuelta') {
+                        $incidenciasEstado = $incidenciasEstado->whereNotNull('resuelta_en');
+                    }
+                    $tiempoPromedio = $incidenciasEstado->avg(function($inc) {
+                        if ($inc->estado === 'resuelta' && $inc->resuelta_en) {
+                            return $inc->created_at->diffInHours($inc->resuelta_en);
+                        }
+                        return $inc->created_at->diffInHours(now());
+                    });
+                    $tiempoPorEstado[$estado] = $tiempoPromedio ? round($tiempoPromedio, 1) : 0;
+                }
+            @endphp
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                 {{-- Total --}}
-                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex items-center gap-4 hover:scale-105 transition-all duration-200 cursor-pointer">
-                    <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-                        <img src="{{ asset('icons/estadistica.svg') }}" class="w-6 h-6" alt="Total">
+                <a href="{{ route('incidencias.index') }}" 
+                   class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+                   title="Ver todas las incidencias">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Total</p>
+                            <p class="text-3xl font-bold text-[#005187] dark:text-[#84b6f4]">{{ $totalInc }}</p>
+                        </div>
+                        <div class="w-14 h-14 bg-[#4d82bc]/10 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">📊</span>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Total incidencias</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $totalInc }}</p>
-                    </div>
-                </div>
+                </a>
 
                 {{-- Pendientes --}}
-                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex items-center gap-4 hover:scale-105 transition-all duration-200 cursor-pointer">
-                    <div class="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-full">
-                        <img src="{{ asset('icons/clock.svg') }}" class="w-6 h-6" alt="Pendientes">
+                <a href="{{ route('incidencias.index', ['estado' => 'pendiente']) }}" 
+                   class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+                   title="Ver incidencias pendientes">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Pendientes</p>
+                            <p class="text-3xl font-bold text-orange-600">{{ $pendientes }}</p>
+                        </div>
+                        <div class="w-14 h-14 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">⏳</span>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Pendientes</p>
-                        <p class="text-2xl font-bold text-amber-600">{{ $pendientes }}</p>
-                    </div>
-                </div>
+                </a>
 
                 {{-- % Resueltas --}}
-                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex items-center gap-4 hover:scale-105 transition-all duration-200 cursor-pointer">
-                    <div class="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
-                        <img src="{{ asset('icons/check.svg') }}" class="w-6 h-6" alt="Resueltas">
+                <a href="{{ route('incidencias.index', ['estado' => 'resuelta']) }}" 
+                   class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+                   title="Ver incidencias resueltas">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">% Resueltas</p>
+                            <p class="text-3xl font-bold text-green-600">{{ $pctResueltas }}%</p>
+                        </div>
+                        <div class="w-14 h-14 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">✅</span>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">% Resueltas</p>
-                        <p class="text-2xl font-bold text-emerald-600">{{ $pctResueltas }}%</p>
-                    </div>
-                </div>
+                </a>
 
                 {{-- Tiempo Promedio de Resolución --}}
-                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex items-center gap-4 hover:scale-105 transition-all duration-200 cursor-pointer">
-                    <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-                        <img src="{{ asset('icons/clock.svg') }}" class="w-6 h-6" alt="Tiempo">
+                <a href="{{ route('incidencias.index', ['estado' => 'resuelta']) }}" 
+                   class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+                   title="Ver incidencias resueltas">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Tiempo Promedio</p>
+                            <p class="text-3xl font-bold text-purple-600">{{ $tiempoPromedioResolucion }}<span class="text-lg">h</span></p>
+                        </div>
+                        <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">⏱️</span>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Tiempo Promedio</p>
-                        <p class="text-2xl font-bold text-purple-600">{{ $tiempoPromedioResolucion }}h</p>
-                    </div>
-                </div>
+                </a>
 
                 {{-- Tiempo en Pendiente --}}
-                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex items-center gap-4 hover:scale-105 transition-all duration-200 cursor-pointer">
-                    <div class="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-full">
-                        <img src="{{ asset('icons/pause.svg') }}" class="w-6 h-6" alt="Pendiente">
+                <a href="{{ route('incidencias.index', ['estado' => 'pendiente']) }}" 
+                   class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+                   title="Ver incidencias pendientes">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Tiempo Pendiente</p>
+                            <p class="text-3xl font-bold text-orange-500">{{ $tiempoPorEstado['pendiente'] }}<span class="text-lg">h</span></p>
+                        </div>
+                        <div class="w-14 h-14 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">⏸️</span>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Tiempo Pendiente</p>
-                        <p class="text-2xl font-bold text-orange-600">{{ $tiempoPorEstado['pendiente'] }}h</p>
-                    </div>
-                </div>
+                </a>
 
                 {{-- Tiempo en Revisión --}}
-                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 flex items-center gap-4 hover:scale-105 transition-all duration-200 cursor-pointer">
-                    <div class="p-3 bg-cyan-100 dark:bg-cyan-900/30 rounded-full">
-                        <img src="{{ asset('icons/revision.svg') }}" class="w-6 h-6" alt="Revisión">
+                <a href="{{ route('incidencias.index', ['estado' => 'en_revision']) }}" 
+                   class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer"
+                   title="Ver incidencias en revisión">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Tiempo Revisión</p>
+                            <p class="text-3xl font-bold text-cyan-600">{{ $tiempoPorEstado['en_revision'] }}<span class="text-lg">h</span></p>
+                        </div>
+                        <div class="w-14 h-14 bg-cyan-100 dark:bg-cyan-900/20 rounded-full flex items-center justify-center">
+                            <span class="text-3xl">🔍</span>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Tiempo Revisión</p>
-                        <p class="text-2xl font-bold text-cyan-600">{{ $tiempoPorEstado['en_revision'] }}h</p>
-                    </div>
-                </div>
+                </a>
             </div>
         </div>
 

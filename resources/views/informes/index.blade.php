@@ -33,65 +33,62 @@
         }
     }">
 
-        {{-- Cabecera: Agregar + Filtros (horizontal en desktop, vertical en móvil) --}}
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-4">
-            {{-- Botón Agregar --}}
-            <div>
-                <a href="{{ route('informes.create') }}"
-                   class="inline-flex items-center gap-2 bg-[#005187] hover:bg-[#4d82bc] text-white font-medium px-4 py-2 rounded-lg shadow transition transform hover:scale-105">
-                    <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
-                </a>
-            </div>
-
-            {{-- Filtros --}}
-            <div class="flex flex-wrap gap-4 flex-1 justify-end">
-                <div class="min-w-[180px]">
-                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4]">Buscar:</label>
-                    <input type="text" x-model="search" placeholder="Nombre del informe..."
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-[#84b6f4] px-3 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
+        <!-- Controles -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <a href="{{ route('informes.create') }}"
+                class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
+                aria-label="Agregar nuevo registro">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                Agregar Registro
+            </a>
+            
+            <div class="flex gap-3 items-center w-full sm:w-auto">
+                <div class="relative flex-1 sm:flex-initial">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <img src="{{ asset('icons/filtro.svg') }}" alt="" class="h-5 w-5 opacity-60">
+                    </div>
+                    <input x-model="search" 
+                           type="text" 
+                           role="search"
+                           aria-label="Buscar informes por nombre"
+                           placeholder="Buscar por nombre"
+                           class="w-full sm:w-[250px] pl-10 pr-4 py-3 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
                 </div>
+                
+                <select x-model="selectedMagister" 
+                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[180px] hci-focus-ring"
+                        aria-label="Filtrar por programa">
+                    <option value="">Todos los programas</option>
+                    <template x-for="m in magisters" :key="m.id">
+                        <option x-text="m.nombre" :value="m.nombre"></option>
+                    </template>
+                </select>
 
-                <div class="min-w-[300px]">
-                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4]">Programa:</label>
-                    <select x-model="selectedMagister"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-[#84b6f4] px-3 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
-                        <option value="">Todos</option>
-                        <template x-for="m in magisters" :key="m.id">
-                            <option x-text="m.nombre" :value="m.nombre"></option>
-                        </template>
-                    </select>
-                </div>
+                <select x-model="selectedUser" 
+                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        aria-label="Filtrar por autor">
+                    <option value="">Todos los autores</option>
+                    <template x-for="u in users" :key="u.id">
+                        <option x-text="u.name" :value="u.name"></option>
+                    </template>
+                </select>
 
-                <div class="min-w-[200px]">
-                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4]">Autor:</label>
-                    <select x-model="selectedUser"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-[#84b6f4] px-3 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
-                        <option value="">Todos</option>
-                        <template x-for="u in users" :key="u.id">
-                            <option x-text="u.name" :value="u.name"></option>
-                        </template>
-                    </select>
-                </div>
-
-                <div class="min-w-[180px]">
-                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4]">Tipo:</label>
-                    <select x-model="selectedTipo"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-[#84b6f4] px-3 py-2 focus:ring-[#4d82bc] focus:border-[#4d82bc]">
-                        <option value="">Todos</option>
-                        <template x-for="tipo in tipos" :key="tipo">
-                            <option :value="tipo" x-text="tipo.charAt(0).toUpperCase() + tipo.slice(1)"></option>
-                        </template>
-                    </select>
-                </div>
-
-                <div class="flex items-end">
-                    <button type="button" @click="search=''; selectedMagister=''; selectedUser=''; selectedTipo=''"
-                        class="bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-4 py-2 rounded-lg shadow text-sm transition transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                        title="Limpiar filtros"
-                        aria-label="Limpiar filtros">
-                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
-                    </button>
-                </div>
+                <select x-model="selectedTipo" 
+                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        aria-label="Filtrar por tipo">
+                    <option value="">Todos los tipos</option>
+                    <template x-for="tipo in tipos" :key="tipo">
+                        <option :value="tipo" x-text="tipo.charAt(0).toUpperCase() + tipo.slice(1)"></option>
+                    </template>
+                </select>
+                
+                <button type="button" 
+                        @click="search=''; selectedMagister=''; selectedUser=''; selectedTipo=''"
+                        class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
+                        title="Limpiar búsqueda y filtros"
+                        aria-label="Limpiar búsqueda y filtros">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
+                </button>
             </div>
         </div>
 

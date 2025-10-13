@@ -43,7 +43,6 @@
                 icon=""
                 help="Nombre único que identifique la sala"
                 maxlength="100"
-                style="width: 500px !important;"
             />
 
             <x-hci-field 
@@ -54,7 +53,6 @@
                 icon=""
                 help="Ubicación física dentro del campus"
                 maxlength="150"
-                style="width: 500px !important;"
             />
         </div>
     </x-hci-form-section>
@@ -63,46 +61,35 @@
     <x-hci-form-section 
         :step="2" 
         title="Detalles" 
-        description="Capacidad, estado y tipo"
+        description="Capacidad y descripción"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
         section-id="detalles"
-        content-class="items-start gap-24 xl:gap-32 2xl:gap-40"
+        content-class="grid-cols-1 md:grid-cols-2 gap-6"
         :editing="$editing"
     >
-        <div class="space-y-8">
-            <div class="w-full">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16 items-start">
-                    <div class="lg:col-span-3">
-                        <x-hci-field 
-                            name="capacity"
-                            type="number"
-                            label="Capacidad"
-                            placeholder="Ej: 30, 50, 100"
-                            value="{{ old('capacity', $room->capacity ?? '') }}"
-                            :required="true"
-                            icon=""
-                            help=""
-                            min="1"
-                            max="1000"
-                            style="width: 140px !important;"
-                        />
-                    </div>
-                    <div class="lg:col-span-9">
-                        <x-hci-field 
-                            name="description"
-                            type="textarea"
-                            label="Descripción"
-                            placeholder="Características especiales, equipamiento, etc."
-                            value="{{ old('description', $room->description ?? '') }}"
-                            icon=""
-                            help="Información adicional sobre la sala"
-                            rows="3"
-                            style="min-width: 480px !important; width: 100% !important;"
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-hci-field 
+            name="capacity"
+            type="number"
+            label="Capacidad"
+            placeholder="Ej: 30, 50, 100"
+            value="{{ old('capacity', $room->capacity ?? '') }}"
+            :required="true"
+            icon=""
+            help="Número máximo de personas"
+            min="1"
+            max="1000"
+        />
+
+        <x-hci-field 
+            name="description"
+            type="textarea"
+            label="Descripción"
+            placeholder="Características especiales, equipamiento, etc."
+            value="{{ old('description', $room->description ?? '') }}"
+            icon=""
+            help="Información adicional sobre la sala"
+            rows="4"
+        />
     </x-hci-form-section>
 
     {{-- Sección 3: Equipamiento --}}
@@ -112,6 +99,7 @@
         description="Selecciona las condiciones disponibles"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
         section-id="equipamiento"
+        content-class="w-full"
         :editing="$editing"
     >
         @php
@@ -128,19 +116,16 @@
                 'televisor_funcional' => 'Televisor Funcional',
             ];
         @endphp
-        <div class="space-y-6">
-            {{-- Contenedor especial tipo tarjeta para mejorar legibilidad (excepción de estilo) --}}
-            <div class="rounded-xl border border-[#c4dafa]/60 bg-[#fcffff] p-6 shadow-sm">
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                @foreach ($condiciones as $campo => $label)
-                    <label class="flex items-center space-x-3 p-4 rounded-lg border border-[#c4dafa]/50 hover:bg-[#c4dafa]/20 transition-colors">
-                        <input type="checkbox" name="{{ $campo }}" id="{{ $campo }}"
-                            {{ old($campo, $room->$campo ?? false) ? 'checked' : '' }}
-                            class="hci-checkbox">
-                        <span class="text-sm text-[#005187] leading-snug">{{ $label }}</span>
-                    </label>
-                @endforeach
-                </div>
+        <div class="rounded-xl border border-[#c4dafa]/60 bg-[#fcffff] p-6 shadow-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            @foreach ($condiciones as $campo => $label)
+                <label class="flex items-center space-x-3 p-3 rounded-lg border border-[#c4dafa]/50 hover:bg-[#c4dafa]/20 transition-colors">
+                    <input type="checkbox" name="{{ $campo }}" id="{{ $campo }}"
+                        {{ old($campo, $room->$campo ?? false) ? 'checked' : '' }}
+                        class="hci-checkbox">
+                    <span class="text-sm text-[#005187] leading-snug">{{ $label }}</span>
+                </label>
+            @endforeach
             </div>
         </div>
     </x-hci-form-section>
@@ -152,37 +137,56 @@
         description="Revisa y confirma los datos antes de enviar"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
         section-id="resumen"
+        content-class="w-full"
         :is-last="true"
         :editing="$editing"
     >
-        <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Nombre</span>
-                    <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-name">—</p>
-                </div>
-                <div class="md:col-span-1 lg:col-span-2 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Ubicación</span>
-                    <p class="text-gray-900 dark:text-white font-medium text-lg break-words" id="resumen-location">—</p>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">🏫</span>
+                        <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4]">Nombre</span>
+                    </div>
+                    <p class="text-gray-900 dark:text-white font-medium" id="resumen-name">—</p>
                 </div>
                 <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Capacidad</span>
-                    <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-capacity">—</p>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">📍</span>
+                        <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4]">Ubicación</span>
+                    </div>
+                    <p class="text-gray-900 dark:text-white font-medium" id="resumen-location">—</p>
                 </div>
-                <div class="md:col-span-2 lg:col-span-3 xl:col-span-3 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Descripción</span>
+                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">👥</span>
+                        <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4]">Capacidad</span>
+                    </div>
+                    <p class="text-gray-900 dark:text-white font-medium" id="resumen-capacity">—</p>
+                </div>
+                <div class="md:col-span-2 lg:col-span-3 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">📝</span>
+                        <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4]">Descripción</span>
+                    </div>
                     <p class="text-gray-900 dark:text-white font-medium" id="resumen-description">—</p>
                 </div>
-                <div class="md:col-span-2 lg:col-span-3 xl:col-span-3 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Equipamiento</span>
+                <div class="md:col-span-2 lg:col-span-3 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">🔧</span>
+                        <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4]">Equipamiento</span>
+                    </div>
                     <div id="resumen-equipamiento" class="flex flex-wrap gap-2">—</div>
                 </div>
             </div>
 
             <div class="mt-6 p-4 bg-[#fcffff] dark:bg-gray-800 rounded-lg border border-[#84b6f4]/20">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    <strong>Nota:</strong> Revisa que toda la información sea correcta antes de guardar.
-                </p>
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">ℹ️</span>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        <strong>Nota:</strong> Revisa que toda la información sea correcta antes de guardar.
+                    </p>
+                </div>
             </div>
         </div>
     </x-hci-form-section>

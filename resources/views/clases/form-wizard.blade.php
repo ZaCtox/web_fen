@@ -23,7 +23,7 @@
     :editing="$editing"
     createDescription="Configura una nueva clase académica con sus sesiones."
     editDescription="Modifica la información general de la clase."
-    :steps="$wizardSteps"
+    sidebarComponent="clases-progress-sidebar"
     :formAction="$editing ? route('clases.update', $clase) : route('clases.store')"
     :formMethod="$editing ? 'PUT' : 'POST'"
     formId="form-clase"
@@ -35,19 +35,20 @@
         description="Selecciona el programa, asignatura y encargado"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z' clip-rule='evenodd'/></svg>"
         section-id="general"
+        content-class="grid-cols-1 gap-6"
         :is-active="true"
         :is-first="true"
         :editing="$editing"
     >
         @php $selectedMagister = isset($clase) ? optional($clase->course->magister)->nombre : old('magister'); @endphp
-        <x-hci-field name="magister" type="select" label="Programa" :required="true" id="magister" help="Primero selecciona el programa" data-agrupados='@json($agrupados ?? [])'>
+        <x-hci-field name="magister" type="select" label="Programa" :required="true" id="magister" icon="" help="Primero selecciona el programa" data-agrupados='@json($agrupados ?? [])'>
             <option value="">-- Selecciona un Programa --</option>
             @foreach(($agrupados ?? []) as $magNombre => $cursos)
                 <option value="{{ $magNombre }}" {{ ($selectedMagister == $magNombre) ? 'selected' : '' }}>{{ $magNombre }}</option>
             @endforeach
         </x-hci-field>
 
-        <x-hci-field name="course_id" type="select" label="Asignatura" :required="true" id="course_id" help="Luego elige la asignatura"> 
+        <x-hci-field name="course_id" type="select" label="Asignatura" :required="true" id="course_id" icon="" help="Luego elige la asignatura"> 
             <option value="">-- Selecciona una Asignatura --</option>
             @php
                 $selectedMagister = isset($clase) ? optional($clase->course->magister)->nombre : null;
@@ -60,22 +61,22 @@
         </x-hci-field>
 
         <input type="hidden" name="period_id" id="period_id" value="{{ old('period_id', $clase->period_id ?? '') }}">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <x-hci-field name="anio" label="Año" id="anio" disabled="true" help="Se completa automáticamente" />
-            <x-hci-field name="trimestre" label="Trimestre" id="trimestre" disabled="true" help="Se completa automáticamente" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-hci-field name="anio" label="Año" id="anio" icon="" disabled="true" help="Se completa automáticamente" />
+            <x-hci-field name="trimestre" label="Trimestre" id="trimestre" icon="" disabled="true" help="Se completa automáticamente" />
         </div>
 
-        <x-hci-field name="encargado" label="Encargado (Profesor)" :required="true" id="encargado" placeholder="Ej: Margarita Pereira" value="{{ old('encargado', $clase->encargado ?? '') }}" help="Profesor responsable de la clase" />
+        <x-hci-field name="encargado" label="Encargado (Profesor)" :required="true" id="encargado" icon="" placeholder="Ej: Margarita Pereira" value="{{ old('encargado', $clase->encargado ?? '') }}" help="Profesor responsable de la clase" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <x-hci-field name="room_id" type="select" label="Sala Principal (opcional)" id="room_id" help="Sala por defecto para las sesiones presenciales">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-hci-field name="room_id" type="select" label="Sala Principal (opcional)" id="room_id" icon="" help="Sala por defecto para las sesiones presenciales">
                 <option value="">-- Sin sala asignada --</option>
                 @foreach(($rooms ?? []) as $r)
                     <option value="{{ $r->id }}" {{ old('room_id', $clase->room_id ?? '') == $r->id ? 'selected' : '' }}>{{ $r->name }}</option>
                 @endforeach
             </x-hci-field>
 
-            <x-hci-field name="url_zoom" type="url" label="URL Zoom Principal (opcional)" id="url_zoom" placeholder="https://zoom.us/j/..." value="{{ old('url_zoom', $clase->url_zoom ?? '') }}" help="Enlace por defecto para sesiones online" />
+            <x-hci-field name="url_zoom" type="url" label="URL Zoom Principal (opcional)" id="url_zoom" icon="" placeholder="https://zoom.us/j/..." value="{{ old('url_zoom', $clase->url_zoom ?? '') }}" help="Enlace por defecto para sesiones online" />
         </div>
     </x-hci-form-section>
 
@@ -87,12 +88,13 @@
         description="Define cuántas sesiones tendrá la clase"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'/></svg>"
         section-id="config-sesiones"
+        content-class="grid-cols-1 gap-6"
         :editing="false"
     >
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <x-hci-field name="num_sesiones" type="number" label="Número de Sesiones" :required="true" id="num_sesiones" min="1" max="50" value="{{ old('num_sesiones', 8) }}" help="¿Cuántas sesiones tendrá esta clase?" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-hci-field name="num_sesiones" type="number" label="Número de Sesiones" :required="true" id="num_sesiones" icon="" min="1" max="50" value="{{ old('num_sesiones', 8) }}" help="¿Cuántas sesiones tendrá esta clase?" />
             
-            <x-hci-field name="fecha_inicio" type="date" label="Fecha de Inicio" :required="true" id="fecha_inicio" value="{{ old('fecha_inicio', date('Y-m-d')) }}" help="Fecha de la primera sesión" />
+            <x-hci-field name="fecha_inicio" type="date" label="Fecha de Inicio" :required="true" id="fecha_inicio" icon="" value="{{ old('fecha_inicio', date('Y-m-d')) }}" help="Fecha de la primera sesión" />
         </div>
 
         <div class="mb-6">
@@ -152,55 +154,81 @@
         description="Revisa toda la información antes de guardar"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/></svg>"
         section-id="resumen"
+        content-class="w-full"
         :editing="$editing"
         :is-last="true"
     >
-        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 space-y-6">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 rounded-xl p-6 border border-blue-200 dark:border-gray-600">
             {{-- Información General --}}
-            <div>
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                    </svg>
-                    Información General
-                </h3>
-                <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Programa</dt>
-                        <dd class="text-sm text-gray-900 dark:text-white mt-1" id="resumen-programa">—</dd>
+            <div class="mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
                     </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Asignatura</dt>
-                        <dd class="text-sm text-gray-900 dark:text-white mt-1" id="resumen-curso">—</dd>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Información General</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">🎓</span>
+                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Programa</h4>
+                        </div>
+                        <p class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]" id="resumen-programa">—</p>
                     </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Período</dt>
-                        <dd class="text-sm text-gray-900 dark:text-white mt-1" id="resumen-periodo">—</dd>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">📚</span>
+                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Asignatura</h4>
+                        </div>
+                        <p class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]" id="resumen-curso">—</p>
                     </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Encargado</dt>
-                        <dd class="text-sm text-gray-900 dark:text-white mt-1" id="resumen-encargado">—</dd>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">📅</span>
+                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Período</h4>
+                        </div>
+                        <p class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]" id="resumen-periodo">—</p>
                     </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sala Principal</dt>
-                        <dd class="text-sm text-gray-900 dark:text-white mt-1" id="resumen-sala-principal">—</dd>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">👨‍🏫</span>
+                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Encargado</h4>
+                        </div>
+                        <p class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]" id="resumen-encargado">—</p>
                     </div>
-                    <div>
-                        <dt class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">URL Zoom Principal</dt>
-                        <dd class="text-sm text-gray-900 dark:text-white mt-1 break-all" id="resumen-zoom-principal">—</dd>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">🏫</span>
+                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sala Principal</h4>
+                        </div>
+                        <p class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]" id="resumen-sala-principal">—</p>
                     </div>
-                </dl>
+                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-lg">💻</span>
+                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">URL Zoom</h4>
+                        </div>
+                        <p class="text-xs font-bold text-[#005187] dark:text-[#84b6f4] break-all" id="resumen-zoom-principal">—</p>
+                    </div>
+                </div>
             </div>
 
             @if(!$editing)
             {{-- Resumen de Sesiones --}}
             <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
-                    </svg>
-                    Sesiones Configuradas (<span id="resumen-total-sesiones">0</span>)
-                </h3>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                        Sesiones Configuradas (<span id="resumen-total-sesiones">0</span>)
+                    </h3>
+                </div>
                 <div id="resumen-sesiones-lista" class="space-y-3">
                     {{-- Se llenará dinámicamente --}}
                 </div>

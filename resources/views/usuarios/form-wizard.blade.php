@@ -15,6 +15,8 @@
     :formAction="$editing ? route('usuarios.update', $usuario) : route('register')"
     :formMethod="$editing ? 'PUT' : 'POST'"
 >
+    {{-- Variable para JavaScript --}}
+    <input type="hidden" id="is-editing" value="{{ $editing ? '1' : '0' }}">
 
                 {{-- Paso 1: Información Personal y Rol --}}
                 <x-hci-form-section 
@@ -27,16 +29,15 @@
                     :is-active="true"
                     :is-first="true"
                     style="display: block;"
+                    contentClass="grid-cols-1 md:grid-cols-2 gap-6"
                 >
                     <x-hci-field 
                         name="name" 
                         type="text" 
                         label="Nombre Completo" 
                         :required="true"
-                        icon=""
                         help="Nombre y apellidos del usuario"
                         value="{{ old('name', $usuario->name ?? '') }}"
-                        style="width: 100% !important;"
                     />
 
                     <x-hci-field 
@@ -44,10 +45,8 @@
                         type="email" 
                         label="Correo Electrónico" 
                         :required="true"
-                        icon=""
                         help="Dirección de correo electrónico válida"
                         value="{{ old('email', $usuario->email ?? '') }}"
-                        style="width: 100% !important;"
                     />
 
                     <x-hci-field 
@@ -55,9 +54,7 @@
                         type="select" 
                         label="Rol del Usuario" 
                         :required="true"
-                        icon=""
                         help="Selecciona el rol que tendrá el usuario en el sistema"
-                        style="width: 100% !important;"
                     >
                         <option value="">-- Selecciona un rol --</option>
                         <option value="director_programa" {{ old('rol', $usuario->rol ?? '') == 'director_programa' ? 'selected' : '' }}>Director de Programa</option>
@@ -134,71 +131,30 @@
                         :is-last="true"
                         style="display: none;"
                     >
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Nombre</h4>
-                                <p id="summary-name" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Correo</h4>
-                                <p id="summary-email" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Rol</h4>
-                                <p id="summary-rol" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
-                            </div>
-                        </div>
-                    </x-hci-form-section>
-                @else
-                    {{-- Paso 3: Resumen (para edición) --}}
-                    <x-hci-form-section 
-                        :step="3" 
-                        title="Resumen" 
-                        description="Revisa la información antes de actualizar el usuario"
-                        icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
-                        section-id="resumen"
-                        :editing="$editing ?? false"
-                        :is-last="true"
-                        style="display: none;"
-                    >
-                        <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">                        
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <!-- Nombre - 1 columna -->
+                        <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Nombre Completo</span>
-                                    <p class="text-gray-900 dark:text-white font-medium text-lg" id="summary-name">{{ old('name', $usuario->name ?? '') }}</p>
+                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Nombre</span>
+                                    <p id="summary-name" class="text-gray-900 dark:text-white font-medium text-lg">--</p>
                                 </div>
-
-                                <!-- Email - 1 columna -->
                                 <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Email</span>
-                                    <p class="text-gray-900 dark:text-white font-medium text-lg break-words" id="summary-email">{{ old('email', $usuario->email ?? '') }}</p>
+                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Correo</span>
+                                    <p id="summary-email" class="text-gray-900 dark:text-white font-medium text-lg break-words">--</p>
                                 </div>
-
-                                <!-- Rol - 1 columna -->
                                 <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                     <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Rol</span>
-                                    <p class="text-gray-900 dark:text-white font-medium text-lg" id="summary-rol">{{ old('rol', $usuario->rol ?? '') }}</p>
-                                </div>
-
-                                <!-- Contraseña - 1 columna -->
-                                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Contraseña</span>
-                                    <p class="text-gray-900 dark:text-white font-medium text-lg" id="summary-password">{{ $editing ? 'No se modifica' : '••••••••' }}</p>
+                                    <p id="summary-rol" class="text-gray-900 dark:text-white font-medium text-lg">--</p>
                                 </div>
                             </div>
 
                             <div class="mt-6 p-4 bg-[#fcffff] dark:bg-gray-800 rounded-lg border border-[#84b6f4]/20">
                                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    <strong>Nota:</strong> Revisa que toda la información sea correcta antes de proceder. 
-                                    {{ $editing ? 'Los cambios se aplicarán inmediatamente.' : 'Se creará un nuevo usuario.' }}
+                                    <strong>Nota:</strong> Revisa que toda la información sea correcta antes de proceder. Se creará un nuevo usuario.
                                 </p>
                             </div>
                         </div>
                     </x-hci-form-section>
-                @endif
-
-                @if($editing)
+                @else
                     {{-- Paso 2: Resumen (edición) --}}
                     <x-hci-form-section 
                         :step="2" 
@@ -210,25 +166,27 @@
                         :is-last="true"
                         style="display: none;"
                     >
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Nombre</h4>
-                                <p id="summary-name" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
+                        <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Nombre Completo</span>
+                                    <p id="summary-name" class="text-gray-900 dark:text-white font-medium text-lg">{{ old('name', $usuario->name ?? '') }}</p>
+                                </div>
+                                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Correo Electrónico</span>
+                                    <p id="summary-email" class="text-gray-900 dark:text-white font-medium text-lg break-words">{{ old('email', $usuario->email ?? '') }}</p>
+                                </div>
+                                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                                    <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Rol</span>
+                                    <p id="summary-rol" class="text-gray-900 dark:text-white font-medium text-lg">{{ old('rol', $usuario->rol ?? '') }}</p>
+                                </div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Correo Electrónico</h4>
-                                <p id="summary-email" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                                <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Rol</h4>
-                                <p id="summary-rol" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
-                            </div>
-                        </div>
 
-                        <div class="mt-6 p-4 bg-[#fcffff] dark:bg-gray-800 rounded-lg border border-[#84b6f4]/20">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                <strong>Nota:</strong> Revisa que toda la información sea correcta antes de proceder. Los cambios se aplicarán inmediatamente.
-                            </p>
+                            <div class="mt-6 p-4 bg-[#fcffff] dark:bg-gray-800 rounded-lg border border-[#84b6f4]/20">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    <strong>Nota:</strong> Revisa que toda la información sea correcta antes de proceder. Los cambios se aplicarán inmediatamente.
+                                </p>
+                            </div>
                         </div>
                     </x-hci-form-section>
                 @endif

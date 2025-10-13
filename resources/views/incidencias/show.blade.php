@@ -14,19 +14,33 @@
         ['label' => 'Detalle de Incidencia', 'url' => '#']
     ]" />
 
-    <div class="hci-container">
-        <div class="hci-section">
-            <h1 class="hci-heading-1 flex items-center">
-                <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                        clip-rule="evenodd" />
-                </svg>
-                Detalle de Incidencia
-            </h1>
-            <p class="hci-text">
-                Revisa los detalles de la incidencia y actualiza su estado según corresponda.
-            </p>
+    <div class="py-6 max-w-7xl mx-auto px-4">
+        {{-- Sticky Header con Botones de Acción --}}
+        <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 py-4 mb-6 -mx-4 px-4 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                {{-- Botón Volver --}}
+                <a href="{{ route('incidencias.index') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                    aria-label="Volver a incidencias">
+                    <img src="{{ asset('icons/back.svg') }}" alt="" class="w-5 h-5">
+                </a>
+
+                {{-- Botón Eliminar (solo si no está resuelta o no_resuelta) --}}
+                @if ($incidencia->estado !== 'resuelta' && $incidencia->estado !== 'no_resuelta')
+                    <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST"
+                          class="form-eliminar"
+                          data-confirm="¿Estás seguro de que quieres eliminar esta incidencia? Esta acción no se puede deshacer.">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-sm font-medium"
+                                title="Eliminar incidencia"
+                                aria-label="Eliminar incidencia">
+                            <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-5 h-5">
+                        </button>
+                    </form>
+                @endif
+            </div>
         </div>
 
         <div class="max-w-6xl mx-auto">
@@ -237,9 +251,9 @@
 
                                 <div class="pt-4">
                                     <button type="submit"
-                                        class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center gap-2 bg-[#3ba55d] hover:bg-[#2d864a] text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition-all duration-200"
+                                        class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                                         title="Guardar cambios">
-                                        <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
+                                        <img src="{{ asset('icons/save.svg') }}" alt="" class="w-5 h-5">
                                     </button>
                                 </div>
                             </form>
@@ -318,7 +332,7 @@
                                                         </div>
                                                         @if($log->comentario)
                                                             <div class="hci-card-body">
-                                                                <p class="hci-text">{{ $log->comentario }}</p>
+                                                                <p class="hci-text px-3">{{ $log->comentario }}</p>
                                                             </div>
                                                         @endif
                                                     </div>
@@ -329,30 +343,6 @@
                                 @endforeach
                             </ul>
                         </div>
-                    </div>
-                </div>
-
-                {{-- Acciones (Ley de Fitts: Botones grandes y accesibles) --}}
-                <div class="hci-form-actions">
-                    <div class="flex justify-between items-center">
-                        <a href="{{ route('incidencias.index') }}"
-                            class="hci-button hci-lift hci-focus-ring inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium px-6 py-3 rounded-lg shadow transition-all duration-200"
-                            title="Volver a incidencias">
-                            <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
-                        </a>
-
-                        @if ($incidencia->estado !== 'resuelta' && $incidencia->estado !== 'no_resuelta')
-                            <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST"
-                                class="form-eliminar">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="hci-button hci-lift hci-focus-ring inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg shadow text-sm font-medium transition-all duration-200"
-                                    title="Eliminar incidencia">
-                                    <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
-                                </button>
-                            </form>
-                        @endif
                     </div>
                 </div>
 

@@ -41,6 +41,12 @@ class EmergencyController extends Controller
         return redirect()->route('emergencies.index')->with('success', 'Emergencia creada.');
     }
 
+    public function show($id)
+    {
+        $emergency = Emergency::findOrFail($id);
+        return view('emergencies.show', compact('emergency'));
+    }
+
     public function edit($id)
     {
         $emergency = Emergency::findOrFail($id);
@@ -66,6 +72,24 @@ class EmergencyController extends Controller
         $emergency->update(['active' => false]);
 
         return redirect()->route('emergencies.index')->with('success', 'Emergencia desactivada manualmente.');
+    }
+
+    public function toggleActive($id)
+    {
+        $emergency = Emergency::findOrFail($id);
+        
+        if ($emergency->active) {
+            // Desactivar
+            $emergency->update(['active' => false]);
+            $message = 'Emergencia desactivada.';
+        } else {
+            // Activar - desactivar todas las demás primero
+            Emergency::where('active', true)->update(['active' => false]);
+            $emergency->update(['active' => true]);
+            $message = 'Emergencia activada.';
+        }
+
+        return back()->with('success', $message);
     }
 
     public function destroy($id)

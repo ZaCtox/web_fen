@@ -35,12 +35,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Preview de la novedad en tiempo real
     const tituloInput = document.querySelector('input[name="titulo"]');
     const contenidoInput = document.querySelector('textarea[name="contenido"]');
-    const iconoInput = document.querySelector('input[name="icono"]');
     const colorInput = document.querySelector('select[name="color"]');
+    
+    // Escuchar cambios en iconos (radio buttons)
+    const iconoInputs = document.querySelectorAll('input[name="icono"]');
+    iconoInputs.forEach(input => {
+        input.addEventListener('change', updatePreview);
+    });
     
     if (tituloInput) tituloInput.addEventListener('input', updatePreview);
     if (contenidoInput) contenidoInput.addEventListener('input', updatePreview);
-    if (iconoInput) iconoInput.addEventListener('input', updatePreview);
     if (colorInput) colorInput.addEventListener('change', updatePreview);
     
     updateSummary();
@@ -263,11 +267,20 @@ function updateSummary() {
 function updatePreview() {
     const titulo = document.querySelector('input[name="titulo"]')?.value || 'Título de la novedad';
     const contenido = document.querySelector('textarea[name="contenido"]')?.value || 'Contenido de la novedad...';
-    const icono = document.querySelector('input[name="icono"]')?.value || '📰';
     const color = document.querySelector('select[name="color"]')?.value || 'blue';
     
-    const previewElement = document.getElementById('novedad-preview');
-    if (previewElement) {
+    // Obtener el icono seleccionado
+    const iconoSeleccionado = document.querySelector('input[name="icono"]:checked');
+    const icono = iconoSeleccionado?.value || '📰';
+    
+    const previewIcon = document.getElementById('preview-icon');
+    const previewTitulo = document.getElementById('preview-titulo');
+    const previewColor = document.getElementById('preview-color');
+    
+    if (previewIcon) previewIcon.textContent = icono;
+    if (previewTitulo) previewTitulo.textContent = titulo || 'Título de la novedad';
+    
+    if (previewColor) {
         const colorClasses = {
             'blue': 'bg-blue-500',
             'green': 'bg-green-500',
@@ -277,20 +290,17 @@ function updatePreview() {
             'indigo': 'bg-indigo-500'
         };
         
-        previewElement.innerHTML = `
-            <div class="bg-white border rounded-lg p-4 shadow-md">
-                <div class="flex items-center mb-2">
-                    <span class="text-2xl mr-3">${icono}</span>
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-gray-900">${titulo}</h3>
-                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium ${colorClasses[color]} text-white">
-                            ${color}
-                        </span>
-                    </div>
-                </div>
-                <p class="text-sm text-gray-600">${contenido.substring(0, 150)}${contenido.length > 150 ? '...' : ''}</p>
-            </div>
-        `;
+        const colorNames = {
+            'blue': 'Azul',
+            'green': 'Verde',
+            'yellow': 'Amarillo',
+            'red': 'Rojo',
+            'purple': 'Morado',
+            'indigo': 'Índigo'
+        };
+        
+        previewColor.className = `inline-flex items-center px-2 py-1 rounded text-xs font-medium ${colorClasses[color]} text-white`;
+        previewColor.textContent = colorNames[color];
     }
 }
 

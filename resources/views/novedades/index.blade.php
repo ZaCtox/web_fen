@@ -29,192 +29,177 @@
         }
     }">
 
-        {{-- Botón superior (WCAG 2.1 AA: 44x44px mínimo) --}}
-        <div class="mb-6">
+        <!-- Controles -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             <a href="{{ route('novedades.create') }}"
-               class="inline-flex items-center justify-center w-11 h-11 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-               title="Nueva Novedad"
-               aria-label="Crear nueva novedad">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="Nueva novedad" class="w-6 h-6">
+                class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
+                aria-label="Crear nueva novedad">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                Agregar Novedad
             </a>
-        </div>
-
-        {{-- 🔍 Filtros --}}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                {{-- Buscar --}}
-                <div>
-                    <label for="search" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
-                        Buscar:
-                    </label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <img src="{{ asset('icons/filtro.svg') }}" alt="Buscar" class="h-4 w-4">
-                        </div>
-                        <input type="text" 
-                               id="search"
-                               x-model="search"
-                               @keyup.enter="actualizarURL()"
-                               placeholder="Título o contenido..."
-                               class="w-full pl-10 pr-3 py-2.5 border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+            
+            <div class="flex gap-3 items-center w-full sm:w-auto">
+                <div class="relative flex-1 sm:flex-initial">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <img src="{{ asset('icons/filtro.svg') }}" alt="" class="h-5 w-5 opacity-60">
                     </div>
+                    <input x-model="search" 
+                           @keyup.enter="actualizarURL()"
+                           type="text" 
+                           role="search"
+                           aria-label="Buscar novedades por título o contenido"
+                           placeholder="Buscar por título o contenido"
+                           class="w-full sm:w-[350px] pl-10 pr-4 py-3 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
                 </div>
+                
+                <select x-model="tipo" 
+                        @change="actualizarURL()"
+                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        aria-label="Filtrar por tipo de novedad">
+                    <option value="">Todos los tipos</option>
+                    <option value="academica">Académica</option>
+                    <option value="evento">Evento</option>
+                    <option value="admision">Admisión</option>
+                    <option value="institucional">Institucional</option>
+                    <option value="servicio">Servicio</option>
+                    <option value="mantenimiento">Mantenimiento</option>
+                </select>
 
-                {{-- Tipo --}}
-                <div>
-                    <label for="tipo" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
-                        Tipo:
-                    </label>
-                    <select id="tipo" 
-                            x-model="tipo"
-                            @change="actualizarURL()"
-                            class="w-full px-3 py-2.5 border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
-                        <option value="">Todos los tipos</option>
-                        <option value="academica">Académica</option>
-                        <option value="evento">Evento</option>
-                        <option value="admision">Admisión</option>
-                        <option value="institucional">Institucional</option>
-                        <option value="servicio">Servicio</option>
-                        <option value="mantenimiento">Mantenimiento</option>
-                    </select>
-                </div>
-
-                {{-- Estado --}}
-                <div>
-                    <label for="estado" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
-                        Estado:
-                    </label>
-                    <select id="estado" 
-                            x-model="estado"
-                            @change="actualizarURL()"
-                            class="w-full px-3 py-2.5 border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
-                        <option value="">Todos los estados</option>
-                        <option value="activas">Activas</option>
-                        <option value="expiradas">Expiradas</option>
-                        <option value="urgentes">Urgentes</option>
-                    </select>
-                </div>
-
-                {{-- Botón Limpiar --}}
-                <div class="flex items-end">
-                    <button type="button"
-                            @click="limpiarFiltros()" 
-                            class="px-4 py-3 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 transform hover:scale-105"
-                            title="Limpiar filtros"
-                            aria-label="Limpiar filtros">
-                        <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-5 h-5">
-                    </button>
-                </div>
+                <select x-model="estado" 
+                        @change="actualizarURL()"
+                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        aria-label="Filtrar por estado">
+                    <option value="">Todos los estados</option>
+                    <option value="activas">Activas</option>
+                    <option value="expiradas">Expiradas</option>
+                    <option value="urgentes">Urgentes</option>
+                </select>
+                
+                <button type="button" 
+                        @click="limpiarFiltros()"
+                        class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
+                        title="Limpiar búsqueda y filtros"
+                        aria-label="Limpiar búsqueda y filtros">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
+                </button>
             </div>
         </div>
 
-        {{-- 📊 Estadísticas simplificadas --}}
+        {{-- 📊 Estadísticas corregidas --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                 <div class="p-3 bg-[#f8fafc] dark:bg-gray-700 rounded-lg">
-                    <div class="text-xl font-bold text-[#005187] dark:text-[#84b6f4]">{{ $novedades->total() }}</div>
+                    <div class="text-xl font-bold text-[#005187] dark:text-[#84b6f4]">{{ $estadisticas['total'] }}</div>
                     <div class="text-xs text-gray-600 dark:text-gray-400">Total</div>
                 </div>
                 <div class="p-3 bg-[#f8fafc] dark:bg-gray-700 rounded-lg">
-                    <div class="text-xl font-bold text-green-600">{{ $novedades->where('visible_publico', true)->count() }}</div>
+                    <div class="text-xl font-bold text-green-600">{{ $estadisticas['publicas'] }}</div>
                     <div class="text-xs text-gray-600 dark:text-gray-400">Públicas</div>
                 </div>
                 <div class="p-3 bg-[#f8fafc] dark:bg-gray-700 rounded-lg">
-                    <div class="text-xl font-bold text-red-600">{{ $novedades->where('es_urgente', true)->count() }}</div>
+                    <div class="text-xl font-bold text-red-600">{{ $estadisticas['urgentes'] }}</div>
                     <div class="text-xs text-gray-600 dark:text-gray-400">Urgentes</div>
                 </div>
                 <div class="p-3 bg-[#f8fafc] dark:bg-gray-700 rounded-lg">
-                    <div class="text-xl font-bold text-yellow-600">{{ $novedades->where('fecha_expiracion', '<', now())->count() }}</div>
+                    <div class="text-xl font-bold text-yellow-600">{{ $estadisticas['expiradas'] }}</div>
                     <div class="text-xs text-gray-600 dark:text-gray-400">Expiradas</div>
                 </div>
             </div>
         </div>
 
-        {{-- 📋 Tabla simplificada --}}
+        {{-- 📋 Grid de Cards --}}
         @if($novedades->count() > 0)
-            <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg">
-                <table class="min-w-full text-sm text-left text-gray-900 dark:text-gray-100">
-                    <thead class="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        <tr>
-                            <th class="px-4 py-3 font-medium">Novedad</th>
-                            <th class="px-4 py-3 font-medium">Tipo</th>
-                            <th class="px-4 py-3 font-medium">Estado</th>
-                            <th class="px-4 py-3 font-medium">Creada</th>
-                            <th class="px-4 py-3 font-medium">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($novedades as $novedad)
-                            <tr class="border-t border-gray-200 dark:border-gray-600 
-                                       hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
-                                       hover:border-l-4 hover:border-l-[#4d82bc]
-                                       hover:-translate-y-0.5 hover:shadow-md
-                                       transition-all duration-200 group cursor-pointer"
-                                onclick="window.location='{{ route('novedades.show', $novedad) }}'">
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center">
-                                        <div class="text-xl mr-3">{{ $novedad->icono }}</div>
-                                        <div>
-                                            <div class="font-medium text-gray-900 dark:text-gray-100">
-                                                {{ Str::limit($novedad->titulo, 40) }}
-                                                @if($novedad->es_urgente)
-                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 ml-2">
-                                                        URGENTE
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                {{ Str::limit($novedad->contenido, 50) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
-                                        {{ ucfirst($novedad->tipo_novedad) }}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                @foreach($novedades as $index => $novedad)
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition-all duration-300 border border-gray-200 dark:border-gray-700 flex flex-col hci-fade-in cursor-pointer"
+                         style="animation-delay: {{ $index * 0.05 }}s"
+                         onclick="window.location='{{ route('novedades.show', $novedad) }}'">
+                        {{-- Header con icono y tipo --}}
+                        <div class="p-4 text-center bg-[#4d82bc]/10 dark:bg-[#4d82bc]/20">
+                            <span class="text-4xl" role="img">{{ $novedad->icono ?? '📰' }}</span>
+                            <div class="mt-2 flex flex-wrap gap-1 justify-center">
+                                <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#4d82bc] text-white">
+                                    {{ ucfirst($novedad->tipo_novedad) }}
+                                </span>
+                                @if($novedad->es_urgente)
+                                    <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-red-500 text-white">
+                                        🔴 Urgente
                                     </span>
-                                </td>
-                                <td class="px-4 py-3">
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Contenido --}}
+                        <div class="p-4 flex-1 flex flex-col">
+                            <h4 class="font-bold text-gray-800 dark:text-gray-100 mb-2 text-base line-clamp-2 min-h-[48px]">
+                                {{ $novedad->titulo }}
+                            </h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-3 flex-1">
+                                {{ Str::limit($novedad->contenido, 120) }}
+                            </p>
+
+                            {{-- Información adicional --}}
+                            <div class="space-y-2 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                                @if($novedad->magister)
+                                    <div class="flex items-center">
+                                        <span class="mr-1">🎓</span>
+                                        <span>{{ Str::limit($novedad->magister->nombre, 25) }}</span>
+                                    </div>
+                                @endif
+                                
+                                {{-- Estado --}}
+                                <div class="flex items-center justify-center gap-2">
                                     @if($novedad->fecha_expiracion && $novedad->fecha_expiracion instanceof \Carbon\Carbon && $novedad->fecha_expiracion->isPast())
-                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
-                                            Expirada
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                            ⏱️
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                            Activa
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                            ✅
                                         </span>
                                     @endif
-                                </td>
-                                <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                                    {{ $novedad->created_at->format('d/m/Y') }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex space-x-1" onclick="event.stopPropagation()">
-                                        {{-- Editar --}}
-                                        <a href="{{ route('novedades.edit', $novedad) }}" 
-                                           class="inline-flex items-center justify-center w-8 h-8 bg-[#84B5F4] hover:bg-[#4d82bc] text-white rounded-lg transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
-                                           title="Editar novedad">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
-                                        </a>
 
-                                        {{-- Eliminar --}}
-                                        <form method="POST" action="{{ route('novedades.destroy', $novedad) }}" 
-                                              class="form-eliminar inline"
-                                              data-confirm="¿Estás seguro de que quieres eliminar esta novedad? Esta acción no se puede deshacer.">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    class="inline-flex items-center justify-center w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-lg transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
-                                                    title="Eliminar novedad">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-4 h-4">
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                    @if($novedad->visible_publico)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                            🌐
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="flex items-center text-gray-400">
+                                    <span class="mr-1">🕐</span>
+                                    <span>{{ $novedad->created_at->format('d/m/Y') }}</span>
+                                </div>
+                            </div>
+
+                            {{-- Botones de Administración --}}
+                            <div class="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700 mt-auto" onclick="event.stopPropagation()">
+                                {{-- Editar --}}
+                                <a href="{{ route('novedades.edit', $novedad) }}"
+                                   class="flex-1 inline-flex items-center justify-center gap-1 px-2 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
+                                   title="Editar novedad"
+                                   aria-label="Editar novedad {{ $novedad->titulo }}">
+                                    <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-3.5 h-3.5 flex-shrink-0">
+                                </a>
+
+                                {{-- Eliminar --}}
+                                <form method="POST" 
+                                      action="{{ route('novedades.destroy', $novedad) }}" 
+                                      class="form-eliminar flex-1"
+                                      data-confirm="¿Estás seguro de que quieres eliminar esta novedad? Esta acción no se puede deshacer.">
+                                    @csrf
+                                    @method('DELETE')
+                                        <button type="submit"
+                                                class="w-full inline-flex items-center justify-center gap-1 px-2 py-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
+                                                title="Eliminar novedad"
+                                                aria-label="Eliminar novedad {{ $novedad->titulo }}">
+                                            <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-3.5 h-3.5 flex-shrink-0">
+                                        </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
 
             {{-- Paginación --}}

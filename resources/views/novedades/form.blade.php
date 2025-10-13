@@ -27,155 +27,190 @@
                     :is-active="true"
                     :is-first="true"
                     :editing="$editing"
+                    contentClass="grid-cols-1 gap-8"
                 >
-                    <x-hci-field 
-                        name="titulo"
-                        label="Título de la Novedad"
-                        placeholder="Ej: Inicio del Año Académico 2025"
-                        value="{{ old('titulo', $novedad->titulo ?? '') }}"
-                        :required="true"
-                        icon="📰"
-                        help="Título descriptivo y atractivo para la novedad"
-                        maxlength="255"
-                    />
+                    <div class="w-full">
+                        <x-hci-field 
+                            name="titulo"
+                            label="Título de la Novedad"
+                            placeholder="Ej: Inicio del Año Académico 2025"
+                            value="{{ old('titulo', $novedad->titulo ?? '') }}"
+                            :required="true"
+                            help="Título descriptivo y atractivo para la novedad"
+                            maxlength="255"
+                        />
+                    </div>
 
-                    <x-hci-field 
-                        name="contenido"
-                        type="textarea"
-                        label="Contenido"
-                        placeholder="Describe los detalles de la novedad..."
-                        value="{{ old('contenido', $novedad->contenido ?? '') }}"
-                        :required="true"
-                        rows="6"
-                        help="Contenido completo de la novedad con todos los detalles importantes"
-                        maxlength="2000"
-                    />
+                    <div class="w-full mt-2">
+                        <x-hci-field 
+                            name="contenido"
+                            type="textarea"
+                            label="Contenido"
+                            placeholder="Describe los detalles de la novedad..."
+                            value="{{ old('contenido', $novedad->contenido ?? '') }}"
+                            :required="true"
+                            rows="8"
+                            help="Contenido completo de la novedad con todos los detalles importantes"
+                            maxlength="2000"
+                        />
+                    </div>
 
-                    <x-hci-field 
-                        name="imagen"
-                        type="file"
-                        label="Imagen (opcional)"
-                        help="Imagen que acompañará la novedad (máximo 2MB)"
-                        accept="image/*"
-                    />
-
-                    @if($editing && $novedad->imagen)
-                        <div class="mt-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Imagen Actual</label>
-                            <img src="{{ $novedad->imagen }}" alt="Imagen actual" class="w-32 h-32 object-cover rounded-lg border">
-                        </div>
-                    @endif
                 </x-hci-form-section>
 
                 {{-- Sección 2: Configuración --}}
                 <x-hci-form-section 
                     :step="2" 
                     title="Configuración" 
-                    description="Tipo de novedad y visibilidad"
+                    description="Tipo, programa y visibilidad"
                     icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z' clip-rule='evenodd'/></svg>"
                     section-id="configuracion"
                     :editing="$editing"
+                    contentClass="grid-cols-1 gap-6"
                 >
-                    <x-hci-field 
-                        name="tipo_novedad"
-                        type="select"
-                        label="Tipo de Novedad"
-                        :options="[
-                            'academica' => 'Académica',
-                            'evento' => 'Evento',
-                            'admision' => 'Admisión',
-                            'institucional' => 'Institucional',
-                            'administrativa' => 'Administrativa',
-                            'sistema' => 'Sistema',
-                            'oportunidad' => 'Oportunidad',
-                            'servicio' => 'Servicio',
-                            'mantenimiento' => 'Mantenimiento'
-                        ]"
-                        value="{{ old('tipo_novedad', $novedad->tipo_novedad ?? '') }}"
-                        :required="true"
-                        icon="🏷️"
-                        help="Selecciona el tipo que mejor describe la novedad"
-                    />
-
-                    <x-hci-field 
-                        name="magister_id"
-                        type="select"
-                        label="Programa (opcional)"
-                        :options="['' => 'Todos los programas'] + \App\Models\Magister::orderBy('nombre')->pluck('nombre', 'id')->toArray()"
-                        value="{{ old('magister_id', $novedad->magister_id ?? '') }}"
-                        icon="🎓"
-                        help="Asocia la novedad a un programa específico"
-                    />
-
-                    <div class="hci-field">
-                        <label class="hci-checkbox-label flex items-center">
-                            <input type="checkbox" 
-                                   name="visible_publico" 
-                                   value="1"
-                                   {{ old('visible_publico', $novedad->visible_publico ?? true) ? 'checked' : '' }}
-                                   class="hci-checkbox rounded border-gray-300 text-blue-600">
-                            <span class="ml-2">Visible al público</span>
-                        </label>
-                        <p class="hci-help-text">Si está marcado, la novedad será visible en el sitio público</p>
+                    {{-- Tipo de Novedad --}}
+                    <div class="w-full">
+                        <x-hci-field 
+                            name="tipo_novedad"
+                            type="select"
+                            label="Tipo de Novedad"
+                            :options="[
+                                'academica' => 'Académica',
+                                'evento' => 'Evento',
+                                'admision' => 'Admisión',
+                                'institucional' => 'Institucional',
+                                'administrativa' => 'Administrativa',
+                                'sistema' => 'Sistema',
+                                'oportunidad' => 'Oportunidad',
+                                'servicio' => 'Servicio',
+                                'mantenimiento' => 'Mantenimiento'
+                            ]"
+                            value="{{ old('tipo_novedad', $novedad->tipo_novedad ?? '') }}"
+                            :required="true"
+                            help="Selecciona el tipo que mejor describe la novedad"
+                        />
                     </div>
 
-                    <div class="hci-field">
-                        <label class="hci-checkbox-label flex items-center">
-                            <input type="checkbox" 
-                                   name="es_urgente" 
-                                   value="1"
-                                   {{ old('es_urgente', $novedad->es_urgente ?? false) ? 'checked' : '' }}
-                                   class="hci-checkbox rounded border-gray-300 text-red-600">
-                            <span class="ml-2">Novedad urgente</span>
-                        </label>
-                        <p class="hci-help-text">Las novedades urgentes se destacan visualmente</p>
+                    {{-- Programa --}}
+                    <div class="w-full">
+                        <x-hci-field 
+                            name="magister_id"
+                            type="select"
+                            label="Programa (opcional)"
+                            :options="['' => 'Todos los programas'] + \App\Models\Magister::orderBy('nombre')->pluck('nombre', 'id')->toArray()"
+                            value="{{ old('magister_id', $novedad->magister_id ?? '') }}"
+                            help="Asocia la novedad a un programa específico. Si no seleccionas ninguno, la novedad será visible para todos los programas."
+                        />
                     </div>
 
-                    <x-hci-field 
-                        name="fecha_expiracion"
-                        type="datetime-local"
-                        label="Fecha de Expiración (opcional)"
-                        value="{{ old('fecha_expiracion', $novedad && $novedad->fecha_expiracion && $novedad->fecha_expiracion instanceof \Carbon\Carbon ? $novedad->fecha_expiracion->format('Y-m-d\TH:i') : '') }}"
-                        help="Fecha y hora en que la novedad expirará automáticamente"
-                    />
+                    {{-- Fecha de Expiración --}}
+                    <div class="w-full mb-4">
+                        <x-hci-field 
+                            name="fecha_expiracion"
+                            type="datetime-local"
+                            label="Fecha de Expiración (opcional)"
+                            value="{{ old('fecha_expiracion', $novedad && $novedad->fecha_expiracion && $novedad->fecha_expiracion instanceof \Carbon\Carbon ? $novedad->fecha_expiracion->format('Y-m-d\TH:i') : '') }}"
+                            help="Fecha y hora en que la novedad expirará automáticamente. Si no estableces una fecha, la novedad permanecerá activa indefinidamente."
+                        />
+                    </div>
+
+                    {{-- Configuraciones de Visibilidad --}}
+                    <div class="w-full">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="hci-field">
+                                <label class="hci-checkbox-label flex items-center">
+                                    <input type="checkbox" 
+                                           name="visible_publico" 
+                                           value="1"
+                                           {{ old('visible_publico', $novedad->visible_publico ?? true) ? 'checked' : '' }}
+                                           class="hci-checkbox rounded border-gray-300 text-blue-600">
+                                    <span class="ml-2">Visible al público</span>
+                                </label>
+                                <p class="hci-help-text">Si está marcado, la novedad será visible en el sitio público</p>
+                            </div>
+
+                            <div class="hci-field">
+                                <label class="hci-checkbox-label flex items-center">
+                                    <input type="checkbox" 
+                                           name="es_urgente" 
+                                           value="1"
+                                           {{ old('es_urgente', $novedad->es_urgente ?? false) ? 'checked' : '' }}
+                                           class="hci-checkbox rounded border-gray-300 text-red-600">
+                                    <span class="ml-2">Novedad urgente</span>
+                                </label>
+                                <p class="hci-help-text">Las novedades urgentes se destacan visualmente</p>
+                            </div>
+                        </div>
+                    </div>
                 </x-hci-form-section>
 
                 {{-- Sección 3: Diseño --}}
                 <x-hci-form-section 
                     :step="3" 
-                    title="Personalización Visual" 
-                    description="Icono y colores para la novedad"
+                    title="Diseño" 
+                    description="Personaliza el icono y color de la novedad"
                     icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z' clip-rule='evenodd'/></svg>"
                     section-id="diseno"
                     :editing="$editing"
+                    contentClass="grid-cols-1 gap-6"
                 >
-                    <x-hci-field 
-                        name="icono"
-                        label="Icono"
-                        placeholder="📰"
-                        value="{{ old('icono', $novedad->icono ?? '📰') }}"
-                        icon="🎨"
-                        help="Emoji o icono que represente la novedad"
-                        maxlength="10"
-                    />
+                    {{-- Selector de Icono --}}
+                    <div class="hci-field">
+                        <label class="hci-label">Icono</label>
+                        <div class="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-3 mt-2">
+                            @php
+                                $iconos = ['📰', '🎓', '📅', '🔔', '📢', '📋', '💡', '⭐', '🚨', '🎉', '📚', '🏆', '💼', '🔧', '📞', '📧', '🌐', '📱', '💻', '🎯'];
+                                $iconoActual = old('icono', $novedad->icono ?? '📰');
+                            @endphp
+                            @foreach($iconos as $icono)
+                                <label class="cursor-pointer">
+                                    <input type="radio" 
+                                           name="icono" 
+                                           value="{{ $icono }}" 
+                                           {{ $iconoActual === $icono ? 'checked' : '' }}
+                                           class="sr-only">
+                                    <div class="w-14 h-14 flex items-center justify-center text-3xl border-2 rounded-lg transition-all duration-200 hover:scale-110 {{ $iconoActual === $icono ? 'border-[#4d82bc] bg-[#4d82bc]/10' : 'border-gray-300 hover:border-[#84b6f4]' }}">
+                                        {{ $icono }}
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="hci-help-text">Selecciona un icono que represente la novedad</p>
+                    </div>
 
-                    <x-hci-field 
-                        name="color"
-                        type="select"
-                        label="Color de la Novedad"
-                        :options="[
-                            'blue' => 'Azul',
-                            'green' => 'Verde',
-                            'yellow' => 'Amarillo',
-                            'red' => 'Rojo',
-                            'purple' => 'Morado',
-                            'indigo' => 'Índigo'
-                        ]"
-                        value="{{ old('color', $novedad->color ?? 'blue') }}"
-                        :required="true"
-                        icon="🎨"
-                        help="Color que identificará visualmente la novedad"
-                    />
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <x-hci-field 
+                            name="color"
+                            type="select"
+                            label="Color de la Novedad"
+                            :options="[
+                                'blue' => 'Azul',
+                                'green' => 'Verde',
+                                'yellow' => 'Amarillo',
+                                'red' => 'Rojo',
+                                'purple' => 'Morado',
+                                'indigo' => 'Índigo'
+                            ]"
+                            value="{{ old('color', $novedad->color ?? 'blue') }}"
+                            :required="true"
+                            help="Color que identificará visualmente la novedad"
+                        />
+
+                        {{-- Preview de la novedad --}}
+                        <div class="hci-field">
+                            <label class="hci-label">Vista Previa</label>
+                            <div id="novedad-preview" class="mt-2 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                                <div class="flex items-center">
+                                    <span id="preview-icon" class="text-2xl mr-3">{{ $iconoActual }}</span>
+                                    <div class="flex-1">
+                                        <h4 id="preview-titulo" class="font-semibold text-gray-900 dark:text-white">Título de la novedad</h4>
+                                        <span id="preview-color" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-500 text-white">
+                                            Azul
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </x-hci-form-section>
 
                 {{-- Sección 4: Resumen Final --}}

@@ -14,49 +14,45 @@
     ]" />
 
     <div class="py-6 max-w-7xl mx-auto px-4">
-        {{-- Filtros y Botones --}}
-        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                {{-- Selector de ciclo --}}
-                <div class="flex-1">
-                    <form method="GET" action="{{ route('courses.index') }}" class="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
-                        <div class="w-full sm:w-auto">
-                            <label for="cohorte" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                                Ciclo Académico:
-                            </label>
-                            <select name="cohorte" 
-                                    id="cohorte"
-                                    onchange="this.form.submit()"
-                                    class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
-                                @foreach($cohortes as $cohorte)
-                                    <option value="{{ $cohorte }}" {{ $cohorteSeleccionada == $cohorte ? 'selected' : '' }}>
-                                        {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+        {{-- Botones superiores --}}
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+            {{-- Lado izquierdo: Botón Ver Programas --}}
+            <a href="{{ route('magisters.index') }}"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow">
+                <img src="{{ asset('icons/searchw.svg') }}" alt="" class="w-5 h-5">
+                <span>Ver Programas</span>
+            </a>
+
+            {{-- Lado derecho: Filtro de Ciclo --}}
+            <div class="w-full sm:w-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                    <form method="GET" action="{{ route('courses.index') }}" class="flex items-center gap-3">
+                        <label for="cohorte" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
+                            Ciclo Académico:
+                        </label>
+                        <select name="cohorte" 
+                                id="cohorte"
+                                onchange="this.form.submit()"
+                                class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
+                            @foreach($cohortes as $cohorte)
+                                <option value="{{ $cohorte }}" {{ $cohorteSeleccionada == $cohorte ? 'selected' : '' }}>
+                                    {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                                </option>
+                            @endforeach
+                        </select>
                     </form>
                 </div>
-
-                {{-- Botones de Acción --}}
-                <div class="flex gap-3">
-                    <a href="{{ route('magisters.index') }}"
-                        class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200">
-                        <img src="{{ asset('icons/searchw.svg') }}" alt="Programas" class="w-5 h-5">
-                        <span>Ver Programas</span>
-                    </a>
-                </div>
             </div>
-            
-            {{-- Indicador de filtro activo --}}
-            @if($cohorteSeleccionada != $cohortes->first())
-                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                    <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                        ⚠️ Mostrando cursos de la cohorte <strong>{{ $cohorteSeleccionada }}</strong> (Periodo Pasado)
-                    </p>
-                </div>
-            @endif
         </div>
+        
+        {{-- Indicador de filtro activo --}}
+        @if($cohorteSeleccionada != $cohortes->first())
+            <div class="mb-6 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                    ⚠️ Mostrando cursos de la cohorte <strong>{{ $cohorteSeleccionada }}</strong> (Periodo Pasado)
+                </p>
+            </div>
+        @endif
 
         <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg shadow p-6 border border-[#c4dafa]">
             @php
@@ -75,8 +71,10 @@
                         <div class="flex items-center gap-3">
                             {{-- Botón añadir curso --}}
                             <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
-                                class="inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-3 py-2 rounded-lg shadow transition transform hover:scale-105">
-                                <img src="{{ asset('icons/agregar.svg') }}" alt="nueva" class="w-5 h-5">
+                                class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                                title="Agregar curso a este programa">
+                                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-4 h-4">
+                                <span>Agregar Curso</span>
                             </a>
                             <span class="text-sm text-[#4d82bc] flex items-center">
                                 <svg class="ml-2 w-5 h-5 transition-transform" fill="none" stroke="currentColor"

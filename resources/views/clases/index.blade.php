@@ -53,15 +53,17 @@
             },
         }">
 
-        {{-- Botones superiores (WCAG 2.1 AA: 44x44px mínimo) --}}
-        <div class="mb-6 flex justify-between items-center">
+        {{-- Botones superiores --}}
+        <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
+            {{-- Lado izquierdo: Botón Agregar --}}
             <a href="{{ route('clases.create') }}"
-               class="inline-flex items-center justify-center w-11 h-11 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-               title="Nueva Clase"
-               aria-label="Crear nueva clase">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="Nueva clase" class="w-6 h-6">
+               class="inline-flex items-center gap-2 px-6 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow"
+               title="Crear nueva clase">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                <span>Agregar Clase</span>
             </a>
 
+            {{-- Lado derecho: Botón Exportar --}}
             <form method="GET" action="{{ route('clases.exportar') }}">
                 <input type="hidden" name="cohorte" :value="cohorte">
                 <input type="hidden" name="magister" :value="magister">
@@ -70,33 +72,29 @@
                 <input type="hidden" name="anio" :value="anio">
                 <input type="hidden" name="trimestre" :value="trimestre">
                 <button type="submit"
-                    class="inline-flex items-center justify-center w-11 h-11 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                    title="Exportar a Excel"
-                    aria-label="Descargar datos en Excel">
-                    <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-6 h-6">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow"
+                    title="Exportar a Excel">
+                    <img src="{{ asset('icons/download.svg') }}" alt="" class="w-5 h-5">
                 </button>
             </form>
         </div>
 
-        {{-- 🔹 Selector de ciclo --}}
-        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                <div class="flex-1">
-                    <label for="cohorte-select" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                        Ciclo Académico:
-                    </label>
-                    <select x-model="cohorte" 
-                            @change="actualizarURL()"
-                            id="cohorte-select"
-                            class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
-                        @foreach($cohortes as $cohorte)
-                            <option value="{{ $cohorte }}">
-                                {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
+        {{-- Filtro de ciclo --}}
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div class="flex items-center gap-3">
+                <label for="cohorte-select" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
+                    Ciclo Académico:
+                </label>
+                <select x-model="cohorte" 
+                        @change="actualizarURL()"
+                        id="cohorte-select"
+                        class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
+                    @foreach($cohortes as $cohorte)
+                        <option value="{{ $cohorte }}">
+                            {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             {{-- Indicador de ciclo --}}
@@ -109,75 +107,76 @@
             @endif
         </div>
 
-        {{-- 🔍 Filtros --}}
-        <div class="mb-6 grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
-            {{-- Magíster --}}
-            <div>
-                <label class="text-sm font-semibold text-[#005187]">Programa:</label>
-                <select x-model="magister" @change="actualizarURL"
-                    class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2">
-                    <option value="">Todos</option>
-                    @foreach ($magisters as $m)
-                        <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
-                    @endforeach
-                </select>
-            </div>
+        {{-- Filtros adicionales --}}
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 items-end">
+                {{-- Magíster --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Programa:</label>
+                    <select x-model="magister" @change="actualizarURL"
+                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                        <option value="">Todos</option>
+                        @foreach ($magisters as $m)
+                            <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-            {{-- Sala --}}
-            <div>
-                <label class="text-sm font-semibold text-[#005187]">Sala:</label>
-                <select x-model="sala" @change="actualizarURL"
-                    class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2">
-                    <option value="">Todas</option>
-                    @foreach ($rooms as $r)
-                        <option value="{{ $r->name }}">{{ $r->name }}</option>
-                    @endforeach
-                </select>
-            </div>
+                {{-- Sala --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Sala:</label>
+                    <select x-model="sala" @change="actualizarURL"
+                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                        <option value="">Todas</option>
+                        @foreach ($rooms as $r)
+                            <option value="{{ $r->name }}">{{ $r->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-            {{-- Día --}}
-            <div>
-                <label class="text-sm font-semibold text-[#005187]">Día:</label>
-                <select x-model="dia" @change="actualizarURL"
-                    class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2">
-                    <option value="">Todos</option>
-                    <option value="Viernes">Viernes</option>
-                    <option value="Sábado">Sábado</option>
-                </select>
-            </div>
+                {{-- Día --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Día:</label>
+                    <select x-model="dia" @change="actualizarURL"
+                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                        <option value="">Todos</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                    </select>
+                </div>
 
-            {{-- Año --}}
-            <div>
-                <label class="text-sm font-semibold text-[#005187]">Año:</label>
-                <select x-model="anio" @change="actualizarURL"
-                    class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2">
-                    <option value="">Todos</option>
-                    @foreach ($anios as $a)
-                        <option value="{{ $a }}">{{ $a }}</option>
-                    @endforeach
-                </select>
-            </div>
+                {{-- Año --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Año:</label>
+                    <select x-model="anio" @change="actualizarURL"
+                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                        <option value="">Todos</option>
+                        @foreach ($anios as $a)
+                            <option value="{{ $a }}">{{ $a }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-            {{-- Trimestre --}}
-            <div>
-                <label class="text-sm font-semibold text-[#005187]">Trimestre:</label>
-                <select x-model="trimestre" @change="actualizarURL"
-                    class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] text-[#005187] px-2 py-2">
-                    <option value="">Todos</option>
-                    <template x-for="p in periodosFiltrados" :key="p.id">
-                        <option :value="p.numero" x-text="'Trimestre ' + p.numero"></option>
-                    </template>
-                </select>
-            </div>
+                {{-- Trimestre --}}
+                <div>
+                    <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Trimestre:</label>
+                    <select x-model="trimestre" @change="actualizarURL"
+                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                        <option value="">Todos</option>
+                        <template x-for="p in periodosFiltrados" :key="p.id">
+                            <option :value="p.numero" x-text="'Trimestre ' + p.numero"></option>
+                        </template>
+                    </select>
+                </div>
 
-            {{-- Botón limpiar --}}
-            <div class="flex items-end">
-                <button @click="limpiarFiltros" type="button"
-                    class="px-4 py-3 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                    title="Limpiar filtros"
-                    aria-label="Limpiar filtros">
-                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
-                </button>
+                {{-- Botón limpiar --}}
+                <div>
+                    <button @click="limpiarFiltros" type="button"
+                        class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
+                        title="Limpiar filtros">
+                        <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
+                    </button>
+                </div>
             </div>
         </div>
 

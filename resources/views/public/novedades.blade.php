@@ -140,7 +140,7 @@
         </template>
 
         {{-- Grid de Novedades --}}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" x-show="filtradas.length > 0">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6" x-show="filtradas.length > 0">
             <template x-for="novedad in filtradas" :key="novedad.id">
                 <div class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition-all duration-300 border border-gray-200 dark:border-gray-600 flex flex-col">
                     {{-- Header con icono y tipo --}}

@@ -22,8 +22,8 @@
                         <span class="font-mono font-semibold">{{ $mallaCurricular->codigo }}</span>
                     </p>
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="w-3 h-3 rounded-full" 
-                              style="background-color: {{ $mallaCurricular->magister ? $mallaCurricular->magister->color : '#6b7280' }}"></span>
+                        <span class="w-3 h-3 rounded-full"
+                            style="background-color: {{ $mallaCurricular->magister ? $mallaCurricular->magister->color : '#6b7280' }}"></span>
                         <span class="text-sm text-gray-700 dark:text-gray-300">
                             {{ $mallaCurricular->magister ? $mallaCurricular->magister->nombre : 'Sin programa' }}
                         </span>
@@ -31,16 +31,16 @@
                 </div>
 
                 <div class="flex gap-2">
-                    <a href="{{ route('mallas-curriculares.edit', $mallaCurricular) }}"
-                       class="inline-flex items-center gap-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white px-4 py-2 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 font-medium"
-                       title="Editar malla">
-                        <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
+                    <a href="{{ route('mallas-curriculares.index') }}"
+                        class="inline-flex items-center gap-2 px-4 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm hci-button-ripple hci-glow"
+                        title="Volver al listado">
+                        <img src="{{ asset('icons/back.svg') }}" alt="" class="w-5 h-5">
                     </a>
 
-                    <a href="{{ route('mallas-curriculares.index') }}"
-                       class="inline-flex items-center px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                       title="Volver al listado">
-                        <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
+                    <a href="{{ route('mallas-curriculares.edit', $mallaCurricular) }}"
+                        class="inline-flex items-center gap-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white px-4 py-3 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2 font-medium text-sm hci-button-ripple hci-glow"
+                        title="Editar malla curricular">
+                        <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5">
                     </a>
                 </div>
             </div>
@@ -122,9 +122,9 @@
                 </h3>
                 @if($mallaCurricular->activa)
                     <a href="{{ route('courses.create') }}?malla_curricular_id={{ $mallaCurricular->id }}"
-                       class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
-                       title="Agregar curso a esta malla">
-                        <img src="{{ asset('icons/add.svg') }}" alt="Agregar" class="w-4 h-4">
+                        class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                        title="Agregar curso a esta malla">
+                        <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-4 h-4">
                         Agregar Curso
                     </a>
                 @endif
@@ -135,21 +135,32 @@
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-[#c4dafa] dark:bg-gray-700">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
                                     Curso
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
-                                    Periodo
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                                    Año
                                 </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
-                                    Clases
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                                    Trimestre
                                 </th>
-                                <th class="px-6 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
+                                    Sesiones
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-center text-xs font-medium text-[#005187] dark:text-[#84b6f4] uppercase tracking-wider">
                                     Acciones
                                 </th>
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            @php
+                                $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI'];
+                            @endphp
                             @foreach($mallaCurricular->courses->sortBy('period.numero') as $course)
                                 <tr class="hover:bg-[#e3f2fd] dark:hover:bg-gray-700 transition-colors">
                                     <td class="px-6 py-4">
@@ -157,21 +168,32 @@
                                             {{ $course->nombre }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <span class="text-sm text-gray-900 dark:text-white">
-                                            {{ $course->period->nombre_completo }}
+                                            {{ $course->period->anio }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
-                                            {{ $course->clases->count() }} clase{{ $course->clases->count() != 1 ? 's' : '' }}
+                                        <span class="text-sm text-gray-900 dark:text-white">
+                                            {{ $romanos[$course->period->numero] ?? $course->period->numero }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                            @php
+                                                $totalSesiones = $course->clases->sum(function($clase) {
+                                                    return $clase->sesiones->count();
+                                                });
+                                            @endphp
+                                            {{ $totalSesiones }} sesión{{ $totalSesiones != 1 ? 'es' : '' }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <a href="{{ route('courses.edit', $course) }}"
-                                           class="inline-flex items-center justify-center w-8 h-8 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200"
-                                           title="Editar curso">
-                                            <img src="{{ asset('icons/editar.svg') }}" alt="Editar" class="w-4 h-4">
+                                            class="inline-flex items-center justify-center w-8 h-8 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200"
+                                            title="Editar curso">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-4 h-4">
                                         </a>
                                     </td>
                                 </tr>
@@ -187,8 +209,8 @@
                     </p>
                     @if($mallaCurricular->activa)
                         <a href="{{ route('courses.create') }}?malla_curricular_id={{ $mallaCurricular->id }}"
-                           class="inline-flex items-center gap-2 mt-4 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium">
-                            <img src="{{ asset('icons/add.svg') }}" alt="Agregar" class="w-4 h-4">
+                            class="inline-flex items-center gap-2 mt-4 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium">
+                            <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-4 h-4">
                             Agregar Primer Curso
                         </a>
                     @endif
@@ -197,7 +219,3 @@
         </div>
     </div>
 </x-app-layout>
-
-
-
-

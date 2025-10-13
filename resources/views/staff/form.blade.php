@@ -1,11 +1,20 @@
-{{-- Formulario de Staff Optimizado con Principios HCI --}}
-@section('title', isset($staff) ? 'Editar miembro del Staff' : 'Crear miembro del Staff')
+{{-- Formulario de Equipo Optimizado con Principios HCI --}}
+@section('title', isset($staff) ? 'Editar miembro del Equipo' : 'Crear miembro del Equipo')
 
 @php
     $editing = isset($staff);
 @endphp
 
-{{-- Layout genérico del wizard --}}
+{{-- Layout genérico del wizard con datos reactivos --}}
+<div x-data="{
+    formData: {
+        nombre: '{{ old('nombre', $staff->nombre ?? '') }}',
+        cargo: '{{ old('cargo', $staff->cargo ?? '') }}',
+        email: '{{ old('email', $staff->email ?? '') }}',
+        telefono: '{{ old('telefono', $staff->telefono ?? '') }}',
+        anexo: '{{ old('anexo', $staff->anexo ?? '') }}'
+    }
+}">
 <x-hci-wizard-layout 
     title="Miembro del Equipo"
     :editing="$editing"
@@ -28,28 +37,34 @@
                     :is-first="true"
                     :editing="$editing"
                 >
-                    <x-hci-field 
+                    <div>
+                        <label for="nombre" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Nombre Completo <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
                         name="nombre"
-                        label="Nombre Completo"
+                               id="nombre"
+                               x-model="formData.nombre"
                         placeholder="Ej: Juan Pérez González"
-                        value="{{ old('nombre', $staff->nombre ?? '') }}"
-                        :required="true"
-                        icon=""
-                        help=""
+                               required
                         maxlength="150"
-                    />
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+                    </div>
 
-                    <x-hci-field 
-                        name="cargo"
-                        label="Cargo"
-                        placeholder="Ej: Coordinador Académico"
-                        value="{{ old('cargo', $staff->cargo ?? '') }}"
-                        :required="true"
-                        icon=""
-                        help=""
-                        maxlength="100"
-                        style="width: 400px !important;"
-                    />
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <label for="cargo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Cargo <span class="text-red-500">*</span>
+                        </label>
+                        <textarea 
+                               name="cargo" 
+                               id="cargo"
+                               x-model="formData.cargo"
+                               placeholder="Ej: Coordinador de Postgrado y Magísteres"
+                               required
+                               maxlength="200"
+                               rows="2"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition resize-none"></textarea>
+                    </div>
 
                 </x-hci-form-section>
 
@@ -71,14 +86,19 @@
                                  class="w-32 h-32 rounded-full object-cover border-4 border-[#84b6f4] shadow-lg">
                         </div>
 
-                        {{-- Área de drag & drop --}}
-                        <div id="foto-drop-zone" class="hci-file-drop-zone"
+                        {{-- Área de drag & drop con mejor accesibilidad --}}
+                        <div id="foto-drop-zone" 
+                             class="hci-file-drop-zone"
+                             role="button"
+                             tabindex="0"
+                             aria-label="Área para subir foto de perfil. Arrastra una imagen aquí o presiona Enter para seleccionar un archivo"
                              ondrop="handleFotoDrop(event)" 
                              ondragover="handleDragOver(event)" 
                              ondragleave="handleDragLeave(event)"
-                             onclick="document.getElementById('foto-input').click()">
+                             onclick="document.getElementById('foto-input').click()"
+                             onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); document.getElementById('foto-input').click(); }">
                             <div class="hci-file-drop-content">
-                                <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                           d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                 </svg>
@@ -86,7 +106,7 @@
                                     <span id="foto-drop-text">Arrastra tu foto aquí</span>
                                 </p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                                    O haz clic para seleccionar una imagen
+                                    O haz clic (o presiona Enter) para seleccionar una imagen
                                 </p>
                                 <p class="text-xs text-gray-400 mt-2">
                                     JPG, JPEG, PNG, WEBP • Máximo 2MB
@@ -134,27 +154,135 @@
                     section-id="contacto"
                     :editing="$editing"
                 >
-                    <x-hci-field 
-                        name="email"
-                        type="email"
-                        label="Correo Electrónico institucional"
-                        placeholder="ejemplo@utalca.cl"
-                        value="{{ old('email', $staff->email ?? '') }}"
-                        :required="true"
-                        icon=""
-                        help=""
-                    />
+                    <div x-data="{ 
+                        emailTouched: false,
+                        validateEmail() {
+                            const emailRegex = /^[a-zA-Z0-9._%+-]+@utalca\.cl$/;
+                            return emailRegex.test(formData.email) || formData.email === '';
+                        }
+                    }">
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Correo Electrónico Institucional <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" 
+                               name="email" 
+                               id="email"
+                               x-model="formData.email"
+                               @blur="emailTouched = true"
+                               placeholder="ejemplo@utalca.cl"
+                               required
+                               pattern="^[a-zA-Z0-9._%+-]+@utalca\.cl$"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition"
+                               :class="emailTouched && !validateEmail() ? 'border-red-500' : ''">
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400" x-show="formData.email === ''">
+                            💡 <strong>Importante:</strong> Debe ser un correo institucional @utalca.cl
+                        </p>
+                        <p class="mt-2 text-xs text-green-600 dark:text-green-400" x-show="validateEmail() && formData.email !== ''" x-cloak>
+                            ✓ Email institucional válido: <span x-text="formData.email"></span>
+                        </p>
+                        <p x-show="emailTouched && !validateEmail() && formData.email !== ''" 
+                           class="mt-1 text-sm text-red-600 dark:text-red-400"
+                           x-cloak>
+                            ⚠️ El correo debe ser del dominio @utalca.cl
+                        </p>
+                    </div>
 
-                    <x-hci-field 
-                        name="telefono"
-                        label="Teléfono"
-                        placeholder=""
-                        value="{{ old('telefono', $staff->telefono ?? '') }}"
-                        :required="true"
-                        icon=""
-                        help="Ejemplo celular: +56 9 12345678 | Ejemplo fijo: +56 712345678"
-                        pattern="^(\+56\s?9\d{8}|\+56\s?712\d{6}|9\d{8}|712\d{6})$"
-                    />
+                    <div x-data="{ 
+                        touched: false,
+                        formatPhone() {
+                            // Solo formatear números chilenos automáticamente
+                            // Si ya tiene +, asumir que es internacional y no tocar
+                            if (formData.telefono.startsWith('+') && !formData.telefono.startsWith('+56')) {
+                                return; // Es internacional, no formatear
+                            }
+                            
+                            // Limpiar todo excepto números y +
+                            let cleaned = formData.telefono.replace(/[^\d+]/g, '');
+                            
+                            // Si empieza con 56, agregar +
+                            if (cleaned.startsWith('56') && !cleaned.startsWith('+')) {
+                                cleaned = '+' + cleaned;
+                            }
+                            
+                            // Si no tiene código de país Y ya escribió suficientes números, asumir Chile
+                            if (!cleaned.startsWith('+') && cleaned.length >= 8) {
+                                cleaned = '+56' + cleaned;
+                            }
+                            
+                            // Solo formatear números chilenos completos
+                            if (cleaned.startsWith('+56')) {
+                                // Formatear celular: +56 9 1234 5678 (9 dígitos después de +56)
+                                if (cleaned.match(/^\+56(9\d{8})$/)) {
+                                    cleaned = cleaned.replace(/^\+56(9)(\d{4})(\d{4})$/, '+56 $1 $2 $3');
+                                }
+                                // Formatear fijo 9 dígitos: +56 71 220 0200 (ej: Talca)
+                                else if (cleaned.match(/^\+56([2-7]\d{8})$/)) {
+                                    cleaned = cleaned.replace(/^\+56(\d{2})(\d{3})(\d{4})$/, '+56 $1 $2 $3');
+                                }
+                                // Formatear fijo 8 dígitos: +56 75 234 567 (otras regiones)
+                                else if (cleaned.match(/^\+56([2-7]\d{7})$/)) {
+                                    cleaned = cleaned.replace(/^\+56(\d{2})(\d{3})(\d{3})$/, '+56 $1 $2 $3');
+                                }
+                            }
+                            
+                            formData.telefono = cleaned;
+                        },
+                        validatePhone() {
+                            if (formData.telefono === '') return true;
+                            
+                            // Celular Chile: +56 9 XXXX XXXX (9 dígitos)
+                            const celularChile = /^\+56\s9\s\d{4}\s\d{4}$/;
+                            // Fijo Chile 9 dígitos: +56 71 220 0200 (ej: Talca)
+                            const fijoChile9 = /^\+56\s[2-7]\d\s\d{3}\s\d{4}$/;
+                            // Fijo Chile 8 dígitos: +56 75 234 567 (otras regiones)
+                            const fijoChile8 = /^\+56\s[2-7]\d\s\d{3}\s\d{3}$/;
+                            // Internacional: + seguido de código de país (1-3 dígitos) y número (mínimo 7 dígitos)
+                            const internacional = /^\+\d{1,3}\s?\d{7,15}$/;
+                            
+                            return celularChile.test(formData.telefono) || fijoChile9.test(formData.telefono) || fijoChile8.test(formData.telefono) || internacional.test(formData.telefono);
+                        },
+                        get phoneType() {
+                            if (formData.telefono === '') return '';
+                            if (/^\+56\s9/.test(formData.telefono)) return 'celular-chile';
+                            if (/^\+56\s[2-7]/.test(formData.telefono)) return 'fijo-chile';
+                            if (/^\+\d{1,3}/.test(formData.telefono) && !formData.telefono.startsWith('+56')) return 'internacional';
+                            return '';
+                        }
+                    }">
+                        <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Teléfono <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" 
+                               name="telefono" 
+                               id="telefono"
+                               x-model="formData.telefono"
+                               @blur="formatPhone(); touched = true"
+                               placeholder="+56 9 1234 5678 o +1 555 1234567"
+                               required
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition"
+                               :class="touched && !validatePhone() ? 'border-red-500' : ''">
+                        
+                        <!-- Ayuda dinámica según el tipo -->
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400" x-show="formData.telefono === ''">
+                            💡 <strong>Formato:</strong> Chile: 9 dígitos (ej: 912345678) • Internacional: +código país + número (ej: +1 5551234567)
+                        </p>
+                        <p class="mt-2 text-xs text-green-600 dark:text-green-400" x-show="phoneType === 'celular-chile' && validatePhone()" x-cloak>
+                            ✓ Celular Chile: <span x-text="formData.telefono"></span>
+                        </p>
+                        <p class="mt-2 text-xs text-green-600 dark:text-green-400" x-show="phoneType === 'fijo-chile' && validatePhone()" x-cloak>
+                            ✓ Teléfono fijo Chile: <span x-text="formData.telefono"></span>
+                        </p>
+                        <p class="mt-2 text-xs text-blue-600 dark:text-blue-400" x-show="phoneType === 'internacional' && validatePhone()" x-cloak>
+                            🌍 Teléfono internacional: <span x-text="formData.telefono"></span>
+                        </p>
+                        
+                        <!-- Error solo después de blur y si no valida -->
+                        <p x-show="touched && !validatePhone() && formData.telefono !== ''" 
+                           class="mt-1 text-sm text-red-600 dark:text-red-400"
+                           x-cloak>
+                            ⚠️ Formato inválido. Chile: 9 dígitos (ej: 912345678). Internacional: +código + número (ej: +1 5551234567).
+                        </p>
+                    </div>
                 </x-hci-form-section>
 
                 {{-- Sección 4: Información Adicional --}}
@@ -166,15 +294,21 @@
                     section-id="adicional"
                     :editing="$editing"
                 >
-                    <x-hci-field 
-                        name="anexo"
-                        label="Anexo"
-                        placeholder="Ej: 1234"
-                        value="{{ old('anexo', $staff->anexo ?? '') }}"
-                        icon=""
-                        help="Número interno de la universidad"
-                        maxlength="5"
-                    />
+                    <div>
+                        <label for="anexo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Anexo
+                        </label>
+                        <input type="text" 
+                               name="anexo" 
+                               id="anexo"
+                               x-model="formData.anexo"
+                               placeholder="Ej: 1234"
+                               maxlength="5"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                            💡 Número interno de la universidad
+                        </p>
+                    </div>
                 </x-hci-form-section>
 
                 {{-- Sección 5: Resumen Final --}}
@@ -188,35 +322,35 @@
                     :editing="$editing"
                 >
                     <div class="bg-[#c4dafa]/30 dark:bg-[#84b6f4]/10 rounded-lg p-6 border border-[#84b6f4]/30 w-full">                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                            <!-- Nombre Completo - 1 columna -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Nombre Completo -->
                             <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                 <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Nombre Completo</span>
-                                <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-nombre">{{ old('nombre', $staff->nombre ?? '') }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium" x-text="formData.nombre || 'No ingresado'"></p>
                             </div>
 
-                            <!-- Cargo - 2 columnas para más espacio -->
-                            <div class="md:col-span-1 lg:col-span-2 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                            <!-- Cargo -->
+                            <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                 <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Cargo</span>
-                                <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-cargo">{{ old('cargo', $staff->cargo ?? '') }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium" x-text="formData.cargo || 'No ingresado'"></p>
                             </div>
 
-                            <!-- Email - 2 columnas para más espacio -->
-                            <div class="md:col-span-1 lg:col-span-2 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                            <!-- Email -->
+                            <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                 <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Email</span>
-                                <p class="text-gray-900 dark:text-white font-medium text-lg break-words" id="resumen-email">{{ old('email', $staff->email ?? '') }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium break-words" x-text="formData.email || 'No ingresado'"></p>
                             </div>
 
-                            <!-- Teléfono - 2 columnas para más espacio -->
-                            <div class="md:col-span-1 lg:col-span-2 bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                            <!-- Teléfono -->
+                            <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                 <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Teléfono</span>
-                                <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-telefono">{{ old('telefono', $staff->telefono ?? '') }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium" x-text="formData.telefono || 'No ingresado'"></p>
                             </div>
 
-                            <!-- Anexo - 1 columna -->
+                            <!-- Anexo -->
                             <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
                                 <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-2">Anexo</span>
-                                <p class="text-gray-900 dark:text-white font-medium text-lg" id="resumen-anexo">{{ old('anexo', $staff->anexo ?? 'No especificado') }}</p>
+                                <p class="text-gray-900 dark:text-white font-medium" x-text="formData.anexo || 'No especificado'"></p>
                             </div>
                         </div>
 
@@ -229,6 +363,7 @@
                     </div>
                 </x-hci-form-section>
 </x-hci-wizard-layout>
+</div>
 
 {{-- Incluir CSS de Cropper.js --}}
 @push('styles')
