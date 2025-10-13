@@ -305,7 +305,6 @@
                         class="inline-flex items-center gap-2 px-5 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                         title="Volver al calendario">
                         <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
-                        <span class="hidden sm:inline">Volver al Calendario</span>
                     </a>
                 </div>
             @endif
