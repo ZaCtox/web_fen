@@ -1,7 +1,8 @@
 // JavaScript para el formulario wizard de Usuarios
 // Ley de Hick-Hyman: Navegación por pasos del formulario
 let currentStep = 1;
-let totalSteps = 3; // Se ajustará dinámicamente según si es edición o registro
+let totalSteps = 4; // Se ajustará dinámicamente según si es edición o registro
+let currentFile = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Solo buscar errores de validación de Laravel, no errores de UI
@@ -17,14 +18,56 @@ document.addEventListener('DOMContentLoaded', function() {
     // Detectar si estamos en modo edición usando el campo oculto
     const isEditingInput = document.getElementById('is-editing');
     const isEditing = isEditingInput && isEditingInput.value === '1';
-    totalSteps = isEditing ? 2 : 3;
+    totalSteps = isEditing ? 3 : 4;
     
-    // En modo edición, ocultar el paso 3 del sidebar si existe
+    // En modo edición, ocultar el paso 3 (Notificación) del sidebar
     if (isEditing) {
         const step3Sidebar = document.querySelector('.hci-progress-sidebar [data-step="3"]');
         if (step3Sidebar) {
             step3Sidebar.style.display = 'none';
         }
+        
+        // Renumerar el paso 4 como paso 3 en edición y actualizar data-step
+        const step4Sidebar = document.querySelector('.hci-progress-sidebar [data-step="4"]');
+        if (step4Sidebar) {
+            const stepNumber = step4Sidebar.querySelector('.hci-progress-step-number');
+            if (stepNumber) {
+                stepNumber.textContent = '3';
+            }
+            step4Sidebar.setAttribute('data-step', '3');
+            step4Sidebar.setAttribute('onclick', 'navigateToStep(3)');
+        }
+        
+        // Crear una función personalizada para actualizar el progreso en modo edición
+        window.updateWizardProgressSteps = function(currentStep) {
+            const progressSteps = document.querySelectorAll('.hci-progress-step-vertical:not([style*="display: none"])');
+            
+            progressSteps.forEach((stepElement, index) => {
+                const stepNumber = index + 1;
+                
+                // Remover todas las clases de estado primero
+                stepElement.classList.remove('completed', 'active');
+                
+                if (stepNumber < currentStep) {
+                    // Pasos anteriores: completados (verde con checkmark ✓)
+                    stepElement.classList.add('completed');
+                } else if (stepNumber === currentStep) {
+                    // Paso actual: activo (azul con número)
+                    stepElement.classList.add('active');
+                }
+                // Pasos futuros: sin clase especial (gris con número)
+            });
+        };
+        
+        // Actualizar el texto del header
+        const currentStepText = document.getElementById('current-step');
+        const progressPercentage = document.getElementById('progress-percentage');
+        if (currentStepText) currentStepText.textContent = 'Paso 1 de 3';
+        if (progressPercentage) progressPercentage.textContent = '33%';
+        
+        // Actualizar la barra de progreso
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) progressBar.style.height = '33%';
     }
     
     // Inicializar formulario
@@ -69,11 +112,6 @@ window.prevStep = function() {
 window.navigateToStep = function(step) {
     const isEditingInput = document.getElementById('is-editing');
     const isEditing = isEditingInput && isEditingInput.value === '1';
-    
-    // En modo edición, no permitir navegar al paso 3 (no existe)
-    if (isEditing && step > 2) {
-        return;
-    }
     
     // No permitir navegar a pasos que no existen
     if (step > totalSteps) {
@@ -150,12 +188,12 @@ function getSectionId(step) {
     const isEditing = isEditingInput && isEditingInput.value === '1';
     
     if (isEditing) {
-        // En edición: personal (con rol incluido), resumen (2 pasos)
-        const sectionIds = ['personal', 'resumen'];
+        // En edición: personal, foto, resumen (3 pasos)
+        const sectionIds = ['personal', 'foto', 'resumen'];
         return sectionIds[step - 1] || 'resumen';
     } else {
-        // En registro: personal (con rol incluido), notificacion, resumen (3 pasos)
-        const sectionIds = ['personal', 'notificacion', 'resumen'];
+        // En registro: personal, foto, notificacion, resumen (4 pasos)
+        const sectionIds = ['personal', 'foto', 'notificacion', 'resumen'];
         return sectionIds[step - 1] || 'resumen';
     }
 }
@@ -165,6 +203,11 @@ function validateCurrentStep() {
     
     // Si no se encuentra la sección, no validar
     if (!currentSection) {
+        return true;
+    }
+    
+    // Si estamos en el paso de resumen, no validar campos (es solo visualización)
+    if (getSectionId(currentStep) === 'resumen') {
         return true;
     }
     
@@ -280,7 +323,11 @@ function updateSummary() {
 
 // Función para enviar el formulario
 window.submitForm = function() {
+    console.log('submitForm called, currentStep:', currentStep);
+    
     if (validateCurrentStep()) {
+        console.log('Validation passed, submitting form');
+        
         // Mostrar overlay de loading global
         if (!document.getElementById('form-loading-overlay')) {
             const overlay = document.createElement('div');
@@ -296,6 +343,113 @@ window.submitForm = function() {
         }
         
         // Submit del formulario
-        document.querySelector('.hci-form').submit();
+        const form = document.querySelector('form.hci-form');
+        if (form) {
+            console.log('Submitting form:', form.action, form.method);
+            form.submit();
+        } else {
+            console.error('Form not found!');
+            // Fallback: buscar cualquier formulario en la página
+            const fallbackForm = document.querySelector('form');
+            if (fallbackForm) {
+                console.log('Using fallback form:', fallbackForm.action, fallbackForm.method);
+                fallbackForm.submit();
+            } else {
+                console.error('No form found at all!');
+            }
+        }
+    } else {
+        console.log('Validation failed');
     }
+}
+
+// ==================== FUNCIONES DE DRAG & DROP PARA FOTO ====================
+
+window.handleDragOver = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const dropZone = document.getElementById('foto-drop-zone');
+    if (dropZone) {
+        dropZone.classList.add('hci-file-drop-active');
+    }
+}
+
+window.handleDragLeave = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const dropZone = document.getElementById('foto-drop-zone');
+    if (dropZone) {
+        dropZone.classList.remove('hci-file-drop-active');
+    }
+}
+
+window.handleFotoDrop = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const dropZone = document.getElementById('foto-drop-zone');
+    if (dropZone) {
+        dropZone.classList.remove('hci-file-drop-active');
+    }
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        handleFotoFile(files[0]);
+    }
+}
+
+window.handleFotoSelect = function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        handleFotoFile(file);
+    }
+}
+
+function validateImageFile(file) {
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        alert('Por favor, selecciona una imagen JPG, PNG o WEBP.');
+        return false;
+    }
+    
+    // Validar tamaño (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('La imagen no puede exceder los 2MB.');
+        return false;
+    }
+    
+    return true;
+}
+
+function handleFotoFile(file) {
+    if (validateImageFile(file)) {
+        // Actualizar el input file directamente
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('foto-input').files = dataTransfer.files;
+        
+        // Crear preview URL
+        const previewUrl = URL.createObjectURL(file);
+        document.getElementById('foto-preview').src = previewUrl;
+        
+        // Mostrar información del archivo
+        document.getElementById('foto-name').textContent = file.name;
+        document.getElementById('foto-preview-info').classList.remove('hidden');
+        document.getElementById('foto-drop-text').textContent = 'Foto seleccionada';
+        
+        currentFile = file;
+    }
+}
+
+window.clearFoto = function() {
+    document.getElementById('foto-input').value = '';
+    document.getElementById('foto-preview-info').classList.add('hidden');
+    document.getElementById('foto-drop-text').textContent = 'Arrastra tu foto aquí';
+    
+    // Restablecer preview a avatar por defecto
+    const defaultAvatar = 'https://ui-avatars.com/api/?name=Foto&background=84b6f4&color=000000&size=300&bold=true&font-size=0.4';
+    document.getElementById('foto-preview').src = defaultAvatar;
+    
+    currentFile = null;
 }

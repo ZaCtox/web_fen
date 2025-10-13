@@ -6,7 +6,7 @@
 @endphp
 
 {{-- Layout genérico del wizard --}}
-<x-hci-wizard-layout 
+<x-hci-wizard-layout
     title="Usuario"
     :editing="$editing"
     createDescription="Registra un nuevo usuario en el sistema."
@@ -14,6 +14,7 @@
     sidebarComponent="usuarios-progress-sidebar"
     :formAction="$editing ? route('usuarios.update', $usuario) : route('register')"
     :formMethod="$editing ? 'PUT' : 'POST'"
+    formEnctype="multipart/form-data"
 >
     {{-- Variable para JavaScript --}}
     <input type="hidden" id="is-editing" value="{{ $editing ? '1' : '0' }}">
@@ -57,21 +58,97 @@
                         help="Selecciona el rol que tendrá el usuario en el sistema"
                     >
                         <option value="">-- Selecciona un rol --</option>
+                        <option value="administrador" {{ old('rol', $usuario->rol ?? '') == 'administrador' ? 'selected' : '' }}>Administrador</option>
                         <option value="director_programa" {{ old('rol', $usuario->rol ?? '') == 'director_programa' ? 'selected' : '' }}>Director de Programa</option>
                         <option value="asistente_programa" {{ old('rol', $usuario->rol ?? '') == 'asistente_programa' ? 'selected' : '' }}>Asistente de Programa</option>
-                        <option value="docente" {{ old('rol', $usuario->rol ?? '') == 'docente' ? 'selected' : '' }}>Docente</option>
                         <option value="técnico" {{ old('rol', $usuario->rol ?? '') == 'técnico' ? 'selected' : '' }}>Técnico</option>
                         <option value="auxiliar" {{ old('rol', $usuario->rol ?? '') == 'auxiliar' ? 'selected' : '' }}>Auxiliar</option>
                         <option value="asistente_postgrado" {{ old('rol', $usuario->rol ?? '') == 'asistente_postgrado' ? 'selected' : '' }}>Asistente de Postgrado</option>
-                        <option value="director_magister" {{ old('rol', $usuario->rol ?? '') == 'director_magister' ? 'selected' : '' }}>Director Magíster</option>
-                        <option value="director_administrativo" {{ old('rol', $usuario->rol ?? '') == 'director_administrativo' ? 'selected' : '' }}>Director Administrativo</option>
                     </x-hci-field>
                 </x-hci-form-section>
 
+                {{-- Paso 2: Foto de Perfil --}}
+                <x-hci-form-section 
+                    :step="2" 
+                    title="Foto de Perfil" 
+                    description="Agrega una foto para el usuario"
+                    icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z' clip-rule='evenodd'/></svg>"
+                    section-id="foto"
+                    :editing="$editing ?? false"
+                    style="display: none;"
+                >
+                    <div style="max-width: 500px;">
+                        {{-- Preview de la foto --}}
+                        <div class="flex justify-center mb-4">
+                            <img id="foto-preview" 
+                                 src="{{ isset($usuario) && $usuario->foto ? $usuario->foto : 'https://ui-avatars.com/api/?name=Foto&background=84b6f4&color=000000&size=300&bold=true&font-size=0.4' }}" 
+                                 alt="Preview" 
+                                 class="w-32 h-32 rounded-full object-cover border-4 border-[#84b6f4] shadow-lg">
+                        </div>
+
+                        {{-- Área de drag & drop --}}
+                        <div id="foto-drop-zone" 
+                             class="hci-file-drop-zone"
+                             role="button"
+                             tabindex="0"
+                             aria-label="Área para subir foto de perfil. Arrastra una imagen aquí o presiona Enter para seleccionar un archivo"
+                             ondrop="handleFotoDrop(event)" 
+                             ondragover="handleDragOver(event)" 
+                             ondragleave="handleDragLeave(event)"
+                             onclick="document.getElementById('foto-input').click()"
+                             onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); document.getElementById('foto-input').click(); }">
+                            <div class="hci-file-drop-content">
+                                <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <p class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    <span id="foto-drop-text">Arrastra tu foto aquí</span>
+                                </p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    O haz clic (o presiona Enter) para seleccionar una imagen
+                                </p>
+                                <p class="text-xs text-gray-400 mt-2">
+                                    JPG, JPEG, PNG, WEBP • Máximo 2MB
+                                </p>
+                            </div>
+                        </div>
+
+                        <input type="file" 
+                               name="foto" 
+                               id="foto-input" 
+                               class="hidden" 
+                               accept="image/jpeg,image/jpg,image/png,image/webp"
+                               onchange="handleFotoSelect(event)">
+                        
+                        <div id="foto-preview-info" class="hidden mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <span id="foto-name" class="text-sm font-medium text-green-700 dark:text-green-300"></span>
+                                <button type="button" onclick="clearFoto()" class="ml-auto text-red-500 hover:text-red-700">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        @error('foto')
+                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+
+                        <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                            💡 <strong>Nota:</strong> Si no subes una foto, se generará automáticamente un avatar con las iniciales del nombre.
+                        </p>
+                    </div>
+                </x-hci-form-section>
+
                 @if(!$editing)
-                    {{-- Paso 2: Notificación de Correo (solo para registro) --}}
+                    {{-- Paso 3: Notificación de Correo (solo para registro) --}}
                     <x-hci-form-section 
-                        :step="2" 
+                        :step="3" 
                         title="Notificación de Cuenta" 
                         description="Se enviará un correo con las credenciales de acceso"
                         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z'/><path d='M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z'/></svg>"
@@ -120,9 +197,9 @@
                         </div>
                     </x-hci-form-section>
 
-                    {{-- Paso 3: Resumen (registro) --}}
+                    {{-- Paso 4: Resumen (registro) --}}
                     <x-hci-form-section 
-                        :step="3" 
+                        :step="4" 
                         title="Resumen" 
                         description="Revisa la información antes de crear el usuario"
                         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
@@ -155,9 +232,9 @@
                         </div>
                     </x-hci-form-section>
                 @else
-                    {{-- Paso 2: Resumen (edición) --}}
+                    {{-- Paso 3: Resumen (edición) --}}
                     <x-hci-form-section 
-                        :step="2" 
+                        :step="3" 
                         title="Resumen" 
                         description="Revisa los cambios antes de actualizar el usuario"
                         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"

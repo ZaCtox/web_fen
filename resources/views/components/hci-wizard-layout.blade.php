@@ -64,6 +64,7 @@
                 class="hci-form" 
                 method="POST" 
                 action="{{ $formAction }}"
+                @if($editing) data-editing="true" @endif
                 @if($formEnctype) enctype="{{ $formEnctype }}" @endif
                 @foreach($formDataAttributes as $key => $value)
                     @if($key === 'enctype')

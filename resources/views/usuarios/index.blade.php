@@ -24,6 +24,7 @@
                     'options' => Carbon\Carbon::JUST_NOW | Carbon\Carbon::ONE_DAY_WORDS,
                     'short' => false
                 ]) : 'Nunca',
+                'foto' => $u->foto,
                 'initials' => strtoupper(
                     (count(explode(' ', $u->name)) >= 2) 
                         ? substr(explode(' ', $u->name)[0], 0, 1) . substr(explode(' ', $u->name)[1], 0, 1)
@@ -135,13 +136,24 @@
                      :style="`animation-delay: ${index * 0.1}s`">
                     <div class="cursor-pointer transition-all duration-300 rounded-xl overflow-hidden shadow-sm border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-xl hover:-translate-y-1 hover:border-[#4d82bc]/40">
                         
-                        {{-- Avatar con iniciales --}}
+                        {{-- Avatar con foto o iniciales --}}
                         <div class="flex justify-center pt-5 pb-3">
                             <div class="relative">
-                                <div :class="usuario.avatar_color" 
-                                     class="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg border-4 border-white dark:border-gray-700 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                                    <span x-text="usuario.initials"></span>
-                                </div>
+                                {{-- Si tiene foto, mostrar la foto --}}
+                                <template x-if="usuario.foto">
+                                    <img :src="usuario.foto" 
+                                         :alt="usuario.name"
+                                         class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white dark:border-gray-700 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                </template>
+                                
+                                {{-- Si no tiene foto, mostrar iniciales --}}
+                                <template x-if="!usuario.foto">
+                                    <div :class="usuario.avatar_color" 
+                                         class="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg border-4 border-white dark:border-gray-700 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                                        <span x-text="usuario.initials"></span>
+                                    </div>
+                                </template>
+                                
                                 {{-- Indicador de usuario autenticado --}}
                                 <div x-show="usuario.id === authId" 
                                      class="absolute -bottom-1 -right-1 w-7 h-7 bg-green-500 rounded-full flex items-center justify-center border-4 border-white dark:border-gray-800 shadow-lg"

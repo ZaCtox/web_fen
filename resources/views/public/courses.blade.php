@@ -62,6 +62,17 @@
                             Magíster en {{ $magister->nombre }}
                         </h3>
                         <div class="flex items-center gap-3">
+                            @php
+                                $totalSct = $magister->courses->sum('sct');
+                            @endphp
+                            @if($totalSct > 0)
+                                <div class="flex items-center gap-1 bg-[#4d82bc]/10 px-2 py-1 rounded-full">
+                                    <span class="text-xs text-[#4d82bc] font-medium">Total SCT:</span>
+                                    <span class="inline-flex items-center justify-center w-6 h-6 bg-[#4d82bc] text-white text-xs font-bold rounded-full">
+                                        {{ $totalSct }}
+                                    </span>
+                                </div>
+                            @endif
                             <span class="text-sm text-[#4d82bc] flex items-center">
                                 <svg class="ml-2 w-5 h-5 transition-transform duration-200" 
                                      :class="{ 'rotate-180': expandedMagisters[{{ $magister->id }}] }"
@@ -100,19 +111,68 @@
                                             Trimestre {{ $romanos[$trimestre] ?? $trimestre }}
                                         </h5>
 
-                                        <div class="space-y-2">
-                                            @foreach ($cursos as $course)
-                                                <div class="px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 
-                                                         hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
-                                                         hover:border-l-4 hover:border-l-[#4d82bc]
-                                                         hover:-translate-y-0.5 hover:shadow-md
-                                                         transition-all duration-200 group cursor-pointer">
-                                                    <span class="text-[#005187] dark:text-gray-100 font-medium group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
-                                                        {{ $course->nombre }}
-                                                    </span>
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                        <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
+                                            <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
+                                                <tr>
+                                                    <th class="px-4 py-2 text-left">Curso</th>
+                                                    <th class="px-4 py-2 text-center w-20">SCT</th>
+                                                    <th class="px-4 py-2 text-center w-40">Rrequisitos</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($cursos as $course)
+                                                    <tr class="border-b border-gray-200 dark:border-gray-600 
+                                                                 hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                                                 hover:border-l-4 hover:border-l-[#4d82bc]
+                                                                 hover:-translate-y-0.5 hover:shadow-md
+                                                                 transition-all duration-200 group cursor-pointer">
+                                                        <td class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
+                                                            {{ $course->nombre }}
+                                                        </td>
+                                                        <td class="px-4 py-2 text-center">
+                                                            @if($course->sct)
+                                                                <span class="inline-flex items-center justify-center w-8 h-8 text-[#005187] text-sm font-bold rounded-full">
+                                                                    {{ $course->sct }}
+                                                                </span>
+                                                            @else
+                                                                <span class="text-gray-400 dark:text-gray-500 text-sm">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-4 py-2 text-center">
+                                                            @if($course->requisitos)
+                                                                @php
+                                                                    $requisitosArray = explode(',', $course->requisitos);
+                                                                @endphp
+                                                                <div class="flex flex-wrap gap-1 justify-center">
+                                                                    @foreach($requisitosArray as $req)
+                                                                        @if($req == 'ingreso')
+                                                                            <span class="inline-flex items-center px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium rounded-full">
+                                                                                🎓 Ingreso
+                                                                            </span>
+                                                                        @else
+                                                                            @php
+                                                                                $cursoReq = $magisters->flatMap->courses->firstWhere('id', $req);
+                                                                            @endphp
+                                                                            @if($cursoReq)
+                                                                                <span class="inline-flex items-center px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full" title="{{ $cursoReq->nombre }}">
+                                                                                    {{ Str::limit($cursoReq->nombre, 20) }}
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full">
+                                                                                    ID: {{ $req }}
+                                                                                </span>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            @else
+                                                                <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 @endforeach
                             </div>

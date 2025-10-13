@@ -68,9 +68,9 @@ window.navigateToStep = function(step) {
 // Función para cancelar el formulario
 window.cancelForm = function() {
     if (window.hasUnsavedChanges && window.hasUnsavedChanges()) {
-        window.showUnsavedChangesModal(window.location.origin + '/staff');
+        window.showUnsavedChangesModal(window.location.origin + '/equipo');
     } else {
-        window.location.href = window.location.origin + '/staff';
+        window.location.href = window.location.origin + '/equipo';
     }
 }
 

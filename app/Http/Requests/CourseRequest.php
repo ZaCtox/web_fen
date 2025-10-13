@@ -23,6 +23,8 @@ class CourseRequest extends FormRequest
     {
         return [
             'nombre' => 'required|string|max:255',
+            'sct' => 'nullable|integer|min:1|max:20',
+            'requisitos' => 'nullable|string|max:500',
             'magister_id' => 'required|exists:magisters,id',
             'period_id' => 'required|exists:periods,id',
             'anio' => 'nullable|integer|min:1|max:2',
@@ -40,6 +42,9 @@ class CourseRequest extends FormRequest
         return [
             'nombre.required' => 'El nombre del curso es obligatorio.',
             'nombre.max' => 'El nombre del curso no puede exceder los 255 caracteres.',
+            'sct.integer' => 'Los créditos SCT deben ser un número entero.',
+            'sct.min' => 'Los créditos SCT deben ser al menos 1.',
+            'sct.max' => 'Los créditos SCT no pueden ser mayor a 20.',
             'magister_id.required' => 'Debe seleccionar un programa académico.',
             'magister_id.exists' => 'El programa académico seleccionado no es válido.',
             'period_id.required' => 'Debe seleccionar un período académico.',

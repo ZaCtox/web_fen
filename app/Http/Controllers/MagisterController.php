@@ -18,7 +18,9 @@ class MagisterController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Magister::query()->withCount('courses');
+            $query = Magister::query()
+                ->withCount('courses')
+                ->withSum('courses', 'sct');
 
             // Búsqueda por nombre
             if ($request->filled('q')) {

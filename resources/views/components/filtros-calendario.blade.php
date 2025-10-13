@@ -40,7 +40,7 @@
                 Programa:
             </label>
             <select id="magister-filter" name="magister"
-                class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-3 py-2 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+                class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-2.5 text-base focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
                 <option value="">Todos</option>
                 @foreach(\App\Models\Magister::orderBy('orden')->get() as $m)
                     <option value="{{ $m->id }}" {{ $m->id == 1 ? 'selected' : '' }}>

@@ -125,6 +125,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::put('/profile/foto', [ProfileController::class, 'updateFoto'])->name('profile.update-foto');
+    Route::delete('/profile/foto', [ProfileController::class, 'deleteFoto'])->name('profile.delete-foto');
     
     // 🔔 Notificaciones (tabla personalizada notifications)
     Route::patch('/notifications/{notification}/read', function($notificationId) {
@@ -179,6 +181,10 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'staff.update',
             'destroy' => 'staff.destroy'
         ])
+        ->middleware('role:administrador');
+    
+    Route::delete('/equipo/{staff}/foto', [StaffController::class, 'deleteFoto'])
+        ->name('staff.delete-foto')
         ->middleware('role:administrador');
 
     // 📰 Novedades

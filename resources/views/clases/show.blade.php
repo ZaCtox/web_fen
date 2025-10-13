@@ -10,6 +10,45 @@
         ['label' => 'Detalle de Clase', 'url' => '#']
     ]" />
 
+    {{-- 🎯 Sticky Header con Botones de Acción (solo modo administrador) --}}
+    @unless(!empty($public) && $public === true)
+        <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 py-4 mb-6 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+            <div class="max-w-5xl mx-auto px-6">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                    {{-- Botón Volver --}}
+                    <a href="{{ route('clases.index') }}"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                        aria-label="Volver a la lista de clases">
+                        <img src="{{ asset('icons/back.svg') }}" alt="" class="w-5 h-5">
+                    </a>
+
+                    {{-- Acciones: Editar + Eliminar --}}
+                    <div class="flex gap-3">
+                        {{-- Editar --}}
+                        <a href="{{ route('clases.edit', $clase) }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                            aria-label="Editar clase">
+                            <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5">
+                            <span class="hidden sm:inline">Editar</span>
+                        </a>
+
+                        {{-- Eliminar --}}
+                        <form action="{{ route('clases.destroy', $clase) }}" method="POST" class="inline-flex form-eliminar">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 text-sm font-medium"
+                                aria-label="Eliminar clase">
+                                <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-5 h-5">
+                                <span class="hidden sm:inline">Eliminar</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endunless
+
     <div class="max-w-5xl mx-auto p-6">
         <div class="rounded-xl shadow-lg p-8 border-l-4 transition-all duration-200 hover:shadow-xl
                     bg-white dark:bg-gray-800"
@@ -259,48 +298,17 @@
                 </div>
             @endunless
 
-            {{-- 🔒 Botonera interna --}}
-            @unless(!empty($public) && $public === true)
-                <div class="flex items-center justify-between mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-
-                    {{-- Volver (a la izquierda) --}}
-                    <a href="{{ route('clases.index') }}"
-                        class="inline-flex items-center px-5 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                        title="Volver a la lista de clases">
-                        <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
-                    </a>
-
-                    {{-- Editar + Eliminar (a la derecha) --}}
-                    <div class="flex gap-3">
-                        {{-- Editar --}}
-                        <a href="{{ route('clases.edit', $clase) }}"
-                            class="inline-flex items-center px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                            title="Editar clase">
-                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
-                        </a>
-
-                        {{-- Eliminar --}}
-                        <form action="{{ route('clases.destroy', $clase) }}" method="POST" class="inline-flex form-eliminar">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                class="inline-flex items-center justify-center px-3 py-1 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                                title="Eliminar clase">
-                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @else
-                {{-- 🟢 Modo público --}}
+            {{-- 🟢 Modo público: Botón Volver al Calendario --}}
+            @if(!empty($public) && $public === true)
                 <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex justify-start">
                     <a href="{{ url('/Calendario-Academico') }}"
-                        class="inline-flex items-center px-5 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                        class="inline-flex items-center gap-2 px-5 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                         title="Volver al calendario">
                         <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
+                        <span class="hidden sm:inline">Volver al Calendario</span>
                     </a>
                 </div>
-            @endunless
+            @endif
         </div>
     </div>
 </x-app-layout>

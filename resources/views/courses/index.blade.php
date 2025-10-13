@@ -109,6 +109,8 @@
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
                                                     <th class="px-4 py-2 text-left">Curso</th>
+                                                    <th class="px-4 py-2 text-center w-20">SCT</th>
+                                                    <th class="px-4 py-2 text-center w-32">Requisitos</th>
                                                     <th class="px-4 py-2 text-right w-32">Acciones</th>
                                                 </tr>
                                             </thead>
@@ -121,6 +123,46 @@
                                                                                    transition-all duration-200 group cursor-pointer">
                                                         <td class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
                                                             {{ $course->nombre }}
+                                                        </td>
+                                                        <td class="px-4 py-2 text-center">
+                                                            @if($course->sct)
+                                                                <span class="inline-flex items-center justify-center w-8 h-8 text-[#005187] text-sm font-bold rounded-full">
+                                                                    {{ $course->sct }}
+                                                                </span>
+                                                            @else
+                                                                <span class="text-gray-400 dark:text-gray-500 text-sm">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-4 py-2 text-center">
+                                                            @if($course->requisitos)
+                                                                @php
+                                                                    $requisitosArray = explode(',', $course->requisitos);
+                                                                @endphp
+                                                                <div class="flex flex-wrap gap-1 justify-center">
+                                                                    @foreach($requisitosArray as $req)
+                                                                        @if($req == 'ingreso')
+                                                                            <span class="inline-flex items-center px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-xs font-medium rounded-full">
+                                                                                🎓 Ingreso
+                                                                            </span>
+                                                                        @else
+                                                                            @php
+                                                                                $cursoReq = $magisters->flatMap->courses->firstWhere('id', $req);
+                                                                            @endphp
+                                                                            @if($cursoReq)
+                                                                                <span class="inline-flex items-center px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-xs font-medium rounded-full" title="{{ $cursoReq->nombre }}">
+                                                                                    {{ Str::limit($cursoReq->nombre, 20) }}
+                                                                                </span>
+                                                                            @else
+                                                                                <span class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full">
+                                                                                    ID: {{ $req }}
+                                                                                </span>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            @else
+                                                                <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
+                                                            @endif
                                                         </td>
                                                         <td class="px-3 py-2 text-right">
                                                             <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
@@ -144,7 +186,7 @@
                                                     </tr>
                                                 @empty
                                                     <tr>
-                                                        <td colspan="3" class="px-4 py-8">
+                                                        <td colspan="4" class="px-4 py-8">
                                                             <x-empty-state type="no-data" icon="📚" title="No hay cursos registrados"
                                                                 message="Crea tu primer curso para comenzar a gestionar el contenido académico."
                                                                 actionText="Crear Curso" actionUrl="{{ route('courses.create') }}"

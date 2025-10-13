@@ -228,4 +228,34 @@ class StaffController extends Controller
                 ->with('error', 'Error al eliminar el miembro del personal. Es posible que tenga información relacionada.');
         }
     }
+
+    /**
+     * Eliminar solo la foto del personal
+     */
+    public function deleteFoto(Staff $staff)
+    {
+        try {
+            // Eliminar foto de Cloudinary si existe
+            if ($staff->public_id) {
+                try {
+                    (new UploadApi)->destroy($staff->public_id);
+                } catch (Exception $e) {
+                    Log::warning('No se pudo eliminar foto de Cloudinary: ' . $e->getMessage());
+                }
+            }
+
+            // Limpiar campos de foto y public_id
+            $staff->foto = null;
+            $staff->public_id = null;
+            $staff->save();
+
+            Log::info('Foto de personal eliminada', ['staff_id' => $staff->id, 'nombre' => $staff->nombre]);
+
+            return redirect()->back()->with('success', 'Foto eliminada correctamente.');
+
+        } catch (Exception $e) {
+            Log::error('Error al eliminar foto de personal: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al eliminar la foto. Por favor, inténtelo nuevamente.');
+        }
+    }
 }

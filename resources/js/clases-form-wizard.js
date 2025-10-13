@@ -973,6 +973,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const editing = document.querySelector('[data-editing="true"]') !== null;
     totalSteps = editing ? 2 : 4;
 
+    // 🔧 Ajustar sidebar para modo edición
+    if (editing) {
+        // Ocultar pasos de creación (2 y 3)
+        const creationSteps = document.querySelectorAll('.step-creation-only');
+        creationSteps.forEach(step => step.style.display = 'none');
+
+        // Actualizar el paso 4 (Resumen) para que sea el paso 2 en edición
+        const resumenStep = document.querySelector('[data-step="4"]');
+        if (resumenStep) {
+            const stepNumber = resumenStep.querySelector('.hci-progress-step-number');
+            if (stepNumber) stepNumber.textContent = '2';
+            resumenStep.setAttribute('data-step', '2');
+            resumenStep.setAttribute('onclick', 'navigateToStep(2)');
+        }
+
+        // Actualizar el texto del total de pasos
+        const totalStepsSpan = document.getElementById('total-steps');
+        if (totalStepsSpan) totalStepsSpan.textContent = '2';
+
+        // Actualizar el progreso inicial
+        const currentStepText = document.getElementById('current-step');
+        if (currentStepText) currentStepText.textContent = 'Paso 1 de 2';
+        
+        const progressPercentage = document.getElementById('progress-percentage');
+        if (progressPercentage) progressPercentage.textContent = '50%';
+        
+        const progressBar = document.getElementById('progress-bar');
+        if (progressBar) progressBar.style.height = '50%';
+
+        // Sobrescribir la función de actualización de progreso para modo edición
+        window.updateWizardProgressSteps = function(currentStep) {
+            // Solo considerar pasos visibles (no ocultos)
+            const progressSteps = document.querySelectorAll('.hci-progress-step-vertical:not([style*="display: none"])');
+            
+            progressSteps.forEach((stepElement, index) => {
+                const stepNumber = index + 1;
+                
+                // Remover todas las clases de estado primero
+                stepElement.classList.remove('completed', 'active');
+                
+                if (stepNumber < currentStep) {
+                    // Pasos anteriores: completados (verde con checkmark ✓)
+                    stepElement.classList.add('completed');
+                } else if (stepNumber === currentStep) {
+                    // Paso actual: activo (azul con número)
+                    stepElement.classList.add('active');
+                }
+                // Pasos futuros: sin clase especial (gris con número)
+            });
+        };
+    }
+
     // Prevenir submit del formulario con Enter (excepto en textareas)
     const form = document.querySelector('.hci-form');
     if (form) {

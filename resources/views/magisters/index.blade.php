@@ -37,16 +37,17 @@
         {{-- Header: acciones + búsqueda --}}
         <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
             <div class="flex gap-3">
+                {{-- Botón Volver (Izquierda) --}}
                 <a href="{{ route('courses.index') }}"
-                    class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
-                    title="Volver a cursos">
-                    <img src="{{ asset('icons/back.svg') }}" alt="Volver" class="w-5 h-5">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow">
+                    <img src="{{ asset('icons/back.svg') }}" alt="" class="w-5 h-5">
                 </a>
 
+                {{-- Botón Agregar (Al lado del Volver) --}}
                 <a href="{{ route('magisters.create') }}"
-                    class="hci-button hci-lift hci-focus-ring inline-flex items-center bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow transition-all duration-200"
-                    title="Agregar nuevo programa">
-                    <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow">
+                    <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                    <span>Agregar Programa</span>
                 </a>
             </div>
 
@@ -117,6 +118,15 @@
                                 @endif
                                 <p><strong class="text-[#005187] dark:text-[#84b6f4]">Cursos asociados:</strong>
                                     {{ $count }}</p>
+                                <p><strong class="text-[#005187] dark:text-[#84b6f4]">Total SCT:</strong>
+                                    @if($magister->courses_sum_sct)
+                                            {{ $magister->courses_sum_sct }}
+                                        
+                                        <span class="text-sm text-gray-500 ml-1">créditos</span>
+                                    @else
+                                        <span class="text-gray-400 text-sm">Sin créditos definidos</span>
+                                    @endif
+                                </p>
                             </div>
                         </div>
 

@@ -33,8 +33,8 @@ class MagisterSaludSeeder extends Seeder
                 ['name' => 'Arcadio Cerda', 'password' => Hash::make('admin123'), 'rol' => 'administrador']
             ),
             'director_admin' => User::firstOrCreate(
-                ['email' => 'director@utalca.cl'],
-                ['name' => 'Director Administrativo', 'password' => Hash::make('admin456'), 'rol' => 'director_administrativo']
+                ['email' => 'jcastillo@utalca.cl'],
+                ['name' => 'José Leonardo Castillo', 'password' => Hash::make('castillo123'), 'rol' => 'director_administrativo']
             ),
             'luis_canales' => User::firstOrCreate(
                 ['email' => 'lcanales@utalca.cl'],
@@ -70,12 +70,24 @@ class MagisterSaludSeeder extends Seeder
             ),
         ];
 
-        $this->command->info('   ✅ ' . (count($usuarios) + count($docentes)) . ' usuarios creados');
+        // Personal de Apoyo
+        $personalApoyo = [
+            'cristian_barrientos' => User::firstOrCreate(
+                ['email' => 'cristian.barrientos@utalca.cl'],
+                ['name' => 'Cristian Barrientos', 'password' => Hash::make('auxiliar123'), 'rol' => 'auxiliar']
+            ),
+            'miguel_suarez' => User::firstOrCreate(
+                ['email' => 'msuarez@utalca.cl'],
+                ['name' => 'Miguel Suárez', 'password' => Hash::make('tecnico123'), 'rol' => 'técnico']
+            ),
+        ];
+
+        $this->command->info('   ✅ ' . (count($usuarios) + count($docentes) + count($personalApoyo)) . ' usuarios creados');
 
         // ==========================================
         // 2. MAGÍSTER
         // ==========================================
-        $this->command->info('🎓 Creando Magíster...');
+        $this->command->info('🎓 Creando Programa...');
         
         $magister = Magister::firstOrCreate(
             ['nombre' => 'Gestión de Sistemas de Salud'],
@@ -85,12 +97,12 @@ class MagisterSaludSeeder extends Seeder
                 'encargado' => 'Luis Canales',
                 'asistente' => 'Mary Isabel Sepúlveda G.',
                 'telefono' => '+56 712200313',
-                'anexo' => '0313',
+                'anexo' => '',
                 'correo' => 'msepulveda@utalca.cl'
             ]
         );
 
-        $this->command->info('   ✅ Magíster creado');
+        $this->command->info('   ✅ Programa creado');
 
         // ==========================================
         // 3. MALLAS CURRICULARES
@@ -132,22 +144,32 @@ class MagisterSaludSeeder extends Seeder
         $periodos = [];
         $cohorte = '2025-2026';
         
-        // Crear períodos para la cohorte 2025-2026
-        foreach ([1, 2] as $anio) {
-            foreach ([1, 2, 3] as $trimestre) {
-                $periodo = Period::firstOrCreate(
-                    [
-                        'cohorte' => $cohorte,
-                        'anio' => $anio,
-                        'numero' => $trimestre,
-                    ],
-                    [
-                        'fecha_inicio' => Carbon::now()->addMonths(($anio - 1) * 12 + ($trimestre - 1) * 4),
-                        'fecha_fin' => Carbon::now()->addMonths(($anio - 1) * 12 + $trimestre * 4),
-                    ]
-                );
-                $periodos[] = $periodo;
-            }
+        // Definir fechas específicas para cada período
+        $fechasPeriodos = [
+            // Año 1
+            [1, 1, '2025-10-03', '2025-12-12'], // Trimestre I: 3 oct - 12 dic
+            [1, 2, '2026-01-06', '2026-03-14'], // Trimestre II: 6 ene - 14 mar (estimado)
+            [1, 3, '2026-04-07', '2026-06-13'], // Trimestre III: 7 abr - 13 jun (estimado)
+            
+            // Año 2
+            [2, 1, '2026-07-15', '2026-09-26'], // Trimestre I: 15 jul - 26 sep (estimado)
+            [2, 2, '2026-10-05', '2026-12-11'], // Trimestre II: 5 oct - 11 dic (estimado)
+            [2, 3, '2027-01-05', '2027-03-12'], // Trimestre III: 5 ene - 12 mar (estimado)
+        ];
+        
+        foreach ($fechasPeriodos as [$anio, $trimestre, $inicio, $fin]) {
+            $periodo = Period::firstOrCreate(
+                [
+                    'cohorte' => $cohorte,
+                    'anio' => $anio,
+                    'numero' => $trimestre,
+                ],
+                [
+                    'fecha_inicio' => Carbon::parse($inicio),
+                    'fecha_fin' => Carbon::parse($fin),
+                ]
+            );
+            $periodos[] = $periodo;
         }
 
         $this->command->info('   ✅ ' . count($periodos) . ' períodos creados para cohorte ' . $cohorte);
@@ -159,47 +181,49 @@ class MagisterSaludSeeder extends Seeder
         
         $mallaActual = $mallas[1]; // Malla 2025-2026
         
-        // Definir todos los cursos por año y trimestre
+        // Definir todos los cursos por año y trimestre con sus SCT y requisitos
         $cursosPorPeriodo = [
-            // Año 1 - Trimestre I
-            [1, 1, 'Taller 1 – Habilidades de Aprendizaje: Presentación Efectiva, Trabajo en Equipo, Metodología de Casos'],
-            [1, 1, 'Economía'],
-            [1, 1, 'Contabilidad'],
-            [1, 1, 'Administración'],
+            // Año 1 - Trimestre I (requisito: ingreso)
+            [1, 1, 'Taller 1 – Habilidades de Aprendizaje: Presentación Efectiva, Trabajo en Equipo, Metodología de Casos', 1, ['ingreso']],
+            [1, 1, 'Economía', 3, ['ingreso']],
+            [1, 1, 'Contabilidad', 3, ['ingreso']],
+            [1, 1, 'Administración', 3, ['ingreso']],
             
             // Año 1 - Trimestre II
-            [1, 2, 'Estadística para la Gestión'],
-            [1, 2, 'Entorno Económico'],
-            [1, 2, 'Entorno Social Cultural'],
-            [1, 2, 'Taller 2: Herramientas para el Trabajo de Grado: Métodos y Técnicas para la Investigación en Gestión'],
+            [1, 2, 'Estadística para la Gestión', 3, ['ingreso']],
+            [1, 2, 'Entorno Económico', 3, ['ingreso']],
+            [1, 2, 'Entorno Social Cultural', 3, ['ingreso']],
+            [1, 2, 'Taller 2: Herramientas para el Trabajo de Grado: Métodos y Técnicas para la Investigación en Gestión', 1, ['ingreso']],
             
             // Año 1 - Trimestre III
-            [1, 3, 'Aspectos Legales en Salud'],
-            [1, 3, 'Desarrollo de Competencias Relacionales'],
-            [1, 3, 'Dirección Estratégica de Sistemas de Salud'],
-            [1, 3, 'Sistema de Salud y Gestión en Red'],
+            [1, 3, 'Aspectos Legales en Salud', 3, ['administracion']], // Requiere: Administración (curso 4)
+            [1, 3, 'Desarrollo de Competencias Relacionales', 3, ['administracion']], // Requiere: Administración (curso 4)
+            [1, 3, 'Dirección Estratégica de Sistemas de Salud', 3, ['administracion']], // Requiere: Administración (curso 4)
+            [1, 3, 'Sistema de Salud y Gestión en Red', 3, ['entorno_economico']], // Requiere: Entorno Económico (curso 6)
             
             // Año 2 - Trimestre I
-            [2, 1, 'Dirección Estratégica de Recursos Humanos'],
-            [2, 1, 'Gestión de Operaciones, Logística y Calidad'],
-            [2, 1, 'Epidemiología y Salud Pública para la Gestión'],
-            [2, 1, 'Trabajo de Grado I'],
+            [2, 1, 'Dirección Estratégica de Recursos Humanos', 3, ['administracion']], // Requiere: Administración
+            [2, 1, 'Gestión de Operaciones, Logística y Calidad', 3, ['administracion']], // Requiere: Administración
+            [2, 1, 'Epidemiología y Salud Pública para la Gestión', 3, ['entorno_economico']], // Requiere: Entorno Económico
+            [2, 1, 'Trabajo de Grado I', 2, ['taller2']], // Requiere: Taller 2
             
             // Año 2 - Trimestre II
-            [2, 2, 'Calidad y Acreditación en Salud'],
-            [2, 2, 'Formulación y Evaluación de Proyectos en Salud'],
-            [2, 2, 'Control Estratégico de Instituciones de Salud'],
-            [2, 2, 'Trabajo de Grado II'],
+            [2, 2, 'Calidad y Acreditación en Salud', 3, ['direccion_sistemas_salud']], // Requiere: Dirección Estratégica de Sistemas de Salud
+            [2, 2, 'Formulación y Evaluación de Proyectos en Salud', 3, ['economia']], // Requiere: Economía
+            [2, 2, 'Control Estratégico de Instituciones de Salud', 3, ['direccion_sistemas_salud']], // Requiere: Dirección Estratégica de Sistemas de Salud
+            [2, 2, 'Trabajo de Grado II', 3, ['trabajo_grado_1']], // Requiere: Trabajo de Grado I
             
             // Año 2 - Trimestre III
-            [2, 3, 'Electivo I'],
-            [2, 3, 'Electivo II'],
-            [2, 3, 'Taller 3: Desarrollo y Crecimiento Personal'],
-            [2, 3, 'Trabajo de Grado III'],
+            [2, 3, 'Electivo I', 3, ['ingreso']], // Requiere: Ingreso
+            [2, 3, 'Electivo II', 3, ['ingreso']], // Requiere: Ingreso
+            [2, 3, 'Taller 3: Desarrollo y Crecimiento Personal', 3, ['desarrollo_competencias']], // Requiere: Desarrollo de Competencias Relacionales
+            [2, 3, 'Trabajo de Grado III', 3, ['trabajo_grado_2']], // Requiere: Trabajo de Grado II
         ];
 
         $cursosCreados = [];
-        foreach ($cursosPorPeriodo as [$anio, $trimestre, $nombreCurso]) {
+        $mapaCursos = []; // Para mapear nombres de cursos a IDs
+        
+        foreach ($cursosPorPeriodo as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
             $periodo = Period::where('cohorte', '2025-2026')
                 ->where('anio', $anio)
                 ->where('numero', $trimestre)
@@ -212,9 +236,88 @@ class MagisterSaludSeeder extends Seeder
                         'magister_id' => $magister->id,
                         'period_id' => $periodo->id,
                     ],
-                    ['malla_curricular_id' => $mallaActual->id]
+                    [
+                        'malla_curricular_id' => $mallaActual->id,
+                        'sct' => $sct,
+                        'requisitos' => null, // Se actualizará después
+                    ]
                 );
+                
+                // Guardar en el mapa para referencias posteriores
+                $mapaCursos[$nombreCurso] = $curso->id;
                 $cursosCreados[] = $curso;
+            }
+        }
+        
+        // Ahora actualizar los requisitos con los IDs reales
+        foreach ($cursosCreados as $curso) {
+            $requisitosOriginales = null;
+            
+            // Buscar los requisitos originales del array
+            foreach ($cursosPorPeriodo as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
+                if ($curso->nombre === $nombreCurso && is_array($requisitos)) {
+                    $requisitosOriginales = $requisitos;
+                    break;
+                }
+            }
+            
+            if ($requisitosOriginales) {
+                $requisitosIDs = [];
+                foreach ($requisitosOriginales as $req) {
+                    if ($req === 'ingreso') {
+                        $requisitosIDs[] = 'ingreso';
+                    } elseif ($req === 'administracion') {
+                        // Buscar el ID del curso "Administración"
+                        $adminCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Administración');
+                        if ($adminCurso) {
+                            $requisitosIDs[] = $adminCurso->id;
+                        }
+                    } elseif ($req === 'entorno_economico') {
+                        // Buscar el ID del curso "Entorno Económico"
+                        $entornoCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Entorno Económico');
+                        if ($entornoCurso) {
+                            $requisitosIDs[] = $entornoCurso->id;
+                        }
+                    } elseif ($req === 'taller2') {
+                        // Buscar el ID del curso "Taller 2: Herramientas para el Trabajo de Grado..."
+                        $taller2Curso = collect($cursosCreados)->first(fn($c) => str_contains($c->nombre, 'Taller 2'));
+                        if ($taller2Curso) {
+                            $requisitosIDs[] = $taller2Curso->id;
+                        }
+                    } elseif ($req === 'direccion_sistemas_salud') {
+                        // Buscar el ID del curso "Dirección Estratégica de Sistemas de Salud"
+                        $dssCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Dirección Estratégica de Sistemas de Salud');
+                        if ($dssCurso) {
+                            $requisitosIDs[] = $dssCurso->id;
+                        }
+                    } elseif ($req === 'economia') {
+                        // Buscar el ID del curso "Economía"
+                        $economiaCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Economía');
+                        if ($economiaCurso) {
+                            $requisitosIDs[] = $economiaCurso->id;
+                        }
+                    } elseif ($req === 'trabajo_grado_1') {
+                        // Buscar el ID del curso "Trabajo de Grado I"
+                        $tg1Curso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Trabajo de Grado I');
+                        if ($tg1Curso) {
+                            $requisitosIDs[] = $tg1Curso->id;
+                        }
+                    } elseif ($req === 'desarrollo_competencias') {
+                        // Buscar el ID del curso "Desarrollo de Competencias Relacionales"
+                        $competenciasCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Desarrollo de Competencias Relacionales');
+                        if ($competenciasCurso) {
+                            $requisitosIDs[] = $competenciasCurso->id;
+                        }
+                    } elseif ($req === 'trabajo_grado_2') {
+                        // Buscar el ID del curso "Trabajo de Grado II"
+                        $tg2Curso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Trabajo de Grado II');
+                        if ($tg2Curso) {
+                            $requisitosIDs[] = $tg2Curso->id;
+                        }
+                    }
+                }
+                
+                $curso->update(['requisitos' => implode(',', $requisitosIDs)]);
             }
         }
 
@@ -230,7 +333,7 @@ class MagisterSaludSeeder extends Seeder
             [
                 'location' => 'Facultad de Economía y Negocios',
                 'capacity' => 40,
-                'description' => 'Sala principal equipada con proyector, sistema de audio y pizarra interactiva.',
+                'description' => '',
                 'calefaccion' => true,
                 'energia_electrica' => true,
                 'existe_aseo' => true,
@@ -244,7 +347,64 @@ class MagisterSaludSeeder extends Seeder
             ]
         );
 
-        $this->command->info('   ✅ Sala FEN 1 creada');
+        $salaFEN2 = Room::firstOrCreate(
+            ['name' => 'Sala FEN 2'],
+            [
+                'location' => 'Facultad de Economía y Negocios',
+                'capacity' => 35,
+                'description' => '',
+                'calefaccion' => true,
+                'energia_electrica' => true,
+                'existe_aseo' => true,
+                'plumones' => true,
+                'borrador' => true,
+                'pizarra_limpia' => true,
+                'computador_funcional' => true,
+                'cables_computador' => true,
+                'control_remoto_camara' => false,
+                'televisor_funcional' => true,
+            ]
+        );
+
+        $salaFEN3 = Room::firstOrCreate(
+            ['name' => 'Sala FEN 3'],
+            [
+                'location' => 'Facultad de Economía y Negocios',
+                'capacity' => 30,
+                'description' => '',
+                'calefaccion' => true,
+                'energia_electrica' => true,
+                'existe_aseo' => true,
+                'plumones' => true,
+                'borrador' => true,
+                'pizarra_limpia' => true,
+                'computador_funcional' => true,
+                'cables_computador' => true,
+                'control_remoto_camara' => true,
+                'televisor_funcional' => true,
+            ]
+        );
+
+        $sala119 = Room::firstOrCreate(
+            ['name' => 'Sala 119'],
+                        [
+                'location' => 'Facultad de Economía y Negocios',
+                'capacity' => 20,
+                'description' => '',
+                'calefaccion' => true,
+                'energia_electrica' => true,
+                'existe_aseo' => true,
+                'plumones' => true,
+                'borrador' => true,
+                'pizarra_limpia' => true,
+                'computador_funcional' => true,
+                'cables_computador' => true,
+                'control_remoto_camara' => true,
+                'televisor_funcional' => true,
+            ]
+        );
+
+        $this->command->info('   ✅ 4 salas creadas (FEN 1, FEN 2, FEN 3, 119)');
 
         // ==========================================
         // 7. CLASES Y SESIONES
@@ -370,18 +530,18 @@ class MagisterSaludSeeder extends Seeder
         $staffData = [
             // Autoridades
             [
-                'nombre' => 'Decano FEN',
+                'nombre' => 'Arcadio Cerda',
                 'cargo' => 'Decano Facultad de Economía y Negocios',
                 'telefono' => '+56 712200300',
-                'anexo' => '0300',
-                'email' => 'decano.fen@utalca.cl'
+                'anexo' => '',
+                'email' => 'acerda@utalca.cl'
             ],
             [
                 'nombre' => 'José Leonardo Castillo',
                 'cargo' => 'Director Administrativo',
                 'telefono' => '+56 712417313',
-                'anexo' => '7313',
-                'email' => 'josecastillo@utalca.cl'
+                'anexo' => '',
+                'email' => 'jcastillo@utalca.cl'
             ],
             
             // Directores de Magíster
@@ -389,21 +549,21 @@ class MagisterSaludSeeder extends Seeder
                 'nombre' => 'Pablo Neudörfer, PhD',
                 'cargo' => 'Director Magíster en Economía',
                 'telefono' => '+56 712200350',
-                'anexo' => '0350',
+                'anexo' => '',
                 'email' => 'pneudorfer@utalca.cl'
             ],
             [
                 'nombre' => 'Dr. Jorge Navarrete',
                 'cargo' => 'Director Magíster en Gestión y Políticas Públicas',
                 'telefono' => '+56 712200351',
-                'anexo' => '0351',
+                'anexo' => '',
                 'email' => 'jnavarrete@utalca.cl'
             ],
             [
                 'nombre' => 'Luis Canales',
                 'cargo' => 'Director Magíster en Gestión de Sistemas de Salud',
                 'telefono' => '+56 712200352',
-                'anexo' => '0352',
+                'anexo' => '',
                 'email' => 'lcanales@utalca.cl'
             ],
             
@@ -412,30 +572,23 @@ class MagisterSaludSeeder extends Seeder
                 'nombre' => 'July Basoalto Riveros',
                 'cargo' => 'Coordinadora Magíster en Economía',
                 'telefono' => '+56 712200312',
-                'anexo' => '0312',
+                'anexo' => '',
                 'email' => 'jbasoalto@utalca.cl'
             ],
             [
                 'nombre' => 'Mary Isabel Sepúlveda G.',
                 'cargo' => 'Coordinadora Magíster en Gestión y Políticas Públicas',
                 'telefono' => '+56 712200313',
-                'anexo' => '0313',
+                'anexo' => '',
                 'email' => 'msepulveda@utalca.cl'
             ],
             
             // Oficina de Postgrado
             [
-                'nombre' => 'Patricia Muñoz',
-                'cargo' => 'Jefa Oficina de Postgrado',
-                'telefono' => '+56 712201514',
-                'anexo' => '1514',
-                'email' => 'pamunoz@utalca.cl'
-            ],
-            [
                 'nombre' => 'María Castillo',
-                'cargo' => 'Asistente de Postgrado - Apoyo Logístico y Operacional',
+                'cargo' => 'Asistente de Postgrado',
                 'telefono' => '+56 712200314',
-                'anexo' => '0314',
+                'anexo' => '',
                 'email' => 'maria.castillob@utalca.cl'
             ],
             
@@ -468,6 +621,22 @@ class MagisterSaludSeeder extends Seeder
                 'anexo' => '0363',
                 'email' => 'salvear@utalca.cl'
             ],
+            
+            // Personal de Apoyo
+            [
+                'nombre' => 'Cristian Barrientos',
+                'cargo' => 'Auxiliar de Facultad, Campus Talca',
+                'telefono' => '+56 9 76543210',
+                'anexo' => null,
+                'email' => 'cristian.barrientos@utalca.cl'
+            ],
+            [
+                'nombre' => 'Miguel Suárez',
+                'cargo' => 'Informático FEN, Campus Talca',
+                'telefono' => '+56 712201789',
+                'anexo' => '1789',
+                'email' => 'msuarez@utalca.cl'
+            ],
         ];
 
         foreach ($staffData as $staff) {
@@ -477,7 +646,7 @@ class MagisterSaludSeeder extends Seeder
             );
         }
 
-        $this->command->info('   ✅ ' . count($staffData) . ' miembros del staff creados');
+        $this->command->info('   ✅ ' . count($staffData) . ' miembros del equipo creados (incluyendo 2 de personal de apoyo)');
 
         // ==========================================
         // 9. NOVEDADES

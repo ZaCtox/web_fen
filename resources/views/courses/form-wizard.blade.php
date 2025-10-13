@@ -33,16 +33,106 @@
         :is-first="true"
         :editing="$editing"
     >
-        <x-hci-field 
-            name="nombre"
-            label="Nombre del Curso"
-            placeholder="Ej: Economía Aplicada"
-            value="{{ old('nombre', $course->nombre ?? '') }}"
-            :required="true"
-            icon=""
-            help="Nombre descriptivo del curso académico"
-            maxlength="150"
-        />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-hci-field 
+                name="nombre"
+                label="Nombre del Curso"
+                placeholder="Ej: Economía Aplicada"
+                value="{{ old('nombre', $course->nombre ?? '') }}"
+                :required="true"
+                icon=""
+                help="Nombre descriptivo del curso académico"
+                maxlength="150"
+            />
+            
+            <x-hci-field 
+                name="sct"
+                type="number"
+                label="Créditos SCT"
+                placeholder="Ej: 3"
+                value="{{ old('sct', $course->sct ?? '') }}"
+                :required="false"
+                icon=""
+                help="Sistema de Créditos Transferibles (1-20)"
+                min="1"
+                max="20"
+            />
+        </div>
+
+        <div class="mt-4">
+            <label for="requisitos" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
+                Prerrequisitos
+                <span class="text-xs text-gray-500 dark:text-gray-400 font-normal">(Selecciona uno o más)</span>
+            </label>
+            
+            {{-- Input oculto para enviar los valores --}}
+            <input type="hidden" name="requisitos" id="requisitos-hidden" value="">
+            
+            {{-- Contenedor de chips seleccionados --}}
+            <div id="requisitos-selected" class="flex flex-wrap gap-2 mb-3 min-h-[50px] p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                @php
+                    $requisitosSeleccionados = old('requisitos', $course->requisitos ? explode(',', $course->requisitos) : []);
+                @endphp
+                @foreach($requisitosSeleccionados as $req)
+                    @if($req == 'ingreso')
+                        <span class="requisito-chip inline-flex items-center gap-1 px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-sm font-medium rounded-full" data-value="ingreso">
+                            🎓 Ingreso
+                            <button type="button" class="requisito-remove hover:text-green-600 dark:hover:text-green-400" data-value="ingreso">×</button>
+                        </span>
+                    @else
+                        @php
+                            $cursoReq = $allCourses->firstWhere('id', $req);
+                        @endphp
+                        @if($cursoReq)
+                            <span class="requisito-chip inline-flex items-center gap-1 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-medium rounded-full" data-value="{{ $cursoReq->id }}">
+                                {{ Str::limit($cursoReq->nombre, 30) }}
+                                <button type="button" class="requisito-remove hover:text-blue-600 dark:hover:text-blue-400" data-value="{{ $cursoReq->id }}">×</button>
+                            </span>
+                        @endif
+                    @endif
+                @endforeach
+            </div>
+            
+            {{-- Buscador --}}
+            <div class="relative">
+                <input type="text" 
+                       id="requisitos-search" 
+                       placeholder="🔍 Buscar prerrequisitos..."
+                       class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
+                
+                {{-- Dropdown de resultados --}}
+                <div id="requisitos-dropdown" class="hidden absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-64 overflow-y-auto">
+                    <div class="p-2 space-y-1">
+                        {{-- Opción Ingreso --}}
+                        <div class="requisito-option cursor-pointer px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-700 transition" data-value="ingreso" data-text="🎓 Ingreso (Sin prerrequisitos)">
+                            <div class="flex items-center gap-2">
+                                <span class="text-green-600 dark:text-green-400">🎓</span>
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Ingreso (Sin prerrequisitos)</span>
+                            </div>
+                        </div>
+                        
+                        {{-- Cursos --}}
+                        @foreach($allCourses as $curso)
+                            <div class="requisito-option cursor-pointer px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-700 transition" 
+                                 data-value="{{ $curso->id }}" 
+                                 data-text="{{ $curso->nombre }} (Año {{ $curso->period->anio ?? '' }} - Trimestre {{ $curso->period->numero ?? '' }})">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-blue-600 dark:text-blue-400">📚</span>
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ $curso->nombre }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">Año {{ $curso->period->anio ?? '' }} - Trimestre {{ $curso->period->numero ?? '' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            
+            <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                💡 Escribe para buscar y haz clic para seleccionar. Los seleccionados aparecerán arriba.
+            </p>
+        </div>
     </x-hci-form-section>
 
     {{-- Sección 2: Programa y Período --}}
@@ -156,6 +246,54 @@
                         <h4 class="font-medium text-gray-700 dark:text-gray-300">Nombre del Curso</h4>
                     </div>
                     <p id="resumen-nombre" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('nombre', $course->nombre ?? '') }}</p>
+                </div>
+
+                <!-- Créditos SCT -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">⚖️</span>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Créditos SCT</h4>
+                    </div>
+                    <p id="resumen-sct" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">
+                        @if(old('sct', $course->sct ?? ''))
+                            {{ old('sct', $course->sct ?? '') }} créditos
+                        @else
+                            <span class="text-gray-400">No especificado</span>
+                        @endif
+                    </p>
+                </div>
+
+                <!-- Prerrequisitos -->
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">🔗</span>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Prerrequisitos</h4>
+                    </div>
+                    <div id="resumen-requisitos" class="flex flex-wrap gap-2">
+                        @php
+                            $requisitosDisplay = old('requisitos', $course->requisitos ? explode(',', $course->requisitos) : []);
+                        @endphp
+                        @if(count($requisitosDisplay) > 0)
+                            @foreach($requisitosDisplay as $req)
+                                @if($req == 'ingreso')
+                                    <span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-sm font-medium rounded-full">
+                                        🎓 Ingreso
+                                    </span>
+                                @else
+                                    @php
+                                        $cursoReq = $allCourses->firstWhere('id', $req);
+                                    @endphp
+                                    @if($cursoReq)
+                                        <span class="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-medium rounded-full">
+                                            {{ $cursoReq->nombre }}
+                                        </span>
+                                    @endif
+                                @endif
+                            @endforeach
+                        @else
+                            <span class="text-gray-400">No especificado</span>
+                        @endif
+                    </div>
                 </div>
 
                 <!-- Programa -->

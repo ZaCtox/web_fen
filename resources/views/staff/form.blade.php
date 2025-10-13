@@ -88,7 +88,7 @@
 
                         {{-- Área de drag & drop con mejor accesibilidad --}}
                         <div id="foto-drop-zone" 
-                             class="hci-file-drop-zone"
+                             class="hci-file-drop-zone mb-4"
                              role="button"
                              tabindex="0"
                              aria-label="Área para subir foto de perfil. Arrastra una imagen aquí o presiona Enter para seleccionar un archivo"
@@ -138,6 +138,22 @@
                         @error('foto')
                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
+
+                        {{-- Botón para eliminar foto existente (solo en edición) --}}
+                        @if($editing && isset($staff) && $staff->foto)
+                            <form action="{{ route('staff.delete-foto', $staff) }}" method="POST" class="mt-4" id="delete-foto-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button"
+                                        onclick="if(confirm('¿Estás seguro de que quieres eliminar la foto actual? Se generará un avatar con las iniciales.')) { document.getElementById('delete-foto-form').submit(); }"
+                                        class="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Eliminar Foto Actual
+                                </button>
+                            </form>
+                        @endif
 
                         <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
                             💡 <strong>Nota:</strong> Si no subes una foto, se generará automáticamente un avatar con las iniciales del nombre.

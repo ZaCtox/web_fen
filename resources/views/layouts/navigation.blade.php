@@ -108,7 +108,7 @@
                                         <span>Incidencias</span>
                                         @php $pendingCount = \App\Models\Incident::whereNotIn('estado', ['resuelta','no_resuelta'])->count(); @endphp
                                         @if($pendingCount>0)
-                                            <span class="von-restorff-badge von-restorff-badge-critical">{{ $pendingCount }}</span>
+                                            <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">{{ $pendingCount }}</span>
                                         @endif
                                     </a>
                                 @endif
@@ -126,7 +126,7 @@
                                                 })->count(); 
                                         @endphp
                                         @if($activeEmergencies > 0)
-                                            <span class="von-restorff-badge von-restorff-badge-critical von-restorff-glow">{{ $activeEmergencies }}</span>
+                                            <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">{{ $activeEmergencies }}</span>
                                         @endif
                                     </a>
                                 @endif
@@ -286,10 +286,16 @@
                                     ];
                                     $avatarColor = $colors[$user->id % count($colors)];
                                 @endphp
-                                <!-- Avatar con iniciales -->
-                                <div class="flex items-center justify-center w-10 h-10 rounded-full {{ $avatarColor }} text-white font-semibold text-sm shadow-inner">
-                                    {{ $initials }}
-                                </div>
+                                <!-- Avatar con foto o iniciales -->
+                                @if($user->foto)
+                                    <img src="{{ $user->foto }}" 
+                                         alt="{{ $user->name }}" 
+                                         class="w-10 h-10 rounded-full object-cover shadow-inner">
+                                @else
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-full {{ $avatarColor }} text-white font-semibold text-sm shadow-inner">
+                                        {{ $initials }}
+                                    </div>
+                                @endif
                                 <!-- Nombre y rol -->
                                 <div class="flex flex-col items-start text-left">
                                     <span class="text-sm font-medium">{{ $user->name }}</span>

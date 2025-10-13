@@ -40,7 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Escuchar cambios en iconos (radio buttons)
     const iconoInputs = document.querySelectorAll('input[name="icono"]');
     iconoInputs.forEach(input => {
-        input.addEventListener('change', updatePreview);
+        input.addEventListener('change', function() {
+            updateIconStyles();
+            updatePreview();
+            updateSummary(); // Actualizar resumen también
+        });
     });
     
     if (tituloInput) tituloInput.addEventListener('input', updatePreview);
@@ -48,7 +52,27 @@ document.addEventListener('DOMContentLoaded', function() {
     if (colorInput) colorInput.addEventListener('change', updatePreview);
     
     updateSummary();
+    updateIconStyles(); // Inicializar estilos de iconos
 });
+
+// Función para actualizar los estilos visuales de los iconos
+function updateIconStyles() {
+    const iconoInputs = document.querySelectorAll('input[name="icono"]');
+    const iconoActual = document.querySelector('input[name="icono"]:checked')?.value || '📰';
+    
+    iconoInputs.forEach(input => {
+        const iconoDiv = input.nextElementSibling;
+        if (iconoDiv) {
+            if (input.value === iconoActual) {
+                // Icono seleccionado: borde azul y fondo
+                iconoDiv.className = 'w-14 h-14 flex items-center justify-center text-3xl border-2 rounded-lg transition-all duration-200 hover:scale-110 border-[#4d82bc] bg-[#4d82bc]/10';
+            } else {
+                // Icono no seleccionado: borde gris
+                iconoDiv.className = 'w-14 h-14 flex items-center justify-center text-3xl border-2 rounded-lg transition-all duration-200 hover:scale-110 border-gray-300 hover:border-[#84b6f4]';
+            }
+        }
+    });
+}
 
 // Navegación entre pasos
 window.nextStep = function() {
@@ -239,7 +263,8 @@ function updateSummary() {
     const tipo = document.querySelector('select[name="tipo_novedad"]')?.value || '';
     const esUrgente = document.querySelector('input[name="es_urgente"]')?.checked || false;
     const visiblePublico = document.querySelector('input[name="visible_publico"]')?.checked || false;
-    const icono = document.querySelector('input[name="icono"]')?.value || '📰';
+    const iconoSeleccionado = document.querySelector('input[name="icono"]:checked');
+    const icono = iconoSeleccionado?.value || '📰';
     const color = document.querySelector('select[name="color"]')?.value || 'blue';
     const magister = document.querySelector('select[name="magister_id"]')?.selectedOptions[0]?.text || 'No especificado';
     

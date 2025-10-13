@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-RzMstkJP.css",
+    "file": "assets/app-BtRqTfLn.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -26,7 +26,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-D1dJYjO0.js",
+    "file": "assets/app-BDoqI4rc.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
@@ -44,7 +44,7 @@
     "isEntry": true
   },
   "resources/js/clases-form-wizard.js": {
-    "file": "assets/clases-form-wizard-Bix-WiuC.js",
+    "file": "assets/clases-form-wizard-CuHTc-2i.js",
     "name": "clases-form-wizard",
     "src": "resources/js/clases-form-wizard.js",
     "isEntry": true
@@ -56,7 +56,7 @@
     "isEntry": true
   },
   "resources/js/courses-form-wizard.js": {
-    "file": "assets/courses-form-wizard-BKdUmMcE.js",
+    "file": "assets/courses-form-wizard-XCHhXqSs.js",
     "name": "courses-form-wizard",
     "src": "resources/js/courses-form-wizard.js",
     "isEntry": true
@@ -110,7 +110,7 @@
     "isEntry": true
   },
   "resources/js/novedades-form-wizard.js": {
-    "file": "assets/novedades-form-wizard-CYBkwzT3.js",
+    "file": "assets/novedades-form-wizard-C_jgIMMm.js",
     "name": "novedades-form-wizard",
     "src": "resources/js/novedades-form-wizard.js",
     "isEntry": true
@@ -128,13 +128,13 @@
     "isEntry": true
   },
   "resources/js/staff-form-wizard.js": {
-    "file": "assets/staff-form-wizard-130KoESn.js",
+    "file": "assets/staff-form-wizard-o8DV1wiX.js",
     "name": "staff-form-wizard",
     "src": "resources/js/staff-form-wizard.js",
     "isEntry": true
   },
   "resources/js/usuarios-form-wizard.js": {
-    "file": "assets/usuarios-form-wizard-B8cpKKyQ.js",
+    "file": "assets/usuarios-form-wizard-BqmCkULv.js",
     "name": "usuarios-form-wizard",
     "src": "resources/js/usuarios-form-wizard.js",
     "isEntry": true

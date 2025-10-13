@@ -55,12 +55,22 @@ class CourseController extends Controller
             ->orderBy('año_inicio', 'desc')
             ->get();
 
-        return view('courses.create', compact('magisters', 'selectedMagisterId', 'selectedMallaId', 'periods', 'mallas'));
+        // Obtener todos los cursos para el selector de prerrequisitos
+        $allCourses = Course::with('period')->orderBy('nombre')->get();
+
+        return view('courses.create', compact('magisters', 'selectedMagisterId', 'selectedMallaId', 'periods', 'mallas', 'allCourses'));
     }
 
     public function store(CourseRequest $request)
     {
-        Course::create($request->only('nombre', 'magister_id', 'malla_curricular_id', 'period_id'));
+        $data = $request->only('nombre', 'sct', 'requisitos', 'magister_id', 'malla_curricular_id', 'period_id');
+        
+        // Manejar requisitos: si viene vacío, asignar null
+        if (empty($data['requisitos'])) {
+            $data['requisitos'] = null;
+        }
+        
+        Course::create($data);
 
         return redirect()->route('courses.index')->with('success', 'Curso creado correctamente.');
     }
@@ -76,12 +86,22 @@ class CourseController extends Controller
             ->orderBy('año_inicio', 'desc')
             ->get();
 
-        return view('courses.edit', compact('course', 'magisters', 'periods', 'mallas'));
+        // Obtener todos los cursos para el selector de prerrequisitos
+        $allCourses = Course::with('period')->orderBy('nombre')->get();
+
+        return view('courses.edit', compact('course', 'magisters', 'periods', 'mallas', 'allCourses'));
     }
 
     public function update(CourseRequest $request, Course $course)
     {
-        $course->update($request->only('nombre', 'magister_id', 'malla_curricular_id', 'period_id'));
+        $data = $request->only('nombre', 'sct', 'requisitos', 'magister_id', 'malla_curricular_id', 'period_id');
+        
+        // Manejar requisitos: si viene vacío, asignar null
+        if (empty($data['requisitos'])) {
+            $data['requisitos'] = null;
+        }
+        
+        $course->update($data);
 
         return redirect()->route('courses.index')->with('success', 'Curso actualizado correctamente.');
     }

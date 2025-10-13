@@ -3,6 +3,308 @@
 let currentStep = 1;
 const totalSteps = 3; // 3 pasos para courses
 
+// Funciones auxiliares
+function showStep(step) {
+    const sections = document.querySelectorAll('.hci-form-section');
+    const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
+    
+    // Ocultar todas las secciones
+    sections.forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Mostrar sección actual
+    const currentSection = document.getElementById(getSectionId(step));
+    if (currentSection) {
+        currentSection.classList.add('active');
+        currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Actualizar estado visual del sidebar (verde=completado, azul=actual, gris=pendiente)
+    if (window.updateWizardProgressSteps) {
+        window.updateWizardProgressSteps(step);
+    }
+}
+
+function updateProgress(step) {
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const currentStepText = document.getElementById('current-step');
+    
+    const percentage = (step / totalSteps) * 100;
+    
+    if (progressBar) progressBar.style.height = percentage + '%';
+    if (progressPercentage) progressPercentage.textContent = Math.round(percentage) + '%';
+    if (currentStepText) currentStepText.textContent = `Paso ${step} de ${totalSteps}`;
+}
+
+function getSectionId(step) {
+    const sectionIds = ['basica', 'programa', 'resumen'];
+    return sectionIds[step - 1];
+}
+
+function validateCurrentStep() {
+    const currentSection = document.getElementById(getSectionId(currentStep));
+    const requiredFields = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
+    
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            validateField(field);
+            isValid = false;
+        } else {
+            clearFieldError(field);
+        }
+    });
+    
+    if (!isValid) {
+        // Mostrar mensaje de error
+        showStepError('Por favor, completa todos los campos requeridos antes de continuar.');
+    }
+    
+    return isValid;
+}
+
+function showStepError(message) {
+    // Crear o actualizar mensaje de error
+    let errorDiv = document.getElementById('step-error-message');
+    if (!errorDiv) {
+        errorDiv = document.createElement('div');
+        errorDiv.id = 'step-error-message';
+        errorDiv.className = 'hci-error-message';
+        document.querySelector('.hci-container').insertBefore(errorDiv, document.querySelector('.hci-wizard-layout'));
+    }
+    
+    errorDiv.innerHTML = `
+        <div class="hci-error-content">
+            <span class="hci-error-icon">⚠️</span>
+            <span class="hci-error-text">${message}</span>
+        </div>
+    `;
+    
+    // Ocultar mensaje después de 5 segundos
+    setTimeout(() => {
+        if (errorDiv) errorDiv.remove();
+    }, 5000);
+}
+
+function validateField(field) {
+    const isValid = field.checkValidity();
+    const fieldContainer = field.closest('.hci-field');
+    const errorElement = fieldContainer?.querySelector('.hci-field-error');
+    
+    if (!isValid) {
+        field.classList.add('border-red-500');
+        field.classList.remove('border-gray-300');
+        
+        if (!errorElement) {
+            const error = document.createElement('div');
+            error.className = 'hci-field-error';
+            error.textContent = field.validationMessage || 'Este campo es requerido';
+            fieldContainer?.appendChild(error);
+        }
+    } else {
+        clearFieldError(field);
+    }
+}
+
+function clearFieldError(field) {
+    field.classList.remove('border-red-500');
+    field.classList.add('border-gray-300');
+    
+    const fieldContainer = field.closest('.hci-field');
+    const errorElement = fieldContainer?.querySelector('.hci-field-error');
+    if (errorElement) {
+        errorElement.remove();
+    }
+}
+
+function updateSummary() {
+    const nombre = document.querySelector('input[name="nombre"]')?.value || '';
+    const sct = document.querySelector('input[name="sct"]')?.value || '';
+    const requisitosSelect = document.querySelector('select[name="requisitos[]"]');
+    const magisterId = document.querySelector('select[name="magister_id"]')?.value || '';
+    const anio = document.querySelector('select[name="anio"]')?.value || '';
+    const numero = document.querySelector('select[name="numero"]')?.value || '';
+    
+    // Obtener texto de las opciones seleccionadas
+    const magisterSelect = document.querySelector('select[name="magister_id"]');
+    const mallaSelect = document.querySelector('select[name="malla_curricular_id"]');
+    const anioSelect = document.querySelector('select[name="anio"]');
+    const numeroSelect = document.querySelector('select[name="numero"]');
+    
+    const programaTexto = magisterSelect?.selectedOptions[0]?.text || 'No seleccionado';
+    const mallaTexto = mallaSelect?.selectedOptions[0]?.text || 'Sin malla específica';
+    const anioTexto = anioSelect?.selectedOptions[0]?.text || 'No seleccionado';
+    const trimestreTexto = numeroSelect?.selectedOptions[0]?.text || 'No seleccionado';
+    
+    // Actualizar elementos del resumen
+    const resumenNombre = document.getElementById('resumen-nombre');
+    const resumenSct = document.getElementById('resumen-sct');
+    const resumenRequisitos = document.getElementById('resumen-requisitos');
+    const resumenPrograma = document.getElementById('resumen-programa');
+    const resumenMalla = document.getElementById('resumen-malla');
+    const resumenAnio = document.getElementById('resumen-anio');
+    const resumenTrimestre = document.getElementById('resumen-trimestre');
+    
+    if (resumenNombre) resumenNombre.textContent = nombre || 'No especificado';
+    if (resumenSct) {
+        if (sct) {
+            resumenSct.innerHTML = `${sct} créditos`;
+        } else {
+            resumenSct.innerHTML = '<span class="text-gray-400">No especificado</span>';
+        }
+    }
+    
+    // Actualizar prerrequisitos desde los chips
+    if (resumenRequisitos) {
+        const chips = document.querySelectorAll('.requisito-chip');
+        if (chips.length > 0) {
+            resumenRequisitos.innerHTML = Array.from(chips).map(chip => {
+                const value = chip.getAttribute('data-value');
+                const text = chip.textContent.trim();
+                if (value === 'ingreso') {
+                    return `<span class="inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 text-sm font-medium rounded-full">🎓 Ingreso</span>`;
+                } else {
+                    return `<span class="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 text-sm font-medium rounded-full">${text}</span>`;
+                }
+            }).join('');
+        } else {
+            resumenRequisitos.innerHTML = '<span class="text-gray-400">No especificado</span>';
+        }
+    }
+    
+    if (resumenPrograma) resumenPrograma.textContent = programaTexto;
+    if (resumenMalla) resumenMalla.textContent = mallaTexto;
+    if (resumenAnio) resumenAnio.textContent = anioTexto;
+    if (resumenTrimestre) resumenTrimestre.textContent = trimestreTexto;
+}
+
+// Función para inicializar el buscador de prerrequisitos
+function initRequisitosSearch() {
+    const searchInput = document.getElementById('requisitos-search');
+    const dropdown = document.getElementById('requisitos-dropdown');
+    const selectedContainer = document.getElementById('requisitos-selected');
+    const hiddenInput = document.getElementById('requisitos-hidden');
+    
+    if (!searchInput || !dropdown || !selectedContainer) return;
+    
+    let selectedValues = [];
+    
+    // Cargar valores iniciales
+    document.querySelectorAll('.requisito-chip').forEach(chip => {
+        const value = chip.getAttribute('data-value');
+        if (value) selectedValues.push(value);
+    });
+    
+    // Actualizar input oculto
+    function updateHiddenInput() {
+        hiddenInput.value = selectedValues.join(',');
+    }
+    
+    // Función para agregar un requisito
+    function addRequisito(value, text) {
+        if (selectedValues.includes(value)) return;
+        
+        selectedValues.push(value);
+        updateHiddenInput();
+        
+        // Crear chip
+        const chip = document.createElement('span');
+        chip.className = 'requisito-chip inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full';
+        chip.setAttribute('data-value', value);
+        
+        if (value === 'ingreso') {
+            chip.className += ' bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200';
+            chip.innerHTML = `🎓 Ingreso <button type="button" class="requisito-remove hover:text-green-600 dark:hover:text-green-400" data-value="ingreso">×</button>`;
+        } else {
+            chip.className += ' bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200';
+            chip.innerHTML = `${text} <button type="button" class="requisito-remove hover:text-blue-600 dark:hover:text-blue-400" data-value="${value}">×</button>`;
+        }
+        
+        selectedContainer.appendChild(chip);
+        
+        // Agregar listener al botón de eliminar
+        const removeBtn = chip.querySelector('.requisito-remove');
+        removeBtn.addEventListener('click', () => removeRequisito(value));
+        
+        updateSummary();
+    }
+    
+    // Función para remover un requisito
+    function removeRequisito(value) {
+        selectedValues = selectedValues.filter(v => v !== value);
+        updateHiddenInput();
+        
+        const chip = selectedContainer.querySelector(`[data-value="${value}"]`);
+        if (chip) chip.remove();
+        
+        updateSummary();
+    }
+    
+    // Event listener para el input de búsqueda
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const options = dropdown.querySelectorAll('.requisito-option');
+        
+        let hasResults = false;
+        
+        options.forEach(option => {
+            const text = option.getAttribute('data-text').toLowerCase();
+            const value = option.getAttribute('data-value');
+            
+            if (text.includes(searchTerm) && !selectedValues.includes(value)) {
+                option.style.display = 'block';
+                hasResults = true;
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        dropdown.classList.toggle('hidden', !hasResults || searchTerm === '');
+    });
+    
+    // Event listener para seleccionar una opción
+    dropdown.addEventListener('click', function(e) {
+        const option = e.target.closest('.requisito-option');
+        if (!option) return;
+        
+        const value = option.getAttribute('data-value');
+        const text = option.getAttribute('data-text');
+        
+        addRequisito(value, text);
+        
+        searchInput.value = '';
+        dropdown.classList.add('hidden');
+    });
+    
+    // Event listener para eliminar chips
+    selectedContainer.addEventListener('click', function(e) {
+        if (e.target.classList.contains('requisito-remove')) {
+            const value = e.target.getAttribute('data-value');
+            removeRequisito(value);
+        }
+    });
+    
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+    
+    // Mostrar dropdown al hacer clic en el input
+    searchInput.addEventListener('focus', function() {
+        if (this.value === '') {
+            dropdown.classList.remove('hidden');
+        }
+    });
+    
+    // Inicializar
+    updateHiddenInput();
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const sections = document.querySelectorAll('.hci-form-section');
     const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
@@ -151,6 +453,9 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSummary(); // Actualizar resumen en tiempo real
         });
     });
+    
+    // Inicializar buscador de prerrequisitos
+    initRequisitosSearch();
 });
 
 // Navegación entre pasos
@@ -190,178 +495,44 @@ window.cancelForm = function() {
     }
 }
 
-function showStep(step) {
-    const sections = document.querySelectorAll('.hci-form-section');
-    const progressSteps = document.querySelectorAll('.hci-progress-step-vertical');
-    
-    // Ocultar todas las secciones
-    sections.forEach(section => {
-        section.classList.remove('active');
-    });
-    
-    // Mostrar sección actual
-    const currentSection = document.getElementById(getSectionId(step));
-    if (currentSection) {
-        currentSection.classList.add('active');
-        currentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    
-    // Actualizar estado visual del sidebar (verde=completado, azul=actual, gris=pendiente)
-    if (window.updateWizardProgressSteps) {
-        window.updateWizardProgressSteps(step);
-    }
-}
-
-function updateProgress(step) {
-    const progressBar = document.getElementById('progress-bar');
-    const progressPercentage = document.getElementById('progress-percentage');
-    const currentStepText = document.getElementById('current-step');
-    
-    const percentage = (step / totalSteps) * 100;
-    
-    if (progressBar) progressBar.style.height = percentage + '%';
-    if (progressPercentage) progressPercentage.textContent = Math.round(percentage) + '%';
-    if (currentStepText) currentStepText.textContent = `Paso ${step} de ${totalSteps}`;
-}
-
-function getSectionId(step) {
-    const sectionIds = ['basica', 'programa', 'resumen'];
-    return sectionIds[step - 1];
-}
-
-function validateCurrentStep() {
-    const currentSection = document.getElementById(getSectionId(currentStep));
-    const requiredFields = currentSection.querySelectorAll('input[required], select[required], textarea[required]');
-    
-    let isValid = true;
-    
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            validateField(field);
-            isValid = false;
-        } else {
-            clearFieldError(field);
+// Función para enviar el formulario
+window.submitForm = function() {
+    // Validar el paso actual antes de enviar
+    if (validateCurrentStep()) {
+        // Asegurar que period_id esté actualizado antes de enviar
+        if (typeof window.actualizarPeriodId === 'function') {
+            window.actualizarPeriodId();
         }
-    });
-    
-    if (!isValid) {
-        // Mostrar mensaje de error
-        showStepError('Por favor, completa todos los campos requeridos antes de continuar.');
-    }
-    
-    return isValid;
-}
-
-function showStepError(message) {
-    // Crear o actualizar mensaje de error
-    let errorDiv = document.getElementById('step-error-message');
-    if (!errorDiv) {
-        errorDiv = document.createElement('div');
-        errorDiv.id = 'step-error-message';
-        errorDiv.className = 'hci-error-message';
-        document.querySelector('.hci-container').insertBefore(errorDiv, document.querySelector('.hci-wizard-layout'));
-    }
-    
-    errorDiv.innerHTML = `
-        <div class="hci-error-content">
-            <span class="hci-error-icon">⚠️</span>
-            <span class="hci-error-text">${message}</span>
-        </div>
-    `;
-    
-    // Ocultar mensaje después de 5 segundos
-    setTimeout(() => {
-        if (errorDiv) errorDiv.remove();
-    }, 5000);
-}
-
-function validateField(field) {
-    const isValid = field.checkValidity();
-    const fieldContainer = field.closest('.hci-field');
-    const errorElement = fieldContainer?.querySelector('.hci-field-error');
-    
-    if (!isValid) {
-        field.classList.add('border-red-500');
-        field.classList.remove('border-gray-300');
         
-        if (!errorElement) {
-            const error = document.createElement('div');
-            error.className = 'hci-field-error';
-            error.textContent = field.validationMessage || 'Este campo es requerido';
-            fieldContainer?.appendChild(error);
+        // Actualizar el input oculto de requisitos antes de enviar
+        updateRequisitosHiddenInput();
+        
+        // Mostrar overlay de loading global
+        if (!document.getElementById('form-loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'form-loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-overlay-content">
+                    <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                    <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
         }
-    } else {
-        clearFieldError(field);
+        
+        // Enviar el formulario
+        document.querySelector('.hci-form').submit();
     }
 }
 
-function clearFieldError(field) {
-    field.classList.remove('border-red-500');
-    field.classList.add('border-gray-300');
+// Función para actualizar el input oculto de requisitos
+function updateRequisitosHiddenInput() {
+    const hiddenInput = document.getElementById('requisitos-hidden');
+    const chips = document.querySelectorAll('.requisito-chip');
+    const values = Array.from(chips).map(chip => chip.getAttribute('data-value'));
     
-    const fieldContainer = field.closest('.hci-field');
-    const errorElement = fieldContainer?.querySelector('.hci-field-error');
-    if (errorElement) {
-        errorElement.remove();
+    if (hiddenInput) {
+        hiddenInput.value = values.join(',');
     }
 }
-
-// Función para actualizar el resumen en tiempo real
-function updateSummary() {
-    const nombre = document.querySelector('input[name="nombre"]')?.value || '';
-    const magisterId = document.querySelector('select[name="magister_id"]')?.value || '';
-    const anio = document.querySelector('select[name="anio"]')?.value || '';
-    const numero = document.querySelector('select[name="numero"]')?.value || '';
-    
-    // Obtener texto de las opciones seleccionadas
-    const magisterSelect = document.querySelector('select[name="magister_id"]');
-    const mallaSelect = document.querySelector('select[name="malla_curricular_id"]');
-    const anioSelect = document.querySelector('select[name="anio"]');
-    const numeroSelect = document.querySelector('select[name="numero"]');
-    
-    const programaTexto = magisterSelect?.selectedOptions[0]?.text || 'No seleccionado';
-    const mallaTexto = mallaSelect?.selectedOptions[0]?.text || 'Sin malla específica';
-    const anioTexto = anioSelect?.selectedOptions[0]?.text || 'No seleccionado';
-    const trimestreTexto = numeroSelect?.selectedOptions[0]?.text || 'No seleccionado';
-    
-    // Actualizar elementos del resumen
-    const resumenNombre = document.getElementById('resumen-nombre');
-    const resumenPrograma = document.getElementById('resumen-programa');
-    const resumenMalla = document.getElementById('resumen-malla');
-    const resumenAnio = document.getElementById('resumen-anio');
-    const resumenTrimestre = document.getElementById('resumen-trimestre');
-    
-    if (resumenNombre) resumenNombre.textContent = nombre || 'No especificado';
-    if (resumenPrograma) resumenPrograma.textContent = programaTexto;
-    if (resumenMalla) resumenMalla.textContent = mallaTexto;
-    if (resumenAnio) resumenAnio.textContent = anioTexto;
-    if (resumenTrimestre) resumenTrimestre.textContent = trimestreTexto;
-}
-
-    // Función para enviar el formulario
-    window.submitForm = function() {
-        // Validar el paso actual antes de enviar
-        if (validateCurrentStep()) {
-            // Asegurar que period_id esté actualizado antes de enviar
-            if (typeof window.actualizarPeriodId === 'function') {
-                window.actualizarPeriodId();
-            }
-            
-            // Mostrar overlay de loading global
-            if (!document.getElementById('form-loading-overlay')) {
-                const overlay = document.createElement('div');
-                overlay.id = 'form-loading-overlay';
-                overlay.className = 'loading-overlay';
-                overlay.innerHTML = `
-                    <div class="loading-overlay-content">
-                        <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
-                        <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
-                    </div>
-                `;
-                document.body.appendChild(overlay);
-            }
-            
-            // Enviar el formulario
-            document.querySelector('.hci-form').submit();
-        }
-    }
