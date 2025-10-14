@@ -27,6 +27,7 @@ export default defineConfig({
                 'resources/js/incidencias-form-wizard.js',
                 'resources/js/usuarios-form-wizard.js',
                 'resources/js/novedades-form-wizard.js',
+                'resources/js/daily-reports-form-wizard.js',
                 'resources/js/microinteractions.js',
                 'resources/js/feedback-system.js',
             ],

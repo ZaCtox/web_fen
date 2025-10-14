@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-BtRqTfLn.css",
+    "file": "assets/app-D43P7zNx.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -65,6 +65,12 @@
     "file": "assets/form-BMVQ3xAP.js",
     "name": "form",
     "src": "resources/js/courses/form.js",
+    "isEntry": true
+  },
+  "resources/js/daily-reports-form-wizard.js": {
+    "file": "assets/daily-reports-form-wizard-Bibje5cE.js",
+    "name": "daily-reports-form-wizard",
+    "src": "resources/js/daily-reports-form-wizard.js",
     "isEntry": true
   },
   "resources/js/emergency-form-wizard.js": {

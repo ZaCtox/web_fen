@@ -87,6 +87,11 @@
                 <div class="w-full {{ $contentClass }}">
                     {{ $slot }}
                 </div>
+            @elseif($sectionId === 'observaciones')
+                {{-- Excepción: observaciones de reportes diarios con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
             @elseif($sectionId === 'programa')
                 {{-- Excepción: programa de cursos con grid personalizado --}}
                 <div class="grid {{ $contentClass }}">
