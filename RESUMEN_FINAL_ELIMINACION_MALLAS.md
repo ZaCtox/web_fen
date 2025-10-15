@@ -268,3 +268,4 @@ Las siguientes rutas ya no están disponibles:
 
 **¡Sistema simplificado exitosamente!** 🎉
 
+

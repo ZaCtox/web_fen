@@ -12,6 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('periods', function (Blueprint $table) {
+            // Primero agregar la columna si no existe
+            if (!Schema::hasColumn('periods', 'magister_id')) {
+                $table->unsignedBigInteger('magister_id')->nullable()->after('id');
+            }
+            // Luego agregar la foreign key
             $table->foreign('magister_id')->references('id')->on('magisters')->onDelete('cascade');
         });
     }
@@ -23,7 +28,12 @@ return new class extends Migration
     {
         Schema::table('periods', function (Blueprint $table) {
             $table->dropForeign(['magister_id']);
+            // Eliminar la columna si la agregamos en up()
+            if (Schema::hasColumn('periods', 'magister_id')) {
+                $table->dropColumn('magister_id');
+            }
         });
     }
 };
+
 

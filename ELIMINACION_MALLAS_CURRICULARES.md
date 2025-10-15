@@ -310,3 +310,4 @@ El sistema ha sido simplificado exitosamente eliminando las mallas curriculares.
 
 **Estado Final:** ✅ **Sistema simplificado y funcionando correctamente**
 
+
