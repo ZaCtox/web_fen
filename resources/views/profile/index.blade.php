@@ -34,13 +34,6 @@
             </div>
         </div>
 
-        {{-- Eliminar cuenta --}}
-{{--         <div class="p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-            <div class="max-w-xl space-y-4">
-                @include('profile.partials.delete-user-form')
-            </div>
-        </div> --}}
-
     </div>
 </x-app-layout>
 

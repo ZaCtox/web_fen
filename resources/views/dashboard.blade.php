@@ -40,113 +40,7 @@
                 
                 <div class="space-y-3">
                     @foreach($novedades as $novedad)
-                    <div class="flex items-start p-3 rounded-lg border-l-4 {{ $novedad->color === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-400' : ($novedad->color === 'green' ? 'bg-green-50 dark:bg-green-900/20 border-green-400' : ($novedad->color === 'yellow' ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-400' : ($novedad->color === 'red' ? 'bg-red-50 dark:bg-red-900/20 border-red-400' : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400'))) }} {{ $novedad->es_urgente ? ($novedad->color === 'blue' ? 'ring-2 ring-blue-300 dark:ring-blue-700' : ($novedad->color === 'green' ? 'ring-2 ring-green-300 dark:ring-green-700' : ($novedad->color === 'yellow' ? 'ring-2 ring-yellow-300 dark:ring-yellow-700' : ($novedad->color === 'red' ? 'ring-2 ring-red-300 dark:ring-red-700' : 'ring-2 ring-purple-300 dark:ring-purple-700')))) : '' }}">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center {{ $novedad->color === 'blue' ? 'bg-blue-100 dark:bg-blue-900' : ($novedad->color === 'green' ? 'bg-green-100 dark:bg-green-900' : ($novedad->color === 'yellow' ? 'bg-yellow-100 dark:bg-yellow-900' : ($novedad->color === 'red' ? 'bg-red-100 dark:bg-red-900' : 'bg-purple-100 dark:bg-purple-900'))) }}">
-                                @php
-                                    $iconColor = $novedad->color === 'blue' ? 'text-blue-600 dark:text-blue-400' : 
-                                                ($novedad->color === 'green' ? 'text-green-600 dark:text-green-400' : 
-                                                ($novedad->color === 'yellow' ? 'text-yellow-600 dark:text-yellow-400' : 
-                                                ($novedad->color === 'red' ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400')));
-                                @endphp
-                                
-                                @if($novedad->icono)
-                                    @switch($novedad->icono)
-                                        @case('warning')
-                                            <svg class="w-4 h-4 {{ $iconColor }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                            </svg>
-                                            @break
-                                        @case('check')
-                                            <svg class="w-4 h-4 {{ $iconColor }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                            </svg>
-                                            @break
-                                        @case('info')
-                                            <svg class="w-4 h-4 {{ $iconColor }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                            </svg>
-                                            @break
-                                        @case('calendar')
-                                            <svg class="w-4 h-4 {{ $iconColor }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                                            </svg>
-                                            @break
-                                        @case('alert')
-                                            <svg class="w-4 h-4 {{ $iconColor }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                            </svg>
-                                            @break
-                                        @default
-                                            <svg class="w-4 h-4 {{ $iconColor }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                            </svg>
-                                    @endswitch
-                                @else
-                                    <svg class="w-4 h-4 {{ $iconColor }}" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                                    </svg>
-                                @endif
-                            </div>
-                        </div>
-                        <div class="ml-3 flex-1">
-                            @php
-                                $textColor = $novedad->color === 'blue' ? 'text-blue-800 dark:text-blue-200' : 
-                                            ($novedad->color === 'green' ? 'text-green-800 dark:text-green-200' : 
-                                            ($novedad->color === 'yellow' ? 'text-yellow-800 dark:text-yellow-200' : 
-                                            ($novedad->color === 'red' ? 'text-red-800 dark:text-red-200' : 'text-purple-800 dark:text-purple-200')));
-                                            
-                                $badgeColor = $novedad->color === 'blue' ? 'bg-blue-200 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 
-                                             ($novedad->color === 'green' ? 'bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-200' : 
-                                             ($novedad->color === 'yellow' ? 'bg-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 
-                                             ($novedad->color === 'red' ? 'bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-purple-200 text-purple-800 dark:bg-purple-900 dark:text-purple-200')));
-                                             
-                                $contentColor = $novedad->color === 'blue' ? 'text-blue-600 dark:text-blue-300' : 
-                                              ($novedad->color === 'green' ? 'text-green-600 dark:text-green-300' : 
-                                              ($novedad->color === 'yellow' ? 'text-yellow-600 dark:text-yellow-300' : 
-                                              ($novedad->color === 'red' ? 'text-red-600 dark:text-red-300' : 'text-purple-600 dark:text-purple-300')));
-                                              
-                                $timeColor = $novedad->color === 'blue' ? 'text-blue-500 dark:text-blue-400' : 
-                                            ($novedad->color === 'green' ? 'text-green-500 dark:text-green-400' : 
-                                            ($novedad->color === 'yellow' ? 'text-yellow-500 dark:text-yellow-400' : 
-                                            ($novedad->color === 'red' ? 'text-red-500 dark:text-red-400' : 'text-purple-500 dark:text-purple-400')));
-                            @endphp
-                            
-                            <p class="text-sm font-medium {{ $textColor }}">
-                                {{ $novedad->titulo }}
-                                @if($novedad->es_urgente)
-                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $badgeColor }}">
-                                        Urgente
-                                    </span>
-                                @endif
-                            </p>
-                            <p class="text-sm {{ $contentColor }} mt-1">
-                                {{ $novedad->contenido }}
-                                @if($novedad->acciones && count($novedad->acciones) > 0)
-                                    @foreach($novedad->acciones as $accion)
-                                        @php
-                                            $linkColor = $accion['color'] === 'blue' ? 'text-blue-600 dark:text-blue-400' : 
-                                                       ($accion['color'] === 'green' ? 'text-green-600 dark:text-green-400' : 
-                                                       ($accion['color'] === 'yellow' ? 'text-yellow-600 dark:text-yellow-400' : 
-                                                       ($accion['color'] === 'red' ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400')));
-                                        @endphp
-                                        <a href="{{ $accion['url'] }}" class="ml-2 underline hover:no-underline font-medium {{ $linkColor }}">
-                                            {{ $accion['texto'] }}
-                                        </a>
-                                    @endforeach
-                                @endif
-                            </p>
-                            @if(isset($novedad->created_at))
-                                <p class="text-xs {{ $timeColor }} mt-1">
-                                    {{ $novedad->created_at->diffForHumans() }}
-                                </p>
-                            @else
-                                <p class="text-xs {{ $timeColor }} mt-1">
-                                    Ahora
-                                </p>
-                            @endif
-                        </div>
-                    </div>
+                        <x-novedad-card :novedad="$novedad" />
                     @endforeach
                 </div>
                 
@@ -248,34 +142,6 @@
                     @endcan
                 </div>
             </div>
-
-            {{-- Accesos Rápidos --}}
-{{--             <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
-                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center">
-                    <svg class="w-6 h-6 mr-2 text-[#4d82bc]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                    Accesos Rápidos
-                </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    @foreach($accesosRapidos as $acceso)
-                    <a href="{{ route($acceso['ruta']) }}" class="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-{{ $acceso['color'] }}-50 dark:hover:bg-{{ $acceso['color'] }}-900/20 transition-all duration-200 hci-lift border border-gray-200 dark:border-gray-600 hover:border-{{ $acceso['color'] }}-300 dark:hover:border-{{ $acceso['color'] }}-700 group">
-                        <div class="flex items-start">
-                            <div class="text-3xl mr-3 group-hover:scale-110 transition-transform duration-200">{{ $acceso['icono'] }}</div>
-                            <div class="flex-1">
-                                <h4 class="font-semibold text-gray-900 dark:text-white group-hover:text-{{ $acceso['color'] }}-600 dark:group-hover:text-{{ $acceso['color'] }}-400 transition-colors duration-200">
-                                    {{ $acceso['titulo'] }}
-                                </h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $acceso['descripcion'] }}</p>
-                            </div>
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-{{ $acceso['color'] }}-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </a>
-                    @endforeach
-                </div>
-            </div> --}}
 
             {{-- Próximas Clases (solo para docentes) --}}
             @if($proximasClases && $proximasClases->isNotEmpty())
@@ -412,6 +278,3 @@
         </div>
     </div>
 </x-app-layout>
-
-
-

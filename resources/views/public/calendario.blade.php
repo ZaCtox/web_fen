@@ -115,13 +115,8 @@
         <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/locales-all.global.min.js"></script>
         @vite('resources/js/calendar-public.js')
     @endpush
-    
 </x-app-layout>
 
 {{-- Footer institucional --}}
 @include('components.footer')
-
-
-
-
 

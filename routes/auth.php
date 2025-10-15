@@ -12,23 +12,13 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// 🟢 SOLO usuarios autenticados con rol adecuado pueden registrar
-Route::middleware('auth')->group(function () {
-    Route::get('/register', function () {
-        if (! in_array(auth()->user()->rol, ['administrador'])) {
-            abort(403, 'Solo administrador puede registrar nuevos usuarios.');
-        }
-
-        return app(RegisteredUserController::class)->create();
-    })->name('register');
-
-    Route::post('/register', function (Request $request) {
-        if (! in_array(auth()->user()->rol, ['administrador'])) {
-            abort(403, 'Solo administrador puede registrar nuevos usuarios.');
-        }
-
-        return app(RegisteredUserController::class)->store($request);
-    });
+// 🟢 SOLO usuarios autenticados con rol administrador pueden registrar nuevos usuarios
+Route::middleware(['auth', 'role:administrador'])->group(function () {
+    Route::get('/register', [RegisteredUserController::class, 'create'])
+        ->name('register');
+    
+    Route::post('/register', [RegisteredUserController::class, 'store'])
+        ->name('register.store');
 });
 
 // 🔒 Rutas públicas para invitados (no logueados)

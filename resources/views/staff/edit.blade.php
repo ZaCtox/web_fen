@@ -18,6 +18,3 @@
         @include('staff.form', ['staff' => $staff])
     </div>
 </x-app-layout>
-
-
-

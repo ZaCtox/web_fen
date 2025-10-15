@@ -15,6 +15,7 @@ use Illuminate\View\View;
 use Illuminate\Validation\Rules;
 use Cloudinary\Api\Upload\UploadApi;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 
 class RegisteredUserController extends Controller
@@ -28,17 +29,26 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Registrar nuevo usuario
+     * Registrar nuevo usuario (solo para administradores)
      */
     public function store(Request $request): RedirectResponse
     {
+        // Validación de datos
         $validated = $request->validate([
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            // Roles permitidos según tu formulario
             'rol'   => ['required', 'in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado'],
             'foto'  => ['nullable', 'image', 'max:2048'],
             'avatar_color' => ['nullable', 'string', 'max:6'],
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'Debe ser un email válido.',
+            'email.unique' => 'Este email ya está registrado.',
+            'rol.required' => 'Debe seleccionar un rol.',
+            'rol.in' => 'El rol seleccionado no es válido.',
+            'foto.image' => 'El archivo debe ser una imagen.',
+            'foto.max' => 'La imagen no puede superar los 2MB.',
         ]);
 
         // Manejar la subida de la foto a Cloudinary
@@ -78,14 +88,27 @@ class RegisteredUserController extends Controller
             'avatar_color' => $validated['avatar_color'] ?? null,
         ]);
 
-        // Opcional: enviar contraseña por correo al usuario
-        Mail::to($user->email)->send(new WelcomeUserMail($user, $password));
+        // Enviar email de bienvenida con credenciales
+        try {
+            Mail::to($user->email)->send(new WelcomeUserMail($user, $password));
+        } catch (Exception $e) {
+            Log::warning('No se pudo enviar email de bienvenida: ' . $e->getMessage());
+        }
 
-        // Evento de registro para verificación de email
+        // Evento de registro
         event(new Registered($user));
+
+        // Log de auditoría
+        Log::info('Usuario creado por administrador', [
+            'admin_id' => Auth::id(),
+            'admin_name' => Auth::user()->name,
+            'new_user_id' => $user->id,
+            'new_user_email' => $user->email,
+            'new_user_rol' => $user->rol,
+        ]);
 
         return redirect()
             ->route('usuarios.index')
-            ->with('success', 'Usuario creado exitosamente. Se ha enviado un correo con las credenciales de acceso.');
+            ->with('success', "Usuario '{$user->name}' creado exitosamente. Se ha enviado un correo con las credenciales de acceso.");
     }
 }

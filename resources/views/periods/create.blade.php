@@ -24,5 +24,3 @@
 
 {{-- Cargar JavaScript del wizard --}}
 @vite('resources/js/periods-form-wizard.js')
-
-

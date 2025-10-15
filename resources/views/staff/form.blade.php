@@ -421,14 +421,7 @@
 </x-hci-wizard-layout>
 </div>
 
-{{-- Incluir CSS de Cropper.js --}}
-@push('styles')
-    <!-- Estilos del cropper eliminados - ya no los necesitamos -->
-@endpush
-
 {{-- Incluir JavaScript del wizard --}}
 @push('scripts')
     @vite('resources/js/staff-form-wizard.js')
 @endpush
-
-

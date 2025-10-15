@@ -128,13 +128,8 @@
     </div>
     @endif
 
-
-
-
     {{-- Footer --}}
     <footer>
         @include('components.footer')
     </footer>
 </x-app-layout>
-
-

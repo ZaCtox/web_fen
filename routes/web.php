@@ -23,14 +23,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'role:administrador,director_administrativo,docente,administrativo,asistente_postgrado'])
     ->name('dashboard');
 
-// 🧠 Demo de Principios HCI
+// 🧠 Demo de Principios HCI (DEV)
 Route::get('/hci-demo', function () {
-    return view('examples.hci-demo');
+    return view('dev.examples.hci-demo');
 })->middleware(['auth', 'role:administrador'])->name('hci.demo');
 
-// 🎨 Demo de Microinteracciones HCI
+// 🎨 Demo de Microinteracciones HCI (DEV)
 Route::get('/microinteractions-demo', function () {
-    return view('examples.microinteractions-demo');
+    return view('dev.examples.microinteractions-demo');
 })->middleware(['auth', 'role:administrador'])->name('microinteractions.demo');
 
 // 🟡 Rutas protegidas

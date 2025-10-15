@@ -218,8 +218,3 @@
     @vite('resources/js/periods-form-wizard.js')
 @endpush
 
-
-
-
-
-

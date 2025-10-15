@@ -146,5 +146,3 @@
     </footer>
 </x-app-layout>
 
-
-

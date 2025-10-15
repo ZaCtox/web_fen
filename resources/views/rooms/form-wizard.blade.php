@@ -196,7 +196,3 @@
     @vite('resources/js/rooms-form-wizard.js')
 @endpush
 
-
-
-
-

@@ -8,5 +8,3 @@
     
     @include('usuarios.form-wizard', ['usuario' => $usuario])
 </x-app-layout>
-
-

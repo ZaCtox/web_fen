@@ -16,5 +16,3 @@
         @include('rooms.form-wizard')
     </div>
 </x-app-layout>
-
-

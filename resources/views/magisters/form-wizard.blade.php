@@ -262,6 +262,3 @@
 @push('scripts')
     @vite('resources/js/magisters-form-wizard.js')
 @endpush
-
-
-

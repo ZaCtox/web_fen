@@ -248,7 +248,4 @@
         </div>
     </div>
     @include('components.footer')
-
 </x-app-layout>
-
-

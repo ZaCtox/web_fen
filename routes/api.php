@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ClaseController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\InformeController;
 use App\Http\Controllers\Api\EmergencyController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\IncidentController;
@@ -215,6 +216,20 @@ Route::name('api.')->group(function () {
         Route::get('daily-reports/{dailyReport}/download-pdf', [DailyReportController::class, 'downloadPdf'])->name('daily-reports.download-pdf');
         Route::get('daily-reports-statistics', [DailyReportController::class, 'statistics'])->name('daily-reports.statistics');
         Route::get('daily-reports-resources', [DailyReportController::class, 'resources'])->name('daily-reports.resources');
+
+        // Informes/Archivos API
+        Route::apiResource('informes', InformeController::class)->names([
+            'index' => 'informes.index',
+            'store' => 'informes.store',
+            'show' => 'informes.show',
+            'update' => 'informes.update',
+            'destroy' => 'informes.destroy',
+        ]);
+        
+        // Rutas adicionales para Informes
+        Route::get('informes/{informe}/download', [InformeController::class, 'download'])->name('informes.download');
+        Route::get('informes-statistics', [InformeController::class, 'statistics'])->name('informes.statistics');
+        Route::get('informes-resources', [InformeController::class, 'resources'])->name('informes.resources');
 
         Route::apiResource('clases', ClaseController::class)->names([
             'index' => 'clases.index',
