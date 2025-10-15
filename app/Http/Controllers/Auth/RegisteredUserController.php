@@ -36,8 +36,9 @@ class RegisteredUserController extends Controller
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             // Roles permitidos según tu formulario
-            'rol'   => ['required', 'in:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado'],
+            'rol'   => ['required', 'in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado'],
             'foto'  => ['nullable', 'image', 'max:2048'],
+            'avatar_color' => ['nullable', 'string', 'max:6'],
         ]);
 
         // Manejar la subida de la foto a Cloudinary
@@ -57,6 +58,14 @@ class RegisteredUserController extends Controller
             }
         }
 
+        // Limpiar el # del color si viene
+        if (isset($validated['avatar_color']) && $validated['avatar_color']) {
+            $color = $validated['avatar_color'];
+            if (str_starts_with($color, '#')) {
+                $validated['avatar_color'] = substr($color, 1);
+            }
+        }
+
         $password = Str::random(12); // genera contraseña aleatoria
 
         $user = User::create([
@@ -66,6 +75,7 @@ class RegisteredUserController extends Controller
             'rol'       => $validated['rol'],
             'foto'      => $validated['foto'] ?? null,
             'public_id' => $validated['public_id'] ?? null,
+            'avatar_color' => $validated['avatar_color'] ?? null,
         ]);
 
         // Opcional: enviar contraseña por correo al usuario

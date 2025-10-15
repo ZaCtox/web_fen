@@ -73,6 +73,24 @@
     >
         <div class="w-full">
             <x-hci-field 
+                name="magister_id" 
+                type="select" 
+                label="Programa" 
+                :required="false"
+                help="Selecciona el programa asociado a la incidencia (opcional)"
+            >
+                <option value="">-- Selecciona un Programa --</option>
+                @foreach($magisters as $magister)
+                    <option value="{{ $magister->id }}" 
+                        {{ old('magister_id', $incident->magister_id ?? '') == $magister->id ? 'selected' : '' }}>
+                        {{ $magister->nombre }}
+                    </option>
+                @endforeach
+            </x-hci-field>
+        </div>
+
+        <div class="w-full">
+            <x-hci-field 
                 name="room_id" 
                 type="select" 
                 label="Sala Afectada" 
@@ -215,17 +233,34 @@
                     </div>
                 </div>
 
-                {{-- Sala --}}
-                <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
-                    <div class="flex items-start gap-3">
-                        <div class="flex-shrink-0 w-10 h-10 bg-[#4d82bc]/10 rounded-lg flex items-center justify-center">
-                            <svg class="w-5 h-5 text-[#4d82bc]" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-                            </svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Programa --}}
+                    <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-[#4d82bc]/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-[#4d82bc]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-1">Programa</span>
+                                <p id="summary-programa" class="text-gray-900 dark:text-white font-semibold">--</p>
+                            </div>
                         </div>
-                        <div class="flex-1">
-                            <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-1">Sala Afectada</span>
-                            <p id="summary-sala" class="text-gray-900 dark:text-white font-semibold text-lg">--</p>
+                    </div>
+
+                    {{-- Sala --}}
+                    <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg p-4 border border-[#84b6f4]/20">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-[#4d82bc]/10 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-[#4d82bc]" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <span class="text-sm font-medium text-[#4d82bc] dark:text-[#84b6f4] block mb-1">Sala Afectada</span>
+                                <p id="summary-sala" class="text-gray-900 dark:text-white font-semibold">--</p>
+                            </div>
                         </div>
                     </div>
                 </div>

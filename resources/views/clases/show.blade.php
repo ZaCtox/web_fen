@@ -26,7 +26,7 @@
                     <div class="flex gap-3">
                         {{-- Editar --}}
                         <a href="{{ route('clases.edit', $clase) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                            class="inline-flex items-center gap-2 px-4 py-2  bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
                             aria-label="Editar clase">
                             <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5">
                             <span class="hidden sm:inline">Editar</span>
@@ -37,7 +37,7 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 text-sm font-medium"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 text-sm font-medium"
                                 aria-label="Eliminar clase">
                                 <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-5 h-5">
                                 <span class="hidden sm:inline">Eliminar</span>
@@ -258,7 +258,7 @@
                                             </a>
                                         @elseif($sesion->es_pasada)
                                             <button @click="showModal = true; modalMode = 'grabacion'; editingSesion = {{ $sesion->id }}"
-                                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2"
+                                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                                                     title="Agregar grabación">
                                                 <img src="{{ asset('icons/agregar.svg') }}" alt="Subir" class="w-5 h-5">
                                                 Agregar Grabación
@@ -267,7 +267,7 @@
                                     </div>
                                     <div class="flex gap-2 ml-4">
                                         <button @click="showModal = true; modalMode = 'edit'; editingSesion = {{ $sesion->id }}"
-                                                class="p-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                                                class="p-2  bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                                                 title="Editar sesión">
                                             <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
                                         </button>
@@ -276,7 +276,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="p-2 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                                    class="p-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
                                                     title="Eliminar sesión">
                                                 <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
                                             </button>

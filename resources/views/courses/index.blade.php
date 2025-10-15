@@ -1,16 +1,16 @@
-{{-- Cursos de Postgrado FEN Fusionado --}}
-@section('title', 'Cursos')
+{{-- Módulos de Postgrado FEN Fusionado --}}
+@section('title', 'Módulos')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-2xl font-bold text-[#005187] dark:text-[#84b6f4]">
-            Cursos por Programa
+            Módulos por Programa
         </h2>
     </x-slot>
 
     {{-- Breadcrumb --}}
     <x-hci-breadcrumb :items="[
         ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Cursos', 'url' => '#']
+        ['label' => 'Módulos', 'url' => '#']
     ]" />
 
     <div class="py-6 max-w-7xl mx-auto px-4">
@@ -23,20 +23,20 @@
                 <span>Ver Programas</span>
             </a>
 
-            {{-- Lado derecho: Filtro de Ciclo --}}
+            {{-- Lado derecho: Filtro de Año de Ingreso --}}
             <div class="w-full sm:w-auto">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
                     <form method="GET" action="{{ route('courses.index') }}" class="flex items-center gap-3">
-                        <label for="cohorte" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
-                            Ciclo Académico:
+                        <label for="anio_ingreso" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
+                            Año de Ingreso:
                         </label>
-                        <select name="cohorte" 
-                                id="cohorte"
+                        <select name="anio_ingreso" 
+                                id="anio_ingreso"
                                 onchange="this.form.submit()"
                                 class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
-                            @foreach($cohortes as $cohorte)
-                                <option value="{{ $cohorte }}" {{ $cohorteSeleccionada == $cohorte ? 'selected' : '' }}>
-                                    {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                            @foreach($aniosIngreso as $anio)
+                                <option value="{{ $anio }}" {{ $anioIngresoSeleccionado == $anio ? 'selected' : '' }}>
+                                    {{ $anio }}
                                 </option>
                             @endforeach
                         </select>
@@ -46,10 +46,10 @@
         </div>
         
         {{-- Indicador de filtro activo --}}
-        @if($cohorteSeleccionada != $cohortes->first())
+        @if($anioIngresoSeleccionado != $aniosIngreso->first())
             <div class="mb-6 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                 <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                    ⚠️ Mostrando cursos de la cohorte <strong>{{ $cohorteSeleccionada }}</strong> (Periodo Pasado)
+                    ⚠️ Mostrando módulos del año de ingreso <strong>{{ $anioIngresoSeleccionado }}</strong> (Periodo Pasado)
                 </p>
             </div>
         @endif
@@ -69,12 +69,12 @@
                             Magíster en {{ $magister->nombre }}
                         </h3>
                         <div class="flex items-center gap-3">
-                            {{-- Botón añadir curso --}}
+                            {{-- Botón añadir módulo --}}
                             <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
                                 class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
-                                title="Agregar curso a este programa">
+                                title="Agregar módulo a este programa">
                                 <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-4 h-4">
-                                <span>Agregar Curso</span>
+                                <span>Agregar Módulo</span>
                             </a>
                             <span class="text-sm text-[#4d82bc] flex items-center">
                                 <svg class="ml-2 w-5 h-5 transition-transform" fill="none" stroke="currentColor"
@@ -108,7 +108,7 @@
                                         <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
-                                                    <th class="px-4 py-2 text-left">Curso</th>
+                                                    <th class="px-4 py-2 text-left">Módulo</th>
                                                     <th class="px-4 py-2 text-center w-20">SCT</th>
                                                     <th class="px-4 py-2 text-center w-32">Requisitos</th>
                                                     <th class="px-4 py-2 text-right w-32">Acciones</th>
@@ -172,7 +172,7 @@
                                                                     type="link" 
                                                                     :href="route('courses.edit', $course)" 
                                                                     icon="editw.svg"
-                                                                    tooltip="Editar curso" />
+                                                                    tooltip="Editar módulo" />
 
                                                                 {{-- Botón Eliminar --}}
                                                                 <x-action-button 
@@ -180,16 +180,16 @@
                                                                     :formAction="route('courses.destroy', $course)" 
                                                                     formMethod="DELETE" 
                                                                     class="form-eliminar"
-                                                                    tooltip="Eliminar curso" />
+                                                                    tooltip="Eliminar módulo" />
                                                             </div>
                                                         </td>
                                                     </tr>
                                                 @empty
                                                     <tr>
                                                         <td colspan="4" class="px-4 py-8">
-                                                            <x-empty-state type="no-data" icon="📚" title="No hay cursos registrados"
-                                                                message="Crea tu primer curso para comenzar a gestionar el contenido académico."
-                                                                actionText="Crear Curso" actionUrl="{{ route('courses.create') }}"
+                                                            <x-empty-state type="no-data" icon="📚" title="No hay módulos registrados"
+                                                                message="Crea tu primer módulo para comenzar a gestionar el contenido académico."
+                                                                actionText="Crear Módulo" actionUrl="{{ route('courses.create') }}"
                                                                 actionIcon="➕" />
                                                         </td>
                                                     </tr>
@@ -201,7 +201,7 @@
                             </div>
                         @empty
                             <p class="text-sm text-[#4d82bc] dark:text-gray-400 mt-2">
-                                Este magíster aún no tiene cursos registrados.
+                                Este magíster aún no tiene módulos registrados.
                             </p>
                         @endforelse
                     </div>

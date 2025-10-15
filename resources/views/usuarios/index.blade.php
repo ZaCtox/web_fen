@@ -25,6 +25,7 @@
                     'short' => false
                 ]) : 'Nunca',
                 'foto' => $u->foto,
+                'avatar_url' => $u->foto ?? $u->generateAvatarUrl(),
                 'initials' => strtoupper(
                     (count(explode(' ', $u->name)) >= 2) 
                         ? substr(explode(' ', $u->name)[0], 0, 1) . substr(explode(' ', $u->name)[1], 0, 1)
@@ -139,20 +140,10 @@
                         {{-- Avatar con foto o iniciales --}}
                         <div class="flex justify-center pt-5 pb-3">
                             <div class="relative">
-                                {{-- Si tiene foto, mostrar la foto --}}
-                                <template x-if="usuario.foto">
-                                    <img :src="usuario.foto" 
-                                         :alt="usuario.name"
-                                         class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white dark:border-gray-700 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                                </template>
-                                
-                                {{-- Si no tiene foto, mostrar iniciales --}}
-                                <template x-if="!usuario.foto">
-                                    <div :class="usuario.avatar_color" 
-                                         class="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg border-4 border-white dark:border-gray-700 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                                        <span x-text="usuario.initials"></span>
-                                    </div>
-                                </template>
+                                {{-- Avatar con foto o generado --}}
+                                <img :src="usuario.avatar_url" 
+                                     :alt="usuario.name"
+                                     class="w-20 h-20 rounded-full object-cover shadow-lg border-4 border-white dark:border-gray-700 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                                 
                                 {{-- Indicador de usuario autenticado --}}
                                 <div x-show="usuario.id === authId" 
@@ -190,7 +181,7 @@
                                  class="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
                                 {{-- Editar --}}
                                 <a :href="`/usuarios/${usuario.id}/edit`"
-                                   class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple min-h-[40px]"
+                                   class="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple min-h-[40px]"
                                    :aria-label="'Editar usuario ' + usuario.name">
                                     <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-4 h-4 flex-shrink-0">
                                 </a>

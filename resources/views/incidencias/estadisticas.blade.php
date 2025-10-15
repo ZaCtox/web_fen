@@ -30,6 +30,8 @@
             <form method="GET" id="form-filtros" x-data="{
             estado: '{{ request('estado') }}',
             sala: '{{ request('room_id') }}',
+            programa: '{{ request('magister_id') }}',
+            anioIngreso: '{{ $anioIngresoSeleccionado }}',
             anio: '{{ request('anio') }}',
             trimestre: '{{ request('trimestre') }}',
             historico: {{ request()->filled('historico') ? 'true' : 'false' }},
@@ -42,6 +44,12 @@
                 });
             },
             actualizarURL() {
+                // Si cambió el año de ingreso, limpiar filtros de año y trimestre
+                if (this.anioIngreso !== '{{ $anioIngresoSeleccionado }}') {
+                    this.anio = '';
+                    this.trimestre = '';
+                }
+                
                 // Si se activa histórico, limpiar trimestre
                 if (this.historico) {
                     this.trimestre = '';
@@ -51,8 +59,10 @@
                 this.toggleAnioOptions();
                 
                 const params = new URLSearchParams(window.location.search);
+                this.anioIngreso ? params.set('anio_ingreso', this.anioIngreso) : params.delete('anio_ingreso');
                 this.estado ? params.set('estado', this.estado) : params.delete('estado');
                 this.sala ? params.set('room_id', this.sala) : params.delete('room_id');
+                this.programa ? params.set('magister_id', this.programa) : params.delete('magister_id');
                 this.anio ? params.set('anio', this.anio) : params.delete('anio');
                 this.trimestre ? params.set('trimestre', this.trimestre) : params.delete('trimestre');
                 this.historico ? params.set('historico', '1') : params.delete('historico');
@@ -81,107 +91,146 @@
                 }
             }
         }" x-init="toggleAnioOptions()">
-                <div class="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-                    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
-                        {{-- Filtros --}}
-                        <div class="flex flex-wrap gap-3 items-end w-full">
-                            {{-- Estado --}}
-                            <div>
-                                <label for="estado" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
-                                    Estado
-                                </label>
-                                <select x-model="estado" 
-                                        @change="actualizarURL()"
-                                        id="estado"
-                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px] hci-focus-ring"
-                                        aria-label="Filtrar por estado">
-                                    <option value="">Todos</option>
-                                    <option value="pendiente">Pendientes</option>
-                                    <option value="en_revision">En Revisión</option>
-                                    <option value="resuelta">Resueltas</option>
-                                    <option value="no_resuelta">No Resueltas</option>
-                                </select>
-                            </div>
+                {{-- Filtro de programa y año de ingreso --}}
+                <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 shadow-md p-4">
+                    <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+                        {{-- Programa --}}
+                        <div>
+                            <label for="programa" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">Programa:</label>
+                            <select x-model="programa" @change="actualizarURL"
+                                class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition font-medium text-base">
+                                <option value="">Todos</option>
+                                @foreach ($magisters as $m)
+                                    <option value="{{ $m->id }}">{{ $m->nombre }}</option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                            {{-- Sala --}}
-                            <div>
-                                <label for="sala" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
-                                    Sala
-                                </label>
-                                <select x-model="sala" 
-                                        @change="actualizarURL()"
-                                        id="sala"
-                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px] hci-focus-ring"
-                                        aria-label="Filtrar por sala">
-                                    <option value="">Todas</option>
-                                    @foreach ($salas as $s)
-                                        <option value="{{ $s->id }}">{{ $s->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{-- Año --}}
-                            <div>
-                                <label for="anio-select" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
-                                    Año
-                                </label>
-                                <select x-model="anio" 
-                                        @change="actualizarURL()" 
-                                        id="anio-select"
-                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[120px] hci-focus-ring"
-                                        aria-label="Filtrar por año">
-                                    <option value="">Todos</option>
-                                    @foreach ($anios as $a)
-                                        <option value="{{ $a }}" class="anio-normal">{{ $a }}</option>
-                                    @endforeach
-                                    @foreach ($aniosHistoricos as $a)
-                                        <option value="{{ $a }}" class="anio-historico" style="display: none;">{{ $a }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{-- Trimestre --}}
-                            <div id="trimestre-div">
-                                <label for="trimestre" class="block text-sm font-semibold text-[#005187] dark:text-gray-300 mb-2">
-                                    Trimestre
-                                </label>
-                                <select x-model="trimestre" 
-                                        @change="actualizarURL()"
-                                        id="trimestre"
-                                        class="px-4 py-2.5 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 text-[#005187] dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[130px] hci-focus-ring"
-                                        aria-label="Filtrar por trimestre">
-                                    <option value="">Todos</option>
-                                    <template x-for="p in periodosFiltrados" :key="p.id">
-                                        <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero">
-                                        </option>
-                                    </template>
-                                </select>
-                            </div>
-
-                            {{-- Histórico --}}
-                            <div class="flex items-end">
-                                <label class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                    <input type="checkbox" 
-                                           x-model="historico" 
-                                           @change="actualizarURL()" 
-                                           id="historico"
-                                           class="rounded border-[#84b6f4] text-[#4d82bc] focus:ring-[#4d82bc]">
-                                    <span class="text-sm font-semibold text-[#005187] dark:text-gray-300">Histórico</span>
-                                </label>
-                            </div>
-                            
-                            {{-- Limpiar --}}
-                            <button type="button" 
-                                    @click="estado = ''; sala = ''; anio = ''; trimestre = ''; historico = false; actualizarURL();"
-                                    class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
-                                    title="Limpiar filtros"
-                                    aria-label="Limpiar filtros">
-                                <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
-                            </button>
+                        {{-- Año de Ingreso --}}
+                        <div>
+                            <label for="anio_ingreso" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">Año de Ingreso:</label>
+                            <select x-model="anioIngreso" 
+                                    @change="actualizarURL()"
+                                    id="anio_ingreso"
+                                    class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                                @foreach($aniosIngreso as $anio)
+                                    <option value="{{ $anio }}">
+                                        {{ $anio }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
                 </div>
+
+                {{-- Filtros adicionales --}}
+                <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+                    <div class="flex flex-wrap items-end gap-4">
+                        {{-- Estado --}}
+                        <div>
+                            <label for="estado" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Estado
+                            </label>
+                            <select x-model="estado" 
+                                    @change="actualizarURL()"
+                                    id="estado"
+                                    class="px-4 py-2.5 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px]"
+                                    aria-label="Filtrar por estado">
+                                <option value="">Todos</option>
+                                <option value="pendiente">Pendientes</option>
+                                <option value="en_revision">En Revisión</option>
+                                <option value="resuelta">Resueltas</option>
+                                <option value="no_resuelta">No Resueltas</option>
+                            </select>
+                        </div>
+
+                        {{-- Sala --}}
+                        <div>
+                            <label for="sala" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Sala
+                            </label>
+                            <select x-model="sala" 
+                                    @change="actualizarURL()"
+                                    id="sala"
+                                    class="px-4 py-2.5 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px]"
+                                    aria-label="Filtrar por sala">
+                                <option value="">Todas</option>
+                                @foreach ($salas as $s)
+                                    <option value="{{ $s->id }}">{{ $s->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Año Académico --}}
+                        <div>
+                            <label for="anio-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Año Académico
+                            </label>
+                            <select x-model="anio" 
+                                    @change="actualizarURL()" 
+                                    id="anio-select"
+                                    class="px-4 py-2.5 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px]"
+                                    aria-label="Filtrar por año académico">
+                                <option value="">Todos</option>
+                                @foreach ($anios as $a)
+                                    <option value="{{ $a }}" class="anio-normal">{{ $a }}</option>
+                                @endforeach
+                                @foreach ($aniosHistoricos as $a)
+                                    <option value="{{ $a }}" class="anio-historico" style="display: none;">{{ $a }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Trimestre --}}
+                        <div id="trimestre-div">
+                            <label for="trimestre" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Trimestre
+                            </label>
+                            <select x-model="trimestre" 
+                                    @change="actualizarURL()"
+                                    id="trimestre"
+                                    class="px-4 py-2.5 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[140px]"
+                                    aria-label="Filtrar por trimestre">
+                                <option value="">Todos</option>
+                                <template x-for="p in periodosFiltrados" :key="p.id">
+                                    <option :value="p.numero" x-text="'Trimestre ' + p.numero" :selected="trimestre == p.numero">
+                                    </option>
+                                </template>
+                            </select>
+                        </div>
+
+                        {{-- Histórico --}}
+                        <div class="flex items-end">
+                            <label class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                <input type="checkbox" 
+                                       x-model="historico" 
+                                       @change="actualizarURL()" 
+                                       id="historico"
+                                       class="rounded border-gray-300 dark:border-gray-600 text-[#4d82bc] focus:ring-[#4d82bc]">
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Histórico</span>
+                            </label>
+                        </div>
+                        
+                        {{-- Limpiar --}}
+                        <button type="button" 
+                                @click="estado = ''; sala = ''; programa = ''; anio = ''; trimestre = ''; historico = false; anioIngreso = '{{ $aniosIngreso->first() }}'; actualizarURL();"
+                                class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
+                                title="Limpiar filtros"
+                                aria-label="Limpiar filtros">
+                            <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
+                        </button>
+                    </div>
+                </div>
             </form>
+
+            {{-- Indicador de año de ingreso --}}
+            @if($anioIngresoSeleccionado != $aniosIngreso->first())
+                <div class="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ Mostrando estadísticas de un Año de Ingreso Anterior
+                    </p>
+                </div>
+            @endif
 
             {{-- Mensaje histórico --}}
             @if(request('historico'))

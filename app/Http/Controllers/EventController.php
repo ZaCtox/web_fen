@@ -22,7 +22,7 @@ class EventController extends Controller
         Log::info('🟢 EventController@index llamado (calendario logueado)', [
             'magister_id' => $request->get('magister_id'),
             'room_id' => $request->get('room_id'),
-            'cohorte' => $request->get('cohorte'),
+            'anio_ingreso' => $request->get('anio_ingreso'),
             'anio' => $request->get('anio'),
             'trimestre' => $request->get('trimestre'),
             'start' => $request->get('start'),
@@ -32,7 +32,7 @@ class EventController extends Controller
         try {
             $magisterId = $request->query('magister_id');
             $roomId = $request->query('room_id');
-            $cohorte = $request->query('cohorte');
+            $anioIngreso = $request->query('anio_ingreso');
             $anio = $request->query('anio');
             $trimestre = $request->query('trimestre');
 
@@ -73,7 +73,7 @@ class EventController extends Controller
                 });
 
             // Eventos generados desde clases (que ahora incluyen sus sesiones)
-            $classEvents = $this->generarEventosDesdeClases($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, $anio, $trimestre);
+            $classEvents = $this->generarEventosDesdeClases($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, $anio, $trimestre);
 
             Log::debug('📦 Eventos manuales (logueado):', ['count' => $manualEvents->count()]);
             Log::debug('📦 Eventos de clases/sesiones (logueado):', ['count' => $classEvents->count()]);
@@ -92,31 +92,31 @@ class EventController extends Controller
     public function calendario(Request $request)
     {
         try {
-            // Obtener cohortes disponibles
-            $cohortes = Period::select('cohorte')
+            // Obtener años de ingreso disponibles
+            $aniosIngreso = Period::select('anio_ingreso')
                 ->distinct()
-                ->whereNotNull('cohorte')
-                ->orderBy('cohorte', 'desc')
-                ->pluck('cohorte');
+                ->whereNotNull('anio_ingreso')
+                ->orderBy('anio_ingreso', 'desc')
+                ->pluck('anio_ingreso');
 
-            // cohorte seleccionada (por defecto la más reciente)
-            $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
+            // Año de ingreso seleccionado (por defecto el más reciente)
+            $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
 
-            // Obtener el primer período de la cohorte seleccionada
-            $primerPeriodo = Period::where('cohorte', $cohorteSeleccionada)
+            // Obtener el primer período del año de ingreso seleccionado
+            $primerPeriodo = Period::where('anio_ingreso', $anioIngresoSeleccionado)
                 ->orderBy('anio')
                 ->orderBy('numero')
                 ->first();
             
             $fechaInicio = optional($primerPeriodo)->fecha_inicio?->format('Y-m-d') ?? now()->format('Y-m-d');
             
-            // Obtener períodos de la cohorte seleccionada
-            $periodos = Period::where('cohorte', $cohorteSeleccionada)
+            // Obtener períodos del año de ingreso seleccionado
+            $periodos = Period::where('anio_ingreso', $anioIngresoSeleccionado)
                 ->orderBy('anio')
                 ->orderBy('numero')
                 ->get();
 
-            return view('calendario.index', compact('fechaInicio', 'cohortes', 'cohorteSeleccionada', 'periodos'));
+            return view('calendario.index', compact('fechaInicio', 'aniosIngreso', 'anioIngresoSeleccionado', 'periodos'));
 
         } catch (Exception $e) {
             Log::error('Error al cargar vista de calendario: ' . $e->getMessage());
@@ -271,7 +271,7 @@ class EventController extends Controller
         }
     }
 
-    private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $cohorte = null, ?string $anio = null, ?string $trimestre = null)
+    private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, ?string $anio = null, ?string $trimestre = null)
     {
         $dias = [
             'Domingo' => 0,
@@ -286,7 +286,7 @@ class EventController extends Controller
         $q = Clase::with(['room', 'period', 'course.magister', 'sesiones'])
             ->when(!empty($magisterId), fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
             ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId))
-            ->when(!empty($cohorte), fn($q) => $q->whereHas('period', fn($qq) => $qq->where('cohorte', $cohorte)));
+            ->when(!empty($anioIngreso), fn($q) => $q->whereHas('period', fn($qq) => $qq->where('anio_ingreso', $anioIngreso)));
 
         if ($rangeStart && $rangeEnd) {
             $q->whereHas('period', fn($qq) => $qq

@@ -26,14 +26,14 @@ class EventController extends Controller
     {
         $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
-        $cohorte = $request->query('cohorte');
+        $anioIngreso = $request->query('anio_ingreso');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
 
         \Log::info('📅 API EventController@index', [
             'magister_id' => $magisterId,
             'room_id' => $roomId,
-            'cohorte' => $cohorte,
+            'anio_ingreso' => $anioIngreso,
             'start' => $rangeStart?->toDateString(),
             'end' => $rangeEnd?->toDateString(),
         ]);
@@ -88,10 +88,10 @@ class EventController extends Controller
             });
 
         // Obtener eventos de clases con límites
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 25);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 25);
 
         // Obtener sesiones de clase
-        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 50);
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
 
         $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
@@ -188,7 +188,7 @@ class EventController extends Controller
     /**
      * Generar eventos desde clases con optimizaciones para evitar JSON demasiado grande.
      */
-    private function generarEventosDesdeClasesOptimizado(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $cohorte = null, int $maxEvents = 50)
+    private function generarEventosDesdeClasesOptimizado(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, int $maxEvents = 50)
     {
         $dias = [
             'Domingo' => 0,
@@ -208,7 +208,7 @@ class EventController extends Controller
         $q = Clase::with(['room', 'period', 'course.magister'])
             ->when(! empty($magisterId), fn ($q) => $q->whereHas('course', fn ($qq) => $qq->where('magister_id', $magisterId)))
             ->when(! empty($roomId), fn ($q) => $q->where('room_id', $roomId))
-            ->when(! empty($cohorte), fn ($q) => $q->whereHas('period', fn ($qq) => $qq->where('cohorte', $cohorte)))
+            ->when(! empty($anioIngreso), fn ($q) => $q->whereHas('period', fn ($qq) => $qq->where('anio_ingreso', $anioIngreso)))
             ->whereHas('period', fn ($qq) => $qq
                 ->whereDate('fecha_fin', '>=', $rangeStart->toDateString())
                 ->whereDate('fecha_inicio', '<=', $rangeEnd->toDateString()));
@@ -297,7 +297,7 @@ class EventController extends Controller
     {
         $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
-        $cohorte = $request->query('cohorte');
+        $anioIngreso = $request->query('anio_ingreso');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
 
@@ -357,10 +357,10 @@ class EventController extends Controller
             });
 
         // Obtener eventos de clases
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 50);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
 
         // Obtener sesiones de clase
-        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $cohorte, 50);
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
 
         $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
@@ -468,7 +468,7 @@ class EventController extends Controller
     /**
      * Generar eventos desde las sesiones de clase (ClaseSesion)
      */
-    private function generarEventosDesdeSesiones(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $cohorte = null, int $maxEvents = 50)
+    private function generarEventosDesdeSesiones(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, int $maxEvents = 50)
     {
         if (!$rangeStart || !$rangeEnd) {
             return collect();
@@ -486,7 +486,7 @@ class EventController extends Controller
             ->whereBetween('fecha', [$rangeStart->toDateString(), $rangeEnd->toDateString()])
             ->when(!empty($magisterId), fn($q) => $q->whereHas('clase.course', fn($qq) => $qq->where('magister_id', $magisterId)))
             ->when(!empty($roomId), fn($q) => $q->whereHas('clase', fn($qq) => $qq->where('room_id', $roomId)))
-            ->when(!empty($cohorte), fn($q) => $q->whereHas('clase.period', fn($qq) => $qq->where('cohorte', $cohorte)))
+            ->when(!empty($anioIngreso), fn($q) => $q->whereHas('clase.period', fn($qq) => $qq->where('anio_ingreso', $anioIngreso)))
             ->limit($maxEvents)
             ->get();
 

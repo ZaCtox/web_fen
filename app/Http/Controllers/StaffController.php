@@ -103,6 +103,14 @@ class StaffController extends Controller
                 }
             }
 
+            // Procesar color del avatar (quitar el # si viene)
+            if (isset($validated['avatar_color']) && $validated['avatar_color']) {
+                $color = $validated['avatar_color'];
+                if (str_starts_with($color, '#')) {
+                    $validated['avatar_color'] = substr($color, 1);
+                }
+            }
+
             $staff = Staff::create($validated);
 
             Log::info('Nuevo personal creado', ['staff_id' => $staff->id, 'nombre' => $staff->nombre]);
@@ -173,6 +181,14 @@ class StaffController extends Controller
                     return redirect()->back()
                         ->withInput()
                         ->withErrors(['foto' => 'Error al subir la foto. Por favor, inténtelo nuevamente.']);
+                }
+            }
+
+            // Procesar color del avatar (quitar el # si viene)
+            if (isset($validated['avatar_color']) && $validated['avatar_color']) {
+                $color = $validated['avatar_color'];
+                if (str_starts_with($color, '#')) {
+                    $validated['avatar_color'] = substr($color, 1);
                 }
             }
 

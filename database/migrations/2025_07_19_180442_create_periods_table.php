@@ -12,8 +12,10 @@ return new class extends Migration {
     {
         Schema::create('periods', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('magister_id')->nullable(); // Se agregará foreign key después
             $table->integer('numero'); // 1, 2 o 3
-            $table->integer('anio'); // 2025, 2026, etc.
+            $table->integer('anio'); // 1 o 2 (año académico)
+            $table->integer('anio_ingreso')->nullable()->index(); // 2024, 2025, 2026 (año de ingreso de la cohorte)
             $table->date('fecha_inicio');
             $table->date('fecha_fin');
             $table->boolean('activo')->default(true);

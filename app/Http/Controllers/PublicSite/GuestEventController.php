@@ -16,7 +16,7 @@ class GuestEventController extends Controller
         \Log::info('🟡 GuestEventController@index llamado', [
             'magister_id' => $request->get('magister_id'),
             'room_id' => $request->get('room_id'),
-            'cohorte' => $request->get('cohorte'),
+            'anio_ingreso' => $request->get('anio_ingreso'),
             'start' => $request->get('start'),
             'end' => $request->get('end'),
         ]);
@@ -24,7 +24,7 @@ class GuestEventController extends Controller
         try {
             $magisterId = is_numeric($request->get('magister_id')) ? (int) $request->get('magister_id') : null;
             $roomId = is_numeric($request->get('room_id')) ? (int) $request->get('room_id') : null;
-            $cohorte = $request->get('cohorte');
+            $anioIngreso = $request->get('anio_ingreso');
 
             $rangeStart = $request->query('start') ? Carbon::parse($request->query('start'), 'America/Santiago') : null;
             $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end'), 'America/Santiago') : null;
@@ -47,7 +47,7 @@ class GuestEventController extends Controller
             $clases = Clase::with(['room', 'period', 'course.magister', 'sesiones'])
                 ->when($magisterId, fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
                 ->when($roomId, fn($q) => $q->where('room_id', $roomId))
-                ->when($cohorte, fn($q) => $q->whereHas('period', fn($qq) => $qq->where('cohorte', $cohorte)))
+                ->when($anioIngreso, fn($q) => $q->whereHas('period', fn($qq) => $qq->where('anio_ingreso', $anioIngreso)))
                 ->when($rangeStart && $rangeEnd, function ($q) use ($rangeStart, $rangeEnd) {
                     $q->whereHas('period', function ($qq) use ($rangeStart, $rangeEnd) {
                         $qq->whereDate('fecha_fin', '>=', $rangeStart->toDateString())

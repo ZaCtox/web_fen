@@ -13,6 +13,7 @@ class Staff extends Model
 
     protected $fillable = [
         'nombre', 'cargo', 'telefono','anexo', 'correo', 'email', 'foto', 'public_id',
+        'avatar_color',
     ];
 
     /**
@@ -46,24 +47,35 @@ class Staff extends Model
     }
 
     /**
-     * Genera un avatar con las iniciales usando UI Avatars
+     * Genera un avatar con las iniciales
      */
-    private function generateAvatarUrl(): string
+    public function generateAvatarUrl(): string
     {
         $iniciales = $this->iniciales;
+        $color = $this->avatar_color ?? $this->getDefaultColor();
+        return "https://ui-avatars.com/api/?name={$iniciales}&background={$color}&color=ffffff&size=300&bold=true&font-size=0.4";
+    }
+
+    /**
+     * Obtiene el color por defecto basado en el ID
+     */
+    private function getDefaultColor(): string
+    {
+        // Usar los mismos colores que están en los selectores
         $colores = [
-            ['bg' => '005187', 'color' => 'ffffff'], // Azul oscuro
-            ['bg' => '4d82bc', 'color' => 'ffffff'], // Azul medio
-            ['bg' => '84b6f4', 'color' => '000000'], // Azul claro
-            ['bg' => 'ffa726', 'color' => '000000'], // Naranja
-            ['bg' => '66bb6a', 'color' => 'ffffff'], // Verde
-            ['bg' => 'ab47bc', 'color' => 'ffffff'], // Morado
+            '005187', // Azul oscuro
+            '4d82bc', // Azul medio
+            '84b6f4', // Azul claro
+            '00acc1', // Cyan
+            '66bb6a', // Verde
+            'ffa726', // Naranja
+            'ef5350', // Rojo
+            'ffca28', // Amarillo
+            'ab47bc', // Morado
+            '78909c', // Gris
         ];
         
-        // Seleccionar color basado en el ID para consistencia
         $colorIndex = $this->id % count($colores);
-        $color = $colores[$colorIndex];
-        
-        return "https://ui-avatars.com/api/?name={$iniciales}&background={$color['bg']}&color={$color['color']}&size=300&bold=true&font-size=0.4";
+        return $colores[$colorIndex];
     }
 }

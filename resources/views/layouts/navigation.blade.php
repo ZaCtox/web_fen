@@ -14,10 +14,9 @@
                     @php
                         $canClases = tieneRol(['administrador','director_programa','asistente_programa','director_administrativo','asistente_postgrado']);
                         $canCourses = tieneRol(['administrador','director_programa','asistente_programa']);
-                        $canMallas = tieneRol(['administrador','director_programa','director_administrativo']);
                         $canPeriods = tieneRol('administrador');
                         $canRooms = tieneRol(['administrador','asistente_programa']);
-                        $showAcademica = $canClases || $canCourses || $canMallas || $canPeriods || $canRooms;
+                        $showAcademica = $canClases || $canCourses || $canPeriods || $canRooms;
 
                         $canIncidencias = tieneRol(['administrador','director_programa','asistente_programa','técnico','auxiliar','asistente_postgrado']);
                         $canInformes = tieneRol(['administrador','director_programa','asistente_programa','asistente_postgrado']);
@@ -61,10 +60,7 @@
                                     <a href="{{ route('clases.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Clases</a>
                                 @endif
                                 @if($canCourses)
-                                    <a href="{{ route('courses.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Cursos</a>
-                                @endif
-                                @if($canMallas)
-                                    <a href="{{ route('mallas-curriculares.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Mallas Curriculares</a>
+                                    <a href="{{ route('courses.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Módulos</a>
                                 @endif
                                 @if($canPeriods)
                                     <a href="{{ route('periods.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Periodos</a>
@@ -195,7 +191,7 @@
                     <x-nav-link :href="route('public.calendario.index')" :active="request()->routeIs('public.calendario.index')">Calendario</x-nav-link>
                     <x-nav-link :href="route('public.Equipo-FEN.index')" :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-nav-link>
                     <x-nav-link :href="route('public.rooms.index')" :active="request()->routeIs('public.rooms.index')">Salas</x-nav-link>
-                    <x-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Cursos</x-nav-link>
+                    <x-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Módulos</x-nav-link>
                     <x-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Registros</x-nav-link>
                 </nav>
             @endif
@@ -287,15 +283,9 @@
                                     $avatarColor = $colors[$user->id % count($colors)];
                                 @endphp
                                 <!-- Avatar con foto o iniciales -->
-                                @if($user->foto)
-                                    <img src="{{ $user->foto }}" 
-                                         alt="{{ $user->name }}" 
-                                         class="w-10 h-10 rounded-full object-cover shadow-inner">
-                                @else
-                                    <div class="flex items-center justify-center w-10 h-10 rounded-full {{ $avatarColor }} text-white font-semibold text-sm shadow-inner">
-                                        {{ $initials }}
-                                    </div>
-                                @endif
+                                <img src="{{ $user->foto ?? $user->generateAvatarUrl() }}" 
+                                     alt="{{ $user->name }}" 
+                                     class="w-10 h-10 rounded-full object-cover shadow-inner">
                                 <!-- Nombre y rol -->
                                 <div class="flex flex-col items-start text-left">
                                     <span class="text-sm font-medium">{{ $user->name }}</span>
@@ -462,10 +452,9 @@
                 @php
                     $canClases = tieneRol(['administrador','director_programa','asistente_programa','director_administrativo','asistente_postgrado']);
                     $canCourses = tieneRol(['administrador','director_programa','asistente_programa']);
-                    $canMallas = tieneRol(['administrador','director_programa','director_administrativo']);
                     $canPeriods = tieneRol('administrador');
                     $canRooms = tieneRol(['administrador','asistente_programa']);
-                    $showAcademica = $canClases || $canCourses || $canMallas || $canPeriods || $canRooms;
+                    $showAcademica = $canClases || $canCourses || $canPeriods || $canRooms;
 
                     $canIncidencias = tieneRol(['administrador','director_programa','asistente_programa','técnico','auxiliar','asistente_postgrado']);
                     $canInformes = tieneRol(['administrador','director_programa','asistente_programa','asistente_postgrado']);
@@ -489,10 +478,7 @@
                         <x-responsive-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
                     @endif
                     @if($canCourses)
-                        <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Cursos</x-responsive-nav-link>
-                    @endif
-                    @if($canMallas)
-                        <x-responsive-nav-link :href="route('mallas-curriculares.index')" :active="request()->routeIs('mallas-curriculares.*')">Mallas Curriculares</x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Módulos</x-responsive-nav-link>
                     @endif
                     @if($canPeriods)
                         <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-responsive-nav-link>

@@ -14,6 +14,29 @@
     ]" />
 
     <div class="p-6 max-w-6xl mx-auto">
+        {{-- Mensajes de éxito/error --}}
+        @if(session('success'))
+            <div class="mb-6 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 rounded-lg shadow-md">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-green-800 dark:text-green-200 font-medium">{{ session('success') }}</p>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-lg shadow-md">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-red-800 dark:text-red-200 font-medium">{{ session('error') }}</p>
+                </div>
+            </div>
+        @endif
+
         {{-- Botones superiores --}}
         <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
             {{-- Lado izquierdo: Botón Agregar --}}
@@ -42,49 +65,69 @@
                     </button>
                 @endif
 
-                {{-- Botón Actualizar fechas al próximo año --}}
-                <form id="form-actualizar-proximo-anio" method="POST" action="{{ route('periods.actualizarProximoAnio') }}"
+                {{-- Botón Añadir año de ingreso --}}
+                <form id="form-anadir-anio-ingreso" method="POST" action="{{ route('periods.actualizarProximoAnio') }}"
                     class="hidden">
                     @csrf
                 </form>
                 <button type="button" onclick="
                     Swal.fire({
-                        title:'¿Actualizar fechas al próximo año?',
-                        text:'Se sumará 1 año a las fechas de inicio y término de TODOS los períodos. No se modifica el número de trimestre ni el año académico.',
-                        icon:'warning',
+                        title:'¿Añadir nuevo año de ingreso?',
+                        text:'Se abrirá el formulario para crear el primer período del año de ingreso {{ now()->year + 1 }}. Primero selecciona el programa (magister) y luego crea los trimestres uno por uno.',
+                        icon:'info',
                         showCancelButton:true,
                         confirmButtonColor:'#4d82bc',
                         cancelButtonColor:'#6b7280',
-                        confirmButtonText:'Sí, actualizar',
+                        confirmButtonText:'Sí, continuar',
                         cancelButtonText:'Cancelar'
-                    }).then((r)=>{ if(r.isConfirmed) document.getElementById('form-actualizar-proximo-anio').submit(); });
+                    }).then((r)=>{ if(r.isConfirmed) document.getElementById('form-anadir-anio-ingreso').submit(); });
                 "
                     class="inline-flex items-center gap-2 px-4 py-3 bg-[#84b6f4] hover:bg-[#4d82bc] text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2 text-sm hci-button-ripple hci-glow">
                     <img src="{{ asset('icons/actualizar.svg') }}" alt="" class="w-5 h-5">
-                    <span>Actualizar al próximo año</span>
+                    <span>Añadir Año de Ingreso</span>
                 </button>
             </div>
 
-            {{-- Lado derecho: Filtro de cohorte --}}
+            {{-- Lado derecho: Filtros --}}
             <div class="w-full sm:w-auto">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                        <label for="cohorte-select" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
-                            Ciclo Académico:
-                        </label>
-                        <form method="GET" action="{{ route('periods.index') }}" id="cohorte-form">
-                            <select name="cohorte" 
-                                    id="cohorte-select"
-                                    onchange="document.getElementById('cohorte-form').submit()"
-                                    class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
-                                @foreach($cohortes as $cohorte)
-                                    <option value="{{ $cohorte }}" {{ $cohorte == $cohorteSeleccionada ? 'selected' : '' }}>
-                                        {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form>
-                    </div>
+                    <form method="GET" action="{{ route('periods.index') }}" id="filtros-form">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                            {{-- Filtro de Magister --}}
+                            <div class="flex flex-col gap-2">
+                                <label for="magister-select" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
+                                    Programa:
+                                </label>
+                                <select name="magister_id" 
+                                        id="magister-select"
+                                        onchange="document.getElementById('filtros-form').submit()"
+                                        class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
+                                    @foreach($magisters as $magister)
+                                        <option value="{{ $magister->id }}" {{ $magister->id == $magisterSeleccionado ? 'selected' : '' }}>
+                                            {{ $magister->nombre }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            {{-- Filtro de Año de Ingreso --}}
+                            <div class="flex flex-col gap-2">
+                                <label for="anio-ingreso-select" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
+                                    Año de Ingreso:
+                                </label>
+                                <select name="anio_ingreso" 
+                                        id="anio-ingreso-select"
+                                        onchange="document.getElementById('filtros-form').submit()"
+                                        class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
+                                    @foreach($aniosIngreso as $anio)
+                                        <option value="{{ $anio }}" {{ $anio == $anioIngresoSeleccionado ? 'selected' : '' }}>
+                                            {{ $anio }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -92,7 +135,10 @@
 
         @php
             $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI'];
-            $agrupados = $periods->sortBy([['anio', 'asc'], ['numero', 'asc']])->groupBy('anio');
+            // Agrupar por año académico (Año 1, Año 2)
+            $agrupados = $periods->sortBy('numero')->groupBy(function($period) {
+                return ceil($period->numero / 3); // Trimestres 1-3 = Año 1, Trimestres 4-6 = Año 2
+            });
         @endphp
 
         @if($periods->isEmpty())
@@ -100,11 +146,11 @@
                 message="Crea tu primer período académico para comenzar a organizar las clases y actividades del año."
                 actionText="Crear Período" actionUrl="{{ route('periods.create') }}" actionIcon="➕" />
         @else
-            @foreach ($agrupados as $anio => $porTrimestre)
+            @foreach ($agrupados as $anioAcademico => $periodos)
                 <div
                     class="mt-6 mb-10 bg-[#fcffff] dark:bg-gray-800 rounded-xl shadow-md border-l-4 border-[#005187] overflow-hidden">
                     <h3 class="text-lg font-bold text-[#005187] dark:text-[#c4dafa] px-6 py-3 bg-[#84b6f4]/20">
-                        Año {{ $anio }}
+                        Año {{ $anioAcademico }}
                     </h3>
                     <div class="overflow-x-auto">
                         <table class="w-full table-auto text-sm text-gray-700 dark:text-gray-200">
@@ -117,7 +163,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($porTrimestre->sortBy('numero') as $period)
+                                @foreach ($periodos->sortBy('numero') as $period)
                                     <tr class="border-b border-gray-200 dark:border-gray-600 
                                                                    hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
                                                                    hover:border-l-4 hover:border-l-[#4d82bc]

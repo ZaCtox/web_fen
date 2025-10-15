@@ -1,22 +1,22 @@
-{{-- Formulario de Cursos con Wizard Genérico --}}
-@section('title', isset($course) ? 'Editar Curso' : 'Crear Curso')
+{{-- Formulario de Modulos con Wizard Genérico --}}
+@section('title', isset($course) ? 'Editar Módulo' : 'Crear Módulo')
 
 @php
     $editing = isset($course);
     
     // Definir los pasos del wizard
     $wizardSteps = [
-        ['title' => 'Información Básica', 'description' => 'Nombre del curso'],
+        ['title' => 'Información Básica', 'description' => 'Nombre del Módulo'],
         ['title' => 'Programa y Período', 'description' => 'Asignación académica'],
         ['title' => 'Resumen', 'description' => 'Revisar y confirmar']
     ];
 @endphp
 
 <x-hci-wizard-layout
-    title="Curso"
+    title="Módulo"
     :editing="$editing"
-    createDescription="Crea un nuevo curso con información organizada y estructurada."
-    editDescription="Modifica la información del curso académico."
+    createDescription="Crea un nuevo módulo con información organizada y estructurada."
+    editDescription="Modifica la información del módulo académico."
     :steps="$wizardSteps"
     :formAction="$editing ? route('courses.update', $course) : route('courses.store')"
     :formMethod="$editing ? 'PUT' : 'POST'"
@@ -25,7 +25,7 @@
     <x-hci-form-section 
         :step="1" 
         title="Información Básica" 
-        description="Datos principales del curso"
+        description="Datos principales del módulo"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path fill-rule='evenodd' d='M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z' clip-rule='evenodd'/></svg>"
         section-id="basica"
         content-class="w-full"
@@ -36,12 +36,12 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <x-hci-field 
                 name="nombre"
-                label="Nombre del Curso"
+                label="Nombre del Módulo"
                 placeholder="Ej: Economía Aplicada"
                 value="{{ old('nombre', $course->nombre ?? '') }}"
                 :required="true"
                 icon=""
-                help="Nombre descriptivo del curso académico"
+                help="Nombre descriptivo del módulo académico"
                 maxlength="150"
             />
             
@@ -111,7 +111,7 @@
                             </div>
                         </div>
                         
-                        {{-- Cursos --}}
+                        {{-- Módulos --}}
                         @foreach($allCourses as $curso)
                             <div class="requisito-option cursor-pointer px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-gray-700 transition" 
                                  data-value="{{ $curso->id }}" 
@@ -151,32 +151,13 @@
             label="Programa Académico"
             :required="true"
             icon=""
-            help="Selecciona el programa al que pertenece el curso"
+            help="Selecciona el programa al que pertenece el módulo"
             id="magister_id"
         >
             <option value="">-- Selecciona un Programa --</option>
             @foreach($magisters as $magister)
                 <option value="{{ $magister->id }}" {{ old('magister_id', $course->magister_id ?? $selectedMagisterId ?? '') == $magister->id ? 'selected' : '' }}>
                     {{ $magister->nombre }}
-                </option>
-            @endforeach
-        </x-hci-field>
-
-        <x-hci-field 
-            name="malla_curricular_id"
-            type="select"
-            label="Malla Curricular (Opcional)"
-            icon=""
-            help="Opcional: Asigna este curso a una versión específica de malla curricular"
-            id="malla_curricular_id"
-        >
-            <option value="">-- Sin malla específica --</option>
-            @foreach($mallas as $malla)
-                <option value="{{ $malla->id }}" 
-                        data-magister="{{ $malla->magister_id }}"
-                        {{ old('malla_curricular_id', $course->malla_curricular_id ?? $selectedMallaId ?? '') == $malla->id ? 'selected' : '' }}
-                        style="display: none;">
-                    {{ $malla->nombre }} ({{ $malla->codigo }})
                 </option>
             @endforeach
         </x-hci-field>
@@ -233,17 +214,17 @@
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Resumen del Curso</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Resumen del Módulo</h3>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Revisa la información antes de confirmar</p>
                 </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Nombre del Curso - 2 columnas -->
+                <!-- Nombre del Módulo - 2 columnas -->
                 <div class="md:col-span-2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-lg">📚</span>
-                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Nombre del Curso</h4>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Nombre del Módulo</h4>
                     </div>
                     <p id="resumen-nombre" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('nombre', $course->nombre ?? '') }}</p>
                 </div>
@@ -305,15 +286,6 @@
                     <p id="resumen-programa" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('magister_id', $course->magister_id ?? '') }}</p>
                 </div>
 
-                <!-- Malla Curricular -->
-                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-lg">📋</span>
-                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Malla Curricular</h4>
-                    </div>
-                    <p id="resumen-malla" class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]">Sin malla específica</p>
-                </div>
-
                 <!-- Año -->
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
                     <div class="flex items-center gap-2 mb-2">
@@ -341,7 +313,7 @@
     fab="true" 
     icon="❓"
     href="#"
-    aria-label="Ayuda con el formulario de cursos"
+    aria-label="Ayuda con el formulario de módulos"
 />
 
 {{-- Incluir JavaScript del wizard --}}

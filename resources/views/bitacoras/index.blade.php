@@ -68,7 +68,7 @@
 
                                     {{-- Botón Editar --}}
                                     <x-action-button 
-                                        variant="warning" 
+                                        variant="edit" 
                                         type="link" 
                                         :href="route('bitacoras.edit', $bitacora)" 
                                         tooltip="Editar" />

@@ -2,7 +2,12 @@
 @section('title', isset($period) ? 'Editar Período' : 'Crear Período')
 
 @php
-    $editing = isset($period);
+    // Asegurar que $period esté definida
+    if (!isset($period)) {
+        $period = null;
+    }
+    
+    $editing = isset($period) && $period !== null;
     
     // Definir los pasos del wizard
     $wizardSteps = [
@@ -18,7 +23,7 @@
     createDescription="Registra un nuevo período académico con información organizada."
     editDescription="Modifica la información del período académico."
     :steps="$wizardSteps"
-    :formAction="$editing ? route('periods.update', $period) : route('periods.store')"
+    :formAction="$editing ? route('periods.update', $period ?? null) : route('periods.store')"
     :formMethod="$editing ? 'PUT' : 'POST'"
 >
 
@@ -26,14 +31,31 @@
     <x-hci-form-section 
         :step="1" 
         title="Información Básica" 
-        description="Define el año académico y trimestre del período"
+        description="Define el programa, año académico y trimestre del período"
         icon="<svg class='w-8 h-8' fill='currentColor' viewBox='0 0 20 20'><path d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>"
         section-id="informacion"
-        content-class="grid-cols-1 md:grid-cols-3 gap-6"
+        content-class="grid-cols-1 md:grid-cols-2 gap-6"
         :is-active="true"
         :is-first="true"
         :editing="$editing"
     >
+        <x-hci-field 
+            name="magister_id" 
+            type="select" 
+            label="Programa (Magister)" 
+            :required="true"
+            icon=""
+            help="Selecciona el programa"
+            id="magister-select"
+        >
+            <option value="">-- Selecciona un Programa --</option>
+            @foreach($magisters as $magister)
+                <option value="{{ $magister->id }}" {{ old('magister_id', isset($period) ? $period->magister_id : $magisterId) == $magister->id ? 'selected' : '' }}>
+                    {{ $magister->nombre }}
+                </option>
+            @endforeach
+        </x-hci-field>
+
         <x-hci-field 
             name="anio" 
             type="select" 
@@ -44,23 +66,29 @@
             id="anio-select"
         >
             <option value="">-- Selecciona un Año --</option>
-            <option value="1" {{ old('anio', $period->anio ?? '') == '1' ? 'selected' : '' }}>Año 1</option>
-            <option value="2" {{ old('anio', $period->anio ?? '') == '2' ? 'selected' : '' }}>Año 2</option>
+            <option value="1" {{ old('anio', isset($period) ? $period->anio : null) == '1' ? 'selected' : '' }}>Año 1</option>
+            <option value="2" {{ old('anio', isset($period) ? $period->anio : null) == '2' ? 'selected' : '' }}>Año 2</option>
         </x-hci-field>
 
         <x-hci-field 
-            name="cohorte" 
+            name="anio_ingreso" 
             type="select" 
-            label="Cohorte Académica" 
+            label="Año de Ingreso" 
             :required="true"
             icon=""
-            help="Selecciona la cohorte académica"
-            id="ciclo-select"
+            help="Selecciona el año de ingreso de los estudiantes"
+            id="anio-ingreso-select"
         >
-            <option value="">-- Selecciona una cohorte --</option>
-            <option value="2025-2026" {{ old('cohorte', $period->cohorte ?? '') == '2025-2026' ? 'selected' : '' }}>2025-2026 (Actual)</option>
-            <option value="2024-2025" {{ old('cohorte', $period->cohorte ?? '') == '2024-2025' ? 'selected' : '' }}>2024-2025 (Pasada)</option>
-            <option value="2026-2027" {{ old('cohorte', $period->cohorte ?? '') == '2026-2027' ? 'selected' : '' }}>2026-2027 (Futura)</option>
+            <option value="">-- Selecciona un año de ingreso --</option>
+            @php
+                $anioIngresoSeleccionado = old('anio_ingreso', isset($period) ? $period->anio_ingreso : ($anioIngreso ?? ''));
+                $anioActual = now()->year;
+                $anioAnterior = $anioActual - 1;
+                $anioSiguiente = $anioActual + 1;
+            @endphp
+            <option value="{{ $anioActual }}" {{ $anioIngresoSeleccionado == $anioActual ? 'selected' : '' }}>{{ $anioActual }} (Actual)</option>
+            <option value="{{ $anioAnterior }}" {{ $anioIngresoSeleccionado == $anioAnterior ? 'selected' : '' }}>{{ $anioAnterior }} (Pasado)</option>
+            <option value="{{ $anioSiguiente }}" {{ $anioIngresoSeleccionado == $anioSiguiente ? 'selected' : '' }}>{{ $anioSiguiente }} (Futuro)</option>
         </x-hci-field>
 
         <x-hci-field 
@@ -71,15 +99,15 @@
             icon=""
             help="Selecciona el trimestre del año"
             id="numero-select"
-            value="{{ old('numero', $period->numero ?? '') }}"
+            value="{{ old('numero', isset($period) ? $period->numero : '') }}"
         >
             <option value="">-- Selecciona un trimestre --</option>
             @php
-                $anioSeleccionado = old('anio', $period->anio ?? '');
+                $anioSeleccionado = old('anio', isset($period) ? $period->anio : '');
                 $trimestres = $anioSeleccionado == '1' ? [1, 2, 3] : ($anioSeleccionado == '2' ? [4, 5, 6] : []);
             @endphp
             @foreach($trimestres as $trimestre)
-                <option value="{{ $trimestre }}" {{ old('numero', $period->numero ?? '') == $trimestre ? 'selected' : '' }}>
+                <option value="{{ $trimestre }}" {{ old('numero', isset($period) ? $period->numero : '') == $trimestre ? 'selected' : '' }}>
                     Trimestre {{ $trimestre }}
                 </option>
             @endforeach
@@ -141,13 +169,21 @@
                 </div>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-lg">📚</span>
                         <h4 class="font-medium text-gray-700 dark:text-gray-300">Año Académico</h4>
                     </div>
                     <p id="summary-anio" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
+                </div>
+                
+                <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-lg">🎓</span>
+                        <h4 class="font-medium text-gray-700 dark:text-gray-300">Año de Ingreso</h4>
+                    </div>
+                    <p id="summary-anio-ingreso" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">--</p>
                 </div>
                 
                 <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">

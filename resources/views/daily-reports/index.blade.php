@@ -137,7 +137,7 @@
                                     <td class="px-4 py-3">
                                         <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2" onclick="event.stopPropagation()">
                                             <a href="{{ route('daily-reports.edit', $report) }}" 
-                                               class="inline-flex items-center justify-center p-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
+                                               class="inline-flex items-center justify-center p-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                                title="Editar reporte">
                                                 <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
                                             </a>

@@ -77,11 +77,11 @@
                     section-id="foto"
                     :editing="$editing"
                 >
-                    <div style="max-width: 500px;">
+                    <div class="w-full">
                         {{-- Preview de la foto actual --}}
                         <div class="flex justify-center mb-4">
                             <img id="foto-preview" 
-                                 src="{{ isset($staff) && $staff->foto ? $staff->foto_perfil : 'https://ui-avatars.com/api/?name=Foto&background=84b6f4&color=000000&size=300&bold=true&font-size=0.4' }}"
+                                 src="{{ isset($staff) && $staff->foto ? $staff->foto_perfil : (isset($staff) ? $staff->generateAvatarUrl() : 'https://ui-avatars.com/api/?name=Staff&background=4d82bc&color=ffffff&size=300&bold=true&font-size=0.4') }}"
                                  alt="Preview" 
                                  class="w-32 h-32 rounded-full object-cover border-4 border-[#84b6f4] shadow-lg">
                         </div>
@@ -146,7 +146,7 @@
                                 @method('DELETE')
                                 <button type="button"
                                         onclick="if(confirm('¿Estás seguro de que quieres eliminar la foto actual? Se generará un avatar con las iniciales.')) { document.getElementById('delete-foto-form').submit(); }"
-                                        class="inline-flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                        class="inline-flex items-center gap-2 px-4 py-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                                     </svg>
@@ -155,9 +155,49 @@
                             </form>
                         @endif
 
-                        <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                            💡 <strong>Nota:</strong> Si no subes una foto, se generará automáticamente un avatar con las iniciales del nombre.
-                        </p>
+                        {{-- Selector de Color del Avatar --}}
+                        <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                Color del Avatar (opcional)
+                            </label>
+                            
+                            <div class="flex flex-wrap gap-3 mb-2">
+                                @php
+                                    $colores = [
+                                        '005187' => 'Azul oscuro',
+                                        '4d82bc' => 'Azul medio',
+                                        '84b6f4' => 'Azul claro',
+                                        '00acc1' => 'Cyan',
+                                        '66bb6a' => 'Verde',
+                                        'ffa726' => 'Naranja',
+                                        'ef5350' => 'Rojo',
+                                        'ffca28' => 'Amarillo',
+                                        'ab47bc' => 'Morado',
+                                        '78909c' => 'Gris',
+                                    ];
+                                    $colorActual = old('avatar_color', ($staff->avatar_color ?? null)) ?? '4d82bc';
+                                @endphp
+                                
+                                @foreach($colores as $codigo => $nombre)
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" 
+                                               name="avatar_color" 
+                                               value="{{ $codigo }}"
+                                               class="sr-only peer"
+                                               {{ $colorActual === $codigo ? 'checked' : '' }}
+                                               onchange="updateAvatarPreviewColor('{{ $codigo }}')">
+                                        <div class="w-10 h-10 rounded-lg border-4 transition-all duration-200 peer-checked:border-gray-900 dark:peer-checked:border-white peer-checked:scale-110 border-gray-300 dark:border-gray-600 hover:scale-105 shadow-md" 
+                                             style="background-color: #{{ $codigo }};"
+                                             title="{{ $nombre }}">
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                            
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                Si no subes una foto, se generará un avatar con las iniciales usando este color.
+                            </p>
+                        </div>
                     </div>
                 </x-hci-form-section>
 

@@ -10,7 +10,7 @@
     {{-- Breadcrumb --}}
     <x-hci-breadcrumb :items="[
         ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Cursos', 'url' => route('courses.index')],
+        ['label' => 'Módulos', 'url' => route('courses.index')],
         ['label' => 'Programas', 'url' => '#']
     ]" />
 
@@ -34,6 +34,37 @@
         }
     }">
 
+        {{-- Filtro de año de ingreso --}}
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 shadow-md p-4">
+            <form method="GET" action="{{ route('magisters.index') }}" class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div>
+                    <label for="anio_ingreso" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">Año de Ingreso:</label>
+                    <select name="anio_ingreso" 
+                            id="anio_ingreso"
+                            onchange="this.form.submit()"
+                            class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                        @foreach($aniosIngreso as $anio)
+                            <option value="{{ $anio }}" {{ $anioIngresoSeleccionado == $anio ? 'selected' : '' }}>
+                                {{ $anio }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                @if(request('q'))
+                    <input type="hidden" name="q" value="{{ request('q') }}">
+                @endif
+            </form>
+        </div>
+
+        {{-- Indicador de año de ingreso --}}
+        @if($anioIngresoSeleccionado != $aniosIngreso->first())
+            <div class="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                    ⚠️ Mostrando programas de un Año de Ingreso Anterior
+                </p>
+            </div>
+        @endif
+
         {{-- Header: acciones + búsqueda --}}
         <div class="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
             <div class="flex gap-3">
@@ -52,6 +83,9 @@
             </div>
 
             <form method="GET" class="w-full sm:w-auto">
+                @if(request('anio_ingreso'))
+                    <input type="hidden" name="anio_ingreso" value="{{ request('anio_ingreso') }}">
+                @endif
                 <input name="q" x-model="q" placeholder="Buscar por nombre…"
                     class="w-full sm:w-64 px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
             </form>
@@ -79,7 +113,7 @@
                     $count = $magister->courses_count ?? 0;
                     $hasCourses = $count > 0;
                     $msg = $hasCourses
-                        ? 'Este programa tiene cursos asociados. ¿Deseas eliminar también esos cursos?'
+                        ? 'Este programa tiene módulos asociados. ¿Deseas eliminar también esos módulos?'
                         : '¿Eliminar este programa?';
                 @endphp
 
@@ -116,7 +150,7 @@
                                     <p><strong class="text-[#005187] dark:text-[#84b6f4]">Correo:</strong>
                                         {{ $magister->correo }}</p>
                                 @endif
-                                <p><strong class="text-[#005187] dark:text-[#84b6f4]">Cursos asociados:</strong>
+                                <p><strong class="text-[#005187] dark:text-[#84b6f4]">Módulos asociados:</strong>
                                     {{ $count }}</p>
                                 <p><strong class="text-[#005187] dark:text-[#84b6f4]">Total SCT:</strong>
                                     @if($magister->courses_sum_sct)
@@ -135,7 +169,7 @@
                             <div class="flex gap-3">
                                 {{-- Botón Editar --}}
                                 <a href="{{ route('magisters.edit', $magister) }}"
-                                   class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#84b6f4] hover:bg-[#84b6f4]/80 text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
+                                   class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                    title="Editar programa">
                                     <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-6 h-6">
                                 </a>
@@ -145,7 +179,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#f28b82] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                                            class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
                                             title="Eliminar programa">
                                         <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-6 h-6">
                                     </button>
@@ -159,7 +193,7 @@
                     type="no-data"
                     icon="🎓"
                     title="No hay programas de magíster registrados"
-                    message="Crea tu primer programa de magíster para organizar los cursos y actividades académicas."
+                    message="Crea tu primer programa de magíster para organizar los módulos y actividades académicas."
                     actionText="Crear Programa"
                     actionUrl="{{ route('magisters.create') }}"
                     actionIcon="➕"

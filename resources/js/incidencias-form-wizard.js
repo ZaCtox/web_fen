@@ -186,6 +186,7 @@ function clearFieldError(field) {
 function updateSummary() {
     const titulo = document.querySelector('input[name="titulo"]')?.value || '';
     const descripcion = document.querySelector('textarea[name="descripcion"]')?.value || '';
+    const programa = document.querySelector('select[name="magister_id"]')?.selectedOptions?.[0]?.text || '';
     const sala = document.querySelector('select[name="room_id"]')?.selectedOptions?.[0]?.text || '';
     const imagen = document.querySelector('input[name="imagen"]')?.files?.[0]?.name || '';
     const ticket = document.querySelector('input[name="nro_ticket"]')?.value || '';
@@ -193,12 +194,14 @@ function updateSummary() {
     // Actualizar elementos del resumen
     const resumenTitulo = document.getElementById('summary-titulo');
     const resumenDescripcion = document.getElementById('summary-descripcion');
+    const resumenPrograma = document.getElementById('summary-programa');
     const resumenSala = document.getElementById('summary-sala');
     const resumenImagen = document.getElementById('summary-imagen');
     const resumenTicket = document.getElementById('summary-ticket');
     
     if (resumenTitulo) resumenTitulo.textContent = titulo || 'No especificado';
     if (resumenDescripcion) resumenDescripcion.textContent = descripcion || 'No especificado';
+    if (resumenPrograma) resumenPrograma.textContent = programa || 'No especificado';
     if (resumenSala) resumenSala.textContent = sala || 'No especificado';
     if (resumenImagen) resumenImagen.textContent = imagen || 'Sin imagen';
     if (resumenTicket) resumenTicket.textContent = ticket || 'Sin ticket';

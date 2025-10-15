@@ -9,7 +9,7 @@
 <x-hci-breadcrumb 
     :items="[
         ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Cursos', 'url' => route('courses.index')],
+        ['label' => 'Módulos', 'url' => route('courses.index')],
         ['label' => 'Programas', 'url' => route('magisters.index')],
         ['label' => $editing ? 'Editar Programa' : 'Nuevo Programa', 'url' => '#']
     ]"

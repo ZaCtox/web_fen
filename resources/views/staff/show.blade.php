@@ -35,7 +35,7 @@
                 <!-- Acciones principales -->
                 <div class="flex gap-3">
                     <a href="{{ route('staff.edit', $staff) }}" 
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-semibold"
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-semibold"
                        aria-label="Editar información de {{ $staff->nombre }}">
                         <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
                     </a>
@@ -77,7 +77,7 @@
                         @method('DELETE')
                         <button type="button"
                                 onclick="if(confirm('¿Estás seguro de que quieres eliminar la foto de {{ $staff->nombre }}? Se generará un avatar con las iniciales.')) { document.getElementById('delete-foto-form-show').submit(); }"
-                                class="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-sm transition-all duration-200 text-xs font-medium hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                class="inline-flex items-center gap-2 px-3 py-1.5 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg shadow-sm transition-all duration-200 text-xs font-medium hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
                             </svg>

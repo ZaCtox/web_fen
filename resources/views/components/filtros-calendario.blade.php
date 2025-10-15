@@ -1,30 +1,44 @@
-@props(['cohortes' => collect(), 'cohorteSeleccionada' => null, 'periodos' => collect()])
+@props(['aniosIngreso' => collect(), 'anioIngresoSeleccionado' => null, 'periodos' => collect()])
 
 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 space-y-4">
-    {{-- Selector de ciclo --}}
+    {{-- Selector de programa y año de ingreso --}}
     <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <div class="flex-1">
-                <label for="cohorte-filter" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                    Ciclo Académico:
+        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+            <div>
+                <label for="magister-filter" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
+                    Programa:
                 </label>
-                <select id="cohorte-filter" name="cohorte" required
-                    onchange="const params = new URLSearchParams(); params.set('cohorte', this.value); window.location.search = params.toString();"
+                <select id="magister-filter" name="magister"
+                    class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 text-base focus:ring-[#4d82bc] focus:border-[#4d82bc] transition font-medium">
+                    <option value="">Todos</option>
+                    @foreach(\App\Models\Magister::orderBy('orden')->get() as $m)
+                        <option value="{{ $m->id }}" {{ $m->id == 1 ? 'selected' : '' }}>
+                            {{ $m->nombre }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label for="anio-ingreso-filter" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
+                    Año de Ingreso:
+                </label>
+                <select id="anio-ingreso-filter" name="anio_ingreso" required
+                    onchange="const params = new URLSearchParams(); params.set('anio_ingreso', this.value); window.location.search = params.toString();"
                     class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium"
-                    aria-describedby="cohorte-status"
+                    aria-describedby="anio-ingreso-status"
                     aria-required="true">
-                    @if(isset($cohortes))
-                        @foreach($cohortes as $cohorte)
-                            <option value="{{ $cohorte }}" {{ $cohorte == $cohorteSeleccionada ? 'selected' : '' }}>
-                                {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                    @if(isset($aniosIngreso))
+                        @foreach($aniosIngreso as $anio)
+                            <option value="{{ $anio }}" {{ $anio == $anioIngresoSeleccionado ? 'selected' : '' }}>
+                                {{ $anio }}
                             </option>
                         @endforeach
                     @endif
                 </select>
             </div>
-            <div class="text-sm" id="cohorte-status" role="status" aria-live="polite">
-                @if(isset($cohorteSeleccionada))
-                    @if($cohorteSeleccionada != $cohortes->first())
+            <div class="text-sm" id="anio-ingreso-status" role="status" aria-live="polite">
+                @if(isset($anioIngresoSeleccionado))
+                    @if($anioIngresoSeleccionado != $aniosIngreso->first())
                         <span class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded text-xs">
                             ⚠️ Pasado
                         </span>
@@ -35,21 +49,6 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-4">
-        <div>
-            <label for="magister-filter" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
-                Programa:
-            </label>
-            <select id="magister-filter" name="magister"
-                class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-2.5 text-base focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
-                <option value="">Todos</option>
-                @foreach(\App\Models\Magister::orderBy('orden')->get() as $m)
-                    <option value="{{ $m->id }}" {{ $m->id == 1 ? 'selected' : '' }}>
-                        {{ $m->nombre }}
-                    </option>
-                @endforeach
-            </select>
-
-        </div>
 
         <div>
             <label for="room-filter" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">

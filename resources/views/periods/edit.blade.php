@@ -13,7 +13,13 @@
     ]" />
 
     <div class="p-6 max-w-full mx-auto">
-        @include('periods.form-wizard', ['editing' => true, 'period' => $period])
+        @include('periods.form-wizard', [
+            'editing' => true, 
+            'period' => $period,
+            'magisters' => $magisters ?? collect(),
+            'magisterId' => null,
+            'anioIngreso' => null
+        ])
     </div>
 </x-app-layout>
 

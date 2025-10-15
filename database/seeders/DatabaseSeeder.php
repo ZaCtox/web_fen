@@ -15,8 +15,7 @@ class DatabaseSeeder extends Seeder
         // 🧹 Limpiar las tablas en orden seguro (dependencias al final)
         DB::table('incidents')->truncate();      // depende de rooms
         DB::table('rooms')->truncate();
-        DB::table('courses')->truncate();        // depende de magisters y mallas
-        DB::table('malla_curriculars')->truncate(); // depende de magisters
+        DB::table('courses')->truncate();        // depende de magisters y periods
         DB::table('magisters')->truncate();
         DB::table('users')->truncate();          // solo si quieres resetear usuarios
         DB::table('periods')->truncate(); 

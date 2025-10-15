@@ -3,7 +3,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#4d82bc]">
-            📰 Novedades y Actividades
+            Novedades y Actividades
         </h2>
     </x-slot>
 

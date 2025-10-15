@@ -10,9 +10,10 @@ class Period extends Model
     use HasFactory;
 
     protected $fillable = [
+        'magister_id',
         'numero',
         'anio',
-        'cohorte',
+        'anio_ingreso',
         'fecha_inicio',
         'fecha_fin'
     ];
@@ -28,8 +29,16 @@ class Period extends Model
     // Accessor para nombre completo generado dinámicamente
     public function getNombreCompletoAttribute()
     {
-        $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI'];
-        return "Año {$this->anio} - Trimestre " . ($romanos[$this->numero] ?? $this->numero);
+        // Calcular el año académico basado en el número de trimestre
+        // Trimestres 1-3 = Año 1, Trimestres 4-6 = Año 2
+        $anioAcademico = ceil($this->numero / 3);
+        
+        return "Año {$anioAcademico}";
+    }
+
+    public function magister()
+    {
+        return $this->belongsTo(Magister::class);
     }
 
     public function courses()
@@ -40,7 +49,13 @@ class Period extends Model
     // Scopes útiles
     public function scopeDeCohorte($query, $cohorte)
     {
-        return $query->where('cohorte', $cohorte);
+        // Mantener por compatibilidad, pero usar anio_ingreso
+        return $query->where('anio_ingreso', $cohorte);
+    }
+
+    public function scopeDeAnioIngreso($query, $anioIngreso)
+    {
+        return $query->where('anio_ingreso', $anioIngreso);
     }
 
     public function scopeActual($query)

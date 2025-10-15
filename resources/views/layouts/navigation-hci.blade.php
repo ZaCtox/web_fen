@@ -78,7 +78,7 @@
                         
                         @if(tieneRol(['administrador', 'director_programa', 'asistente_programa']))
                             <x-hci-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')" icon="carpeta">
-                                Cursos
+                                Módulos
                             </x-hci-nav-link>
                         @endif
                     </x-hci-nav-group>
@@ -161,9 +161,9 @@
                     <!-- Menú de usuario -->
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 group">
-                            <div class="w-8 h-8 bg-[#4d82bc] rounded-full flex items-center justify-center text-white text-sm font-medium group-hover:scale-105 transition-transform duration-200">
-                                {{ substr(Auth::user()->name, 0, 1) }}
-                            </div>
+                            <img src="{{ Auth::user()->foto ?? Auth::user()->generateAvatarUrl() }}" 
+                                 alt="{{ Auth::user()->name }}" 
+                                 class="w-8 h-8 rounded-full object-cover group-hover:scale-105 transition-transform duration-200">
                             <span class="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">{{ Auth::user()->name }}</span>
                             <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -262,7 +262,7 @@
                             @endif
                             @if(tieneRol(['administrador', 'director_programa', 'asistente_programa']))
                                 <x-hci-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')" icon="carpeta">
-                                    Cursos
+                                    Módulos
                                 </x-hci-nav-link>
                             @endif
                         </div>

@@ -16,7 +16,7 @@
     ]" />
 
     <div class="py-6 max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-        <x-filtros-calendario :cohortes="$cohortes" :cohorteSeleccionada="$cohorteSeleccionada" :periodos="$periodos" />
+        <x-filtros-calendario :aniosIngreso="$aniosIngreso" :anioIngresoSeleccionado="$anioIngresoSeleccionado" :periodos="$periodos" />
         <x-leyenda-magister />
         <div id="current-period-label" class="mt-4 text-center text-xl font-bold text-[#005187] dark:text-[#84b6f4]">
             <span id="current-period-text">Cargando...</span>

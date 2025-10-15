@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $usuarios = User::select('id', 'name', 'email', 'rol', 'created_at', 'last_login_at', 'foto')->get();
+        $usuarios = User::select('id', 'name', 'email', 'rol', 'created_at', 'last_login_at', 'foto', 'avatar_color')->get();
         return view('usuarios.index', compact('usuarios'));
     }
 
@@ -34,8 +34,9 @@ class UserController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
-                'rol' => 'required|in:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado',
+                'rol' => 'required|in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado',
                 'foto' => 'sometimes|nullable|image|max:2048',
+                'avatar_color' => 'nullable|string|max:6',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error('Error de validación en UserController@update', [

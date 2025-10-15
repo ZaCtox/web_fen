@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Incident;
 use App\Models\IncidentLog;
+use App\Models\Magister;
 use App\Models\Period;
 use App\Models\Room;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,14 +21,18 @@ class IncidentController extends Controller
     {
         $query = Incident::with('room');
         
-        // 🔹 Obtener cohorte actual automáticamente
-        $cohorteActual = Period::select('cohorte')
+        // Obtener años de ingreso disponibles
+        $aniosIngreso = Period::select('anio_ingreso')
             ->distinct()
-            ->orderBy('cohorte', 'desc')
-            ->first()->cohorte ?? null;
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
+
+        // Año de ingreso seleccionado (por defecto el más reciente)
+        $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
         
-        // Obtener TODOS los períodos para el sistema
-        $periodos = Period::all();
+        // Obtener períodos del año de ingreso seleccionado
+        $periodos = Period::where('anio_ingreso', $anioIngresoSeleccionado)->get();
         
         // Filtrar por rol del usuario
         $user = Auth::user();
@@ -57,7 +62,8 @@ class IncidentController extends Controller
         }
 
         if ($request->filled('trimestre')) {
-            $periodosFiltrados = Period::where('numero', $request->trimestre);
+            $periodosFiltrados = Period::where('numero', $request->trimestre)
+                ->where('anio_ingreso', $anioIngresoSeleccionado);
             if ($request->filled('anio')) {
                 $periodosFiltrados = $periodosFiltrados->whereYear('fecha_inicio', $request->anio);
             }
@@ -78,8 +84,13 @@ class IncidentController extends Controller
             });
         }
 
+        if ($request->filled('magister_id')) {
+            $query->where('magister_id', $request->magister_id);
+        }
+
         $incidencias = $query->latest()->paginate(10)->withQueryString();
         $salas = Room::orderBy('name')->get();
+        $magisters = Magister::orderBy('orden')->get();
 
         // Calcular estadísticas sobre TODAS las incidencias del usuario (sin filtros)
         $queryEstadisticas = Incident::query();
@@ -95,16 +106,16 @@ class IncidentController extends Controller
             'no_resueltas' => $queryEstadisticas->where('estado', 'no_resuelta')->count(),
         ];
 
-        // Obtener años SOLO de la cohorte actual (para filtro normal)
-        $anios = Period::where('cohorte', $cohorteActual)
+        // Obtener años SOLO del año de ingreso seleccionado (para filtro normal)
+        $anios = Period::where('anio_ingreso', $anioIngresoSeleccionado)
             ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
             ->sort()
             ->values();
             
-        // Obtener años históricos (años de incidencias que NO están en la cohorte actual)
-        $aniosPeriodos = Period::where('cohorte', $cohorteActual)
+        // Obtener años históricos (años de incidencias que NO están en el año de ingreso seleccionado)
+        $aniosPeriodos = Period::where('anio_ingreso', $anioIngresoSeleccionado)
             ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
@@ -116,14 +127,15 @@ class IncidentController extends Controller
             ->orderBy('anio', 'desc')
             ->pluck('anio');
 
-        return view('incidencias.index', compact('incidencias', 'salas', 'anios', 'aniosHistoricos', 'periodos', 'estadisticas'));
+        return view('incidencias.index', compact('incidencias', 'salas', 'magisters', 'anios', 'aniosHistoricos', 'periodos', 'estadisticas', 'aniosIngreso', 'anioIngresoSeleccionado'));
     }
 
     public function create()
     {
         $salas = Room::orderBy('name')->get();
+        $magisters = Magister::orderBy('orden')->get();
 
-        return view('incidencias.create', compact('salas'));
+        return view('incidencias.create', compact('salas', 'magisters'));
     }
 
     public function store(Request $request)
@@ -132,6 +144,7 @@ class IncidentController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
             'room_id' => 'required|exists:rooms,id',
+            'magister_id' => 'nullable|exists:magisters,id',
             'imagen' => 'nullable|image|max:2048',
             'nro_ticket' => 'nullable|string|max:255|unique:incidents,nro_ticket',
         ]);
@@ -223,13 +236,18 @@ class IncidentController extends Controller
 
     public function estadisticas(Request $request)
     {
-        // 🔹 Obtener cohorte actual automáticamente
-        $cohorteActual = Period::select('cohorte')
+        // Obtener años de ingreso disponibles
+        $aniosIngreso = Period::select('anio_ingreso')
             ->distinct()
-            ->orderBy('cohorte', 'desc')
-            ->first()->cohorte ?? null;
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
+
+        // Año de ingreso seleccionado (por defecto el más reciente)
+        $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
         
-        $periodos = Period::orderBy('fecha_inicio')
+        $periodos = Period::where('anio_ingreso', $anioIngresoSeleccionado)
+            ->orderBy('fecha_inicio')
             ->orderBy('numero')
             ->get();
         $aniosUnicos = $periodos->map(fn ($p) => Carbon::parse($p->fecha_inicio)->year)->unique()->sort()->values();
@@ -245,8 +263,17 @@ class IncidentController extends Controller
             $query->where('estado', $request->estado);
         }
         if ($request->filled('trimestre')) {
-            $trimestre = $request->trimestre;
-            $query->whereRaw('QUARTER(created_at) = ?', [$trimestre]);
+            $periodosFiltrados = Period::where('numero', $request->trimestre)
+                ->where('anio_ingreso', $anioIngresoSeleccionado);
+            if ($request->filled('anio')) {
+                $periodosFiltrados = $periodosFiltrados->whereYear('fecha_inicio', $request->anio);
+            }
+            $rangos = $periodosFiltrados->get()->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
+            $query->where(function ($q) use ($rangos) {
+                foreach ($rangos as [$inicio, $fin]) {
+                    $q->orWhereBetween('created_at', [$inicio, $fin]);
+                }
+            });
         }
         if ($request->filled('historico')) {
             // Para modo histórico, excluir incidencias dentro de períodos definidos
@@ -255,6 +282,10 @@ class IncidentController extends Controller
                     ->from('periods')
                     ->whereRaw('incidents.created_at BETWEEN periods.fecha_inicio AND periods.fecha_fin');
             });
+        }
+
+        if ($request->filled('magister_id')) {
+            $query->where('magister_id', $request->magister_id);
         }
 
         $incidenciasFiltradas = $query->with('room')->get();
@@ -274,16 +305,16 @@ class IncidentController extends Controller
         $porTrimestre = $porTrimestre->sortKeys();
         $rangos = $periodos->map(fn ($p) => [$p->fecha_inicio, $p->fecha_fin]);
         
-        // Obtener años SOLO de la cohorte actual (para filtro normal)
-        $anios = Period::where('cohorte', $cohorteActual)
+        // Obtener años SOLO del año de ingreso seleccionado (para filtro normal)
+        $anios = Period::where('anio_ingreso', $anioIngresoSeleccionado)
             ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
             ->sort()
             ->values();
             
-        // Obtener años históricos (años de incidencias que NO están en la cohorte actual)
-        $aniosPeriodos = Period::where('cohorte', $cohorteActual)
+        // Obtener años históricos (años de incidencias que NO están en el año de ingreso seleccionado)
+        $aniosPeriodos = Period::where('anio_ingreso', $anioIngresoSeleccionado)
             ->get()
             ->map(fn($p) => $p->fecha_inicio->year)
             ->unique()
@@ -296,21 +327,33 @@ class IncidentController extends Controller
             ->pluck('anio');
 
         $salas = Room::orderBy('name')->get();
+        $magisters = Magister::orderBy('orden')->get();
 
         return view('incidencias.estadisticas', compact(
             'porSala',
             'porEstado',
             'porTrimestre',
             'salas',
+            'magisters',
             'periodos',
             'anios',
             'aniosHistoricos',
-            'incidenciasFiltradas'
+            'incidenciasFiltradas',
+            'aniosIngreso',
+            'anioIngresoSeleccionado'
         ));
     }
 
     public function exportarPDF(Request $request)
     {
+        // Obtener año de ingreso seleccionado (por defecto el más reciente)
+        $aniosIngreso = Period::select('anio_ingreso')
+            ->distinct()
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
+        
+        $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
 
         $query = Incident::with('room', 'user');
 
@@ -329,7 +372,8 @@ class IncidentController extends Controller
         }
 
         if ($request->filled('trimestre')) {
-            $periodos = Period::where('numero', $request->trimestre);
+            $periodos = Period::where('numero', $request->trimestre)
+                ->where('anio_ingreso', $anioIngresoSeleccionado);
             if ($request->filled('anio')) {
                 $periodos = $periodos->whereYear('fecha_inicio', $request->anio);
             }

@@ -130,12 +130,10 @@ function updateSummary() {
     
     // Obtener texto de las opciones seleccionadas
     const magisterSelect = document.querySelector('select[name="magister_id"]');
-    const mallaSelect = document.querySelector('select[name="malla_curricular_id"]');
     const anioSelect = document.querySelector('select[name="anio"]');
     const numeroSelect = document.querySelector('select[name="numero"]');
     
     const programaTexto = magisterSelect?.selectedOptions[0]?.text || 'No seleccionado';
-    const mallaTexto = mallaSelect?.selectedOptions[0]?.text || 'Sin malla específica';
     const anioTexto = anioSelect?.selectedOptions[0]?.text || 'No seleccionado';
     const trimestreTexto = numeroSelect?.selectedOptions[0]?.text || 'No seleccionado';
     
@@ -144,7 +142,6 @@ function updateSummary() {
     const resumenSct = document.getElementById('resumen-sct');
     const resumenRequisitos = document.getElementById('resumen-requisitos');
     const resumenPrograma = document.getElementById('resumen-programa');
-    const resumenMalla = document.getElementById('resumen-malla');
     const resumenAnio = document.getElementById('resumen-anio');
     const resumenTrimestre = document.getElementById('resumen-trimestre');
     
@@ -176,7 +173,6 @@ function updateSummary() {
     }
     
     if (resumenPrograma) resumenPrograma.textContent = programaTexto;
-    if (resumenMalla) resumenMalla.textContent = mallaTexto;
     if (resumenAnio) resumenAnio.textContent = anioTexto;
     if (resumenTrimestre) resumenTrimestre.textContent = trimestreTexto;
 }
@@ -334,44 +330,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const numeroSelect = document.getElementById('numero');
     const periodIdInput = document.getElementById('period_id');
     const magisterSelect = document.getElementById('magister_id');
-    const mallaSelect = document.getElementById('malla_curricular_id');
 
     let numeroPreseleccionado = null;
-
-    // Filtrar mallas según el magíster seleccionado
-    function actualizarMallasDisponibles() {
-        if (!magisterSelect || !mallaSelect) return;
-        
-        const magisterSeleccionado = magisterSelect.value;
-        const options = mallaSelect.querySelectorAll('option');
-        
-        options.forEach(option => {
-            if (option.value === '') {
-                option.style.display = 'block'; // Siempre mostrar "Sin malla específica"
-                return;
-            }
-            
-            const mallaMagisterId = option.getAttribute('data-magister');
-            if (mallaMagisterId === magisterSeleccionado) {
-                option.style.display = 'block';
-            } else {
-                option.style.display = 'none';
-                if (option.selected) {
-                    mallaSelect.value = ''; // Limpiar selección si no corresponde
-                }
-            }
-        });
-    }
 
     // Event listener para magíster
     if (magisterSelect) {
         magisterSelect.addEventListener('change', () => {
-            actualizarMallasDisponibles();
             updateSummary();
         });
-        
-        // Inicializar al cargar
-        actualizarMallasDisponibles();
     }
 
     function actualizarTrimestresDisponibles() {

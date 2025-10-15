@@ -11,27 +11,27 @@ class PublicCourseController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener cohortes disponibles
-        $cohortes = Period::select('cohorte')
+        // Obtener años de ingreso disponibles
+        $aniosIngreso = Period::select('anio_ingreso')
             ->distinct()
-            ->whereNotNull('cohorte')
-            ->orderBy('cohorte', 'desc')
-            ->pluck('cohorte');
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
 
-        // Cohorte seleccionada (por defecto la más reciente)
-        $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
+        // Año de ingreso seleccionado (por defecto el más reciente)
+        $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
 
-        // Cargar magísteres con cursos filtrados por cohorte
-        $magisters = Magister::with(['courses' => function($query) use ($cohorteSeleccionada) {
-                if ($cohorteSeleccionada) {
-                    $query->whereHas('period', function($q) use ($cohorteSeleccionada) {
-                        $q->where('cohorte', $cohorteSeleccionada);
+        // Cargar magísteres con cursos filtrados por año de ingreso
+        $magisters = Magister::with(['courses' => function($query) use ($anioIngresoSeleccionado) {
+                if ($anioIngresoSeleccionado) {
+                    $query->whereHas('period', function($q) use ($anioIngresoSeleccionado) {
+                        $q->where('anio_ingreso', $anioIngresoSeleccionado);
                     });
                 }
-            }, 'courses.period', 'courses.mallaCurricular'])
+            }, 'courses.period'])
             ->orderBy('orden')
             ->get();
 
-        return view('public.courses', compact('magisters', 'cohortes', 'cohorteSeleccionada'));
+        return view('public.courses', compact('magisters', 'aniosIngreso', 'anioIngresoSeleccionado'));
     }
 }

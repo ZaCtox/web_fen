@@ -51,13 +51,13 @@ Route::name('api.')->group(function () {
 
     Route::get('/periodo-por-fecha', function (Request $request) {
         $fecha = Carbon::parse($request->query('fecha'));
-        $cohorte = $request->query('cohorte');
+        $anioIngreso = $request->query('anio_ingreso');
         
         $query = Period::where('fecha_inicio', '<=', $fecha)
             ->where('fecha_fin', '>=', $fecha);
         
-        if ($cohorte) {
-            $query->where('cohorte', $cohorte);
+        if ($anioIngreso) {
+            $query->where('anio_ingreso', $anioIngreso);
         }
         
         $periodo = $query->first();
@@ -68,11 +68,11 @@ Route::name('api.')->group(function () {
     Route::get('/periodo-fecha-inicio', function (Request $request) {
         $anio = $request->query('anio');
         $trimestre = $request->query('trimestre');
-        $cohorte = $request->query('cohorte');
+        $anioIngreso = $request->query('anio_ingreso');
 
         $periodo = Period::where('anio', $anio)
             ->where('numero', $trimestre)
-            ->when($cohorte, fn($q) => $q->where('cohorte', $cohorte))
+            ->when($anioIngreso, fn($q) => $q->where('anio_ingreso', $anioIngreso))
             ->first();
 
         return response()->json([

@@ -11,10 +11,9 @@
     ]" />
 
     <div class="p-6 max-w-7xl mx-auto" x-data="{
-            cohorte: '{{ $cohorteSeleccionada }}',
+            anioIngreso: '{{ $anioIngresoSeleccionado }}',
             magister: '{{ request('magister') }}',
             sala: '{{ request('room_id') }}',
-            dia: '{{ request('dia') }}',
             anio: '{{ request('anio') }}',
             trimestre: '{{ request('trimestre') }}',
 
@@ -27,15 +26,14 @@
 
             actualizarURL() {
                 const params = new URLSearchParams(window.location.search);
-                this.cohorte ? params.set('cohorte', this.cohorte) : params.delete('cohorte');
+                this.anioIngreso ? params.set('anio_ingreso', this.anioIngreso) : params.delete('anio_ingreso');
                 this.magister ? params.set('magister', this.magister) : params.delete('magister');
                 this.sala ? params.set('room_id', this.sala) : params.delete('room_id');
-                this.dia ? params.set('dia', this.dia) : params.delete('dia');
                 this.anio ? params.set('anio', this.anio) : params.delete('anio');
                 this.trimestre ? params.set('trimestre', this.trimestre) : params.delete('trimestre');
                 
-                // Si cambió la ciclo, limpiar filtros de año y trimestre
-                if (this.cohorte !== '{{ $cohorteSeleccionada }}') {
+                // Si cambió el año de ingreso, limpiar filtros de año y trimestre
+                if (this.anioIngreso !== '{{ $anioIngresoSeleccionado }}') {
                     params.delete('anio');
                     params.delete('trimestre');
                 }
@@ -46,7 +44,6 @@
             limpiarFiltros() {
                 this.magister = '';
                 this.sala = '';
-                this.dia = '';
                 this.anio = '';
                 this.trimestre = '';
                 this.actualizarURL();
@@ -65,10 +62,9 @@
 
             {{-- Lado derecho: Botón Exportar --}}
             <form method="GET" action="{{ route('clases.exportar') }}">
-                <input type="hidden" name="cohorte" :value="cohorte">
+                <input type="hidden" name="anio_ingreso" :value="anioIngreso">
                 <input type="hidden" name="magister" :value="magister">
                 <input type="hidden" name="room_id" :value="sala">
-                <input type="hidden" name="dia" :value="dia">
                 <input type="hidden" name="anio" :value="anio">
                 <input type="hidden" name="trimestre" :value="trimestre">
                 <button type="submit"
@@ -79,42 +75,14 @@
             </form>
         </div>
 
-        {{-- Filtro de ciclo --}}
-        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-            <div class="flex items-center gap-3">
-                <label for="cohorte-select" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] whitespace-nowrap">
-                    Ciclo Académico:
-                </label>
-                <select x-model="cohorte" 
-                        @change="actualizarURL()"
-                        id="cohorte-select"
-                        class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
-                    @foreach($cohortes as $cohorte)
-                        <option value="{{ $cohorte }}">
-                            {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            {{-- Indicador de ciclo --}}
-            @if($cohorteSeleccionada != $cohortes->first())
-                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-                    <p class="text-sm text-yellow-800 dark:text-yellow-200">
-                        ⚠️ Mostrando clases de un Periodo Pasado
-                    </p>
-                </div>
-            @endif
-        </div>
-
-        {{-- Filtros adicionales --}}
-        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 items-end">
-                {{-- Magíster --}}
+        {{-- Filtro de programa y ciclo --}}
+        <div class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 shadow-md p-4">
+            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4">
+                {{-- Programa --}}
                 <div>
-                    <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Programa:</label>
+                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">Programa:</label>
                     <select x-model="magister" @change="actualizarURL"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
+                        class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition font-medium text-base">
                         <option value="">Todos</option>
                         @foreach ($magisters as $m)
                             <option value="{{ $m->nombre }}">{{ $m->nombre }}</option>
@@ -122,6 +90,34 @@
                     </select>
                 </div>
 
+                {{-- Año de Ingreso --}}
+                <div>
+                    <label class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">Año de Ingreso:</label>
+                    <select x-model="anioIngreso" 
+                            @change="actualizarURL()"
+                            class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                        @foreach($aniosIngreso as $anio)
+                            <option value="{{ $anio }}">
+                                {{ $anio }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            {{-- Indicador de año de ingreso --}}
+            @if($anioIngresoSeleccionado != $aniosIngreso->first())
+                <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                        ⚠️ Mostrando clases de un Año de Ingreso Anterior
+                    </p>
+                </div>
+            @endif
+        </div>
+
+        {{-- Filtros adicionales --}}
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 items-end">
                 {{-- Sala --}}
                 <div>
                     <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Sala:</label>
@@ -131,17 +127,6 @@
                         @foreach ($rooms as $r)
                             <option value="{{ $r->name }}">{{ $r->name }}</option>
                         @endforeach
-                    </select>
-                </div>
-
-                {{-- Día --}}
-                <div>
-                    <label class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">Día:</label>
-                    <select x-model="dia" @change="actualizarURL"
-                        class="w-full rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-3 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] transition-colors hci-input-focus text-sm">
-                        <option value="">Todos</option>
-                        <option value="Viernes">Viernes</option>
-                        <option value="Sábado">Sábado</option>
                     </select>
                 </div>
 

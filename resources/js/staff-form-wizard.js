@@ -4,6 +4,7 @@
 
 let currentStep = 1;
 const totalSteps = 5;
+let currentFile = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Solo buscar errores de validación de Laravel, no errores de UI
@@ -310,7 +311,7 @@ function handleFotoFile(file) {
         document.getElementById('foto-preview-info').classList.remove('hidden');
         document.getElementById('foto-drop-text').textContent = 'Foto seleccionada';
         
-        showToast('Foto seleccionada correctamente', 'success');
+        currentFile = file;
     }
 }
 
@@ -328,4 +329,27 @@ window.clearFoto = function() {
     document.getElementById('foto-preview').src = defaultAvatar;
     
     currentFile = null;
+}
+
+// Función para actualizar el preview del avatar cuando se selecciona un color
+window.updateAvatarPreviewColor = function(color) {
+    const nameInput = document.querySelector('input[name="nombre"]');
+    if (!nameInput) return;
+    
+    const name = nameInput.value || 'Staff';
+    const words = name.trim().split(' ');
+    let initials = '';
+    
+    if (words.length >= 2) {
+        initials = words[0].charAt(0).toUpperCase() + words[1].charAt(0).toUpperCase();
+    } else {
+        initials = name.substring(0, 2).toUpperCase();
+    }
+    
+    const avatarUrl = `https://ui-avatars.com/api/?name=${initials}&background=${color}&color=ffffff&size=300&bold=true&font-size=0.4`;
+    const preview = document.getElementById('foto-preview');
+    
+    if (preview && !currentFile) {
+        preview.src = avatarUrl + '&_t=' + Date.now();
+    }
 }

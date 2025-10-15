@@ -11,32 +11,44 @@ class PeriodController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener cohortes disponibles
-        $cohortes = Period::select('cohorte')
+        // Obtener magisters disponibles
+        $magisters = \App\Models\Magister::orderBy('orden')->get();
+        
+        // Magister seleccionado (por defecto el primero)
+        $magisterSeleccionado = $request->get('magister_id', $magisters->first()?->id);
+
+        // Obtener años de ingreso disponibles para el magister seleccionado
+        $aniosIngreso = Period::select('anio_ingreso')
             ->distinct()
-            ->whereNotNull('cohorte')
-            ->orderBy('cohorte', 'desc')
-            ->pluck('cohorte');
+            ->where('magister_id', $magisterSeleccionado)
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
 
-        // cohorte seleccionada (por defecto la más reciente)
-        $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
+        // Año de ingreso seleccionado (por defecto el más reciente)
+        $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
 
-        // Filtrar períodos por cohorte
+        // Filtrar períodos por magister y año de ingreso
         $query = Period::query();
-        if ($cohorteSeleccionada) {
-            $query->where('cohorte', $cohorteSeleccionada);
+        if ($magisterSeleccionado) {
+            $query->where('magister_id', $magisterSeleccionado);
+        }
+        if ($anioIngresoSeleccionado) {
+            $query->where('anio_ingreso', $anioIngresoSeleccionado);
         }
 
         $periods = $query->orderByDesc('anio')->orderBy('numero')->get();
         
-        return view('periods.index', compact('periods', 'cohortes', 'cohorteSeleccionada'));
+        return view('periods.index', compact('periods', 'magisters', 'magisterSeleccionado', 'aniosIngreso', 'anioIngresoSeleccionado'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $anioIngreso = $request->get('anio_ingreso', null);
+        $magisterId = $request->get('magister_id', null);
+        $magisters = \App\Models\Magister::orderBy('orden')->get();
         
-
-        return view('periods.create');
+        return view('periods.create', compact('anioIngreso', 'magisterId', 'magisters'));
     }
 
     public function store(PeriodRequest $request)
@@ -51,9 +63,12 @@ class PeriodController extends Controller
 
     public function edit(Period $period)
     {
+        $magisters = \App\Models\Magister::orderBy('orden')->get();
         
-
-        return view('periods.edit', ['period' => $period]);
+        return view('periods.edit', [
+            'period' => $period,
+            'magisters' => $magisters
+        ]);
     }
 
     public function update(PeriodRequest $request, Period $period)
@@ -77,22 +92,12 @@ class PeriodController extends Controller
 
     public function actualizarAlProximoAnio()
     {
+        // Obtener todos los magisters
+        $magisters = \App\Models\Magister::orderBy('orden')->get();
         
-
-        $periodos = Period::all();
-
-        if ($periodos->isEmpty()) {
-            return back()->with('error', 'No hay períodos académicos para actualizar.');
-        }
-
-        foreach ($periodos as $periodo) {
-            $periodo->update([
-                'fecha_inicio' => Carbon::parse($periodo->fecha_inicio)->addYear(),
-                'fecha_fin' => Carbon::parse($periodo->fecha_fin)->addYear(),
-            ]);
-        }
-
-        return back()->with('success', 'Fechas de todos los períodos se han actualizado al próximo año.');
+        // Redirigir al formulario de crear período con el año de ingreso pre-seleccionado
+        return redirect()->route('periods.create', ['anio_ingreso' => now()->year + 1])
+            ->with('success', "Selecciona el programa y crea el primer período para el año de ingreso " . (now()->year + 1) . ".");
     }
 
     public function trimestreSiguiente(Request $request)

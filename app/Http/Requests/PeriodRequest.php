@@ -22,8 +22,9 @@ class PeriodRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'magister_id' => 'required|exists:magisters,id',
             'anio' => 'required|integer|min:1|max:2',
-            'cohorte' => 'required|string|in:2024-2025,2025-2026,2026-2027',
+            'anio_ingreso' => 'required|integer|min:2020|max:2030',
             'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after:fecha_inicio',
@@ -39,13 +40,16 @@ class PeriodRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'magister_id.required' => 'El programa (magister) es requerido.',
+            'magister_id.exists' => 'El programa seleccionado no es válido.',
             'anio.required' => 'El año académico es requerido.',
             'anio.integer' => 'El año académico debe ser un número entero.',
             'anio.min' => 'El año académico debe ser al menos 1.',
             'anio.max' => 'El año académico no puede ser mayor a 2.',
-            'cohorte.required' => 'La cohorte académica es requerida.',
-            'cohorte.string' => 'La cohorte académica debe ser texto.',
-            'cohorte.in' => 'La cohorte académica debe ser válida.',
+            'anio_ingreso.required' => 'El año de ingreso es requerido.',
+            'anio_ingreso.integer' => 'El año de ingreso debe ser un número entero.',
+            'anio_ingreso.min' => 'El año de ingreso debe ser al menos 2020.',
+            'anio_ingreso.max' => 'El año de ingreso no puede ser mayor a 2030.',
             'numero.required' => 'El trimestre es requerido.',
             'numero.integer' => 'El trimestre debe ser un número entero.',
             'numero.between' => 'El trimestre debe estar entre 1 y 6.',

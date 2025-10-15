@@ -127,6 +127,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::put('/profile/foto', [ProfileController::class, 'updateFoto'])->name('profile.update-foto');
     Route::delete('/profile/foto', [ProfileController::class, 'deleteFoto'])->name('profile.delete-foto');
+    Route::put('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
+    Route::get('/profile/avatar', [ProfileController::class, 'getAvatar'])->name('profile.get-avatar');
     
     // 🔔 Notificaciones (tabla personalizada notifications)
     Route::patch('/notifications/{notification}/read', function($notificationId) {
@@ -159,15 +161,6 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('magisters', MagisterController::class)
         ->except(['show'])
         ->middleware('role:administrador,director_programa,asistente_programa');
-
-    // 📚 Mallas Curriculares
-    Route::resource('mallas-curriculares', App\Http\Controllers\MallaCurricularController::class)
-        ->parameters(['mallas-curriculares' => 'mallaCurricular'])
-        ->middleware('role:administrador,director_programa,director_administrativo');
-    
-    Route::post('/mallas-curriculares/{mallaCurricular}/toggle-estado', [App\Http\Controllers\MallaCurricularController::class, 'toggleEstado'])
-        ->middleware('role:administrador,director_programa,director_administrativo')
-        ->name('mallas-curriculares.toggle-estado');
 
     // 👨‍🏫 Equipo
     Route::resource('equipo', StaffController::class)

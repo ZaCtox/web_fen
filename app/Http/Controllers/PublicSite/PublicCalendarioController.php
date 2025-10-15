@@ -11,26 +11,31 @@ class PublicCalendarioController extends Controller
 {
     public function index(Request $request)
     {
-        // Obtener cohortes disponibles
-        $cohortes = Period::select('cohorte')
+        // Obtener años de ingreso disponibles
+        $aniosIngreso = Period::select('anio_ingreso')
             ->distinct()
-            ->whereNotNull('cohorte')
-            ->orderBy('cohorte', 'desc')
-            ->pluck('cohorte');
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
 
-        // Cohorte seleccionada (por defecto la más reciente)
-        $cohorteSeleccionada = $request->get('cohorte', $cohortes->first());
+        // Año de ingreso seleccionado (por defecto el más reciente)
+        $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
 
-        $periodoActual = Period::orderByDesc('anio')->orderByDesc('numero')->first();
-        $fechaInicio = optional($periodoActual)->fecha_inicio?->format('Y-m-d') ?? now()->format('Y-m-d');
+        // Obtener el primer período del año de ingreso seleccionado
+        $primerPeriodo = Period::where('anio_ingreso', $anioIngresoSeleccionado)
+            ->orderBy('anio')
+            ->orderBy('numero')
+            ->first();
         
-        // Obtener períodos de la cohorte seleccionada
-        $periodos = Period::where('cohorte', $cohorteSeleccionada)
+        $fechaInicio = optional($primerPeriodo)->fecha_inicio?->format('Y-m-d') ?? now()->format('Y-m-d');
+        
+        // Obtener períodos del año de ingreso seleccionado
+        $periodos = Period::where('anio_ingreso', $anioIngresoSeleccionado)
             ->orderBy('anio')
             ->orderBy('numero')
             ->get();
 
-        return view('public.calendario', compact('fechaInicio', 'cohortes', 'cohorteSeleccionada', 'periodos'));
+        return view('public.calendario', compact('fechaInicio', 'aniosIngreso', 'anioIngresoSeleccionado', 'periodos'));
     }
 }
 

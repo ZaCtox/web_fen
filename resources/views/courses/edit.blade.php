@@ -7,8 +7,8 @@
     {{-- Breadcrumb --}}
     <x-hci-breadcrumb :items="[
         ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Cursos', 'url' => route('courses.index')],
-        ['label' => 'Editar curso', 'url' => '#']
+        ['label' => 'Módulos', 'url' => route('courses.index')],
+        ['label' => 'Editar módulo', 'url' => '#']
     ]" />
 
     <div class="p-6 max-w-full mx-auto">

@@ -49,6 +49,7 @@ function actualizarTrimestres() {
 // Función para actualizar el resumen
 function updateSummary() {
     const anioSelect = document.getElementById('anio-select');
+    const anioIngresoSelect = document.getElementById('anio-ingreso-select');
     const numeroSelect = document.getElementById('numero-select');
     const fechaInicio = document.querySelector('input[name="fecha_inicio"]');
     const fechaFin = document.querySelector('input[name="fecha_fin"]');
@@ -57,6 +58,12 @@ function updateSummary() {
     const summaryAnio = document.getElementById('summary-anio');
     if (summaryAnio && anioSelect) {
         summaryAnio.textContent = anioSelect.value ? `Año ${anioSelect.value}` : '--';
+    }
+    
+    // Año de ingreso
+    const summaryAnioIngreso = document.getElementById('summary-anio-ingreso');
+    if (summaryAnioIngreso && anioIngresoSelect) {
+        summaryAnioIngreso.textContent = anioIngresoSelect.value ? anioIngresoSelect.value : '--';
     }
     
     // Trimestre
@@ -272,8 +279,23 @@ function clearFieldError(field) {
 window.submitForm = function() {
     // Validar el paso actual antes de enviar
     if (validateCurrentStep()) {
+        const form = document.querySelector('.hci-form');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Deshabilitar el botón y mostrar estado de procesando
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Guardando...
+            `;
+        }
+        
         // Enviar el formulario
-        document.querySelector('.hci-form').submit();
+        form.submit();
     }
 }
 

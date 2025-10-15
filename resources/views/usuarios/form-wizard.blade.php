@@ -54,13 +54,15 @@
                         name="rol" 
                         type="select" 
                         label="Rol del Usuario" 
-                        :required="true"
-                        help="Selecciona el rol que tendrá el usuario en el sistema"
+                        :required="!$editing"
+                        help="{{ $editing ? 'El rol actual del usuario' : 'Selecciona el rol que tendrá el usuario en el sistema' }}"
                     >
                         <option value="">-- Selecciona un rol --</option>
                         <option value="administrador" {{ old('rol', $usuario->rol ?? '') == 'administrador' ? 'selected' : '' }}>Administrador</option>
+                        <option value="director_administrativo" {{ old('rol', $usuario->rol ?? '') == 'director_administrativo' ? 'selected' : '' }}>Director Administrativo</option>
                         <option value="director_programa" {{ old('rol', $usuario->rol ?? '') == 'director_programa' ? 'selected' : '' }}>Director de Programa</option>
                         <option value="asistente_programa" {{ old('rol', $usuario->rol ?? '') == 'asistente_programa' ? 'selected' : '' }}>Asistente de Programa</option>
+                        <option value="docente" {{ old('rol', $usuario->rol ?? '') == 'docente' ? 'selected' : '' }}>Docente</option>
                         <option value="técnico" {{ old('rol', $usuario->rol ?? '') == 'técnico' ? 'selected' : '' }}>Técnico</option>
                         <option value="auxiliar" {{ old('rol', $usuario->rol ?? '') == 'auxiliar' ? 'selected' : '' }}>Auxiliar</option>
                         <option value="asistente_postgrado" {{ old('rol', $usuario->rol ?? '') == 'asistente_postgrado' ? 'selected' : '' }}>Asistente de Postgrado</option>
@@ -77,11 +79,11 @@
                     :editing="$editing ?? false"
                     style="display: none;"
                 >
-                    <div style="max-width: 500px;">
+                    <div class="w-full">
                         {{-- Preview de la foto --}}
                         <div class="flex justify-center mb-4">
                             <img id="foto-preview" 
-                                 src="{{ isset($usuario) && $usuario->foto ? $usuario->foto : 'https://ui-avatars.com/api/?name=Foto&background=84b6f4&color=000000&size=300&bold=true&font-size=0.4' }}" 
+                                 src="{{ isset($usuario) ? ($usuario->foto ?? $usuario->generateAvatarUrl()) : 'https://ui-avatars.com/api/?name=Foto&background=84b6f4&color=000000&size=300&bold=true&font-size=0.4' }}" 
                                  alt="Preview" 
                                  class="w-32 h-32 rounded-full object-cover border-4 border-[#84b6f4] shadow-lg">
                         </div>
@@ -139,9 +141,49 @@
                             <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
 
-                        <p class="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                            💡 <strong>Nota:</strong> Si no subes una foto, se generará automáticamente un avatar con las iniciales del nombre.
-                        </p>
+                        {{-- Selector de Color del Avatar --}}
+                        <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                                Color del Avatar (opcional)
+                            </label>
+                            
+                            <div class="flex flex-wrap gap-3 mb-2">
+                                @php
+                                    $colores = [
+                                        '005187' => 'Azul oscuro',
+                                        '4d82bc' => 'Azul medio',
+                                        '84b6f4' => 'Azul claro',
+                                        '00acc1' => 'Cyan',
+                                        '66bb6a' => 'Verde',
+                                        'ffa726' => 'Naranja',
+                                        'ef5350' => 'Rojo',
+                                        'ffca28' => 'Amarillo',
+                                        'ab47bc' => 'Morado',
+                                        '78909c' => 'Gris',
+                                    ];
+                                    $colorActual = old('avatar_color', $usuario->avatar_color ?? null) ?? '4d82bc';
+                                @endphp
+                                
+                                @foreach($colores as $codigo => $nombre)
+                                    <label class="relative cursor-pointer group">
+                                        <input type="radio" 
+                                               name="avatar_color" 
+                                               value="{{ $codigo }}"
+                                               class="sr-only peer"
+                                               {{ $colorActual === $codigo ? 'checked' : '' }}
+                                               onchange="updateAvatarPreviewColor('{{ $codigo }}')">
+                                        <div class="w-10 h-10 rounded-lg border-4 transition-all duration-200 peer-checked:border-gray-900 dark:peer-checked:border-white peer-checked:scale-110 border-gray-300 dark:border-gray-600 hover:scale-105 shadow-md" 
+                                             style="background-color: #{{ $codigo }};"
+                                             title="{{ $nombre }}">
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                            
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                Si no subes una foto, se generará un avatar con las iniciales usando este color.
+                            </p>
+                        </div>
                     </div>
                 </x-hci-form-section>
 

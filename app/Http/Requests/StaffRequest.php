@@ -28,6 +28,8 @@ class StaffRequest extends FormRequest
                 Rule::unique('staff', 'email')->ignore($staffId),
             ],
             'foto' => ['nullable', 'image', 'mimes:jpeg,jpg,png,webp', 'max:2048'],
+            'avatar_style' => ['nullable', 'in:icon,initials'],
+            'avatar_color' => ['nullable', 'string', 'max:7'],
         ];
     }
 

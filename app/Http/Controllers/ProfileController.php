@@ -138,4 +138,50 @@ class ProfileController extends Controller
         return Redirect::route('profile.index')
             ->with('foto-updated', 'Foto de perfil eliminada correctamente.');
     }
+
+    /**
+     * Actualizar configuración de avatar
+     */
+    public function updateAvatar(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'avatar_color' => 'nullable|string|max:7',
+        ]);
+
+        $user = Auth::user();
+        
+        // Limpiar el # del color si viene
+        $color = $request->avatar_color;
+        if ($color && str_starts_with($color, '#')) {
+            $color = substr($color, 1);
+        }
+        
+        $user->avatar_color = $color ?: null;
+        $user->save();
+
+        return Redirect::route('profile.index')
+            ->with('avatar-updated', 'Color de avatar actualizado correctamente.');
+    }
+
+    /**
+     * Obtener el avatar del usuario autenticado
+     */
+    public function getAvatar(Request $request)
+    {
+        $user = Auth::user();
+        
+        if ($user->foto) {
+            return redirect($user->foto);
+        }
+        
+        // Si se pasa un color en la URL, usarlo temporalmente para el preview
+        if ($request->has('color')) {
+            $tempColor = $request->input('color');
+            $user->avatar_color = $tempColor;
+        }
+        
+        // Generar el avatar
+        $avatarUrl = $user->generateAvatarUrl();
+        return redirect($avatarUrl);
+    }
 }

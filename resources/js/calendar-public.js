@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const calendarEl = document.getElementById('calendar');
   const magisterFilter = document.getElementById('magister-filter');
   const roomFilter = document.getElementById('room-filter');
-  const cohorteFilter = document.getElementById('cohorte-filter');
+  const anioIngresoFilter = document.getElementById('anio-ingreso-filter');
   const anioFilter = document.getElementById('anio-filter');
   const trimestreFilter = document.getElementById('trimestre-filter');
 
@@ -61,17 +61,17 @@ document.addEventListener('DOMContentLoaded', function () {
     editable: false,
     selectable: false,
     eventClick: onEventClick,
-    events: {
-      url: calendarEl.dataset.url,
-      extraParams: () => ({
-        magister_id: magisterFilter.value || '',
-        room_id: roomFilter.value || '',
-        cohorte: cohorteFilter.value || '',
-        anio: anioFilter.value || '',
-        trimestre: trimestreFilter.value || ''
-      }),
-      failure: (err) => console.error('Error cargando eventos:', err)
-    },
+        events: {
+          url: calendarEl.dataset.url,
+          extraParams: () => ({
+            magister_id: magisterFilter.value || '',
+            room_id: roomFilter.value || '',
+            anio_ingreso: anioIngresoFilter.value || '',
+            anio: anioFilter.value || '',
+            trimestre: trimestreFilter.value || ''
+          }),
+          failure: (err) => console.error('Error cargando eventos:', err)
+        },
     eventDidMount: setTooltip,
 
     viewDidMount: function (info) {
@@ -127,60 +127,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // Filtros → recargar
-  [magisterFilter, roomFilter, cohorteFilter].forEach(select => {
+  [magisterFilter, roomFilter, anioIngresoFilter].forEach(select => {
     select.addEventListener('change', () => {
-      // Validar cohorte antes de recargar
-      if (select === cohorteFilter) {
-        validarCohorte(select.value);
-      }
       calendar.refetchEvents();
     });
   });
-
-  // Función para validar cohorte seleccionada
-  function validarCohorte(cohorteSeleccionada) {
-    const statusElement = document.getElementById('cohorte-status');
-    const selectElement = document.getElementById('cohorte-filter');
-    
-    if (!cohorteSeleccionada) {
-      // cohorte no seleccionada - error
-      selectElement.classList.add('border-red-500');
-      selectElement.classList.remove('border-[#84b6f4]');
-      
-      statusElement.innerHTML = `
-        <span class="inline-flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 rounded text-xs">
-          ❌ Selecciona
-        </span>
-      `;
-      return false;
-    }
-    
-    // Validación exitosa
-    selectElement.classList.remove('border-red-500');
-    selectElement.classList.add('border-[#84b6f4]');
-    
-    // Determinar si es cohorte actual o pasada
-    const cohortes = Array.from(document.querySelectorAll('#cohorte-filter option')).map(opt => opt.value);
-    const esActual = cohorteSeleccionada === cohortes[0];
-    
-    if (esActual) {
-      statusElement.innerHTML = `
-      `;
-    } else {
-      statusElement.innerHTML = `
-        <span class="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded text-xs">
-          ⚠️ Pasado
-        </span>
-      `;
-    }
-    
-    return true;
-  }
-
-  // Validar cohorte al cargar la página
-  if (cohorteFilter) {
-    validarCohorte(cohorteFilter.value);
-  }
 
   // Filtro de año → actualizar trimestres disponibles
   if (anioFilter) {
@@ -204,11 +155,11 @@ document.addEventListener('DOMContentLoaded', function () {
       calendar.refetchEvents();
     });
   }
-  // Botón Limpiar Filtros (no limpia cohorte)
+  // Botón Limpiar Filtros (no limpia año de ingreso)
   const clearBtn = document.getElementById('clear-filters');
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
-      // Limpiar solo magister, sala, año y trimestre (NO cohorte)
+      // Limpiar solo magister, sala, año y trimestre (NO año de ingreso)
       magisterFilter.value = '';
       roomFilter.value = '';
       anioFilter.value = '';
@@ -273,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
   async function navegarAlTrimestre(anio, trimestre) {
     try {
       // Obtener la fecha de inicio del trimestre
-      const res = await fetch(`/api/periodo-fecha-inicio?anio=${anio}&trimestre=${trimestre}&cohorte=${cohorteFilter.value}`);
+      const res = await fetch(`/api/periodo-fecha-inicio?anio=${anio}&trimestre=${trimestre}&anio_ingreso=${anioIngresoFilter.value}`);
       const data = await res.json();
       
       if (data.fecha_inicio) {
@@ -296,12 +247,12 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // Si no hay filtros específicos, buscar por fecha y cohorte
+    // Si no hay filtros específicos, buscar por fecha y año de ingreso
     const fechaISO = fecha.toISOString().split('T')[0];
-    const cohorte = cohorteFilter ? cohorteFilter.value : '';
+    const anioIngreso = anioIngresoFilter ? anioIngresoFilter.value : '';
     
     try {
-      const url = `/api/periodo-por-fecha?fecha=${fechaISO}${cohorte ? `&cohorte=${cohorte}` : ''}`;
+      const url = `/api/periodo-por-fecha?fecha=${fechaISO}${anioIngreso ? `&anio_ingreso=${anioIngreso}` : ''}`;
       const res = await fetch(url);
       const data = await res.json();
       const romanos = { 1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI' };

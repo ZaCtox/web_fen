@@ -1,30 +1,30 @@
-{{-- Cursos de Postgrado FEN --}}
-@section('title', 'Cursos')
+{{-- Módulos de Postgrado FEN --}}
+@section('title', 'Módulos')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">
-            Cursos por Programa
+            Módulos por Programa
         </h2>
     </x-slot>
 
     <div class="py-6 max-w-7xl mx-auto px-4" x-data="{
         expandedMagisters: {}
     }">
-        {{-- Selector de Cohorte --}}
+        {{-- Selector de Año de Ingreso --}}
         <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 <div class="flex-1">
                     <form method="GET" action="{{ route('public.courses.index') }}">
-                        <label for="cohorte" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
-                            Ciclo Académico:
+                        <label for="anio_ingreso" class="block text-sm font-medium text-[#005187] dark:text-[#84b6f4] mb-2">
+                            Año de Ingreso:
                         </label>
-                        <select name="cohorte" 
-                                id="cohorte"
+                        <select name="anio_ingreso" 
+                                id="anio_ingreso"
                                 onchange="this.form.submit()"
                                 class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
-                            @foreach($cohortes as $cohorte)
-                                <option value="{{ $cohorte }}" {{ $cohorteSeleccionada == $cohorte ? 'selected' : '' }}>
-                                    {{ $cohorte }} {{ $cohorte == $cohortes->first() ? '(Actual)' : '' }}
+                            @foreach($aniosIngreso as $anio)
+                                <option value="{{ $anio }}" {{ $anioIngresoSeleccionado == $anio ? 'selected' : '' }}>
+                                    {{ $anio }}
                                 </option>
                             @endforeach
                         </select>
@@ -32,11 +32,11 @@
                 </div>
             </div>
 
-            {{-- Indicador de cohorte --}}
-            @if($cohorteSeleccionada != $cohortes->first())
+            {{-- Indicador de año de ingreso --}}
+            @if($anioIngresoSeleccionado != $aniosIngreso->first())
                 <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
                     <p class="text-sm text-yellow-800 dark:text-yellow-300">
-                        ⚠️ Estás visualizando cursos de la cohorte <strong>{{ $cohorteSeleccionada }}</strong> (período pasado).
+                        ⚠️ Estás visualizando módulos del año de ingreso <strong>{{ $anioIngresoSeleccionado }}</strong> (período pasado).
                     </p>
                 </div>
             @endif
@@ -114,9 +114,9 @@
                                         <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
-                                                    <th class="px-4 py-2 text-left">Curso</th>
+                                                    <th class="px-4 py-2 text-left">Módulo</th>
                                                     <th class="px-4 py-2 text-center w-20">SCT</th>
-                                                    <th class="px-4 py-2 text-center w-40">Rrequisitos</th>
+                                                    <th class="px-4 py-2 text-center w-40">Requisitos</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -178,7 +178,7 @@
                             </div>
                         @empty
                             <p class="text-sm text-[#4d82bc] dark:text-gray-400 mt-2">
-                                Este magíster aún no tiene cursos registrados.
+                                Este magíster aún no tiene módulos registrados.
                             </p>
                         @endforelse
                     </div>

@@ -11,6 +11,7 @@ class Incident extends Model
         'titulo',
         'descripcion',
         'room_id',
+        'magister_id',
         'estado',
         'imagen',
         'comentario',
@@ -35,6 +36,11 @@ class Incident extends Model
     public function room()
     {
         return $this->belongsTo(Room::class);
+    }
+
+    public function magister()
+    {
+        return $this->belongsTo(Magister::class);
     }
 
     public function resolvedBy()

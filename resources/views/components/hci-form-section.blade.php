@@ -92,6 +92,11 @@
                 <div class="w-full {{ $contentClass }}">
                     {{ $slot }}
                 </div>
+            @elseif($sectionId === 'foto')
+                {{-- Excepción: foto de perfil con ancho completo --}}
+                <div class="w-full {{ $contentClass }}">
+                    {{ $slot }}
+                </div>
             @elseif($sectionId === 'programa')
                 {{-- Excepción: programa de cursos con grid personalizado --}}
                 <div class="grid {{ $contentClass }}">
@@ -121,11 +126,11 @@
             </button>
 
             @if($isLast)
-                <button type="button" class="hci-button hci-button-primary hci-button-success" onclick="submitForm()">
+                <button type="button" id="submitBtn" class="hci-button hci-button-primary hci-button-success" onclick="submitForm()">
                     <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-6 h-6">
                 </button>
             @else
-                <button type="button" class="hci-button hci-button-primary" onclick="nextStep()">
+                <button type="button" id="nextBtn" class="hci-button hci-button-primary" onclick="nextStep()">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"

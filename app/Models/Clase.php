@@ -48,8 +48,6 @@ class Clase extends Model
             ->when($f['magister'] ?? null, fn($q, $v) =>
                 $q->whereHas('course.magister', fn($q2) => $q2->where('nombre', $v)))
             ->when($f['sala'] ?? null, fn($q, $v) =>
-                $q->whereHas('room', fn($q2) => $q2->where('name', $v)))
-            ->when($f['dia'] ?? null, fn($q, $v) =>
-                $q->whereHas('sesiones', fn($q2) => $q2->where('dia', $v)));
+                $q->whereHas('room', fn($q2) => $q2->where('name', $v)));
     }
 }

@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\Models\Magister;
-use App\Models\MallaCurricular;
 use App\Models\Period;
 use App\Models\Course;
 use App\Models\Room;
@@ -105,81 +104,75 @@ class MagisterSaludSeeder extends Seeder
         $this->command->info('   ✅ Programa creado');
 
         // ==========================================
-        // 3. MALLAS CURRICULARES
-        // ==========================================
-        $this->command->info('📚 Creando Mallas Curriculares...');
-        
-        $mallas = [
-            MallaCurricular::firstOrCreate(
-                ['codigo' => 'GSS-2024-V1'],
-                [
-                    'magister_id' => $magister->id,
-                    'nombre' => 'Malla Curricular 2024-2025',
-                    'año_inicio' => 2024,
-                    'año_fin' => 2025,
-                    'activa' => false,
-                    'descripcion' => 'Malla curricular para la cohorte 2024-2025 del Magíster en Gestión de Sistemas de Salud.'
-                ]
-            ),
-            MallaCurricular::firstOrCreate(
-                ['codigo' => 'GSS-2025-V2'],
-                [
-                    'magister_id' => $magister->id,
-                    'nombre' => 'Malla Curricular 2025-2026',
-                    'año_inicio' => 2025,
-                    'año_fin' => 2026,
-                    'activa' => true,
-                    'descripcion' => 'Malla curricular vigente con énfasis en transformación digital, gestión hospitalaria moderna y políticas públicas en salud.'
-                ]
-            ),
-        ];
-
-        $this->command->info('   ✅ 2 mallas curriculares creadas');
-
-        // ==========================================
-        // 4. PERÍODOS
+        // 3. PERÍODOS
         // ==========================================
         $this->command->info('📅 Creando Períodos Académicos...');
         
         $periodos = [];
-        $cohorte = '2025-2026';
         
-        // Definir fechas específicas para cada período
-        $fechasPeriodos = [
-            // Año 1
-            [1, 1, '2025-10-03', '2025-12-12'], // Trimestre I: 3 oct - 12 dic
-            [1, 2, '2026-01-06', '2026-03-14'], // Trimestre II: 6 ene - 14 mar (estimado)
-            [1, 3, '2026-04-07', '2026-06-13'], // Trimestre III: 7 abr - 13 jun (estimado)
-            
-            // Año 2
-            [2, 1, '2026-07-15', '2026-09-26'], // Trimestre I: 15 jul - 26 sep (estimado)
-            [2, 2, '2026-10-05', '2026-12-11'], // Trimestre II: 5 oct - 11 dic (estimado)
-            [2, 3, '2027-01-05', '2027-03-12'], // Trimestre III: 5 ene - 12 mar (estimado)
+        // INGRESO 2024 - 6 períodos
+        $this->command->info('   📅 Creando períodos para Ingreso 2024...');
+        
+        $periodos2024 = [
+            // Año 1 - Ingreso 2024
+            ['anio' => 1, 'numero' => 1, 'anio_ingreso' => 2024, 'fecha_inicio' => '2024-03-11', 'fecha_fin' => '2024-05-31'],
+            ['anio' => 1, 'numero' => 2, 'anio_ingreso' => 2024, 'fecha_inicio' => '2024-06-10', 'fecha_fin' => '2024-09-06'],
+            ['anio' => 1, 'numero' => 3, 'anio_ingreso' => 2024, 'fecha_inicio' => '2024-09-23', 'fecha_fin' => '2024-12-13'],
+            // Año 2 - Ingreso 2024
+            ['anio' => 2, 'numero' => 4, 'anio_ingreso' => 2024, 'fecha_inicio' => '2025-03-10', 'fecha_fin' => '2025-05-30'],
+            ['anio' => 2, 'numero' => 5, 'anio_ingreso' => 2024, 'fecha_inicio' => '2025-06-09', 'fecha_fin' => '2025-09-05'],
+            ['anio' => 2, 'numero' => 6, 'anio_ingreso' => 2024, 'fecha_inicio' => '2025-09-22', 'fecha_fin' => '2025-12-12'],
         ];
         
-        foreach ($fechasPeriodos as [$anio, $trimestre, $inicio, $fin]) {
+        foreach ($periodos2024 as $p) {
             $periodo = Period::firstOrCreate(
                 [
-                    'cohorte' => $cohorte,
-                    'anio' => $anio,
-                    'numero' => $trimestre,
+                    'magister_id' => $magister->id,
+                    'anio_ingreso' => $p['anio_ingreso'],
+                    'anio' => $p['anio'],
+                    'numero' => $p['numero'],
                 ],
                 [
-                    'fecha_inicio' => Carbon::parse($inicio),
-                    'fecha_fin' => Carbon::parse($fin),
+                    'fecha_inicio' => Carbon::parse($p['fecha_inicio']),
+                    'fecha_fin' => Carbon::parse($p['fecha_fin']),
                 ]
             );
             $periodos[] = $periodo;
         }
-
-        $this->command->info('   ✅ ' . count($periodos) . ' períodos creados para cohorte ' . $cohorte);
-
-        // ==========================================
-        // 5. CURSOS
-        // ==========================================
-        $this->command->info('📖 Creando Cursos de la Malla 2025-2026...');
         
-        $mallaActual = $mallas[1]; // Malla 2025-2026
+        $this->command->info('   ✅ 6 períodos creados para Ingreso 2024');
+        
+        // INGRESO 2025 - Solo primer trimestre del año 1
+        $this->command->info('   📅 Creando períodos para Ingreso 2025 (solo Trimestre 1)...');
+        
+        $periodos2025 = [
+            // Año 1 - Ingreso 2025 (solo trimestre 1)
+            ['anio' => 1, 'numero' => 1, 'anio_ingreso' => 2025, 'fecha_inicio' => '2025-09-29', 'fecha_fin' => '2025-12-19'],
+        ];
+        
+        foreach ($periodos2025 as $p) {
+            $periodo = Period::firstOrCreate(
+                [
+                    'magister_id' => $magister->id,
+                    'anio_ingreso' => $p['anio_ingreso'],
+                    'anio' => $p['anio'],
+                    'numero' => $p['numero'],
+                ],
+                [
+                    'fecha_inicio' => Carbon::parse($p['fecha_inicio']),
+                    'fecha_fin' => Carbon::parse($p['fecha_fin']),
+                ]
+            );
+            $periodos[] = $periodo;
+        }
+        
+        $this->command->info('   ✅ 1 período creado para Ingreso 2025 (solo Trimestre 1)');
+        $this->command->info('   ✅ Total: ' . count($periodos) . ' períodos académicos creados (6 para 2024 + 1 para 2025)');
+
+        // ==========================================
+        // 4. CURSOS
+        // ==========================================
+        $this->command->info('📖 Creando Cursos del Magíster en Gestión de Sistemas de Salud...');
         
         // Definir todos los cursos por año y trimestre con sus SCT y requisitos
         $cursosPorPeriodo = [
@@ -201,30 +194,33 @@ class MagisterSaludSeeder extends Seeder
             [1, 3, 'Dirección Estratégica de Sistemas de Salud', 3, ['administracion']], // Requiere: Administración (curso 4)
             [1, 3, 'Sistema de Salud y Gestión en Red', 3, ['entorno_economico']], // Requiere: Entorno Económico (curso 6)
             
-            // Año 2 - Trimestre I
-            [2, 1, 'Dirección Estratégica de Recursos Humanos', 3, ['administracion']], // Requiere: Administración
-            [2, 1, 'Gestión de Operaciones, Logística y Calidad', 3, ['administracion']], // Requiere: Administración
-            [2, 1, 'Epidemiología y Salud Pública para la Gestión', 3, ['entorno_economico']], // Requiere: Entorno Económico
-            [2, 1, 'Trabajo de Grado I', 2, ['taller2']], // Requiere: Taller 2
+            // Año 2 - Trimestre IV (trimestre 1 del año 2)
+            [2, 4, 'Dirección Estratégica de Recursos Humanos', 3, ['administracion']], // Requiere: Administración
+            [2, 4, 'Gestión de Operaciones, Logística y Calidad', 3, ['administracion']], // Requiere: Administración
+            [2, 4, 'Epidemiología y Salud Pública para la Gestión', 3, ['entorno_economico']], // Requiere: Entorno Económico
+            [2, 4, 'Trabajo de Grado I', 2, ['taller2']], // Requiere: Taller 2
             
-            // Año 2 - Trimestre II
-            [2, 2, 'Calidad y Acreditación en Salud', 3, ['direccion_sistemas_salud']], // Requiere: Dirección Estratégica de Sistemas de Salud
-            [2, 2, 'Formulación y Evaluación de Proyectos en Salud', 3, ['economia']], // Requiere: Economía
-            [2, 2, 'Control Estratégico de Instituciones de Salud', 3, ['direccion_sistemas_salud']], // Requiere: Dirección Estratégica de Sistemas de Salud
-            [2, 2, 'Trabajo de Grado II', 3, ['trabajo_grado_1']], // Requiere: Trabajo de Grado I
+            // Año 2 - Trimestre V (trimestre 2 del año 2)
+            [2, 5, 'Calidad y Acreditación en Salud', 3, ['direccion_sistemas_salud']], // Requiere: Dirección Estratégica de Sistemas de Salud
+            [2, 5, 'Formulación y Evaluación de Proyectos en Salud', 3, ['economia']], // Requiere: Economía
+            [2, 5, 'Control Estratégico de Instituciones de Salud', 3, ['direccion_sistemas_salud']], // Requiere: Dirección Estratégica de Sistemas de Salud
+            [2, 5, 'Trabajo de Grado II', 3, ['trabajo_grado_1']], // Requiere: Trabajo de Grado I
             
-            // Año 2 - Trimestre III
-            [2, 3, 'Electivo I', 3, ['ingreso']], // Requiere: Ingreso
-            [2, 3, 'Electivo II', 3, ['ingreso']], // Requiere: Ingreso
-            [2, 3, 'Taller 3: Desarrollo y Crecimiento Personal', 3, ['desarrollo_competencias']], // Requiere: Desarrollo de Competencias Relacionales
-            [2, 3, 'Trabajo de Grado III', 3, ['trabajo_grado_2']], // Requiere: Trabajo de Grado II
+            // Año 2 - Trimestre VI (trimestre 3 del año 2)
+            [2, 6, 'Electivo I', 3, ['ingreso']], // Requiere: Ingreso
+            [2, 6, 'Electivo II', 3, ['ingreso']], // Requiere: Ingreso
+            [2, 6, 'Taller 3: Desarrollo y Crecimiento Personal', 3, ['desarrollo_competencias']], // Requiere: Desarrollo de Competencias Relacionales
+            [2, 6, 'Trabajo de Grado III', 3, ['trabajo_grado_2']], // Requiere: Trabajo de Grado II
         ];
 
         $cursosCreados = [];
         $mapaCursos = []; // Para mapear nombres de cursos a IDs
+        $anioIngreso = 2024; // Año de ingreso para TODOS los cursos (2024)
         
+        // Crear TODOS los cursos para año de ingreso 2024
         foreach ($cursosPorPeriodo as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
-            $periodo = Period::where('cohorte', '2025-2026')
+            $periodo = Period::where('magister_id', $magister->id)
+                ->where('anio_ingreso', $anioIngreso)
                 ->where('anio', $anio)
                 ->where('numero', $trimestre)
                 ->first();
@@ -237,7 +233,6 @@ class MagisterSaludSeeder extends Seeder
                         'period_id' => $periodo->id,
                     ],
                     [
-                        'malla_curricular_id' => $mallaActual->id,
                         'sct' => $sct,
                         'requisitos' => null, // Se actualizará después
                     ]
@@ -249,7 +244,46 @@ class MagisterSaludSeeder extends Seeder
             }
         }
         
-        // Ahora actualizar los requisitos con los IDs reales
+        // Ahora crear SOLO los primeros 4 cursos para año de ingreso 2025 (solo trimestre 1)
+        $this->command->info('   📖 Creando primeros 4 cursos para Ingreso 2025 (solo Trimestre 1)...');
+        
+        $primeros4Cursos = [
+            [1, 1, 'Taller 1 – Habilidades de Aprendizaje: Presentación Efectiva, Trabajo en Equipo, Metodología de Casos', 1, ['ingreso']],
+            [1, 1, 'Economía', 3, ['ingreso']],
+            [1, 1, 'Contabilidad', 3, ['ingreso']],
+            [1, 1, 'Administración', 3, ['ingreso']],
+        ];
+        
+        $cursos2025 = [];
+        $anioIngreso2025 = 2025;
+        
+        foreach ($primeros4Cursos as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
+            $periodo = Period::where('magister_id', $magister->id)
+                ->where('anio_ingreso', $anioIngreso2025)
+                ->where('anio', $anio)
+                ->where('numero', $trimestre)
+                ->first();
+            
+            if ($periodo) {
+                $curso = Course::firstOrCreate(
+                    [
+                        'nombre' => $nombreCurso,
+                        'magister_id' => $magister->id,
+                        'period_id' => $periodo->id,
+                    ],
+                    [
+                        'sct' => $sct,
+                        'requisitos' => null, // Se actualizará después
+                    ]
+                );
+                
+                $cursos2025[] = $curso;
+            }
+        }
+        
+        $this->command->info('   ✅ 4 cursos creados para Ingreso 2025 (Trimestre 1)');
+        
+        // Ahora actualizar los requisitos con los IDs reales para cursos 2024
         foreach ($cursosCreados as $curso) {
             $requisitosOriginales = null;
             
@@ -320,11 +354,37 @@ class MagisterSaludSeeder extends Seeder
                 $curso->update(['requisitos' => implode(',', $requisitosIDs)]);
             }
         }
+        
+        // Ahora actualizar los requisitos para los cursos de 2025
+        foreach ($cursos2025 as $curso) {
+            $requisitosOriginales = null;
+            
+            // Buscar los requisitos originales del array
+            foreach ($primeros4Cursos as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
+                if ($curso->nombre === $nombreCurso && is_array($requisitos)) {
+                    $requisitosOriginales = $requisitos;
+                    break;
+                }
+            }
+            
+            if ($requisitosOriginales) {
+                $requisitosIDs = [];
+                foreach ($requisitosOriginales as $req) {
+                    if ($req === 'ingreso') {
+                        $requisitosIDs[] = 'ingreso';
+                    }
+                    // Los 4 primeros cursos solo tienen requisito de ingreso
+                }
+                
+                $curso->update(['requisitos' => implode(',', $requisitosIDs)]);
+            }
+        }
 
-        $this->command->info('   ✅ ' . count($cursosCreados) . ' cursos creados (todos los trimestres del Año 1 y 2)');
+        $this->command->info('   ✅ ' . count($cursosCreados) . ' cursos creados para Ingreso 2024 (todos los trimestres del Año 1 y 2)');
+        $this->command->info('   ✅ Total: ' . (count($cursosCreados) + count($cursos2025)) . ' cursos creados en total');
 
         // ==========================================
-        // 6. SALAS
+        // 5. SALAS
         // ==========================================
         $this->command->info('🏛️ Creando Salas...');
         
@@ -407,21 +467,26 @@ class MagisterSaludSeeder extends Seeder
         $this->command->info('   ✅ 4 salas creadas (FEN 1, FEN 2, FEN 3, 119)');
 
         // ==========================================
-        // 7. CLASES Y SESIONES
+        // 6. CLASES Y SESIONES
         // ==========================================
-        $this->command->info('🗓️ Creando Clases y Sesiones...');
+        $this->command->info('🗓️ Creando Clases y Sesiones para Ingreso 2025...');
         
         $zoomUrl = 'https://reuna.zoom.us/j/82980173545';
         $zoomInfo = 'ID: 829 8017 3545 | Código: 712683';
 
-        // Obtener el período del 1er trimestre y los cursos correspondientes
-        $periodo1erTrimestre = Period::where('cohorte', '2025-2026')->where('anio', 1)->where('numero', 1)->first();
+        // Obtener el período del 1er trimestre y los cursos correspondientes (año de ingreso 2025)
+        $anioIngreso = 2025; // Año de ingreso para las clases
+        $periodo1erTrimestre = Period::where('magister_id', $magister->id)
+            ->where('anio_ingreso', $anioIngreso)
+            ->where('anio', 1)
+            ->where('numero', 1)
+            ->first();
         
-        // Buscar los cursos del 1er trimestre por nombre
-        $cursoTaller1 = collect($cursosCreados)->first(fn($c) => str_contains($c->nombre, 'Taller 1'));
-        $cursoEconomia = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Economía');
-        $cursoContabilidad = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Contabilidad');
-        $cursoAdministracion = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Administración');
+        // Buscar los cursos del 1er trimestre por nombre (de los cursos 2025)
+        $cursoTaller1 = collect($cursos2025)->first(fn($c) => str_contains($c->nombre, 'Taller 1'));
+        $cursoEconomia = collect($cursos2025)->first(fn($c) => $c->nombre === 'Economía');
+        $cursoContabilidad = collect($cursos2025)->first(fn($c) => $c->nombre === 'Contabilidad');
+        $cursoAdministracion = collect($cursos2025)->first(fn($c) => $c->nombre === 'Administración');
         
         $modulos = [
             [
@@ -523,7 +588,7 @@ class MagisterSaludSeeder extends Seeder
         $this->command->info('   ✅ ' . $totalClases . ' clases y ' . $totalSesiones . ' sesiones creadas');
 
         // ==========================================
-        // 8. STAFF
+        // 7. STAFF
         // ==========================================
         $this->command->info('👔 Creando Staff...');
         
@@ -649,7 +714,7 @@ class MagisterSaludSeeder extends Seeder
         $this->command->info('   ✅ ' . count($staffData) . ' miembros del equipo creados (incluyendo 2 de personal de apoyo)');
 
         // ==========================================
-        // 9. NOVEDADES
+        // 8. NOVEDADES
         // ==========================================
         $this->command->info('📰 Creando Novedades...');
         

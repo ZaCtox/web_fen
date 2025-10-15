@@ -18,9 +18,31 @@ class MagisterController extends Controller
     public function index(Request $request)
     {
         try {
+            // Obtener años de ingreso disponibles
+            $aniosIngreso = DB::table('periods')
+                ->select('anio_ingreso')
+                ->distinct()
+                ->orderBy('anio_ingreso', 'desc')
+                ->pluck('anio_ingreso');
+            
+            // Año de ingreso seleccionado (default: el más reciente)
+            $anioIngresoSeleccionado = $request->get('anio_ingreso', $aniosIngreso->first());
+            
             $query = Magister::query()
-                ->withCount('courses')
-                ->withSum('courses', 'sct');
+                ->withCount([
+                    'courses' => function($q) use ($anioIngresoSeleccionado) {
+                        $q->whereHas('period', function($periodQuery) use ($anioIngresoSeleccionado) {
+                            $periodQuery->where('anio_ingreso', $anioIngresoSeleccionado);
+                        });
+                    }
+                ])
+                ->withSum([
+                    'courses' => function($q) use ($anioIngresoSeleccionado) {
+                        $q->whereHas('period', function($periodQuery) use ($anioIngresoSeleccionado) {
+                            $periodQuery->where('anio_ingreso', $anioIngresoSeleccionado);
+                        });
+                    }
+                ], 'sct');
 
             // Búsqueda por nombre
             if ($request->filled('q')) {
@@ -35,7 +57,7 @@ class MagisterController extends Controller
                 ->paginate(10)
                 ->withQueryString();
 
-            return view('magisters.index', compact('magisters'));
+            return view('magisters.index', compact('magisters', 'aniosIngreso', 'anioIngresoSeleccionado'));
 
         } catch (Exception $e) {
             Log::error('Error al cargar listado de magísteres: ' . $e->getMessage());
