@@ -411,4 +411,91 @@ class CourseController extends Controller
             ], 500);
         }
     }
+
+    public function publicMagistersWithCourses(Request $request)
+    {
+        try {
+            $anioIngreso = $request->get('anio_ingreso');
+            
+            // Cargar magísteres con cursos filtrados por año de ingreso
+            $magisters = Magister::with(['courses' => function($query) use ($anioIngreso) {
+                    if ($anioIngreso) {
+                        $query->whereHas('period', function($q) use ($anioIngreso) {
+                            $q->where('anio_ingreso', $anioIngreso);
+                        });
+                    }
+                }, 'courses.period'])
+                ->orderBy('orden')
+                ->get();
+
+            // Formatear la respuesta para Android
+            $formattedMagisters = $magisters->map(function ($magister) {
+                return [
+                    'id' => $magister->id,
+                    'nombre' => $magister->nombre,
+                    'color' => $magister->color,
+                    'encargado' => $magister->encargado,
+                    'telefono' => $magister->telefono,
+                    'correo' => $magister->correo,
+                    'courses' => $magister->courses->map(function ($course) {
+                        return [
+                            'id' => $course->id,
+                            'nombre' => $course->nombre,
+                            'magister_id' => $course->magister_id,
+                            'period_id' => $course->period_id,
+                            'sct' => $course->sct ?? 0,
+                            'requisitos' => $course->requisitos,
+                            'period' => $course->period ? [
+                                'id' => $course->period->id,
+                                'anio' => $course->period->anio,
+                                'numero' => $course->period->numero,
+                                'anio_ingreso' => $course->period->anio_ingreso,
+                            ] : null,
+                        ];
+                    }),
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedMagisters,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error en publicMagistersWithCourses: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener magísteres: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener años de ingreso disponibles
+     */
+    public function publicAvailableYears()
+    {
+        try {
+            $anios = Period::select('anio_ingreso')
+                ->distinct()
+                ->whereNotNull('anio_ingreso')
+                ->orderBy('anio_ingreso', 'desc')
+                ->pluck('anio_ingreso')
+                ->values();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $anios,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error en publicAvailableYears: '.$e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener años: '.$e->getMessage(),
+            ], 500);
+        }
+    }
 }

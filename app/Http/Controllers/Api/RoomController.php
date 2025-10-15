@@ -16,8 +16,8 @@ class RoomController extends Controller
         $capacidad = $request->input('capacidad');
 
         $rooms = Room::query()
-            ->when($ubicacion, fn ($q) => $q->where('location', 'like', "%$ubicacion%"))
-            ->when($capacidad, fn ($q) => $q->where('capacity', '>=', $capacidad))
+            ->when($ubicacion, fn($q) => $q->where('location', 'like', "%$ubicacion%"))
+            ->when($capacidad, fn($q) => $q->where('capacity', '>=', $capacidad))
             ->orderBy('name')
             ->paginate(10);
 
@@ -29,7 +29,7 @@ class RoomController extends Controller
     {
         $room = Room::with(['clases.course.magister', 'clases.period'])->find($id);
 
-        if (! $room) {
+        if (!$room) {
             return response()->json(['message' => 'Sala no encontrada'], 404);
         }
 
@@ -58,7 +58,7 @@ class RoomController extends Controller
     {
         $room = Room::find($id);
 
-        if (! $room) {
+        if (!$room) {
             return response()->json(['message' => 'Sala no encontrada'], 404);
         }
 
@@ -81,7 +81,7 @@ class RoomController extends Controller
     {
         $room = Room::find($id);
 
-        if (! $room) {
+        if (!$room) {
             return response()->json(['message' => 'Sala no encontrada'], 404);
         }
 
@@ -107,16 +107,16 @@ class RoomController extends Controller
         ];
     }
 
-     // ===== MÉTODO PÚBLICO (SIN AUTENTICACIÓN) =====
+    // ===== MÉTODO PÚBLICO (SIN AUTENTICACIÓN) =====
     public function publicIndex(Request $request)
     {
         try {
-            // Obtener salas para vista pública (sin columna 'equipment' que no existe)
+            // Obtener salas para vista pública
             $rooms = Room::select(
-                'id', 
-                'name', 
-                'capacity', 
-                'location', 
+                'id',
+                'name',
+                'capacity',
+                'location',
                 'calefaccion',
                 'energia_electrica',
                 'existe_aseo',
@@ -128,25 +128,35 @@ class RoomController extends Controller
                 'control_remoto_camara',
                 'televisor_funcional'
             )
-            ->orderBy('name')
-            ->get();
+                ->orderBy('name')
+                ->get();
 
             // Formatear datos para respuesta pública
             $formattedRooms = $rooms->map(function ($room) {
                 // Crear lista de equipamiento disponible
                 $equipmentList = [];
-                
-                if ($room->calefaccion) $equipmentList[] = 'Calefacción';
-                if ($room->energia_electrica) $equipmentList[] = 'Energía Eléctrica';
-                if ($room->existe_aseo) $equipmentList[] = 'Aseo';
-                if ($room->plumones) $equipmentList[] = 'Plumones';
-                if ($room->borrador) $equipmentList[] = 'Borrador';
-                if ($room->pizarra_limpia) $equipmentList[] = 'Pizarra';
-                if ($room->computador_funcional) $equipmentList[] = 'Computador';
-                if ($room->cables_computador) $equipmentList[] = 'Cables';
-                if ($room->control_remoto_camara) $equipmentList[] = 'Control Remoto';
-                if ($room->televisor_funcional) $equipmentList[] = 'Televisor';
-                
+
+                if ($room->calefaccion)
+                    $equipmentList[] = 'Calefacción';
+                if ($room->energia_electrica)
+                    $equipmentList[] = 'Energía Eléctrica';
+                if ($room->existe_aseo)
+                    $equipmentList[] = 'Aseo';
+                if ($room->plumones)
+                    $equipmentList[] = 'Plumones';
+                if ($room->borrador)
+                    $equipmentList[] = 'Borrador';
+                if ($room->pizarra_limpia)
+                    $equipmentList[] = 'Pizarra';
+                if ($room->computador_funcional)
+                    $equipmentList[] = 'Computador';
+                if ($room->cables_computador)
+                    $equipmentList[] = 'Cables';
+                if ($room->control_remoto_camara)
+                    $equipmentList[] = 'Control Remoto';
+                if ($room->televisor_funcional)
+                    $equipmentList[] = 'Televisor';
+
                 $equipmentString = !empty($equipmentList) ? implode(', ', $equipmentList) : 'Equipamiento básico';
 
                 return [
@@ -155,7 +165,7 @@ class RoomController extends Controller
                     'capacity' => $room->capacity,
                     'location' => $room->location,
                     'equipment' => $equipmentString,
-                    'status' => 'available', // Valor por defecto
+                    'status' => 'Disponible', // ← CAMBIAR: 'available' → 'Disponible'
                     'public_view' => true
                 ];
             });
@@ -176,5 +186,4 @@ class RoomController extends Controller
             ], 500);
         }
     }
-
 }

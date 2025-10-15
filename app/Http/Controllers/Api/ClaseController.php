@@ -227,4 +227,167 @@ class ClaseController extends Controller
             'memory_peak' => memory_get_peak_usage(true)
         ]);
     }
+
+    /**
+     * ===== MÉTODO PÚBLICO (SIN AUTENTICACIÓN) =====
+     * Obtener clases públicas para la app móvil
+     */
+    public function publicIndex(Request $request)
+    {
+        try {
+            $filters = $request->only('magister', 'sala', 'dia', 'period_id');
+
+            $query = Clase::with(['course.magister', 'period', 'room']);
+
+            // Aplicar filtros
+            if (!empty($filters['magister'])) {
+                $query->whereHas('course.magister', function ($q) use ($filters) {
+                    $q->where('nombre', 'like', '%' . $filters['magister'] . '%');
+                });
+            }
+
+            if (!empty($filters['sala'])) {
+                $query->whereHas('room', function ($q) use ($filters) {
+                    $q->where('name', 'like', '%' . $filters['sala'] . '%');
+                });
+            }
+
+            if (!empty($filters['dia'])) {
+                $query->where('dia', $filters['dia']);
+            }
+
+            if (!empty($filters['period_id'])) {
+                $query->where('period_id', $filters['period_id']);
+            }
+
+            $perPage = $request->get('per_page', 20);
+            $clases = $query->orderBy('period_id')
+                ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
+                ->orderBy('hora_inicio')
+                ->paginate($perPage);
+
+            // Formatear datos para respuesta pública
+            $formattedClases = $clases->map(function ($clase) {
+                return [
+                    'id' => $clase->id,
+                    'course_id' => $clase->course_id,
+                    'tipo' => $clase->tipo,
+                    'period_id' => $clase->period_id,
+                    'room_id' => $clase->room_id,
+                    'modality' => $clase->modality,
+                    'dia' => $clase->dia,
+                    'hora_inicio' => $clase->hora_inicio,
+                    'hora_fin' => $clase->hora_fin,
+                    'url_zoom' => $clase->url_zoom,
+                    'encargado' => $clase->encargado,
+                    'course' => $clase->course ? [
+                        'id' => $clase->course->id,
+                        'nombre' => $clase->course->nombre,
+                        'magister' => $clase->course->magister ? [
+                            'id' => $clase->course->magister->id,
+                            'nombre' => $clase->course->magister->nombre,
+                            'color' => $clase->course->magister->color,
+                        ] : null,
+                    ] : null,
+                    'period' => $clase->period ? [
+                        'id' => $clase->period->id,
+                        'numero' => $clase->period->numero,
+                        'anio' => $clase->period->anio,
+                    ] : null,
+                    'room' => $clase->room ? [
+                        'id' => $clase->room->id,
+                        'name' => $clase->room->name,
+                        'location' => $clase->room->location ?? null,
+                        'capacity' => $clase->room->capacity ?? null,
+                    ] : null,
+                    'public_view' => true,
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedClases,
+                'pagination' => [
+                    'current_page' => $clases->currentPage(),
+                    'per_page' => $clases->perPage(),
+                    'total' => $clases->total(),
+                    'last_page' => $clases->lastPage(),
+                    'has_more_pages' => $clases->hasMorePages(),
+                    'from' => $clases->firstItem(),
+                    'to' => $clases->lastItem(),
+                ],
+                'message' => 'Clases obtenidas exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al cargar las clases: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener una clase pública específica
+     */
+    public function publicShow($id)
+    {
+        try {
+            $clase = Clase::with(['course.magister', 'period', 'room'])->find($id);
+
+            if (!$clase) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Clase no encontrada'
+                ], 404);
+            }
+
+            $formattedClase = [
+                'id' => $clase->id,
+                'course_id' => $clase->course_id,
+                'tipo' => $clase->tipo,
+                'period_id' => $clase->period_id,
+                'room_id' => $clase->room_id,
+                'modality' => $clase->modality,
+                'dia' => $clase->dia,
+                'hora_inicio' => $clase->hora_inicio,
+                'hora_fin' => $clase->hora_fin,
+                'url_zoom' => $clase->url_zoom,
+                'encargado' => $clase->encargado,
+                'course' => $clase->course ? [
+                    'id' => $clase->course->id,
+                    'nombre' => $clase->course->nombre,
+                    'magister' => $clase->course->magister ? [
+                        'id' => $clase->course->magister->id,
+                        'nombre' => $clase->course->magister->nombre,
+                        'color' => $clase->course->magister->color,
+                    ] : null,
+                ] : null,
+                'period' => $clase->period ? [
+                    'id' => $clase->period->id,
+                    'numero' => $clase->period->numero,
+                    'anio' => $clase->period->anio,
+                ] : null,
+                'room' => $clase->room ? [
+                    'id' => $clase->room->id,
+                    'name' => $clase->room->name,
+                    'location' => $clase->room->location ?? null,
+                    'capacity' => $clase->room->capacity ?? null,
+                ] : null,
+                'public_view' => true,
+            ];
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedClase,
+                'message' => 'Clase obtenida exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al cargar la clase: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

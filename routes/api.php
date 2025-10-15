@@ -56,14 +56,14 @@ Route::name('api.')->group(function () {
     Route::get('/periodo-por-fecha', function (Request $request) {
         $fecha = Carbon::parse($request->query('fecha'));
         $anioIngreso = $request->query('anio_ingreso');
-        
+
         $query = Period::where('fecha_inicio', '<=', $fecha)
             ->where('fecha_fin', '>=', $fecha);
-        
+
         if ($anioIngreso) {
             $query->where('anio_ingreso', $anioIngreso);
         }
-        
+
         $periodo = $query->first();
 
         return response()->json(['periodo' => $periodo]);
@@ -97,13 +97,17 @@ Route::name('api.')->group(function () {
         Route::get('staff', [StaffController::class, 'publicIndex']);
         Route::get('rooms', [RoomController::class, 'publicIndex']);
         Route::get('courses', [CourseController::class, 'publicIndex']);
+        Route::get('clases', [ClaseController::class, 'publicIndex']);
+        Route::get('clases', [ClaseController::class, 'PublicShow']);
+        Route::get('/public/magisters-with-course-count', [CourseController::class, 'publicMagistersWithCourses']);
+        Route::get('/public/courses/years', [CourseController::class, 'publicAvailableYears']);
         Route::get('courses/magister/{magisterId}', [CourseController::class, 'publicCoursesByMagister']);
         Route::get('courses/magister/{magisterId}/paginated', [CourseController::class, 'publicCoursesByMagisterPaginated']);
         Route::get('novedades', [NovedadController::class, 'active']);
         Route::get('novedades/{id}', [NovedadController::class, 'show']);
-        Route::get('informes', [InformeController::class, 'index']);
-        Route::get('informes/{id}', [InformeController::class, 'show']);
-        Route::get('informes/{id}/download', [InformeController::class, 'download']);
+        Route::get('informes', [InformeController::class, 'publicIndex']);
+        Route::get('informes/{id}', [InformeController::class, 'publicShow']);
+        Route::get('informes/{id}/download', [InformeController::class, 'publicDownload']);
     });
 
     // �� AUTENTICACIÓN
@@ -125,7 +129,7 @@ Route::name('api.')->group(function () {
         // ADMIN
         Route::middleware('role.api:admin')->group(function () {
             Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-            
+
             // Gestión de usuarios (solo administradores)
             Route::apiResource('users', UserController::class)->names([
                 'index' => 'users.index',
@@ -197,7 +201,7 @@ Route::name('api.')->group(function () {
             'update' => 'incidents.update',
             'destroy' => 'incidents.destroy',
         ]);
-        
+
         // Rutas adicionales para Incidents
         Route::get('incidents-statistics', [IncidentController::class, 'estadisticas'])->name('incidents.statistics');
 
@@ -217,7 +221,7 @@ Route::name('api.')->group(function () {
             'update' => 'daily-reports.update',
             'destroy' => 'daily-reports.destroy',
         ]);
-        
+
         // Rutas adicionales para Daily Reports
         Route::get('daily-reports/{dailyReport}/download-pdf', [DailyReportController::class, 'downloadPdf'])->name('daily-reports.download-pdf');
         Route::get('daily-reports-statistics', [DailyReportController::class, 'statistics'])->name('daily-reports.statistics');
@@ -231,7 +235,7 @@ Route::name('api.')->group(function () {
             'update' => 'informes.update',
             'destroy' => 'informes.destroy',
         ]);
-        
+
         // Rutas adicionales para Informes
         Route::get('informes/{informe}/download', [InformeController::class, 'download'])->name('informes.download');
         Route::get('informes-statistics', [InformeController::class, 'statistics'])->name('informes.statistics');
@@ -245,7 +249,7 @@ Route::name('api.')->group(function () {
             'update' => 'novedades.update',
             'destroy' => 'novedades.destroy',
         ]);
-        
+
         // Rutas adicionales para Novedades
         Route::get('novedades-statistics', [NovedadController::class, 'statistics'])->name('novedades.statistics');
         Route::get('novedades-resources', [NovedadController::class, 'resources'])->name('novedades.resources');

@@ -16,10 +16,10 @@ class StaffController extends Controller
 
         // Filtros opcionales
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('nombre', 'like', '%' . $request->search . '%')
-                  ->orWhere('cargo', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+                    ->orWhere('cargo', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -42,7 +42,7 @@ class StaffController extends Controller
     {
         $staff = Staff::find($id);
 
-        if (! $staff) {
+        if (!$staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
         }
 
@@ -65,14 +65,14 @@ class StaffController extends Controller
     {
         $staff = Staff::find($id);
 
-        if (! $staff) {
+        if (!$staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
         }
 
         // Validación manual excluyendo el ID actual
         $request->validate([
             'nombre' => 'required|string|max:255',
-            'email' => 'required|email|unique:staff,email,'.$id,
+            'email' => 'required|email|unique:staff,email,' . $id,
             'cargo' => 'required|string|max:255',
             'telefono' => 'nullable|string|max:20',
         ]);
@@ -90,7 +90,7 @@ class StaffController extends Controller
     {
         $staff = Staff::find($id);
 
-        if (! $staff) {
+        if (!$staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
         }
 
@@ -103,8 +103,8 @@ class StaffController extends Controller
     public function publicIndex()
     {
         try {
-            // Obtener staff para vista pública (sin filtro de 'activo' ya que no existe)
-            $staff = Staff::select('id', 'nombre', 'cargo', 'telefono', 'email')
+            // Obtener staff para vista pública
+            $staff = Staff::select('id', 'nombre', 'cargo', 'telefono', 'anexo', 'email', 'foto', 'department')
                 ->orderBy('cargo')
                 ->orderBy('nombre')
                 ->get();
@@ -117,7 +117,9 @@ class StaffController extends Controller
                     'role' => $member->cargo,
                     'email' => $member->email,
                     'phone' => $member->telefono,
-                    'department' => $member->cargo, // Usando cargo como departamento
+                    'anexo' => $member->anexo, // ← AGREGAR
+                    'foto' => $member->foto,   // ← AGREGAR
+                    'department' => $member->department ?? $member->cargo, // ← MEJORAR
                     'public_view' => true,
                 ];
             });
@@ -134,7 +136,7 @@ class StaffController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al cargar el equipo: '.$e->getMessage(),
+                'message' => 'Error al cargar el equipo: ' . $e->getMessage(),
             ], 500);
         }
     }

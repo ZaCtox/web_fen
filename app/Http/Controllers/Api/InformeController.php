@@ -21,9 +21,9 @@ class InformeController extends Controller
 
         // Filtros opcionales
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('nombre', 'like', '%' . $request->search . '%')
-                  ->orWhere('tipo', 'like', '%' . $request->search . '%');
+                    ->orWhere('tipo', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -215,7 +215,7 @@ class InformeController extends Controller
     {
         $magisters = Magister::select('id', 'nombre', 'color')->orderBy('nombre')->get();
         $users = User::select('id', 'name')->orderBy('name')->get();
-        
+
         $tipos = [
             'Informe Académico',
             'Reglamento',
@@ -252,7 +252,7 @@ class InformeController extends Controller
                 ->whereNotNull('magister_id')
                 ->groupBy('magister_id')
                 ->get()
-                ->map(function($item) {
+                ->map(function ($item) {
                     return [
                         'magister' => $item->magister->nombre ?? 'N/A',
                         'count' => $item->count
@@ -271,6 +271,145 @@ class InformeController extends Controller
             'data' => $stats,
             'message' => 'Estadísticas de informes obtenidas exitosamente'
         ]);
+    }
+
+    /**
+     * ===== MÉTODO PÚBLICO (SIN AUTENTICACIÓN) =====
+     * Obtener informes públicos para la app móvil
+     */
+    public function publicIndex(Request $request)
+    {
+        try {
+            $query = Informe::with(['user:id,name', 'magister:id,nombre']);
+
+            // Filtro por tipo
+            if ($request->filled('tipo')) {
+                $query->where('tipo', $request->tipo);
+            }
+
+            // Solo informes públicos (si tienes un campo public_view)
+            // $query->where('public_view', true);
+
+            $perPage = $request->get('per_page', 15);
+            $informes = $query->latest()->paginate($perPage);
+
+            // Formatear datos para respuesta pública
+            $formattedInformes = $informes->map(function ($informe) {
+                return [
+                    'id' => $informe->id,
+                    'titulo' => $informe->nombre,
+                    'tipo' => $informe->tipo,
+                    'archivo' => $informe->archivo,
+                    'fechaCreacion' => $informe->created_at->format('Y-m-d H:i:s'),
+                    'fechaActualizacion' => $informe->updated_at->format('Y-m-d H:i:s'),
+                    'magisterId' => $informe->magister_id,
+                    'magisterNombre' => $informe->magister ? $informe->magister->nombre : null,
+                    'publicView' => true,
+                ];
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    'current_page' => $informes->currentPage(),
+                    'data' => $formattedInformes,
+                    'first_page_url' => $informes->url(1),
+                    'from' => $informes->firstItem(),
+                    'last_page' => $informes->lastPage(),
+                    'last_page_url' => $informes->url($informes->lastPage()),
+                    'next_page_url' => $informes->nextPageUrl(),
+                    'path' => $informes->path(),
+                    'per_page' => $informes->perPage(),
+                    'prev_page_url' => $informes->previousPageUrl(),
+                    'to' => $informes->lastItem(),
+                    'total' => $informes->total(),
+                ],
+                'message' => 'Informes públicos obtenidos exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al cargar los informes: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtener un informe público específico
+     */
+    public function publicShow($id)
+    {
+        try {
+            $informe = Informe::with(['user:id,name', 'magister:id,nombre'])->find($id);
+
+            if (!$informe) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Informe no encontrado'
+                ], 404);
+            }
+
+            $formattedInforme = [
+                'id' => $informe->id,
+                'titulo' => $informe->nombre,
+                'tipo' => $informe->tipo,
+                'archivo' => $informe->archivo,
+                'fechaCreacion' => $informe->created_at->format('Y-m-d H:i:s'),
+                'fechaActualizacion' => $informe->updated_at->format('Y-m-d H:i:s'),
+                'magisterId' => $informe->magister_id,
+                'magisterNombre' => $informe->magister ? $informe->magister->nombre : null,
+                'publicView' => true,
+            ];
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $formattedInforme,
+                'message' => 'Informe obtenido exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al cargar el informe: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Descargar informe público
+     */
+    public function publicDownload($id)
+    {
+        try {
+            $informe = Informe::find($id);
+
+            if (!$informe) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Informe no encontrado'
+                ], 404);
+            }
+
+            if (!Storage::disk('public')->exists($informe->archivo)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'El archivo no existe en el servidor'
+                ], 404);
+            }
+
+            // Retornar el archivo para descarga
+            return Storage::disk('public')->download(
+                $informe->archivo,
+                $informe->nombre . '.' . pathinfo($informe->archivo, PATHINFO_EXTENSION)
+            );
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al descargar el informe: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
 
