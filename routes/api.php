@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\InformeController;
+use App\Http\Controllers\Api\NovedadController;
 use App\Http\Controllers\Api\EmergencyController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\IncidentController;
@@ -98,6 +99,11 @@ Route::name('api.')->group(function () {
         Route::get('courses', [CourseController::class, 'publicIndex']);
         Route::get('courses/magister/{magisterId}', [CourseController::class, 'publicCoursesByMagister']);
         Route::get('courses/magister/{magisterId}/paginated', [CourseController::class, 'publicCoursesByMagisterPaginated']);
+        Route::get('novedades', [NovedadController::class, 'active']);
+        Route::get('novedades/{id}', [NovedadController::class, 'show']);
+        Route::get('informes', [InformeController::class, 'index']);
+        Route::get('informes/{id}', [InformeController::class, 'show']);
+        Route::get('informes/{id}/download', [InformeController::class, 'download']);
     });
 
     // �� AUTENTICACIÓN
@@ -230,6 +236,19 @@ Route::name('api.')->group(function () {
         Route::get('informes/{informe}/download', [InformeController::class, 'download'])->name('informes.download');
         Route::get('informes-statistics', [InformeController::class, 'statistics'])->name('informes.statistics');
         Route::get('informes-resources', [InformeController::class, 'resources'])->name('informes.resources');
+
+        // Novedades API
+        Route::apiResource('novedades', NovedadController::class)->names([
+            'index' => 'novedades.index',
+            'store' => 'novedades.store',
+            'show' => 'novedades.show',
+            'update' => 'novedades.update',
+            'destroy' => 'novedades.destroy',
+        ]);
+        
+        // Rutas adicionales para Novedades
+        Route::get('novedades-statistics', [NovedadController::class, 'statistics'])->name('novedades.statistics');
+        Route::get('novedades-resources', [NovedadController::class, 'resources'])->name('novedades.resources');
 
         Route::apiResource('clases', ClaseController::class)->names([
             'index' => 'clases.index',
