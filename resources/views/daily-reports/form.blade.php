@@ -155,6 +155,11 @@
                     'location_detail' => $entry->location_detail,
                     'observation' => $entry->observation,
                     'photo_url' => $entry->photo_url,
+                    'hora' => $entry->hora,
+                    'escala' => $entry->escala,
+                    'programa' => $entry->programa,
+                    'area' => $entry->area,
+                    'tarea' => $entry->tarea,
                 ];
             }
         }
@@ -163,6 +168,7 @@
         // Datos globales para el wizard
         window.dailyReportsData = {
             rooms: @json($rooms ?? []),
+            magisters: @json($magisters ?? []),
             entries: @json($entriesData)
         };
     </script>

@@ -15,6 +15,11 @@ window.addEntryToContainer = function(entryData = null) {
     const locationDetail = entryData?.location_detail || '';
     const observation = entryData?.observation || '';
     const photoUrl = entryData?.photo_url || '';
+    const hora = entryData?.hora || '';
+    const escala = entryData?.escala || '';
+    const programa = entryData?.programa || '';
+    const area = entryData?.area || '';
+    const tarea = entryData?.tarea || '';
     
     // Construir opciones de salas
     let roomOptions = '<option value="">Seleccione una sala específica</option>';
@@ -22,6 +27,15 @@ window.addEntryToContainer = function(entryData = null) {
         window.dailyReportsData.rooms.forEach(room => {
             const selected = room.id == roomId ? 'selected' : '';
             roomOptions += '<option value="' + room.id + '" ' + selected + '>' + room.name + '</option>';
+        });
+    }
+    
+    // Construir opciones de programas de magister
+    let programaOptions = '<option value="">Seleccione un programa</option>';
+    if (window.dailyReportsData && window.dailyReportsData.magisters) {
+        window.dailyReportsData.magisters.forEach(magister => {
+            const selected = magister.nombre == programa ? 'selected' : '';
+            programaOptions += '<option value="' + magister.nombre + '" ' + selected + '>' + magister.nombre + '</option>';
         });
     }
     
@@ -34,6 +48,98 @@ window.addEntryToContainer = function(entryData = null) {
                     '<img src="/icons/trashw.svg" alt="Eliminar" class="w-4 h-4">' +
                 '</button>' +
             '</div>' +
+            
+            // Indicador de severidad
+            '<div class="mb-6 p-4 bg-gradient-to-r from-teal-50 to-red-50 dark:from-gray-800 dark:to-gray-700 rounded-lg border border-gray-200 dark:border-gray-600" onclick="clearSeveritySelection(' + contadorEntradas + ')" style="cursor: pointer;">' +
+                '<h5 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Indicador de Severidad <span class="text-red-500">*</span></h5>' +
+                (escala ? '' : '<div class="severity-error-message text-sm text-red-500 mb-3 font-medium">⚠️ Debe seleccionar un nivel de severidad</div>') +
+                
+                // Iconos arriba (cada uno ocupa 2 números)
+                '<div class="flex justify-center mb-3">' +
+                    '<div class="flex w-full justify-between px-4">' +
+                        '<div class="flex-1 flex justify-center"><img src="/icons/normal.svg" class="w-8 h-8" alt="Normal"></div>' +
+                        '<div class="flex-1 flex justify-center"><img src="/icons/leve.svg" class="w-8 h-8" alt="Leve"></div>' +
+                        '<div class="flex-1 flex justify-center"><img src="/icons/moderado.svg" class="w-8 h-8" alt="Moderado"></div>' +
+                        '<div class="flex-1 flex justify-center"><img src="/icons/fuerte.svg" class="w-8 h-8" alt="Fuerte"></div>' +
+                        '<div class="flex-1 flex justify-center"><img src="/icons/critico.svg" class="w-8 h-8" alt="Crítico"></div>' +
+                    '</div>' +
+                '</div>' +
+                
+                // Números en el medio
+                '<div class="flex items-center justify-center mb-3">' +
+                    '<div class="flex w-full bg-white dark:bg-gray-600 p-2 rounded-lg shadow-inner">' +
+                        Array.from({length: 10}, (_, i) => {
+                            const num = i + 1;
+                            let color = '';
+                            let emoji = '😐';
+                            let label = '';
+                            
+                            if (num === 1) { color = '#4DBCC6'; emoji = '😊'; label = 'Normal'; }
+                            else if (num === 2) { color = '#3C9EAA'; emoji = '😊'; label = 'Normal'; }
+                            else if (num === 3) { color = '#8B8232'; emoji = '🙂'; label = 'Leve'; }
+                            else if (num === 4) { color = '#B4A53C'; emoji = '🙂'; label = 'Leve'; }
+                            else if (num === 5) { color = '#FFCC00'; emoji = '😐'; label = 'Moderado'; }
+                            else if (num === 6) { color = '#FF9900'; emoji = '😐'; label = 'Moderado'; }
+                            else if (num === 7) { color = '#FF6600'; emoji = '😟'; label = 'Fuerte'; }
+                            else if (num === 8) { color = '#FF3300'; emoji = '😟'; label = 'Fuerte'; }
+                            else if (num === 9) { color = '#FF0000'; emoji = '😡'; label = 'Crítico'; }
+                            else { color = '#CC0000'; emoji = '😡'; label = 'Crítico'; }
+                            
+                            const selected = escala == num ? 'ring-2 ring-blue-500 shadow-lg' : '';
+                            return '<div class="flex-1 h-12 rounded-sm ' + selected + ' flex items-center justify-center text-lg font-bold text-white cursor-pointer hover:scale-105 transition-all duration-200" style="background-color: ' + color + ';" onclick="event.stopPropagation(); selectSeverity(' + contadorEntradas + ', ' + num + ')" title="' + num + ' - ' + label + '">' + num + '</div>';
+                        }).join('') +
+                    '</div>' +
+                '</div>' +
+                
+                // Texto abajo (más grande)
+                '<div class="flex justify-between text-sm font-medium text-gray-700 dark:text-gray-300 px-2">' +
+                    '<span>Normal</span>' +
+                    '<span>Leve</span>' +
+                    '<span>Moderado</span>' +
+                    '<span>Fuerte</span>' +
+                    '<span>Crítico</span>' +
+                '</div>' +
+                
+                // Mostrar selección actual
+                (escala ? 
+                    '<div class="mt-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">' +
+                        '<div class="flex items-center justify-center gap-3">' +
+                            '<div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background-color: ' + 
+                            (escala === 1 ? '#4DBCC6' : escala === 2 ? '#3C9EAA' : escala === 3 ? '#8B8232' : escala === 4 ? '#B4A53C' : 
+                             escala === 5 ? '#FFCC00' : escala === 6 ? '#FF9900' : escala === 7 ? '#FF6600' : escala === 8 ? '#FF3300' : 
+                             escala === 9 ? '#FF0000' : '#CC0000') + ';">' + escala + '</div>' +
+                            '<div class="text-center">' +
+                                '<div class="text-sm font-semibold text-blue-700 dark:text-blue-300">Seleccionado: ' + escala + '</div>' +
+                                '<div class="text-xs text-blue-600 dark:text-blue-400">' + 
+                                (escala <= 2 ? 'Normal' : escala <= 4 ? 'Leve' : escala <= 6 ? 'Moderado' : escala <= 8 ? 'Fuerte' : 'Crítico') + 
+                                '</div>' +
+                            '</div>' +
+                            '<button type="button" onclick="clearSeveritySelection(' + contadorEntradas + ')" class="text-red-500 hover:text-red-700 text-sm font-medium">✕ Limpiar</button>' +
+                        '</div>' +
+                    '</div>' : '') +
+                
+                '<input type="hidden" name="entries[' + contadorEntradas + '][escala]" id="escala-' + contadorEntradas + '" value="' + escala + '">' +
+            '</div>' +
+            
+            // Campos de horario, programa y área
+            '<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">' +
+                '<div>' +
+                    '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Horario <span class="text-red-500">*</span></label>' +
+                    '<input type="text" name="entries[' + contadorEntradas + '][hora]" value="' + hora + '" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent dark:bg-gray-700 dark:text-gray-200 transition-all duration-200" placeholder="Ej: 08:30 – 08:50" required>' +
+                '</div>' +
+                '<div>' +
+                    '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Programa (Magister) <span class="text-red-500">*</span></label>' +
+                    '<select name="entries[' + contadorEntradas + '][programa]" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent dark:bg-gray-700 dark:text-gray-200 transition-all duration-200" required>' +
+                        programaOptions +
+                    '</select>' +
+                '</div>' +
+                '<div>' +
+                    '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Área <span class="text-red-500">*</span></label>' +
+                    '<input type="text" name="entries[' + contadorEntradas + '][area]" value="' + area + '" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent dark:bg-gray-700 dark:text-gray-200 transition-all duration-200" placeholder="Ej: TERRENO" required>' +
+                '</div>' +
+            '</div>' +
+            
+            // Ubicación
             '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">' +
                 '<div>' +
                     '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tipo de Ubicación <span class="text-red-500">*</span></label>' +
@@ -58,10 +164,20 @@ window.addEntryToContainer = function(entryData = null) {
                     '<input type="text" name="entries[' + contadorEntradas + '][location_detail]" value="' + locationDetail + '" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent dark:bg-gray-700 dark:text-gray-200 transition-all duration-200" placeholder="Ej: Baño primer piso, Pasillo edificio A">' +
                 '</div>' +
             '</div>' +
-            '<div class="mb-4">' +
-                '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Observación <span class="text-red-500">*</span></label>' +
-                '<textarea name="entries[' + contadorEntradas + '][observation]" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent dark:bg-gray-700 dark:text-gray-200 transition-all duration-200" placeholder="Describe lo observado (mínimo 5 caracteres)..." required>' + observation + '</textarea>' +
+            
+            // Observación y tarea
+            '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">' +
+                '<div>' +
+                    '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Observación <span class="text-red-500">*</span></label>' +
+                    '<textarea name="entries[' + contadorEntradas + '][observation]" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent dark:bg-gray-700 dark:text-gray-200 transition-all duration-200" placeholder="Describe lo observado (mínimo 5 caracteres)..." required>' + observation + '</textarea>' +
+                '</div>' +
+                '<div>' +
+                    '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tarea (Opcional)</label>' +
+                    '<textarea name="entries[' + contadorEntradas + '][tarea]" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent dark:bg-gray-700 dark:text-gray-200 transition-all duration-200" placeholder="Tarea relacionada...">' + tarea + '</textarea>' +
+                '</div>' +
             '</div>' +
+            
+            // Imagen
             (photoUrl ? 
                 '<div class="mb-4">' +
                     '<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Imagen Actual</label>' +
@@ -125,6 +241,125 @@ window.addEntryToContainer = function(entryData = null) {
         }
     };
 };
+
+// Función global para seleccionar severidad
+window.selectSeverity = function(entryIndex, severity) {
+    const input = document.getElementById('escala-' + entryIndex);
+    if (input) {
+        input.value = severity;
+        
+        // Actualizar visualmente la selección
+        const container = document.querySelector(`[data-index="${entryIndex}"]`);
+        if (container) {
+            const severityButtons = container.querySelectorAll('[onclick*="selectSeverity"]');
+            severityButtons.forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-blue-500');
+            });
+            
+            const selectedBtn = container.querySelector(`[onclick="selectSeverity(${entryIndex}, ${severity})"]`);
+            if (selectedBtn) {
+                selectedBtn.classList.add('ring-2', 'ring-blue-500');
+            }
+            
+            // Ocultar mensaje de error
+            const errorDiv = container.querySelector('.severity-error-message');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+            }
+            
+            // Actualizar o crear el indicador de selección
+            updateSeveritySelectionIndicator(entryIndex, severity);
+        }
+    }
+};
+
+// Función para actualizar el indicador de selección
+function updateSeveritySelectionIndicator(entryIndex, severity) {
+    const container = document.querySelector(`[data-index="${entryIndex}"]`);
+    if (!container) return;
+    
+    const severitySection = container.querySelector('[onclick*="clearSeveritySelection"]');
+    if (!severitySection) return;
+    
+    // Remover indicador existente
+    const existingIndicator = severitySection.querySelector('.severity-selection-indicator');
+    if (existingIndicator) {
+        existingIndicator.remove();
+    }
+    
+    // Crear nuevo indicador
+    const indicator = document.createElement('div');
+    indicator.className = 'severity-selection-indicator mt-4 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700';
+    
+    let color = '';
+    let label = '';
+    
+    if (severity === 1) { color = '#4DBCC6'; label = 'Normal'; }
+    else if (severity === 2) { color = '#3C9EAA'; label = 'Normal'; }
+    else if (severity === 3) { color = '#8B8232'; label = 'Leve'; }
+    else if (severity === 4) { color = '#B4A53C'; label = 'Leve'; }
+    else if (severity === 5) { color = '#FFCC00'; label = 'Moderado'; }
+    else if (severity === 6) { color = '#FF9900'; label = 'Moderado'; }
+    else if (severity === 7) { color = '#FF6600'; label = 'Fuerte'; }
+    else if (severity === 8) { color = '#FF3300'; label = 'Fuerte'; }
+    else if (severity === 9) { color = '#FF0000'; label = 'Crítico'; }
+    else { color = '#CC0000'; label = 'Crítico'; }
+    
+    indicator.innerHTML = `
+        <div class="flex items-center justify-center gap-3">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background-color: ${color};">${severity}</div>
+            <div class="text-center">
+                <div class="text-sm font-semibold text-blue-700 dark:text-blue-300">Seleccionado: ${severity}</div>
+                <div class="text-xs text-blue-600 dark:text-blue-400">${label}</div>
+            </div>
+            <button type="button" onclick="clearSeveritySelection(${entryIndex})" class="text-red-500 hover:text-red-700 text-sm font-medium">✕ Limpiar</button>
+        </div>
+    `;
+    
+    severitySection.appendChild(indicator);
+}
+
+// Función para deseleccionar severidad al hacer clic afuera
+window.clearSeveritySelection = function(entryIndex) {
+    const input = document.getElementById('escala-' + entryIndex);
+    if (input) {
+        input.value = '';
+        
+        // Limpiar selección visual
+        const container = document.querySelector(`[data-index="${entryIndex}"]`);
+        if (container) {
+            const severityButtons = container.querySelectorAll('[onclick*="selectSeverity"]');
+            severityButtons.forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-blue-500');
+            });
+            
+            // Remover indicador de selección
+            const existingIndicator = container.querySelector('.severity-selection-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+            
+            // Mostrar mensaje de error
+            const errorDiv = container.querySelector('.severity-error-message');
+            if (errorDiv) {
+                errorDiv.style.display = 'block';
+            } else {
+                // Crear mensaje de error si no existe
+                const severitySection = container.querySelector('[onclick*="clearSeveritySelection"]');
+                if (severitySection) {
+                    const existingError = severitySection.querySelector('.severity-error-message');
+                    if (!existingError) {
+                        const errorMessage = document.createElement('div');
+                        errorMessage.className = 'severity-error-message text-sm text-red-500 mb-3 font-medium';
+                        errorMessage.innerHTML = '⚠️ Debe seleccionar un nivel de severidad';
+                        severitySection.insertBefore(errorMessage, severitySection.children[1]);
+                    }
+                }
+            }
+        }
+    }
+};
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // Solo buscar errores de validación de Laravel, no errores de UI

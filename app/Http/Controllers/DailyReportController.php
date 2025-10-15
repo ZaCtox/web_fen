@@ -43,10 +43,11 @@ class DailyReportController extends Controller
     public function create()
     {
         $rooms = Room::orderBy('name')->get();
+        $magisters = \App\Models\Magister::orderBy('nombre')->get();
         $today = now()->format('Y-m-d');
         $tituloSugerido = DailyReport::generarTitulo();
         
-        return view('daily-reports.create', compact('rooms', 'today', 'tituloSugerido'));
+        return view('daily-reports.create', compact('rooms', 'magisters', 'today', 'tituloSugerido'));
     }
 
     public function store(Request $request)
@@ -67,6 +68,11 @@ class DailyReportController extends Controller
             'entries.*.location_detail' => 'nullable|required_if:entries.*.location_type,Baño,Pasillo,Laboratorio,Oficina,Otro|string|max:255',
             'entries.*.observation' => 'required|string|min:5',
             'entries.*.photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'entries.*.hora' => 'required|string|max:50',
+            'entries.*.escala' => 'required|integer|min:1|max:10',
+            'entries.*.programa' => 'required|string|max:255',
+            'entries.*.area' => 'required|string|max:255',
+            'entries.*.tarea' => 'nullable|string',
         ], [
             'title.required' => 'El título del reporte es obligatorio.',
             'report_date.required' => 'La fecha del reporte es obligatoria.',
@@ -80,6 +86,12 @@ class DailyReportController extends Controller
             'entries.*.photo.image' => 'El archivo debe ser una imagen válida.',
             'entries.*.photo.mimes' => 'La imagen debe ser de tipo: jpeg, png, jpg, gif.',
             'entries.*.photo.max' => 'La imagen no puede exceder los 10MB.',
+            'entries.*.hora.required' => 'El horario es obligatorio.',
+            'entries.*.escala.required' => 'Debe seleccionar un nivel de severidad.',
+            'entries.*.escala.min' => 'La escala debe ser entre 1 y 10.',
+            'entries.*.escala.max' => 'La escala debe ser entre 1 y 10.',
+            'entries.*.programa.required' => 'El programa es obligatorio.',
+            'entries.*.area.required' => 'El área es obligatoria.',
         ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             \Log::error('DailyReportController@store - Error de validación', [
@@ -132,6 +144,11 @@ class DailyReportController extends Controller
                 'location_detail' => $entryData['location_detail'] ?? null,
                 'observation' => $entryData['observation'],
                 'order' => $index + 1,
+                'hora' => $entryData['hora'] ?? null,
+                'escala' => $entryData['escala'] ?? null,
+                'programa' => $entryData['programa'] ?? null,
+                'area' => $entryData['area'] ?? null,
+                'tarea' => $entryData['tarea'] ?? null,
             ];
 
             // Subir imagen si se proporciona
@@ -188,8 +205,9 @@ class DailyReportController extends Controller
     public function edit(DailyReport $dailyReport)
     {
         $rooms = Room::orderBy('name')->get();
+        $magisters = \App\Models\Magister::orderBy('nombre')->get();
         $dailyReport->load(['entries.room']);
-        return view('daily-reports.edit', compact('dailyReport', 'rooms'));
+        return view('daily-reports.edit', compact('dailyReport', 'rooms', 'magisters'));
     }
 
     public function update(Request $request, DailyReport $dailyReport)
@@ -204,6 +222,11 @@ class DailyReportController extends Controller
             'entries.*.location_detail' => 'nullable|required_if:entries.*.location_type,Baño,Pasillo,Laboratorio,Oficina,Otro|string|max:255',
             'entries.*.observation' => 'required|string|min:5',
             'entries.*.photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+            'entries.*.hora' => 'required|string|max:50',
+            'entries.*.escala' => 'required|integer|min:1|max:10',
+            'entries.*.programa' => 'required|string|max:255',
+            'entries.*.area' => 'required|string|max:255',
+            'entries.*.tarea' => 'nullable|string',
         ]);
 
         // Actualizar el reporte
@@ -225,6 +248,11 @@ class DailyReportController extends Controller
                 'location_detail' => $entryData['location_detail'] ?? null,
                 'observation' => $entryData['observation'],
                 'order' => $index + 1,
+                'hora' => $entryData['hora'] ?? null,
+                'escala' => $entryData['escala'] ?? null,
+                'programa' => $entryData['programa'] ?? null,
+                'area' => $entryData['area'] ?? null,
+                'tarea' => $entryData['tarea'] ?? null,
             ];
 
             // Subir nueva imagen si se proporciona

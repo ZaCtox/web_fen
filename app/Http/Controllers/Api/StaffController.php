@@ -10,11 +10,31 @@ use Illuminate\Http\Request;
 class StaffController extends Controller
 {
     // Obtener todos los registros
-    public function index()
+    public function index(Request $request)
     {
-        $staff = Staff::orderBy('nombre')->get(['id', 'nombre', 'cargo', 'telefono', 'email']);
+        $query = Staff::query();
 
-        return response()->json($staff);
+        // Filtros opcionales
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->search . '%')
+                  ->orWhere('cargo', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('cargo')) {
+            $query->where('cargo', 'like', '%' . $request->cargo . '%');
+        }
+
+        $perPage = $request->get('per_page', 15);
+        $staff = $query->orderBy('nombre')->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $staff,
+            'message' => 'Staff obtenido exitosamente'
+        ]);
     }
 
     // Obtener un registro específico

@@ -10,10 +10,34 @@ use Illuminate\Support\Carbon;
 class PeriodController extends Controller
 {
     // Listar todos los períodos
-    public function index()
+    public function index(Request $request)
     {
-        $periods = Period::orderByDesc('anio')->orderBy('numero')->get();
-        return response()->json($periods);
+        $query = Period::query();
+
+        // Filtros opcionales
+        if ($request->filled('anio')) {
+            $query->where('anio', $request->anio);
+        }
+
+        if ($request->filled('anio_ingreso')) {
+            $query->where('anio_ingreso', $request->anio_ingreso);
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('anio', 'like', '%' . $request->search . '%')
+                  ->orWhere('numero', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $perPage = $request->get('per_page', 15);
+        $periods = $query->orderByDesc('anio')->orderBy('numero')->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $periods,
+            'message' => 'Períodos obtenidos exitosamente'
+        ]);
     }
 
     // Mostrar un período
@@ -22,10 +46,17 @@ class PeriodController extends Controller
         $period = Period::find($id);
 
         if (!$period) {
-            return response()->json(['message' => 'Periodo no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Período no encontrado'
+            ], 404);
         }
 
-        return response()->json($period);
+        return response()->json([
+            'success' => true,
+            'data' => $period,
+            'message' => 'Período obtenido exitosamente'
+        ]);
     }
 
     // Crear período
@@ -35,13 +66,15 @@ class PeriodController extends Controller
             'anio' => 'required|integer|min:1|max:10',
             'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after:fecha_inicio'
+            'fecha_fin' => 'required|date|after:fecha_inicio',
+            'anio_ingreso' => 'nullable|integer|min:2020|max:2030'
         ]);
 
         $period = Period::create($validated);
 
         return response()->json([
-            'message' => 'Periodo creado correctamente.',
+            'success' => true,
+            'message' => 'Período creado correctamente.',
             'data' => $period
         ], 201);
     }
@@ -52,20 +85,25 @@ class PeriodController extends Controller
         $period = Period::find($id);
 
         if (!$period) {
-            return response()->json(['message' => 'Periodo no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Período no encontrado'
+            ], 404);
         }
 
         $validated = $request->validate([
             'anio' => 'required|integer|min:1|max:10',
             'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'required|date|after:fecha_inicio'
+            'fecha_fin' => 'required|date|after:fecha_inicio',
+            'anio_ingreso' => 'nullable|integer|min:2020|max:2030'
         ]);
 
         $period->update($validated);
 
         return response()->json([
-            'message' => 'Periodo actualizado correctamente.',
+            'success' => true,
+            'message' => 'Período actualizado correctamente.',
             'data' => $period
         ]);
     }
@@ -76,12 +114,18 @@ class PeriodController extends Controller
         $period = Period::find($id);
 
         if (!$period) {
-            return response()->json(['message' => 'Periodo no encontrado'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Período no encontrado'
+            ], 404);
         }
 
         $period->delete();
 
-        return response()->json(['message' => 'Periodo eliminado correctamente.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Período eliminado correctamente.'
+        ]);
     }
 
     // Avanzar fechas al próximo año
@@ -90,7 +134,10 @@ class PeriodController extends Controller
         $periodos = Period::all();
 
         if ($periodos->isEmpty()) {
-            return response()->json(['message' => 'No hay períodos académicos para actualizar.'], 400);
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay períodos académicos para actualizar.'
+            ], 400);
         }
 
         foreach ($periodos as $periodo) {
@@ -100,7 +147,11 @@ class PeriodController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Fechas actualizadas al próximo año.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Fechas actualizadas al próximo año correctamente.',
+            'data' => $periodos
+        ]);
     }
 
     // Trimestre siguiente según fecha

@@ -14,7 +14,8 @@ class EventController extends Controller
 {
     private function authorizeAccess()
     {
-        if (! tieneRol(['docente', 'administrativo'])) {
+        $user = auth()->user();
+        if (!$user || !in_array($user->rol, ['docente', 'administrativo', 'administrador'])) {
             abort(403, 'Acceso no autorizado.');
         }
     }
@@ -111,7 +112,7 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $this->authorizeAccess();
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -142,7 +143,7 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        
+        $this->authorizeAccess();
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
@@ -176,6 +177,7 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
+        $this->authorizeAccess();
         
         $event->delete();
 
@@ -477,7 +479,7 @@ class EventController extends Controller
         \Log::info('🔍 Buscando sesiones de clase', [
             'magister_id' => $magisterId,
             'room_id' => $roomId,
-            'cohorte' => $cohorte,
+            'anio_ingreso' => $anioIngreso,
             'fecha_inicio' => $rangeStart->toDateString(),
             'fecha_fin' => $rangeEnd->toDateString(),
         ]);

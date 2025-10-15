@@ -53,7 +53,11 @@ class IncidentController extends Controller
 
         $incidencias = $query->latest()->paginate(10);
 
-        return response()->json($incidencias, 200);
+        return response()->json([
+            'success' => true,
+            'data' => $incidencias,
+            'message' => 'Incidencias obtenidas exitosamente'
+        ], 200);
     }
 
     public function show(Incident $incident)

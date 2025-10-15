@@ -105,7 +105,62 @@
                                         - {{ $entry->location_detail }}
                                     @endif
                                 </h5>
-                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ $entry->observation }}</p>
+                                
+                                {{-- Información adicional de la bitácora --}}
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                                    @if($entry->hora)
+                                    <div class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Horario</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $entry->hora }}</div>
+                                    </div>
+                                    @endif
+                                    
+                                    @if($entry->escala)
+                                    <div class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Escala</div>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color: {{ $entry->color_escala }};">
+                                                {{ $entry->escala }}
+                                            </div>
+                                            @if($entry->escala <= 2)
+                                                <img src="{{ asset('icons/normal.svg') }}" class="w-5 h-5" alt="Normal">
+                                            @elseif($entry->escala <= 4)
+                                                <img src="{{ asset('icons/leve.svg') }}" class="w-5 h-5" alt="Leve">
+                                            @elseif($entry->escala <= 6)
+                                                <img src="{{ asset('icons/moderado.svg') }}" class="w-5 h-5" alt="Moderado">
+                                            @elseif($entry->escala <= 8)
+                                                <img src="{{ asset('icons/fuerte.svg') }}" class="w-5 h-5" alt="Fuerte">
+                                            @else
+                                                <img src="{{ asset('icons/critico.svg') }}" class="w-5 h-5" alt="Crítico">
+                                            @endif
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ $entry->nivel_severidad }}</span>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    
+                                    @if($entry->programa)
+                                    <div class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Programa</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $entry->programa }}</div>
+                                    </div>
+                                    @endif
+                                    
+                                    @if($entry->area)
+                                    <div class="bg-white dark:bg-gray-700 rounded-lg p-3 border border-gray-200 dark:border-gray-600">
+                                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">Área</div>
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $entry->area }}</div>
+                                    </div>
+                                    @endif
+                                </div>
+                                
+                                <p class="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">{{ $entry->observation }}</p>
+                                
+                                @if($entry->tarea)
+                                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Tarea:</div>
+                                    <p class="text-sm text-yellow-700 dark:text-yellow-300">{{ $entry->tarea }}</p>
+                                </div>
+                                @endif
                             </div>
                         </div>
                         

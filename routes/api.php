@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClaseController;
 use App\Http\Controllers\Api\CourseController;
+use App\Http\Controllers\Api\DailyReportController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\EmergencyController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\IncidentController;
@@ -116,6 +118,16 @@ Route::name('api.')->group(function () {
         // ADMIN
         Route::middleware('role.api:admin')->group(function () {
             Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+            
+            // Gestión de usuarios (solo administradores)
+            Route::apiResource('users', UserController::class)->names([
+                'index' => 'users.index',
+                'store' => 'users.store',
+                'show' => 'users.show',
+                'update' => 'users.update',
+                'destroy' => 'users.destroy',
+            ]);
+            Route::get('users-statistics', [UserController::class, 'statistics'])->name('users.statistics');
         });
 
         // USUARIO
@@ -178,6 +190,9 @@ Route::name('api.')->group(function () {
             'update' => 'incidents.update',
             'destroy' => 'incidents.destroy',
         ]);
+        
+        // Rutas adicionales para Incidents
+        Route::get('incidents-statistics', [IncidentController::class, 'estadisticas'])->name('incidents.statistics');
 
         Route::apiResource('courses', CourseController::class)->names([
             'index' => 'courses.index',
@@ -186,6 +201,20 @@ Route::name('api.')->group(function () {
             'update' => 'courses.update',
             'destroy' => 'courses.destroy',
         ]);
+
+        // Daily Reports API
+        Route::apiResource('daily-reports', DailyReportController::class)->names([
+            'index' => 'daily-reports.index',
+            'store' => 'daily-reports.store',
+            'show' => 'daily-reports.show',
+            'update' => 'daily-reports.update',
+            'destroy' => 'daily-reports.destroy',
+        ]);
+        
+        // Rutas adicionales para Daily Reports
+        Route::get('daily-reports/{dailyReport}/download-pdf', [DailyReportController::class, 'downloadPdf'])->name('daily-reports.download-pdf');
+        Route::get('daily-reports-statistics', [DailyReportController::class, 'statistics'])->name('daily-reports.statistics');
+        Route::get('daily-reports-resources', [DailyReportController::class, 'resources'])->name('daily-reports.resources');
 
         Route::apiResource('clases', ClaseController::class)->names([
             'index' => 'clases.index',

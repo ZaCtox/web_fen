@@ -115,6 +115,104 @@
             border-left: 3px solid #4d82bc;
         }
         
+        .entry-details {
+            display: table;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .entry-detail-row {
+            display: table-row;
+        }
+        
+        .entry-detail-label {
+            display: table-cell;
+            font-weight: bold;
+            width: 20%;
+            padding: 5px 10px 5px 0;
+            color: #4d82bc;
+            font-size: 12px;
+        }
+        
+        .entry-detail-value {
+            display: table-cell;
+            padding: 5px 0;
+            font-size: 12px;
+        }
+        
+        .severity-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .severity-normal { background-color: #4DBCC6; }
+        .severity-leve { background-color: #8B8232; }
+        .severity-moderado { background-color: #FFCC00; color: #000; }
+        .severity-fuerte { background-color: #FF6600; }
+        .severity-critico { background-color: #FF0000; }
+        
+        .task-section {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            border-left: 3px solid #ffc107;
+        }
+        
+        .severity-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        .severity-icons-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 0 20px;
+        }
+        
+        .severity-icon-container {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .severity-numbers-row {
+            display: flex;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .severity-number {
+            flex: 1;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+            margin: 0 1px;
+            border-radius: 2px;
+        }
+        
+        .severity-labels-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            padding: 0 20px;
+        }
+        
         .image-container {
             text-align: center;
             margin: 20px 0;
@@ -194,6 +292,14 @@
     </div>
     @endif
 
+        <!-- Indicador de Severidad -->
+        <div class="info-section">
+            <h3>Indicador de Severidad</h3>
+            <div style="margin: 20px 0; text-align: center;">
+                <img src="{{ public_path('icons/severity-scale.png') }}" style="width: 100%; max-width: 600px; height: auto;" alt="Escala de Severidad">
+            </div>
+        </div>
+
     <div class="info-section">
         <h3>Observaciones del Día</h3>
         
@@ -204,10 +310,63 @@
                 <div class="entry-location">{{ $entry->ubicacion_completa }}</div>
             </div>
             
+            {{-- Detalles adicionales de la bitácora --}}
+            @if($entry->hora || $entry->escala || $entry->programa || $entry->area)
+            <div class="entry-details">
+                @if($entry->hora)
+                <div class="entry-detail-row">
+                    <div class="entry-detail-label">Horario:</div>
+                    <div class="entry-detail-value">{{ $entry->hora }}</div>
+                </div>
+                @endif
+                
+                @if($entry->escala)
+                <div class="entry-detail-row">
+                    <div class="entry-detail-label">Escala:</div>
+                    <div class="entry-detail-value">
+                        <strong>{{ $entry->escala }} - {{ $entry->nivel_severidad }}</strong>
+                        @if($entry->escala <= 2)
+                            <img src="{{ public_path('icons/normal.svg') }}" class="severity-icon" alt="Normal">
+                        @elseif($entry->escala <= 4)
+                            <img src="{{ public_path('icons/leve.svg') }}" class="severity-icon" alt="Leve">
+                        @elseif($entry->escala <= 6)
+                            <img src="{{ public_path('icons/moderado.svg') }}" class="severity-icon" alt="Moderado">
+                        @elseif($entry->escala <= 8)
+                            <img src="{{ public_path('icons/fuerte.svg') }}" class="severity-icon" alt="Fuerte">
+                        @else
+                            <img src="{{ public_path('icons/critico.svg') }}" class="severity-icon" alt="Crítico">
+                        @endif
+                    </div>
+                </div>
+                @endif
+                
+                @if($entry->programa)
+                <div class="entry-detail-row">
+                    <div class="entry-detail-label">Programa:</div>
+                    <div class="entry-detail-value">{{ $entry->programa }}</div>
+                </div>
+                @endif
+                
+                @if($entry->area)
+                <div class="entry-detail-row">
+                    <div class="entry-detail-label">Área:</div>
+                    <div class="entry-detail-value">{{ $entry->area }}</div>
+                </div>
+                @endif
+            </div>
+            @endif
+            
             <div class="entry-observation">
                 <strong>Observación:</strong><br>
                 {{ $entry->observation }}
             </div>
+            
+            @if($entry->tarea)
+            <div class="task-section">
+                <strong>Tarea:</strong><br>
+                {{ $entry->tarea }}
+            </div>
+            @endif
             
             @if($entry->tiene_foto)
             <div class="image-container">
