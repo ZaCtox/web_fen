@@ -441,11 +441,14 @@ class EventController extends Controller
                 ];
             });
 
+        // Obtener anio_ingreso desde el request
+        $anioIngreso = $request->query('anio_ingreso');
+
         // Obtener eventos de clases
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, null, 25);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 25);
 
         // Obtener sesiones de clase
-        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, null, 50);
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
 
         $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 

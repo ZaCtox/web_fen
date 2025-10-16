@@ -14,18 +14,51 @@ class ClaseController extends Controller
      */
     public function index(Request $request)
     {
-        $filters = $request->only('magister', 'sala', 'dia');
+        $query = Clase::with(['course.magister', 'period', 'room', 'sesiones']);
 
-        $clases = Clase::with(['course.magister', 'period', 'room'])
-            ->filtrar($filters)
-            ->orderBy('period_id')
-            ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
-            ->orderBy('hora_inicio')
-            ->get();
+        // Filtro por año de ingreso
+        if ($request->filled('anio_ingreso')) {
+            $query->whereHas('period', function($q) use ($request) {
+                $q->where('anio_ingreso', $request->anio_ingreso);
+            });
+        }
+
+        // Filtro por año del período
+        if ($request->filled('anio')) {
+            $query->whereHas('period', function($q) use ($request) {
+                $q->where('anio', $request->anio);
+            });
+        }
+
+        // Filtro por trimestre
+        if ($request->filled('trimestre')) {
+            $query->whereHas('period', function($q) use ($request) {
+                $q->where('numero', $request->trimestre);
+            });
+        }
+
+        // Filtro por magíster
+        if ($request->filled('magister')) {
+            $query->whereHas('course.magister', function($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->magister . '%');
+            });
+        }
+
+        // Filtro por sala
+        if ($request->filled('room_id')) {
+            $query->where('room_id', $request->room_id);
+        }
+
+        // Paginación
+        $perPage = $request->get('per_page', 15);
+        $clases = $query->orderBy('period_id')
+            ->orderBy('id')
+            ->paginate($perPage);
 
         return response()->json([
-            'status' => 'success',
-            'data' => $clases
+            'success' => true,
+            'data' => $clases,
+            'message' => 'Clases obtenidas exitosamente'
         ]);
     }
 
@@ -39,24 +72,9 @@ class ClaseController extends Controller
             'tipo' => 'required|string|max:50',
             'period_id' => 'required|exists:periods,id',
             'room_id' => 'nullable|exists:rooms,id',
-            'modality' => 'required|string|in:online,presencial,hibrida',
-            'dia' => 'required|in:Viernes,Sábado',
-            'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'url_zoom' => 'nullable|url',
             'encargado' => 'nullable|string|max:255'
         ]);
-
-        // Validar que url_zoom sea requerido en online e híbrida
-        if (($validated['modality'] === 'online' || $validated['modality'] === 'hibrida') && empty($validated['url_zoom'])) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'El enlace de Zoom es obligatorio para clases Online e Híbridas.',
-                'errors' => [
-                    'url_zoom' => ['El enlace de Zoom es obligatorio para clases Online e Híbridas.']
-                ]
-            ], 422);
-        }
 
         $clase = Clase::create($validated);
 
@@ -88,24 +106,9 @@ class ClaseController extends Controller
             'tipo' => 'required|string|max:50',
             'period_id' => 'required|exists:periods,id',
             'room_id' => 'nullable|exists:rooms,id',
-            'modality' => 'required|string|in:online,presencial,hibrida',
-            'dia' => 'required|in:Viernes,Sábado',
-            'hora_inicio' => 'required|date_format:H:i',
-            'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'url_zoom' => 'nullable|url',
             'encargado' => 'nullable|string|max:255'
         ]);
-
-        // Validar que url_zoom sea requerido en online e híbrida
-        if (($validated['modality'] === 'online' || $validated['modality'] === 'hibrida') && empty($validated['url_zoom'])) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'El enlace de Zoom es obligatorio para clases Online e Híbridas.',
-                'errors' => [
-                    'url_zoom' => ['El enlace de Zoom es obligatorio para clases Online e Híbridas.']
-                ]
-            ], 422);
-        }
 
         $clase->update($validated);
 
@@ -148,10 +151,6 @@ class ClaseController extends Controller
                 'tipo',
                 'period_id',
                 'room_id',
-                'modality',
-                'dia',
-                'hora_inicio',
-                'hora_fin',
                 'url_zoom',
                 'encargado',
                 'created_at',
@@ -163,8 +162,7 @@ class ClaseController extends Controller
                     'room:id,name'
                 ])
                 ->orderBy('period_id')
-                ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
-                ->orderBy('hora_inicio')
+                ->orderBy('id')
                 ->offset(($page - 1) * $perPage)
                 ->limit($perPage)
                 ->get();
@@ -252,18 +250,13 @@ class ClaseController extends Controller
                 });
             }
 
-            if (!empty($filters['dia'])) {
-                $query->where('dia', $filters['dia']);
-            }
-
             if (!empty($filters['period_id'])) {
                 $query->where('period_id', $filters['period_id']);
             }
 
             $perPage = $request->get('per_page', 20);
             $clases = $query->orderBy('period_id')
-                ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
-                ->orderBy('hora_inicio')
+                ->orderBy('id')
                 ->paginate($perPage);
 
             // Formatear datos para respuesta pública
@@ -274,10 +267,6 @@ class ClaseController extends Controller
                     'tipo' => $clase->tipo,
                     'period_id' => $clase->period_id,
                     'room_id' => $clase->room_id,
-                    'modality' => $clase->modality,
-                    'dia' => $clase->dia,
-                    'hora_inicio' => $clase->hora_inicio,
-                    'hora_fin' => $clase->hora_fin,
                     'url_zoom' => $clase->url_zoom,
                     'encargado' => $clase->encargado,
                     'course' => $clase->course ? [
@@ -348,10 +337,6 @@ class ClaseController extends Controller
                 'tipo' => $clase->tipo,
                 'period_id' => $clase->period_id,
                 'room_id' => $clase->room_id,
-                'modality' => $clase->modality,
-                'dia' => $clase->dia,
-                'hora_inicio' => $clase->hora_inicio,
-                'hora_fin' => $clase->hora_fin,
                 'url_zoom' => $clase->url_zoom,
                 'encargado' => $clase->encargado,
                 'course' => $clase->course ? [

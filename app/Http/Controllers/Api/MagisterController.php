@@ -11,13 +11,28 @@ class MagisterController extends Controller
 {
     public function index(Request $request)
     {
-        $magisters = Magister::query()
-            ->withCount('courses')
+        $anioIngreso = $request->get('anio_ingreso');
+
+        $query = Magister::query()
+            ->withCount([
+                'courses' => function($q) use ($anioIngreso) {
+                    if ($anioIngreso) {
+                        $q->whereHas('period', function($periodQuery) use ($anioIngreso) {
+                            $periodQuery->where('anio_ingreso', $anioIngreso);
+                        });
+                    }
+                }
+            ])
             ->when(
                 $request->filled('q'),
                 fn ($q) => $q->where('nombre', 'like', '%'.$request->q.'%')
-            )
-            ->orderBy('nombre')
+            );
+
+        // Ordenamiento
+        $sortBy = $request->get('sort', 'nombre');
+        $sortDirection = $request->get('direction', 'asc');
+
+        $magisters = $query->orderBy($sortBy, $sortDirection)
             ->paginate(10);
 
         return response()->json($magisters, 200);

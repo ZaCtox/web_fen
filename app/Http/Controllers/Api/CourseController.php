@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\Magister;
+use App\Models\Period;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -273,10 +275,20 @@ class CourseController extends Controller
     public function publicIndex(Request $request)
     {
         try {
-            // Obtener cursos con información del magister
-            $courses = Course::with(['magister:id,nombre,encargado'])
-                ->select('id', 'nombre', 'magister_id', 'period_id')
-                ->orderBy('magister_id')
+            $anioIngreso = $request->get('anio_ingreso');
+
+            // Obtener cursos con información del magister y period
+            $query = Course::with(['magister:id,nombre,encargado', 'period:id,anio,numero,anio_ingreso'])
+                ->select('id', 'nombre', 'magister_id', 'period_id');
+
+            // Filtrar por año de ingreso si se proporciona
+            if ($anioIngreso) {
+                $query->whereHas('period', function($q) use ($anioIngreso) {
+                    $q->where('anio_ingreso', $anioIngreso);
+                });
+            }
+
+            $courses = $query->orderBy('magister_id')
                 ->orderBy('nombre')
                 ->get();
 
@@ -288,6 +300,12 @@ class CourseController extends Controller
                     'magister_id' => $course->magister_id,
                     'magister_name' => $course->magister ? $course->magister->nombre : 'Sin asignar',
                     'period_id' => $course->period_id,
+                    'period' => $course->period ? [
+                        'id' => $course->period->id,
+                        'anio' => $course->period->anio,
+                        'numero' => $course->period->numero,
+                        'anio_ingreso' => $course->period->anio_ingreso,
+                    ] : null,
                     'credits' => 0, // Valor por defecto
                     'duration' => null, // Valor por defecto
                     'modality' => 'Presencial', // Valor por defecto
@@ -301,6 +319,7 @@ class CourseController extends Controller
                 'data' => $formattedCourses,
                 'meta' => [
                     'total' => $formattedCourses->count(),
+                    'anio_ingreso_filter' => $anioIngreso,
                     'public_view' => true,
                 ],
             ]);
@@ -318,11 +337,20 @@ class CourseController extends Controller
     public function publicCoursesByMagister(Request $request, $magisterId)
     {
         try {
-            $courses = Course::with(['magister:id,nombre,encargado'])
+            $anioIngreso = $request->get('anio_ingreso');
+
+            $query = Course::with(['magister:id,nombre,encargado', 'period:id,anio,numero,anio_ingreso'])
                 ->where('magister_id', $magisterId)
-                ->select('id', 'nombre', 'magister_id', 'period_id')
-                ->orderBy('nombre')
-                ->get();
+                ->select('id', 'nombre', 'magister_id', 'period_id');
+
+            // Filtrar por año de ingreso si se proporciona
+            if ($anioIngreso) {
+                $query->whereHas('period', function($q) use ($anioIngreso) {
+                    $q->where('anio_ingreso', $anioIngreso);
+                });
+            }
+
+            $courses = $query->orderBy('nombre')->get();
 
             $formattedCourses = $courses->map(function ($course) {
                 return [
@@ -331,6 +359,12 @@ class CourseController extends Controller
                     'magister_id' => $course->magister_id,
                     'magister_name' => $course->magister ? $course->magister->nombre : 'Sin asignar',
                     'period_id' => $course->period_id,
+                    'period' => $course->period ? [
+                        'id' => $course->period->id,
+                        'anio' => $course->period->anio,
+                        'numero' => $course->period->numero,
+                        'anio_ingreso' => $course->period->anio_ingreso,
+                    ] : null,
                     'credits' => 0,
                     'duration' => null,
                     'modality' => 'Presencial',
@@ -344,6 +378,8 @@ class CourseController extends Controller
                 'data' => $formattedCourses,
                 'meta' => [
                     'total' => $formattedCourses->count(),
+                    'magister_id' => $magisterId,
+                    'anio_ingreso_filter' => $anioIngreso,
                     'public_view' => true,
                 ],
             ]);
@@ -363,15 +399,24 @@ class CourseController extends Controller
     public function publicCoursesByMagisterPaginated(Request $request, $magisterId)
     {
         try {
-            $query = Course::with(['magister:id,nombre,encargado'])
+            $anioIngreso = $request->get('anio_ingreso');
+
+            $query = Course::with(['magister:id,nombre,encargado', 'period:id,anio,numero,anio_ingreso'])
                 ->where('magister_id', $magisterId)
                 ->select('id', 'nombre', 'magister_id', 'period_id');
+
+            // Filtrar por año de ingreso si se proporciona
+            if ($anioIngreso) {
+                $query->whereHas('period', function($q) use ($anioIngreso) {
+                    $q->where('anio_ingreso', $anioIngreso);
+                });
+            }
 
             // Aplicar paginación
             $perPage = $request->get('per_page', 10);
             $page = $request->get('page', 1);
 
-            $courses = $query->paginate($perPage, ['*'], 'page', $page);
+            $courses = $query->orderBy('nombre')->paginate($perPage, ['*'], 'page', $page);
 
             // Formatear datos para respuesta pública
             $formattedCourses = $courses->map(function ($course) {
@@ -381,6 +426,12 @@ class CourseController extends Controller
                     'magister_id' => $course->magister_id,
                     'magister_name' => $course->magister ? $course->magister->nombre : 'Sin asignar',
                     'period_id' => $course->period_id,
+                    'period' => $course->period ? [
+                        'id' => $course->period->id,
+                        'anio' => $course->period->anio,
+                        'numero' => $course->period->numero,
+                        'anio_ingreso' => $course->period->anio_ingreso,
+                    ] : null,
                     'credits' => 0, // Valor por defecto
                     'duration' => null, // Valor por defecto
                     'modality' => 'Presencial', // Valor por defecto
@@ -398,6 +449,8 @@ class CourseController extends Controller
                     'per_page' => $courses->perPage(),
                     'total' => $courses->total(),
                     'has_more_pages' => $courses->hasMorePages(),
+                    'magister_id' => $magisterId,
+                    'anio_ingreso_filter' => $anioIngreso,
                     'public_view' => true,
                 ],
             ]);

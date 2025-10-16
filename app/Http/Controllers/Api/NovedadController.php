@@ -41,8 +41,29 @@ class NovedadController extends Controller
             $query->where('es_urgente', $request->boolean('es_urgente'));
         }
 
-        // Solo novedades activas (no expiradas)
-        if ($request->get('only_active', true)) {
+        // Filtro por estado (activa/expirada)
+        if ($request->filled('estado')) {
+            if ($request->estado === 'activa') {
+                $query->where(function($q) {
+                    $q->whereNull('fecha_expiracion')
+                      ->orWhere('fecha_expiracion', '>', now());
+                });
+            } elseif ($request->estado === 'expirada') {
+                $query->where('fecha_expiracion', '<=', now());
+            }
+        }
+
+        // Filtro por visibilidad
+        if ($request->filled('visibilidad')) {
+            if ($request->visibilidad === 'publica') {
+                $query->where('visible_publico', true);
+            } elseif ($request->visibilidad === 'privada') {
+                $query->where('visible_publico', false);
+            }
+        }
+
+        // Solo novedades activas (no expiradas) - por defecto
+        if ($request->get('only_active', false) && !$request->filled('estado')) {
             $query->where(function($q) {
                 $q->whereNull('fecha_expiracion')
                   ->orWhere('fecha_expiracion', '>', now());
@@ -184,22 +205,46 @@ class NovedadController extends Controller
     }
 
     /**
-     * Obtener novedades activas (no expiradas)
+     * Obtener novedades activas (no expiradas) con filtros
      */
-    public function active()
+    public function active(Request $request)
     {
-        $novedades = Novedad::with(['user', 'magister'])
+        $query = Novedad::with(['user', 'magister'])
             ->where(function($q) {
                 $q->whereNull('fecha_expiracion')
                   ->orWhere('fecha_expiracion', '>', now());
-            })
-            ->latest()
-            ->get();
+            });
+
+        // Filtro por búsqueda de texto
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('titulo', 'like', "%{$search}%")
+                  ->orWhere('contenido', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtro por tipo
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        // Filtro por magíster
+        if ($request->filled('magister_id')) {
+            $query->where('magister_id', $request->magister_id);
+        }
+
+        $novedades = $query->latest()->get();
 
         return response()->json([
             'success' => true,
             'data' => $novedades,
-            'message' => 'Novedades activas obtenidas exitosamente'
+            'message' => 'Novedades activas obtenidas exitosamente',
+            'filters_applied' => [
+                'search' => $request->get('search'),
+                'tipo' => $request->get('tipo'),
+                'magister_id' => $request->get('magister_id'),
+            ]
         ]);
     }
 

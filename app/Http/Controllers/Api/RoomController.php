@@ -14,11 +14,18 @@ class RoomController extends Controller
     {
         $ubicacion = $request->input('ubicacion');
         $capacidad = $request->input('capacidad');
+        $search = $request->input('search');
 
-        $rooms = Room::query()
+        $query = Room::query()
             ->when($ubicacion, fn($q) => $q->where('location', 'like', "%$ubicacion%"))
             ->when($capacidad, fn($q) => $q->where('capacity', '>=', $capacidad))
-            ->orderBy('name')
+            ->when($search, fn($q) => $q->where('name', 'like', "%$search%"));
+
+        // Ordenamiento
+        $sortBy = $request->get('sort', 'name');
+        $sortDirection = $request->get('direction', 'asc');
+
+        $rooms = $query->orderBy($sortBy, $sortDirection)
             ->paginate(10);
 
         return response()->json($rooms);

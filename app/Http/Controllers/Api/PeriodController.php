@@ -15,6 +15,10 @@ class PeriodController extends Controller
         $query = Period::query();
 
         // Filtros opcionales
+        if ($request->filled('magister_id')) {
+            $query->where('magister_id', $request->magister_id);
+        }
+
         if ($request->filled('anio')) {
             $query->where('anio', $request->anio);
         }

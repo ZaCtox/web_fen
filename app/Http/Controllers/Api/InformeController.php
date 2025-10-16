@@ -282,9 +282,28 @@ class InformeController extends Controller
         try {
             $query = Informe::with(['user:id,name', 'magister:id,nombre']);
 
+            // Filtro por búsqueda de texto
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('nombre', 'like', "%{$search}%")
+                      ->orWhere('descripcion', 'like', "%{$search}%");
+                });
+            }
+
             // Filtro por tipo
             if ($request->filled('tipo')) {
                 $query->where('tipo', $request->tipo);
+            }
+
+            // Filtro por magister
+            if ($request->filled('magister_id')) {
+                $query->where('magister_id', $request->magister_id);
+            }
+
+            // Filtro por usuario
+            if ($request->filled('user_id')) {
+                $query->where('user_id', $request->user_id);
             }
 
             // Solo informes públicos (si tienes un campo public_view)

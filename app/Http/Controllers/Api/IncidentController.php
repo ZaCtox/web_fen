@@ -42,6 +42,9 @@ class IncidentController extends Controller
             if ($request->filled('anio')) {
                 $periodos->whereYear('fecha_inicio', $request->anio);
             }
+            if ($request->filled('anio_ingreso')) {
+                $periodos->where('anio_ingreso', $request->anio_ingreso);
+            }
             $rangos = $periodos->get()->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
 
             $query->where(function ($q) use ($rangos) {

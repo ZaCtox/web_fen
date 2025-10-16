@@ -16,6 +16,7 @@ class Clase extends Model
         'room_id',
         'url_zoom',
         'encargado',
+        'tipo',
     ];
 
     public function course()

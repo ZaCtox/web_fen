@@ -104,7 +104,7 @@ class StaffController extends Controller
     {
         try {
             // Obtener staff para vista pública
-            $staff = Staff::select('id', 'nombre', 'cargo', 'telefono', 'anexo', 'email', 'foto', 'department')
+            $staff = Staff::select('id', 'nombre', 'cargo', 'telefono', 'anexo', 'email', 'foto')
                 ->orderBy('cargo')
                 ->orderBy('nombre')
                 ->get();
@@ -117,9 +117,9 @@ class StaffController extends Controller
                     'role' => $member->cargo,
                     'email' => $member->email,
                     'phone' => $member->telefono,
-                    'anexo' => $member->anexo, // ← AGREGAR
-                    'foto' => $member->foto,   // ← AGREGAR
-                    'department' => $member->department ?? $member->cargo, // ← MEJORAR
+                    'anexo' => $member->anexo,
+                    'foto' => $member->foto,
+                    'department' => $member->cargo, // Usar cargo como department
                     'public_view' => true,
                 ];
             });

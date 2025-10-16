@@ -98,9 +98,8 @@ Route::name('api.')->group(function () {
         Route::get('rooms', [RoomController::class, 'publicIndex']);
         Route::get('courses', [CourseController::class, 'publicIndex']);
         Route::get('clases', [ClaseController::class, 'publicIndex']);
-        Route::get('clases', [ClaseController::class, 'PublicShow']);
-        Route::get('/public/magisters-with-course-count', [CourseController::class, 'publicMagistersWithCourses']);
-        Route::get('/public/courses/years', [CourseController::class, 'publicAvailableYears']);
+        Route::get('clases/{id}', [ClaseController::class, 'publicShow']);
+        Route::get('courses/years', [CourseController::class, 'publicAvailableYears']);
         Route::get('courses/magister/{magisterId}', [CourseController::class, 'publicCoursesByMagister']);
         Route::get('courses/magister/{magisterId}/paginated', [CourseController::class, 'publicCoursesByMagisterPaginated']);
         Route::get('novedades', [NovedadController::class, 'active']);

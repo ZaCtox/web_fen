@@ -38,8 +38,19 @@ class SearchController extends Controller
         $results = [];
         $user = Auth::user();
 
+        // Solo usuarios autenticados pueden buscar
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No autenticado'
+            ], 401);
+        }
+
+        $isAdmin = $user->rol === 'administrador';
+        $canViewContent = in_array($user->rol, ['administrador', 'docente', 'administrativo']);
+
         // Buscar en Salas
-        if ($user && $user->can('viewAny', Room::class)) {
+        if ($canViewContent) {
             $rooms = Room::where('name', 'like', "%{$query}%")
                 ->orWhere('location', 'like', "%{$query}%")
                 ->limit(5)
@@ -58,7 +69,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Cursos
-        if ($user && $user->can('viewAny', Course::class)) {
+        if ($canViewContent) {
             $courses = Course::with('magister')
                 ->where('nombre', 'like', "%{$query}%")
                 ->limit(5)
@@ -77,7 +88,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Magisters
-        if ($user && $user->can('viewAny', Magister::class)) {
+        if ($canViewContent) {
             $magisters = Magister::where('nombre', 'like', "%{$query}%")
                 ->orWhere('encargado', 'like', "%{$query}%")
                 ->limit(5)
@@ -96,7 +107,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Staff
-        if ($user && $user->can('viewAny', Staff::class)) {
+        if ($canViewContent) {
             $staff = Staff::where('nombre', 'like', "%{$query}%")
                 ->orWhere('cargo', 'like', "%{$query}%")
                 ->orWhere('email', 'like', "%{$query}%")
@@ -116,7 +127,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Períodos
-        if ($user && $user->can('viewAny', Period::class)) {
+        if ($canViewContent) {
             $periods = Period::where('anio', 'like', "%{$query}%")
                 ->orWhere('numero', 'like', "%{$query}%")
                 ->limit(5)
@@ -135,7 +146,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Incidencias
-        if ($user && $user->can('viewAny', Incident::class)) {
+        if ($canViewContent) {
             $incidents = Incident::with('room')
                 ->where('titulo', 'like', "%{$query}%")
                 ->orWhere('descripcion', 'like', "%{$query}%")
@@ -164,7 +175,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Emergencias
-        if ($user && $user->can('viewAny', Emergency::class)) {
+        if ($isAdmin) {
             $emergencies = Emergency::where('title', 'like', "%{$query}%")
                 ->orWhere('message', 'like', "%{$query}%")
                 ->limit(5)
@@ -185,7 +196,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Clases
-        if ($user && $user->can('viewAny', Clase::class)) {
+        if ($canViewContent) {
             $clases = Clase::with(['course', 'room'])
                 ->whereHas('course', function($q) use ($query) {
                     $q->where('nombre', 'like', "%{$query}%");
@@ -213,7 +224,7 @@ class SearchController extends Controller
         }
 
         // Buscar en Usuarios (solo admin)
-        if ($user && $user->rol === 'administrador') {
+        if ($isAdmin) {
             $users = User::where('name', 'like', "%{$query}%")
                 ->orWhere('email', 'like', "%{$query}%")
                 ->orWhere('rol', 'like', "%{$query}%")
