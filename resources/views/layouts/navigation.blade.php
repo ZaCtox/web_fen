@@ -162,7 +162,7 @@
                             <div class="py-1">
                                 @if(tieneRol(['administrador', 'director_administrativo', 'asistente_postgrado']))
                                     <a href="{{ route('novedades.index') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                        <span>📰 Novedades</span>
+                                        <span>Novedades</span>
                                         @php 
                                             $urgentNews = \App\Models\Novedad::where('es_urgente', true)
                                                 ->where(function($q) {
@@ -178,6 +178,9 @@
                                 @if(tieneRol('administrador'))
                                     <a href="{{ route('staff.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Nuestro Equipo</a>
                                     <a href="{{ route('usuarios.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Usuarios</a>
+                                @endif
+                                @if(tieneRol(['administrador', 'director_administrativo', 'director_programa', 'asistente_postgrado']))
+                                    <a href="{{ route('analytics.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Estadísticas</a>
                                 @endif
                             </div>
                         </div>

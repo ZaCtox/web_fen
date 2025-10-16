@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\ClaseController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\DashboardController;
@@ -116,6 +117,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/incidencias/{incidencia}', [IncidentController::class, 'update'])
         ->middleware(['auth', 'incident.modify'])
         ->name('incidencias.update');
+
+    // 📊 Estadísticas Generales (Analytics)
+    Route::get('/analytics', [AnalyticsController::class, 'index'])
+        ->middleware('role:administrador,director_administrativo,director_programa,asistente_postgrado')
+        ->name('analytics.index');
+    
+    Route::get('/analytics/api', [AnalyticsController::class, 'api'])
+        ->middleware('role:administrador,director_administrativo,director_programa,asistente_postgrado')
+        ->name('analytics.api');
 
     // 🏛️ Salas
     Route::resource('rooms', RoomController::class)

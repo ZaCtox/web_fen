@@ -20,6 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'incident.modify' => \App\Http\Middleware\IncidentModificationMiddleware::class,
         ]);
         
+        // Middleware global para trackear vistas de páginas
+        $middleware->append(\App\Http\Middleware\TrackPageViews::class);
     })
     
 
