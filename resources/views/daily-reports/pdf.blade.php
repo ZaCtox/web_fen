@@ -171,47 +171,6 @@
             vertical-align: middle;
         }
         
-        .severity-icons-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 0 20px;
-        }
-        
-        .severity-icon-container {
-            flex: 1;
-            text-align: center;
-        }
-        
-        .severity-numbers-row {
-            display: flex;
-            margin-bottom: 15px;
-            background-color: #f8f9fa;
-            padding: 8px;
-            border-radius: 4px;
-        }
-        
-        .severity-number {
-            flex: 1;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 14px;
-            margin: 0 1px;
-            border-radius: 2px;
-        }
-        
-        .severity-labels-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            font-weight: bold;
-            color: #333;
-            padding: 0 20px;
-        }
         
         .image-container {
             text-align: center;
@@ -292,69 +251,133 @@
     </div>
     @endif
 
-        <!-- Indicador de Severidad -->
+        <!-- Escala de Severidad -->
         <div class="info-section">
-            <h3>Indicador de Severidad</h3>
-            <div style="margin: 20px 0; text-align: center;">
-                <img src="{{ public_path('icons/severity-scale.png') }}" style="width: 100%; max-width: 600px; height: auto;" alt="Escala de Severidad">
+            <h3>Escala de Severidad</h3>
+            
+            {{-- Tabla de Escala de Severidad --}}
+            <div style="margin: 20px 0; background-color: #f8f9fa; border-radius: 8px; padding: 20px; border: 1px solid #e0e0e0;">
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                    <thead>
+                        <tr style="background-color: #005187; color: white;">
+                            <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Escala</th>
+                            <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Nivel</th>
+                            <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Descripción</th>
+                    
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background-color: #4DBCC6; color: white;">
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">1-2</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">Normal</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Condiciones óptimas, sin problemas</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                                
+                            </td>
+                        </tr>
+                        <tr style="background-color: #8B8232; color: white;">
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">3-4</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">Leve</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Problemas menores, atención básica</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                               
+                            </td>
+                        </tr>
+                        <tr style="background-color: #FFCC00; color: #000;">
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">5-6</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">Moderado</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Problemas que requieren atención</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                               
+                            </td>
+                        </tr>
+                        <tr style="background-color: #FF6600; color: white;">
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">7-8</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">Fuerte</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Problemas importantes, acción inmediata</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                               
+                            </td>
+                        </tr>
+                        <tr style="background-color: #FF0000; color: white;">
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">9-10</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd; font-weight: bold;">Crítico</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Situación crítica, intervención urgente</td>
+                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
+                               
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+
             </div>
         </div>
 
     <div class="info-section">
         <h3>Observaciones del Día</h3>
         
+        {{-- Tabla de Observaciones --}}
+        <div style="margin: 20px 0; background-color: #f8f9fa; border-radius: 8px; padding: 20px; border: 1px solid #e0e0e0;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #005187; color: white;">
+                        <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">#</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Ubicación</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Horario</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Escala</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Programa/Área</th>
+                        <th style="padding: 12px; text-align: center; border: 1px solid #003d6b; font-size: 14px; font-weight: bold;">Evidencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($report->entries as $index => $entry)
+                    <tr style="background-color: {{ $index % 2 == 0 ? '#ffffff' : '#f8f9fa' }}; border-bottom: 1px solid #e0e0e0;">
+                        <td style="padding: 12px; text-align: center; border: 1px solid #ddd; font-weight: bold; color: #005187;">{{ $index + 1 }}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold; color: #4d82bc;">{{ $entry->ubicacion_completa }}</td>
+                        <td style="padding: 12px; text-align: center; border: 1px solid #ddd;">{{ $entry->hora ?? 'N/A' }}</td>
+                        <td style="padding: 12px; text-align: center; border: 1px solid #ddd;">
+                            @if($entry->escala)
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <div style="width: 24px; height: 24px; background-color: {{ $entry->color_escala }}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; border: 2px solid white;">
+                                        {{ $entry->escala }}
+                                    </div>
+                                    <span style="font-size: 12px; font-weight: bold;">{{ $entry->nivel_severidad }}</span>
+                                </div>
+                            @else
+                                <span style="color: #999; font-style: italic;">N/A</span>
+                            @endif
+                        </td>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-size: 12px;">
+                            @if($entry->programa || $entry->area)
+                                <div style="margin-bottom: 4px;">
+                                    @if($entry->programa)<strong>Programa:</strong> {{ $entry->programa }}@endif
+                                </div>
+                                @if($entry->area)<div><strong>Área:</strong> {{ $entry->area }}</div>@endif
+                            @else
+                                <span style="color: #999; font-style: italic;">N/A</span>
+                            @endif
+                        </td>
+                        <td style="padding: 12px; text-align: center; border: 1px solid #ddd;">
+                            @if($entry->tiene_foto)
+                                <div style="color: #28a745; font-weight: bold;">Sí</div>
+                            @else
+                                <div style="color: #999;">No</div>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        
+        {{-- Detalles de cada Observación --}}
         @foreach($report->entries as $index => $entry)
-        <div class="entry">
+        <div class="entry" style="page-break-inside: avoid;">
             <div class="entry-header">
                 <div class="entry-number">Observación #{{ $index + 1 }}</div>
                 <div class="entry-location">{{ $entry->ubicacion_completa }}</div>
             </div>
-            
-            {{-- Detalles adicionales de la bitácora --}}
-            @if($entry->hora || $entry->escala || $entry->programa || $entry->area)
-            <div class="entry-details">
-                @if($entry->hora)
-                <div class="entry-detail-row">
-                    <div class="entry-detail-label">Horario:</div>
-                    <div class="entry-detail-value">{{ $entry->hora }}</div>
-                </div>
-                @endif
-                
-                @if($entry->escala)
-                <div class="entry-detail-row">
-                    <div class="entry-detail-label">Escala:</div>
-                    <div class="entry-detail-value">
-                        <strong>{{ $entry->escala }} - {{ $entry->nivel_severidad }}</strong>
-                        @if($entry->escala <= 2)
-                            <img src="{{ public_path('icons/normal.svg') }}" class="severity-icon" alt="Normal">
-                        @elseif($entry->escala <= 4)
-                            <img src="{{ public_path('icons/leve.svg') }}" class="severity-icon" alt="Leve">
-                        @elseif($entry->escala <= 6)
-                            <img src="{{ public_path('icons/moderado.svg') }}" class="severity-icon" alt="Moderado">
-                        @elseif($entry->escala <= 8)
-                            <img src="{{ public_path('icons/fuerte.svg') }}" class="severity-icon" alt="Fuerte">
-                        @else
-                            <img src="{{ public_path('icons/critico.svg') }}" class="severity-icon" alt="Crítico">
-                        @endif
-                    </div>
-                </div>
-                @endif
-                
-                @if($entry->programa)
-                <div class="entry-detail-row">
-                    <div class="entry-detail-label">Programa:</div>
-                    <div class="entry-detail-value">{{ $entry->programa }}</div>
-                </div>
-                @endif
-                
-                @if($entry->area)
-                <div class="entry-detail-row">
-                    <div class="entry-detail-label">Área:</div>
-                    <div class="entry-detail-value">{{ $entry->area }}</div>
-                </div>
-                @endif
-            </div>
-            @endif
             
             <div class="entry-observation">
                 <strong>Observación:</strong><br>
@@ -372,10 +395,6 @@
             <div class="image-container">
                 <img src="{{ $entry->photo_url }}" alt="Evidencia fotográfica de la observación #{{ $index + 1 }}">
                 <p style="margin-top: 10px; font-size: 12px; color: #666;">Evidencia fotográfica</p>
-            </div>
-            @else
-            <div class="no-image">
-                No se adjuntó evidencia fotográfica a esta observación.
             </div>
             @endif
         </div>

@@ -54,7 +54,8 @@ class DailyReportController extends Controller
     {
         \Log::info('DailyReportController@store - Iniciando', [
             'request_data' => $request->all(),
-            'user_id' => Auth::id()
+            'user_id' => Auth::id(),
+            'user_role' => Auth::user()->rol ?? 'no_role'
         ]);
 
         try {
@@ -190,6 +191,12 @@ class DailyReportController extends Controller
 
         \Log::info('DailyReportController@store - Proceso completado exitosamente', [
             'report_id' => $report->id
+        ]);
+
+        // Debug: Verificar que el redirect se ejecute
+        \Log::info('DailyReportController@store - Ejecutando redirect', [
+            'route' => 'daily-reports.index',
+            'user_id' => Auth::id()
         ]);
 
         return redirect()->route('daily-reports.index')

@@ -575,7 +575,21 @@ window.submitForm = function() {
     if (validateCurrentStep()) {
         console.log('Validation passed, submitting form');
         
-        // Submit del formulario directamente sin overlay
+        // Mostrar overlay de loading global
+        if (!document.getElementById('form-loading-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.id = 'form-loading-overlay';
+            overlay.className = 'loading-overlay';
+            overlay.innerHTML = `
+                <div class="loading-overlay-content">
+                    <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                    <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+        
+        // Submit del formulario
         const form = document.querySelector('.hci-form');
         console.log('Form found:', form);
         form.submit();
