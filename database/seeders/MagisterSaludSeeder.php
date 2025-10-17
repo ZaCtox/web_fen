@@ -738,6 +738,17 @@ class MagisterSaludSeeder extends Seeder
         
         $novedades = [
             [
+                'titulo' => '🎉 ¡Plataforma Web FEN Disponible!',
+                'contenido' => 'Nos complace anunciar que la nueva Plataforma Web de la Facultad de Economía y Negocios ya está disponible. Ahora podrás acceder a toda la información académica, calendario de clases, grabaciones, documentos y más desde un solo lugar. Explora las nuevas funcionalidades y mantente al día con todas las actividades del magíster. ¡Bienvenido/a!',
+                'tipo_novedad' => 'general',
+                'visible_publico' => true,
+                'magister_id' => $magister->id,
+                'es_urgente' => true,
+                'color' => 'purple',
+                'icono' => '🚀',
+                'fecha_expiracion' => Carbon::create(2026, 12, 31),
+            ],
+            [
                 'titulo' => 'Inicio de Postulaciones - Magíster en Gestión de Sistemas de Salud',
                 'contenido' => 'Se encuentran abiertas las postulaciones para el Magíster en Gestión de Sistemas de Salud, cohorte 2025-2026. Revisa los requisitos y documentación necesaria en nuestra página web. ¡No pierdas esta oportunidad!',
                 'tipo_novedad' => 'admision',
@@ -780,7 +791,7 @@ class MagisterSaludSeeder extends Seeder
             );
         }
 
-        $this->command->info('   ✅ 3 novedades creadas');
+        $this->command->info('   ✅ 4 novedades creadas');
 
         $this->command->info('');
         $this->command->info('🎉 ¡Datos del Magíster en Gestión de Sistemas de Salud creados exitosamente!');
