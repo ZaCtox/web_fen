@@ -301,7 +301,7 @@ class EventController extends Controller
         return $eventos;
     }
 
-        private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, ?string $anio = null, ?string $trimestre = null)
+    private function generarEventosDesdeClases(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, ?string $anio = null, ?string $trimestre = null)
     {
         $dias = [
             'Domingo' => 0,
@@ -371,7 +371,7 @@ class EventController extends Controller
 
                     // Crear bloques de tiempo en orden cronológico
                     $bloques = [];
-                    
+
                     // 1. Primera parte de la clase (hasta coffee break)
                     if ($sesion->coffee_break_inicio) {
                         $bloques[] = [
@@ -381,7 +381,7 @@ class EventController extends Controller
                             'type' => 'clase'
                         ];
                     }
-                    
+
                     // 2. Coffee Break
                     if ($sesion->coffee_break_inicio && $sesion->coffee_break_fin) {
                         $bloques[] = [
@@ -391,7 +391,7 @@ class EventController extends Controller
                             'type' => 'coffee_break'
                         ];
                     }
-                    
+
                     // 3. Segunda parte de la clase (después de coffee break hasta lunch break)
                     if ($sesion->coffee_break_fin && $sesion->lunch_break_inicio) {
                         $bloques[] = [
@@ -401,7 +401,7 @@ class EventController extends Controller
                             'type' => 'clase'
                         ];
                     }
-                    
+
                     // 4. Lunch Break
                     if ($sesion->lunch_break_inicio && $sesion->lunch_break_fin) {
                         $bloques[] = [
@@ -411,7 +411,7 @@ class EventController extends Controller
                             'type' => 'lunch_break'
                         ];
                     }
-                    
+
                     // 5. Tercera parte de la clase (después de lunch break)
                     if ($sesion->lunch_break_fin) {
                         $bloques[] = [
@@ -421,7 +421,7 @@ class EventController extends Controller
                             'type' => 'clase'
                         ];
                     }
-                    
+
                     // Si no hay breaks, crear un solo bloque de clase
                     if (empty($bloques)) {
                         $bloques[] = [
@@ -436,11 +436,11 @@ class EventController extends Controller
                     foreach ($bloques as $index => $bloque) {
                         $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['start']);
                         $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['end']);
-                        
+
                         $backgroundColor = $color; // Color del magíster por defecto
                         $borderColor = $color;
                         $textColor = '#ffffff';
-                        
+
                         if ($bloque['type'] === 'coffee_break') {
                             $backgroundColor = '#f97316';
                             $borderColor = '#ea580c';
@@ -448,7 +448,7 @@ class EventController extends Controller
                             $backgroundColor = '#dc2626';
                             $borderColor = '#b91c1c';
                         }
-                        
+
                         $eventos->push([
                             'id' => 'bloque-' . $sesion->id . '-' . $index,
                             'title' => $bloque['title'],
@@ -476,7 +476,7 @@ class EventController extends Controller
                 elseif ($sesion->tiene_bloques) {
                     foreach ($sesion->bloques_horarios as $index => $bloque) {
                         $tipoBloque = $bloque['tipo'] ?? 'clase';
-                        
+
                         $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['inicio']);
                         $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['fin']);
 
@@ -505,7 +505,7 @@ class EventController extends Controller
                                 $titulo .= ' [ONLINE]';
                             elseif ($hibrida)
                                 $titulo .= ' [HÍBRIDA]';
-                            
+
                             $backgroundColor = $color;
                             $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
                             $descripcion .= "\n⏰ Bloque " . ($index + 1) . ": " . $bloque['inicio'] . ' - ' . $bloque['fin'];
@@ -726,8 +726,11 @@ class EventController extends Controller
 
         $allEvents = collect($manualEvents)->concat($classEvents)->values();
 
-        // Devuelve array directo como el web
-        return response()->json($allEvents);
+        // ✅ CAMBIO: Envolver en objeto con status y data para consistencia
+        return response()->json([
+            'status' => 'success',
+            'data' => $allEvents
+        ]);
     }
 
     /**
