@@ -107,8 +107,10 @@ Route::name('api.')->group(function () {
         Route::get('informes', [InformeController::class, 'publicIndex']);
         Route::get('informes/{id}', [InformeController::class, 'publicShow']);
         Route::get('informes/{id}/download', [InformeController::class, 'publicDownload']);
-        Route::get('/emergencies/active', [EmergencyController::class, 'active'])->name('emergencies.active');
     });
+
+    //Emergencias
+    Route::get('/emergencies/active', [EmergencyController::class, 'active'])->name('emergencies.active');
 
     // �� AUTENTICACIÓN
     Route::post('/register', [AuthController::class, 'register'])->name('register');
