@@ -162,50 +162,124 @@
                         </div>
                     </div>
                     @endif
-
-                    {{-- 🎥 Grabaciones disponibles (modo público) --}}
-                    @if(!empty($public) && $public === true && $clase->sesiones->count() > 0)
-                        <div class="col-span-2">
-                            <div class="p-4 rounded-lg bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-2 border-red-200 dark:border-red-800">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <span class="text-3xl" role="img" aria-label="Grabaciones">🎥</span>
-                                    <div>
-                                        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Grabaciones Disponibles</h4>
-                                        <p class="text-xs text-gray-600 dark:text-gray-400">{{ $clase->sesiones->count() }} {{ $clase->sesiones->count() === 1 ? 'sesión' : 'sesiones' }} grabada(s)</p>
-                                    </div>
-                                </div>
-                                <div class="space-y-2 max-h-60 overflow-y-auto">
-                                    @foreach($clase->sesiones as $sesion)
-                                        <a href="{{ $sesion->url_grabacion }}" 
-                                           target="_blank" 
-                                           rel="noopener noreferrer"
-                                           class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700 hover:shadow-md hover:border-red-400 dark:hover:border-red-500 transition-all duration-200 group">
-                                            <div class="flex items-center gap-3 flex-1">
-                                                <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                                                        <path d="M8 5v14l11-7z"/>
-                                                    </svg>
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <p class="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
-                                                        Sesión del {{ $sesion->fecha->format('d/m/Y') }}
-                                                    </p>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                                                        {{ \Carbon\Carbon::parse($sesion->fecha)->locale('es')->isoFormat('dddd') }} • Click para ver en YouTube
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                            </svg>
-                                        </a>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
+
+            {{-- ⏰ Horarios y 🎥 Grabaciones lado a lado (modo público) --}}
+            @if(!empty($public) && $public === true && $clase->sesiones->count() > 0)
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    {{-- Horarios de Coffee y Lunch (izquierda) --}}
+                    <div class="p-4 rounded-lg bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-200 dark:border-orange-800">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-3xl" role="img" aria-label="Horarios">⏰</span>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-900 dark:text-white">Horarios de Sesiones</h4>
+                                <p class="text-xs text-gray-600 dark:text-gray-400">Coffee & Lunch Breaks</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3 max-h-60 overflow-y-auto">
+                            @foreach($clase->sesiones as $sesion)
+                                <div class="p-3 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-700">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                                            <span class="text-lg">📅</span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-white">
+                                                {{ \Carbon\Carbon::parse($sesion->fecha)->locale('es')->isoFormat('dddd, D [de] MMMM') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ml-13 space-y-2 text-sm">
+                                        {{-- Mostrar breaks simples si existen --}}
+                                        @if($sesion->coffee_break_inicio || $sesion->lunch_break_inicio)
+                                            {{-- Horario principal de clase --}}
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-blue-600 dark:text-blue-400">📚</span>
+                                                <span class="text-gray-700 dark:text-gray-300 font-medium">
+                                                    <strong>{{ substr($sesion->hora_inicio, 0, 5) }} - {{ substr($sesion->hora_fin, 0, 5) }}</strong> Clase
+                                                </span>
+                                            </div>
+                                            
+                                            {{-- Coffee Break --}}
+                                            @if($sesion->coffee_break_inicio && $sesion->coffee_break_fin)
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-amber-600 dark:text-amber-400">☕</span>
+                                                    <span class="text-gray-600 dark:text-gray-400 italic">
+                                                        {{ substr($sesion->coffee_break_inicio, 0, 5) }} - {{ substr($sesion->coffee_break_fin, 0, 5) }} Coffee Break
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            
+                                            {{-- Lunch Break --}}
+                                            @if($sesion->lunch_break_inicio && $sesion->lunch_break_fin)
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-orange-600 dark:text-orange-400">🍽️</span>
+                                                    <span class="text-gray-600 dark:text-gray-400 italic">
+                                                        {{ substr($sesion->lunch_break_inicio, 0, 5) }} - {{ substr($sesion->lunch_break_fin, 0, 5) }} Lunch Break
+                                                    </span>
+                                                </div>
+                                            @endif
+                                        {{-- Horario tradicional sin breaks --}}
+                                        @elseif($sesion->hora_inicio && $sesion->hora_fin)
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-blue-600 dark:text-blue-400">📚</span>
+                                                <span class="text-gray-700 dark:text-gray-300 font-medium">
+                                                    <strong>{{ substr($sesion->hora_inicio, 0, 5) }} - {{ substr($sesion->hora_fin, 0, 5) }}</strong>
+                                                    @if($sesion->modalidad)
+                                                        <span class="ml-2 px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                                            {{ ucfirst($sesion->modalidad) }}
+                                                        </span>
+                                                    @endif
+                                                </span>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    
+                    {{-- Grabaciones (derecha) --}}
+                    <div class="p-4 rounded-lg bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border-2 border-red-200 dark:border-red-800">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-3xl" role="img" aria-label="Grabaciones">🎥</span>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-900 dark:text-white">Grabaciones Disponibles</h4>
+                                <p class="text-xs text-gray-600 dark:text-gray-400">{{ $clase->sesiones->count() }} {{ $clase->sesiones->count() === 1 ? 'sesión' : 'sesiones' }} grabada(s)</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 max-h-60 overflow-y-auto">
+                            @foreach($clase->sesiones as $sesion)
+                                <a href="{{ $sesion->url_grabacion }}" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   class="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-red-200 dark:border-red-700 hover:shadow-md hover:border-red-400 dark:hover:border-red-500 transition-all duration-200 group">
+                                    <div class="flex items-center gap-3 flex-1">
+                                        <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                                                Sesión del {{ $sesion->fecha->format('d/m/Y') }}
+                                            </p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                                {{ \Carbon\Carbon::parse($sesion->fecha)->locale('es')->isoFormat('dddd') }} • Click para ver en YouTube
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             {{-- 📅 Sesiones de la Clase --}}
             @unless(!empty($public) && $public === true)
@@ -242,6 +316,85 @@
                                             <p class="font-semibold text-gray-900 dark:text-white">
                                                 {{ \Carbon\Carbon::parse($sesion->fecha)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
                                             </p>
+                                            
+                                            {{-- Mostrar bloques horarios si existen --}}
+                                            @if($sesion->tiene_bloques)
+                                                <div class="mt-2 space-y-1 text-sm">
+                                                    @foreach($sesion->bloques_horarios as $bloque)
+                                                        <div class="flex items-center gap-2">
+                                                            @if(($bloque['tipo'] ?? '') === 'clase')
+                                                                <span class="text-blue-600 dark:text-blue-400">📚</span>
+                                                                <span class="text-gray-700 dark:text-gray-300">
+                                                                    <strong>{{ $bloque['inicio'] ?? '' }} - {{ $bloque['fin'] ?? '' }}</strong>
+                                                                    @if(!empty($bloque['nombre']))
+                                                                        <span class="ml-1">{{ $bloque['nombre'] }}</span>
+                                                                    @endif
+                                                                </span>
+                                                            @elseif(($bloque['tipo'] ?? '') === 'coffee_break')
+                                                                <span class="text-amber-600 dark:text-amber-400">☕</span>
+                                                                <span class="text-gray-600 dark:text-gray-400 italic">
+                                                                    {{ $bloque['inicio'] ?? '' }} - {{ $bloque['fin'] ?? '' }} Coffee Break
+                                                                </span>
+                                                            @elseif(($bloque['tipo'] ?? '') === 'lunch_break')
+                                                                <span class="text-orange-600 dark:text-orange-400">🍽️</span>
+                                                                <span class="text-gray-600 dark:text-gray-400 italic">
+                                                                    {{ $bloque['inicio'] ?? '' }} - {{ $bloque['fin'] ?? '' }} Lunch Break
+                                                                </span>
+                                                            @else
+                                                                <span class="text-gray-500">⏰</span>
+                                                                <span class="text-gray-600 dark:text-gray-400">
+                                                                    {{ $bloque['inicio'] ?? '' }} - {{ $bloque['fin'] ?? '' }}
+                                                                    @if(!empty($bloque['nombre']))
+                                                                        <span class="ml-1">{{ $bloque['nombre'] }}</span>
+                                                                    @endif
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            {{-- Mostrar breaks simples si existen --}}
+                                            @elseif($sesion->coffee_break_inicio || $sesion->lunch_break_inicio)
+                                                <div class="mt-2 space-y-2 text-sm">
+                                                    {{-- Horario principal de clase --}}
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-blue-600 dark:text-blue-400">📚</span>
+                                                        <span class="text-gray-700 dark:text-gray-300 font-medium">
+                                                            <strong>{{ substr($sesion->hora_inicio, 0, 5) }} - {{ substr($sesion->hora_fin, 0, 5) }}</strong> Clase
+                                                        </span>
+                                                    </div>
+                                                    
+                                                    {{-- Coffee Break --}}
+                                                    @if($sesion->coffee_break_inicio && $sesion->coffee_break_fin)
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-amber-600 dark:text-amber-400">☕</span>
+                                                            <span class="text-gray-600 dark:text-gray-400 italic">
+                                                                {{ substr($sesion->coffee_break_inicio, 0, 5) }} - {{ substr($sesion->coffee_break_fin, 0, 5) }} Coffee Break
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                    
+                                                    {{-- Lunch Break --}}
+                                                    @if($sesion->lunch_break_inicio && $sesion->lunch_break_fin)
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="text-orange-600 dark:text-orange-400">🍽️</span>
+                                                            <span class="text-gray-600 dark:text-gray-400 italic">
+                                                                {{ substr($sesion->lunch_break_inicio, 0, 5) }} - {{ substr($sesion->lunch_break_fin, 0, 5) }} Lunch Break
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            @elseif($sesion->hora_inicio && $sesion->hora_fin)
+                                                {{-- Modo tradicional sin bloques --}}
+                                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                                    <span class="font-medium">⏰ {{ substr($sesion->hora_inicio, 0, 5) }} - {{ substr($sesion->hora_fin, 0, 5) }}</span>
+                                                    @if($sesion->modalidad)
+                                                        <span class="ml-2 px-2 py-0.5 text-xs rounded bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                                            {{ ucfirst($sesion->modalidad) }}
+                                                        </span>
+                                                    @endif
+                                                </p>
+                                            @endif
+
                                             @if($sesion->observaciones)
                                                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ $sesion->observaciones }}</p>
                                             @endif

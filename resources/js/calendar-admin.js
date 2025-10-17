@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
     const storeUrl = document.querySelector('meta[name="store-url"]')?.content || '';
     const showBase = document.querySelector('meta[name="clases-show-base"]')?.content || '/clases';
+    const userId = document.querySelector('meta[name="user-id"]')?.content || null;
 
     const magisterFilter = document.getElementById('magister-filter');
     const roomFilter = document.getElementById('room-filter');
@@ -36,17 +37,52 @@ document.addEventListener('DOMContentLoaded', function () {
         const m = String(id).match(/^clase-(\d+)-/);
         return m ? m[1] : null;
     };
+    
+    const getClaseIdFromEvent = (ev) => {
+        // Intentar desde el ID del evento
+        const fromId = getClaseIdFromEventId(ev.id);
+        if (fromId) return fromId;
+        
+        // Si no, usar clase_id de extendedProps
+        return ev.extendedProps?.clase_id || null;
+    };
 
     // Render de detalles de evento
     const renderEventDetails = (ev) => {
         const isClase = ev.extendedProps.type === 'clase';
-        const claseId = isClase ? getClaseIdFromEventId(ev.id) : null;
+        const isBreak = ev.extendedProps.type === 'break';
+        const start = fmtTime(ev.start);
+        const end = fmtTime(ev.end);
+        
+        // Si es un BREAK, mostrar solo información del descanso
+        if (isBreak) {
+            const duracion = Math.round((ev.end - ev.start) / 60000); // minutos
+            const sala = ev.extendedProps.room?.name || 'Sin sala';
+            const descripcion = ev.extendedProps.description || '';
+            
+            return `
+              <div class="text-center">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">${ev.title}</h2>
+                <div class="inline-block p-4 rounded-lg ${ev.title.includes('COFFEE') ? 'bg-orange-50 dark:bg-orange-900/20' : 'bg-red-50 dark:bg-red-900/20'}">
+                  <p class="text-6xl mb-3">${ev.title.includes('COFFEE') ? '☕' : '🍽️'}</p>
+                  <p class="text-lg font-medium text-gray-700 dark:text-gray-300">${descripcion}</p>
+                </div>
+                <div class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                  <div><span class="font-medium">⏰ Inicio:</span> ${start}</div>
+                  <div><span class="font-medium">⏰ Fin:</span> ${end}</div>
+                  <div><span class="font-medium">⌛ Duración:</span> ${duracion} minutos</div>
+                  <div><span class="font-medium">🏫 Sala:</span> ${sala}</div>
+                </div>
+              </div>
+            `;
+        }
+        
+        // Si es una CLASE, mostrar toda la información
+        const claseId = isClase ? getClaseIdFromEvent(ev) : null;
         const magister = ev.extendedProps.magister?.name || '—';
         const modalidad = ev.extendedProps.modality || '—';
         const profesor = ev.extendedProps.profesor || ev.extendedProps.teacher || '—';
         const sala = ev.extendedProps.room?.name || 'Sin sala';
-        const start = fmtTime(ev.start);
-        const end = fmtTime(ev.end);
         const zoom = ev.extendedProps.url_zoom || null;
         const grabacion = ev.extendedProps.url_grabacion || null;
         const desc = (ev.extendedProps.type === 'manual') ? (ev.extendedProps.description || '') : '';
@@ -106,12 +142,12 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('📅 Fecha inicial del calendario:', fechaInicio);
     
     const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek',
-        initialDate: fechaInicio || undefined,
+        initialView: window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek', // Lista en móvil, Semana en desktop
+        initialDate: undefined, // Siempre empezar en "hoy"
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,listWeek'   // 👈 siempre mostrar todos
+            right: 'dayGridMonth,timeGridWeek,listWeek'   // 👈 Mes, Semana y Lista
         },
         locale: 'es',
         buttonText: {
@@ -122,15 +158,15 @@ document.addEventListener('DOMContentLoaded', function () {
             list: 'Lista',
         },
         firstDay: 1,
-        slotMinTime: '08:30:00',
-        slotMaxTime: '21:00:00',
-        slotDuration: '01:10:00',
+        slotMinTime: '08:00:00',
+        slotMaxTime: '22:00:00',
+        slotDuration: '00:30:00',
         slotLabelFormat: {
             hour: 'numeric',
             minute: '2-digit',
             hour12: false
         },
-        slotLabelInterval: '01:10:00',
+        slotLabelInterval: '01:00:00',
         allDaySlot: false,
         expandRows: true,
         editable: false,
@@ -172,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 calendar.setOption('height', 'auto');
                 calendar.setOption('contentHeight', 'auto');
             } else {
-                calendar.setOption('height', window.innerHeight - 150);
+                calendar.setOption('height', window.innerHeight + 200 );
                 calendar.setOption('contentHeight', null);
             }
         },
@@ -449,6 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('event-form').addEventListener('submit', saveEvent);
     function saveEvent(e) {
         e.preventDefault();
+        console.log('🚀 Iniciando guardado de evento...');
 
         const eventId = (document.getElementById('event_id').value || '').trim();
         const data = {
@@ -458,39 +495,67 @@ document.addEventListener('DOMContentLoaded', function () {
             start_time: document.getElementById('start_time').value,
             end_time: document.getElementById('end_time').value,
             room_id: document.getElementById('room_id').value || null,
-            type: 'manual'
+            type: 'manual',
+            created_by: userId
         };
+
+        console.log('📦 Data a enviar:', data);
 
         const endpoint = eventId ? `/events/${eventId}` : storeUrl;
         const method = eventId ? 'PUT' : 'POST';
 
+        console.log('🔗 Endpoint:', endpoint);
+        console.log('📡 Method:', method);
+
         if (!endpoint) {
-            console.error('Falta meta[name="store-url"] o endpoint vacío');
+            console.error('❌ Falta meta[name="store-url"] o endpoint vacío');
             Swal.fire({ icon: 'error', title: 'Configuración faltante', text: 'No se encontró la URL para guardar eventos.' });
             return;
         }
 
+        console.log('📤 Enviando petición fetch...');
+        
         fetch(endpoint, {
             method,
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
             body: JSON.stringify(data)
         })
             .then(async (res) => {
+                console.log('📥 Respuesta recibida:', res.status, res.statusText);
+                
                 if (!res.ok) {
                     let errJson = null;
-                    try { errJson = await res.json(); } catch { }
+                    try { 
+                        errJson = await res.json(); 
+                        console.log('❌ Error JSON del servidor:', errJson);
+                    } catch (e) {
+                        console.log('❌ Error parseando JSON:', e);
+                    }
                     throw errJson || { message: 'Error al guardar' };
                 }
-                return res.json();
+                
+                const responseData = await res.json();
+                console.log('✅ Respuesta exitosa del servidor:', responseData);
+                return responseData;
             })
-            .then(() => {
+            .then((data) => {
+                console.log('🎉 Evento guardado exitosamente:', data);
+                console.log('🔄 Cerrando modal y actualizando calendario...');
+                
+                // Cerrar cualquier SweetAlert pendiente
+                Swal.close();
+                
                 calendar.unselect();
                 calendar.refetchEvents();
                 window.closeModal();
                 Swal.fire({ icon: 'success', title: 'Evento guardado', timer: 1500, showConfirmButton: false });
+                
+                console.log('✅ Proceso completado exitosamente');
             })
             .catch((err) => {
-                console.error('Save error:', err);
+                console.error('💥 Error en el proceso de guardado:', err);
+                // Cerrar cualquier SweetAlert pendiente
+                Swal.close();
                 Swal.fire({ icon: 'error', title: 'Error al guardar el evento', text: (err && err.message) ? err.message : 'Revisa los datos ingresados' });
             });
     }
@@ -545,16 +610,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Cerrar modales global
     window.closeModal = function () {
+        console.log('🚪 Cerrando modal...');
         document.getElementById('modal').classList.add('hidden');
         document.getElementById('eventModal').classList.add('hidden');
         resetForm();
+        console.log('✅ Modal cerrado y formulario reseteado');
     };
 
     function resetForm() {
+        console.log('🔄 Reseteando formulario...');
         document.getElementById('event_id').value = '';
         document.getElementById('event-form').reset();
         document.getElementById('start_time').value = '';
         document.getElementById('end_time').value = '';
+        console.log('✅ Formulario reseteado');
     }
 });
 

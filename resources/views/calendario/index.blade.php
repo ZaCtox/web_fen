@@ -6,6 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="store-url" content="{{ route('events.store') }}">
         <meta name="clases-show-base" content="{{ url('/clases') }}">
+        <meta name="user-id" content="{{ auth()->id() }}">
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Calendario Académico</h2>
     </x-slot>
 

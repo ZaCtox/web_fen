@@ -28,6 +28,8 @@ class EventController extends Controller
         $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
         $anioIngreso = $request->query('anio_ingreso');
+        $anio = $request->query('anio');
+        $trimestre = $request->query('trimestre');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
 
@@ -35,6 +37,8 @@ class EventController extends Controller
             'magister_id' => $magisterId,
             'room_id' => $roomId,
             'anio_ingreso' => $anioIngreso,
+            'anio' => $anio,
+            'trimestre' => $trimestre,
             'start' => $rangeStart?->toDateString(),
             'end' => $rangeEnd?->toDateString(),
         ]);
@@ -89,10 +93,10 @@ class EventController extends Controller
             });
 
         // Obtener eventos de clases con límites
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 25);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, $anio, $trimestre, 25);
 
         // Obtener sesiones de clase
-        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, $anio, $trimestre, 50);
 
         $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
@@ -190,7 +194,7 @@ class EventController extends Controller
     /**
      * Generar eventos desde clases con optimizaciones para evitar JSON demasiado grande.
      */
-    private function generarEventosDesdeClasesOptimizado(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, int $maxEvents = 50)
+    private function generarEventosDesdeClasesOptimizado(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, ?string $anio = null, ?string $trimestre = null, int $maxEvents = 50)
     {
         $dias = [
             'Domingo' => 0,
@@ -211,6 +215,8 @@ class EventController extends Controller
             ->when(! empty($magisterId), fn ($q) => $q->whereHas('course', fn ($qq) => $qq->where('magister_id', $magisterId)))
             ->when(! empty($roomId), fn ($q) => $q->where('room_id', $roomId))
             ->when(! empty($anioIngreso), fn ($q) => $q->whereHas('period', fn ($qq) => $qq->where('anio_ingreso', $anioIngreso)))
+            ->when(! empty($anio), fn ($q) => $q->whereHas('period', fn ($qq) => $qq->where('anio', $anio)))
+            ->when(! empty($trimestre), fn ($q) => $q->whereHas('period', fn ($qq) => $qq->where('numero', $trimestre)))
             ->whereHas('period', fn ($qq) => $qq
                 ->whereDate('fecha_fin', '>=', $rangeStart->toDateString())
                 ->whereDate('fecha_inicio', '<=', $rangeEnd->toDateString()));
@@ -300,6 +306,8 @@ class EventController extends Controller
         $magisterId = $request->query('magister_id');
         $roomId = $request->query('room_id');
         $anioIngreso = $request->query('anio_ingreso');
+        $anio = $request->query('anio');
+        $trimestre = $request->query('trimestre');
         $rangeStart = $request->query('start') ? Carbon::parse($request->query('start')) : null;
         $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end')) : null;
 
@@ -359,10 +367,10 @@ class EventController extends Controller
             });
 
         // Obtener eventos de clases
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, $anio, $trimestre, 50);
 
         // Obtener sesiones de clase
-        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, $anio, $trimestre, 50);
 
         $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
@@ -445,10 +453,10 @@ class EventController extends Controller
         $anioIngreso = $request->query('anio_ingreso');
 
         // Obtener eventos de clases
-        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 25);
+        $classEvents = $this->generarEventosDesdeClasesOptimizado($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, null, null, 25);
 
         // Obtener sesiones de clase
-        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, 50);
+        $sesionEvents = $this->generarEventosDesdeSesiones($magisterId, $roomId, $rangeStart, $rangeEnd, $anioIngreso, null, null, 50);
 
         $allEvents = collect($manualEvents)->concat($classEvents)->concat($sesionEvents)->values();
 
@@ -473,7 +481,7 @@ class EventController extends Controller
     /**
      * Generar eventos desde las sesiones de clase (ClaseSesion)
      */
-    private function generarEventosDesdeSesiones(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, int $maxEvents = 50)
+    private function generarEventosDesdeSesiones(?string $magisterId = '', $roomId = null, ?Carbon $rangeStart = null, ?Carbon $rangeEnd = null, ?string $anioIngreso = null, ?string $anio = null, ?string $trimestre = null, int $maxEvents = 50)
     {
         if (!$rangeStart || !$rangeEnd) {
             return collect();
@@ -483,6 +491,8 @@ class EventController extends Controller
             'magister_id' => $magisterId,
             'room_id' => $roomId,
             'anio_ingreso' => $anioIngreso,
+            'anio' => $anio,
+            'trimestre' => $trimestre,
             'fecha_inicio' => $rangeStart->toDateString(),
             'fecha_fin' => $rangeEnd->toDateString(),
         ]);
@@ -492,59 +502,228 @@ class EventController extends Controller
             ->when(!empty($magisterId), fn($q) => $q->whereHas('clase.course', fn($qq) => $qq->where('magister_id', $magisterId)))
             ->when(!empty($roomId), fn($q) => $q->whereHas('clase', fn($qq) => $qq->where('room_id', $roomId)))
             ->when(!empty($anioIngreso), fn($q) => $q->whereHas('clase.period', fn($qq) => $qq->where('anio_ingreso', $anioIngreso)))
+            ->when(!empty($anio), fn($q) => $q->whereHas('clase.period', fn($qq) => $qq->where('anio', $anio)))
+            ->when(!empty($trimestre), fn($q) => $q->whereHas('clase.period', fn($qq) => $qq->where('numero', $trimestre)))
             ->limit($maxEvents)
             ->get();
 
         \Log::info('✅ Sesiones encontradas: ' . $sesiones->count());
 
-        return $sesiones->map(function ($sesion) {
+        return $sesiones->flatMap(function ($sesion) {
             $clase = $sesion->clase;
             $magister = $clase->course->magister ?? null;
             $magisterNombre = $magister ? $magister->nombre : 'Sin magíster';
             $magisterColor = $magister ? ($magister->color ?? '#6b7280') : '#6b7280';
 
-            // Extraer hora_inicio y hora_fin de las observaciones
+            $eventos = [];
+            
+            // Si la sesión tiene campos de breaks simples (nueva forma - MÁS SIMPLE!)
+            if ($sesion->coffee_break_inicio || $sesion->lunch_break_inicio) {
+                // Crear evento principal de la clase
+                $horaInicio = $sesion->hora_inicio ?? '09:00:00';
+                $horaFin = $sesion->hora_fin ?? '16:30:00';
+                
+                $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($horaInicio);
+                $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($horaFin);
+
+                $titulo = $clase->course->nombre;
+                $modality = $sesion->modalidad ?? 'presencial';
+                
+                if ($modality === 'online') {
+                    $titulo .= ' [ONLINE]';
+                } elseif ($modality === 'hibrida') {
+                    $titulo .= ' [HÍBRIDA]';
+                }
+
+                $descripcion = 'Magíster: ' . $magisterNombre;
+                if (!empty($sesion->url_zoom)) {
+                    $descripcion .= "\n🔗 " . $sesion->url_zoom;
+                }
+
+                $eventos[] = [
+                    'id' => 'sesion-' . $sesion->id,
+                    'title' => $titulo,
+                    'description' => $descripcion,
+                    'start' => $start->toDateTimeString(),
+                    'end' => $end->toDateTimeString(),
+                    'room_id' => $sesion->room_id,
+                    'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
+                    'editable' => false,
+                    'backgroundColor' => $magisterColor,
+                    'borderColor' => $magisterColor,
+                    'type' => 'clase',
+                    'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
+                    'modality' => $modality,
+                    'url_zoom' => $sesion->url_zoom,
+                    'profesor' => $clase->encargado ?? null,
+                    'sesion_id' => $sesion->id,
+                ];
+
+                // Agregar Coffee Break si existe
+                if ($sesion->coffee_break_inicio && $sesion->coffee_break_fin) {
+                    $eventos[] = [
+                        'id' => 'break-coffee-' . $sesion->id,
+                        'title' => '☕ COFFEE BREAK',
+                        'description' => '⏰ Descanso de 30 minutos',
+                        'start' => Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->coffee_break_inicio)->toDateTimeString(),
+                        'end' => Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->coffee_break_fin)->toDateTimeString(),
+                        'room_id' => $sesion->room_id,
+                        'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
+                        'editable' => false,
+                        'backgroundColor' => '#f97316', // Naranja más vibrante
+                        'borderColor' => '#ea580c',
+                        'textColor' => '#ffffff',
+                        'display' => 'block',
+                        'type' => 'break',
+                        'sesion_id' => $sesion->id,
+                        'allDay' => false,
+                    ];
+                }
+
+                // Agregar Lunch Break si existe
+                if ($sesion->lunch_break_inicio && $sesion->lunch_break_fin) {
+                    $eventos[] = [
+                        'id' => 'break-lunch-' . $sesion->id,
+                        'title' => '🍽️ LUNCH BREAK',
+                        'description' => '⏰ Almuerzo de 1 hora',
+                        'start' => Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->lunch_break_inicio)->toDateTimeString(),
+                        'end' => Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->lunch_break_fin)->toDateTimeString(),
+                        'room_id' => $sesion->room_id,
+                        'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
+                        'editable' => false,
+                        'backgroundColor' => '#dc2626', // Rojo más vibrante
+                        'borderColor' => '#b91c1c',
+                        'textColor' => '#ffffff',
+                        'display' => 'block',
+                        'type' => 'break',
+                        'sesion_id' => $sesion->id,
+                        'allDay' => false,
+                    ];
+                }
+            }
+            // Si tiene bloques horarios (forma antigua con JSON)
+            elseif ($sesion->tiene_bloques) {
+                foreach ($sesion->bloques_horarios as $index => $bloque) {
+                    $tipoBloque = $bloque['tipo'] ?? 'clase';
+                    
+                    $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['inicio']);
+                    $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['fin']);
+
+                    $modality = $sesion->modalidad ?? 'presencial';
+                    
+                    // Configurar título y color según el tipo de bloque
+                    if ($tipoBloque === 'coffee_break') {
+                        $titulo = '☕ Coffee Break';
+                        $backgroundColor = '#f59e0b'; // Naranja/ámbar
+                        $descripcion = 'Descanso - Coffee Break';
+                        $type = 'break';
+                    } elseif ($tipoBloque === 'lunch_break') {
+                        $titulo = '🍽️ Lunch Break';
+                        $backgroundColor = '#ef4444'; // Rojo
+                        $descripcion = 'Descanso - Almuerzo';
+                        $type = 'break';
+                    } else {
+                        // Bloque de clase normal
+                        $titulo = $clase->course->nombre;
+                        if (!empty($bloque['nombre'])) {
+                            $titulo .= ' - ' . $bloque['nombre'];
+                        }
+                        
+                        if ($modality === 'online') {
+                            $titulo .= ' [ONLINE]';
+                        } elseif ($modality === 'hibrida') {
+                            $titulo .= ' [HÍBRIDA]';
+                        }
+
+                        $backgroundColor = $magisterColor;
+                        $descripcion = 'Magíster: ' . $magisterNombre;
+                        $descripcion .= "\n⏰ Bloque " . ($index + 1) . ": " . $bloque['inicio'] . ' - ' . $bloque['fin'];
+                        if (!empty($sesion->url_zoom)) {
+                            $descripcion .= "\n🔗 " . $sesion->url_zoom;
+                        }
+                        $type = 'clase';
+                    }
+
+                    $eventos[] = [
+                        'id' => 'sesion-' . $sesion->id . '-bloque-' . $index,
+                        'title' => $titulo,
+                        'description' => $descripcion,
+                        'start' => $start->toDateTimeString(),
+                        'end' => $end->toDateTimeString(),
+                        'room_id' => $sesion->room_id,
+                        'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
+                        'editable' => false,
+                        'backgroundColor' => $backgroundColor,
+                        'borderColor' => $backgroundColor,
+                        'type' => $type,
+                        'bloque_tipo' => $tipoBloque,
+                        'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
+                        'modality' => $modality,
+                        'url_zoom' => $sesion->url_zoom,
+                        'profesor' => $clase->encargado ?? null,
+                        'sesion_id' => $sesion->id,
+                        'bloque_index' => $index,
+                        'tiene_bloques' => true,
+                    ];
+                }
+            } else {
+                // Modo tradicional: usar hora_inicio y hora_fin de la sesión o de la clase
+                $horaInicio = $sesion->hora_inicio ?? $clase->hora_inicio ?? '09:00:00';
+                $horaFin = $sesion->hora_fin ?? $clase->hora_fin ?? '13:00:00';
+                
+                // Fallback: Extraer hora_inicio y hora_fin de las observaciones (retrocompatibilidad)
             preg_match('/\((\d{2}:\d{2}:\d{2})-(\d{2}:\d{2}:\d{2})\)/', $sesion->observaciones ?? '', $matches);
-            $horaInicio = $matches[1] ?? $clase->hora_inicio ?? '09:00:00';
-            $horaFin = $matches[2] ?? $clase->hora_fin ?? '13:00:00';
+                if (!empty($matches[1])) {
+                    $horaInicio = $matches[1];
+                    $horaFin = $matches[2];
+                }
 
             $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($horaInicio);
             $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($horaFin);
 
             $titulo = $clase->course->nombre;
-            $modality = 'presencial';
+                $modality = $sesion->modalidad ?? 'presencial';
             
-            // Verificar primero si es híbrida (prioridad), luego online
+                // Verificar modalidad de observaciones (retrocompatibilidad)
             if (str_contains($sesion->observaciones ?? '', 'híbrida')) {
-                $titulo .= ' [HÍBRIDA]';
-                $modality = 'híbrida';
+                    $modality = 'hibrida';
             } elseif (str_contains($sesion->observaciones ?? '', 'Clase online')) {
-                $titulo .= ' [ONLINE]';
                 $modality = 'online';
             }
+                
+                if ($modality === 'online') {
+                    $titulo .= ' [ONLINE]';
+                } elseif ($modality === 'hibrida') {
+                    $titulo .= ' [HÍBRIDA]';
+                }
 
             $descripcion = 'Magíster: ' . $magisterNombre;
-            if (!empty($clase->url_zoom)) {
-                $descripcion .= "\n🔗 " . $clase->url_zoom;
+                if (!empty($sesion->url_zoom ?? $clase->url_zoom)) {
+                    $descripcion .= "\n🔗 " . ($sesion->url_zoom ?? $clase->url_zoom);
             }
 
-            return [
+                $eventos[] = [
                 'id' => 'sesion-' . $sesion->id,
                 'title' => $titulo,
                 'description' => $descripcion,
                 'start' => $start->toDateTimeString(),
                 'end' => $end->toDateTimeString(),
-                'room_id' => $clase->room_id,
-                'room' => $clase->room ? ['id' => $clase->room->id, 'name' => $clase->room->name] : null,
+                    'room_id' => $sesion->room_id ?? $clase->room_id,
+                    'room' => ($sesion->room ?? $clase->room) ? ['id' => ($sesion->room ?? $clase->room)->id, 'name' => ($sesion->room ?? $clase->room)->name] : null,
                 'editable' => false,
                 'backgroundColor' => $magisterColor,
                 'borderColor' => $magisterColor,
                 'type' => 'clase',
                 'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
                 'modality' => $modality,
-                'url_zoom' => $clase->url_zoom,
+                    'url_zoom' => $sesion->url_zoom ?? $clase->url_zoom,
                 'profesor' => $clase->encargado ?? null,
+                    'sesion_id' => $sesion->id,
+                    'tiene_bloques' => false,
             ];
+            }
+
+            return $eventos;
         });
     }
 }

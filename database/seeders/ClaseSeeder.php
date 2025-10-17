@@ -122,34 +122,52 @@ class ClaseSeeder extends Seeder
                 'course_id' => $curso->id,
                 'period_id' => $periodo->id,
                 'room_id' => $salaFEN1->id,
-                'user_id' => $responsable->id,
-                'modality' => 'híbrida', // Modalidad general (mixta)
+                'encargado' => $modulo['responsable'],
                 'tipo' => 'cátedra',
-                'dia' => 'Viernes/Sábado',
-                'hora_inicio' => '18:30:00',
-                'hora_fin' => '21:30:00',
                 'url_zoom' => $zoomUrl,
-                'descripcion' => "Viernes: Online vía Zoom | Sábados: Híbrida (FEN 1 + Zoom)\n{$zoomInfo}",
             ]);
 
             $totalClases++;
 
             // Crear las sesiones individuales
             foreach ($modulo['sesiones'] as $index => $sesion) {
-                ClaseSesion::create([
+                $dataSesion = [
                     'clase_id' => $clase->id,
                     'fecha' => $sesion['fecha'],
+                    'dia' => $sesion['dia'],
                     'hora_inicio' => $sesion['hora_inicio'],
                     'hora_fin' => $sesion['hora_fin'],
                     'modalidad' => $sesion['modalidad'],
                     'room_id' => $sesion['modalidad'] !== 'online' ? $salaFEN1->id : null,
                     'url_zoom' => $zoomUrl,
-                    'tema' => $modulo['nombre'],
-                    'descripcion' => $sesion['modalidad'] === 'online' 
+                    'observaciones' => $sesion['modalidad'] === 'online' 
                         ? "Clase online vía Zoom\n{$zoomInfo}" 
                         : "Clase híbrida: Presencial en FEN 1 + transmisión online\n{$zoomInfo}",
                     'numero_sesion' => $index + 1,
-                ]);
+                    'estado' => 'pendiente',
+                ];
+
+                // Si es SÁBADO y dura todo el día (09:00 - 16:30), agregar bloques horarios
+                if ($sesion['dia'] === 'Sábado' && $sesion['hora_inicio'] === '09:00:00' && $sesion['hora_fin'] === '16:30:00') {
+                    $dataSesion['bloques_horarios'] = json_encode([
+                        ['tipo' => 'clase', 'inicio' => '09:00', 'fin' => '10:30', 'nombre' => ''],
+                        ['tipo' => 'coffee_break', 'inicio' => '10:30', 'fin' => '11:00', 'nombre' => ''],
+                        ['tipo' => 'clase', 'inicio' => '11:00', 'fin' => '13:30', 'nombre' => ''],
+                        ['tipo' => 'lunch_break', 'inicio' => '13:30', 'fin' => '14:30', 'nombre' => ''],
+                        ['tipo' => 'clase', 'inicio' => '14:30', 'fin' => '15:30', 'nombre' => ''],
+                        ['tipo' => 'clase', 'inicio' => '15:30', 'fin' => '16:30', 'nombre' => ''],
+                    ]);
+                }
+                // Si es SÁBADO medio día (09:00 - 13:30)
+                elseif ($sesion['dia'] === 'Sábado' && $sesion['hora_inicio'] === '09:00:00' && $sesion['hora_fin'] === '13:30:00') {
+                    $dataSesion['bloques_horarios'] = json_encode([
+                        ['tipo' => 'clase', 'inicio' => '09:00', 'fin' => '10:30', 'nombre' => ''],
+                        ['tipo' => 'coffee_break', 'inicio' => '10:30', 'fin' => '11:00', 'nombre' => ''],
+                        ['tipo' => 'clase', 'inicio' => '11:00', 'fin' => '13:30', 'nombre' => ''],
+                    ]);
+                }
+
+                ClaseSesion::create($dataSesion);
 
                 $totalSesiones++;
             }

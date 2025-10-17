@@ -137,7 +137,8 @@ class EventController extends Controller
                 'start_time' => 'required|date',
                 'end_time' => 'required|date|after_or_equal:start_time',
                 'room_id' => 'nullable|exists:rooms,id',
-                'type' => 'nullable|string|in:evento,reunión,actividad,otro',
+                'type' => 'nullable|string|in:evento,reunión,actividad,otro,manual',
+                'created_by' => 'nullable|exists:users,id',
             ]);
 
             // Validar que la fecha de fin sea posterior a la de inicio
@@ -201,7 +202,7 @@ class EventController extends Controller
                 'start_time' => 'sometimes|required|date',
                 'end_time' => 'sometimes|required|date|after_or_equal:start_time',
                 'room_id' => 'nullable|exists:rooms,id',
-                'type' => 'nullable|string|in:evento,reunión,actividad,otro',
+                'type' => 'nullable|string|in:evento,reunión,actividad,otro,manual',
                 'status' => 'nullable|string|in:activo,cancelado,finalizado',
             ]);
 
@@ -286,7 +287,9 @@ class EventController extends Controller
         $q = Clase::with(['room', 'period', 'course.magister', 'sesiones'])
             ->when(!empty($magisterId), fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
             ->when(!empty($roomId), fn($q) => $q->where('room_id', $roomId))
-            ->when(!empty($anioIngreso), fn($q) => $q->whereHas('period', fn($qq) => $qq->where('anio_ingreso', $anioIngreso)));
+            ->when(!empty($anioIngreso), fn($q) => $q->whereHas('period', fn($qq) => $qq->where('anio_ingreso', $anioIngreso)))
+            ->when(!empty($anio), fn($q) => $q->whereHas('period', fn($qq) => $qq->where('anio', $anio)))
+            ->when(!empty($trimestre), fn($q) => $q->whereHas('period', fn($qq) => $qq->where('numero', $trimestre)));
 
         if ($rangeStart && $rangeEnd) {
             $q->whereHas('period', fn($qq) => $qq
@@ -320,44 +323,235 @@ class EventController extends Controller
                     continue;
                 }
 
-                $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_inicio);
-                $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_fin);
+                // Si la sesión tiene campos de breaks simples (nueva forma)
+                if ($sesion->coffee_break_inicio || $sesion->lunch_break_inicio) {
+                    $modality = $sesion->modalidad ?? 'presencial';
+                    $online = $modality === 'online';
+                    $hibrida = $modality === 'hibrida';
 
-                $modality = $sesion->modalidad ?? 'presencial';
-                $online = $modality === 'online';
-                $hibrida = $modality === 'hibrida';
+                    $tituloBase = $clase->course->nombre;
+                    if ($online)
+                        $tituloBase .= ' [ONLINE]';
+                    elseif ($hibrida)
+                        $tituloBase .= ' [HÍBRIDA]';
 
-                $titulo = $clase->course->nombre;
-                if ($online)
-                    $titulo .= ' [ONLINE]';
-                elseif ($hibrida)
-                    $titulo .= ' [HÍBRIDA]';
+                    $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
+                    if (!empty($sesion->url_zoom)) {
+                        $descripcion .= "\n🔗 " . $sesion->url_zoom;
+                    }
 
-                $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
-                if (!empty($sesion->url_zoom)) {
-                    $descripcion .= "\n🔗 " . $sesion->url_zoom;
+                    // Crear bloques de tiempo en orden cronológico
+                    $bloques = [];
+                    
+                    // 1. Primera parte de la clase (hasta coffee break)
+                    if ($sesion->coffee_break_inicio) {
+                        $bloques[] = [
+                            'start' => $sesion->hora_inicio,
+                            'end' => $sesion->coffee_break_inicio,
+                            'title' => $tituloBase,
+                            'type' => 'clase'
+                        ];
+                    }
+                    
+                    // 2. Coffee Break
+                    if ($sesion->coffee_break_inicio && $sesion->coffee_break_fin) {
+                        $bloques[] = [
+                            'start' => $sesion->coffee_break_inicio,
+                            'end' => $sesion->coffee_break_fin,
+                            'title' => '☕ COFFEE BREAK',
+                            'type' => 'coffee_break'
+                        ];
+                    }
+                    
+                    // 3. Segunda parte de la clase (después de coffee break hasta lunch break)
+                    if ($sesion->coffee_break_fin && $sesion->lunch_break_inicio) {
+                        $bloques[] = [
+                            'start' => $sesion->coffee_break_fin,
+                            'end' => $sesion->lunch_break_inicio,
+                            'title' => $tituloBase,
+                            'type' => 'clase'
+                        ];
+                    }
+                    
+                    // 4. Lunch Break
+                    if ($sesion->lunch_break_inicio && $sesion->lunch_break_fin) {
+                        $bloques[] = [
+                            'start' => $sesion->lunch_break_inicio,
+                            'end' => $sesion->lunch_break_fin,
+                            'title' => '🍽️ LUNCH BREAK',
+                            'type' => 'lunch_break'
+                        ];
+                    }
+                    
+                    // 5. Tercera parte de la clase (después de lunch break)
+                    if ($sesion->lunch_break_fin) {
+                        $bloques[] = [
+                            'start' => $sesion->lunch_break_fin,
+                            'end' => $sesion->hora_fin,
+                            'title' => $tituloBase,
+                            'type' => 'clase'
+                        ];
+                    }
+                    
+                    // Si no hay breaks, crear un solo bloque de clase
+                    if (empty($bloques)) {
+                        $bloques[] = [
+                            'start' => $sesion->hora_inicio,
+                            'end' => $sesion->hora_fin,
+                            'title' => $tituloBase,
+                            'type' => 'clase'
+                        ];
+                    }
+
+                    // Crear eventos para cada bloque
+                    foreach ($bloques as $index => $bloque) {
+                        $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['start']);
+                        $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['end']);
+                        
+                        $backgroundColor = $color; // Color del magíster por defecto
+                        $borderColor = $color;
+                        $textColor = '#ffffff';
+                        
+                        if ($bloque['type'] === 'coffee_break') {
+                            $backgroundColor = '#f97316';
+                            $borderColor = '#ea580c';
+                        } elseif ($bloque['type'] === 'lunch_break') {
+                            $backgroundColor = '#dc2626';
+                            $borderColor = '#b91c1c';
+                        }
+                        
+                        $eventos->push([
+                            'id' => 'bloque-' . $sesion->id . '-' . $index,
+                            'title' => $bloque['title'],
+                            'description' => $bloque['type'] === 'clase' ? $descripcion : '⏰ ' . ($bloque['type'] === 'coffee_break' ? 'Descanso de 30 minutos' : 'Almuerzo de 1 hora'),
+                            'start' => $start->toDateTimeString(),
+                            'end' => $end->toDateTimeString(),
+                            'room_id' => $sesion->room_id,
+                            'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
+                            'editable' => false,
+                            'backgroundColor' => $backgroundColor,
+                            'borderColor' => $borderColor,
+                            'textColor' => $textColor,
+                            'type' => $bloque['type'] === 'clase' ? 'clase' : 'break',
+                            'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
+                            'modality' => $modality,
+                            'url_zoom' => $sesion->url_zoom,
+                            'profesor' => $magister->nombre ?? null,
+                            'url_grabacion' => $sesion->url_grabacion,
+                            'clase_id' => $clase->id,
+                            'sesion_id' => $sesion->id,
+                        ]);
+                    }
                 }
+                // Si la sesión tiene bloques horarios (forma antigua con JSON)
+                elseif ($sesion->tiene_bloques) {
+                    foreach ($sesion->bloques_horarios as $index => $bloque) {
+                        $tipoBloque = $bloque['tipo'] ?? 'clase';
+                        
+                        $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['inicio']);
+                        $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['fin']);
 
-                $eventos->push([
-                    'id' => 'clase-' . $clase->id . '-sesion-' . $sesion->id,
-                    'title' => $titulo,
-                    'description' => $descripcion,
-                    'start' => $start->toDateTimeString(),
-                    'end' => $end->toDateTimeString(),
-                    'room_id' => $sesion->room_id,
-                    'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
-                    'editable' => false,
-                    'backgroundColor' => $color,
-                    'borderColor' => $color,
-                    'type' => 'clase',
-                    'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
-                    'modality' => $modality,
-                    'url_zoom' => $sesion->url_zoom,
-                    'profesor' => $magister->nombre ?? null,
-                    'url_grabacion' => $sesion->url_grabacion,
-                    'clase_id' => $clase->id,
-                    'sesion_id' => $sesion->id,
-                ]);
+                        $modality = $sesion->modalidad ?? 'presencial';
+                        $online = $modality === 'online';
+                        $hibrida = $modality === 'hibrida';
+
+                        // Configurar título y color según el tipo de bloque
+                        if ($tipoBloque === 'coffee_break') {
+                            $titulo = '☕ Coffee Break';
+                            $backgroundColor = '#f59e0b'; // Naranja/ámbar
+                            $descripcion = 'Descanso - Coffee Break';
+                            $type = 'break';
+                        } elseif ($tipoBloque === 'lunch_break') {
+                            $titulo = '🍽️ Lunch Break';
+                            $backgroundColor = '#ef4444'; // Rojo
+                            $descripcion = 'Descanso - Almuerzo';
+                            $type = 'break';
+                        } else {
+                            // Bloque de clase normal
+                            $titulo = $clase->course->nombre;
+                            if (!empty($bloque['nombre'])) {
+                                $titulo .= ' - ' . $bloque['nombre'];
+                            }
+                            if ($online)
+                                $titulo .= ' [ONLINE]';
+                            elseif ($hibrida)
+                                $titulo .= ' [HÍBRIDA]';
+                            
+                            $backgroundColor = $color;
+                            $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
+                            $descripcion .= "\n⏰ Bloque " . ($index + 1) . ": " . $bloque['inicio'] . ' - ' . $bloque['fin'];
+                            if (!empty($sesion->url_zoom)) {
+                                $descripcion .= "\n🔗 " . $sesion->url_zoom;
+                            }
+                            $type = 'clase';
+                        }
+
+                        $eventos->push([
+                            'id' => 'clase-' . $clase->id . '-sesion-' . $sesion->id . '-bloque-' . $index,
+                            'title' => $titulo,
+                            'description' => $descripcion,
+                            'start' => $start->toDateTimeString(),
+                            'end' => $end->toDateTimeString(),
+                            'room_id' => $sesion->room_id,
+                            'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
+                            'editable' => false,
+                            'backgroundColor' => $backgroundColor,
+                            'borderColor' => $backgroundColor,
+                            'type' => $type,
+                            'bloque_tipo' => $tipoBloque,
+                            'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
+                            'modality' => $modality,
+                            'url_zoom' => $sesion->url_zoom,
+                            'profesor' => $magister->nombre ?? null,
+                            'url_grabacion' => $sesion->url_grabacion,
+                            'clase_id' => $clase->id,
+                            'sesion_id' => $sesion->id,
+                            'bloque_index' => $index,
+                            'tiene_bloques' => true,
+                        ]);
+                    }
+                } else {
+                    // Modo tradicional sin bloques
+                    $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_inicio);
+                    $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_fin);
+
+                    $modality = $sesion->modalidad ?? 'presencial';
+                    $online = $modality === 'online';
+                    $hibrida = $modality === 'hibrida';
+
+                    $titulo = $clase->course->nombre;
+                    if ($online)
+                        $titulo .= ' [ONLINE]';
+                    elseif ($hibrida)
+                        $titulo .= ' [HÍBRIDA]';
+
+                    $descripcion = 'Magíster: ' . ($magister->nombre ?? 'Desconocido');
+                    if (!empty($sesion->url_zoom)) {
+                        $descripcion .= "\n🔗 " . $sesion->url_zoom;
+                    }
+
+                    $eventos->push([
+                        'id' => 'clase-' . $clase->id . '-sesion-' . $sesion->id,
+                        'title' => $titulo,
+                        'description' => $descripcion,
+                        'start' => $start->toDateTimeString(),
+                        'end' => $end->toDateTimeString(),
+                        'room_id' => $sesion->room_id,
+                        'room' => $sesion->room ? ['id' => $sesion->room->id, 'name' => $sesion->room->name] : null,
+                        'editable' => false,
+                        'backgroundColor' => $color,
+                        'borderColor' => $color,
+                        'type' => 'clase',
+                        'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
+                        'modality' => $modality,
+                        'url_zoom' => $sesion->url_zoom,
+                        'profesor' => $magister->nombre ?? null,
+                        'url_grabacion' => $sesion->url_grabacion,
+                        'clase_id' => $clase->id,
+                        'sesion_id' => $sesion->id,
+                        'tiene_bloques' => false,
+                    ]);
+                }
             }
         }
 

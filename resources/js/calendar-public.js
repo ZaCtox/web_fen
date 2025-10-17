@@ -23,12 +23,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Lupa: base para /clases/{id}
   const showBase = document.querySelector('meta[name="clases-show-base"]')?.content || null;
-  // ids de clases: "clase-<ID>-sesion-<ID>" o "clase-<ID>-YYYYMMDD" (legacy)
+  // ids de clases: "clase-<ID>-sesion-<ID>" o "bloque-<sesionID>-<index>" o "clase-<ID>-YYYYMMDD" (legacy)
   const getClaseIdFromEventId = (id) => {
-    // Nuevo formato: "clase-123-sesion-456" o "sesion-456"
-    // Antiguo formato: "clase-123-20250101"
-    const m = String(id).match(/^clase-(\d+)-/);
-    return m ? m[1] : null;
+    // Nuevo formato: "clase-123-sesion-456"
+    const m1 = String(id).match(/^clase-(\d+)-/);
+    if (m1) return m1[1];
+    
+    // Formato de bloques: "bloque-456-0" - necesitamos buscar la clase desde la sesión
+    // Por ahora retornamos null y confiamos en que el evento tenga clase_id en extendedProps
+    return null;
+  };
+  
+  const getClaseIdFromEvent = (event) => {
+    // Intentar desde el ID del evento
+    const fromId = getClaseIdFromEventId(event.id);
+    if (fromId) return fromId;
+    
+    // Si no, usar clase_id de extendedProps
+    return event.extendedProps?.clase_id || null;
   };
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -47,15 +59,15 @@ document.addEventListener('DOMContentLoaded', function () {
       list: 'Lista',
     },
     firstDay: 1,
-    slotMinTime: '08:30:00',
-    slotMaxTime: '21:00:00',
-    slotDuration: '01:10:00',
+    slotMinTime: '08:00:00',
+    slotMaxTime: '22:00:00',
+    slotDuration: '00:30:00',
     slotLabelFormat: {
       hour: 'numeric',
       minute: '2-digit',
       hour12: false
     },
-    slotLabelInterval: '01:10:00',
+    slotLabelInterval: '01:00:00',
     allDaySlot: false,
     expandRows: true,
     editable: false,
@@ -88,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function () {
         calendar.setOption('height', 'auto');
         calendar.setOption('contentHeight', 'auto');
       } else {
-        calendar.setOption('height', window.innerHeight - 150);
+        calendar.setOption('height', window.innerHeight + 200);
         calendar.setOption('contentHeight', null);
       }
     },
@@ -269,65 +281,113 @@ document.addEventListener('DOMContentLoaded', function () {
   // Modal público
   function onEventClick(info) {
     const ext = info.event.extendedProps || {};
+    const isBreak = ext.type === 'break';
 
-    // Título
+    // Título siempre
     document.getElementById('modal-title').textContent = info.event.title;
 
-    // Descripción (si la usas)
-    const descEl = document.getElementById('modal-description');
-    if (descEl) descEl.textContent = ext.description || '';
+    // Si es un BREAK, mostrar información simplificada
+    if (isBreak) {
+      const duracion = Math.round((info.event.end - info.event.start) / 60000); // minutos
+      
+      // Descripción del break
+      const descEl = document.getElementById('modal-description');
+      if (descEl) descEl.textContent = ext.description || '';
+      
+      // Ocultar campos de clase (programa, modalidad, profesor)
+      const programEl = document.getElementById('modal-program');
+      if (programEl && programEl.parentElement) programEl.parentElement.style.display = 'none';
+      
+      const magisterEl = document.getElementById('modal-magister-view');
+      if (magisterEl && magisterEl.parentElement) magisterEl.parentElement.style.display = 'none';
+      
+      const modEl = document.getElementById('modal-modality');
+      if (modEl && modEl.parentElement) modEl.parentElement.style.display = 'none';
+      
+      const profEl = document.getElementById('modal-teacher');
+      if (profEl && profEl.parentElement) profEl.parentElement.style.display = 'none';
+      
+      // Mostrar solo: hora inicio, hora fin, sala
+      document.getElementById('modal-start').textContent = fmtTime(info.event.start);
+      document.getElementById('modal-end').textContent = fmtTime(info.event.end);
+      document.getElementById('modal-room').textContent = ext.room?.name || '—';
+      
+      // Ocultar grabación y lupa para breaks
+      const grabacionContainer = document.getElementById('modal-grabacion-container');
+      if (grabacionContainer) grabacionContainer.classList.add('hidden');
+      
+      const viewLink = document.getElementById('view-class-link');
+      if (viewLink) viewLink.classList.add('hidden');
+      
+    } else {
+      // Si es una CLASE o EVENTO MANUAL, mostrar toda la información normal
+      
+      // MOSTRAR todos los campos que ocultamos para breaks
+      const programEl = document.getElementById('modal-program');
+      if (programEl && programEl.parentElement) programEl.parentElement.style.display = '';
+      
+      const magisterEl = document.getElementById('modal-magister-view');
+      if (magisterEl && magisterEl.parentElement) magisterEl.parentElement.style.display = '';
+      
+      const modEl = document.getElementById('modal-modality');
+      if (modEl && modEl.parentElement) modEl.parentElement.style.display = '';
+      
+      const profEl = document.getElementById('modal-teacher');
+      if (profEl && profEl.parentElement) profEl.parentElement.style.display = '';
 
-    // Programa = nombre del magíster (puede venir como string u objeto)
-    const programaName =
-      ext.programa ||
-      (typeof ext.magister === 'string' ? ext.magister : (ext.magister?.name || 'No especificado'));
+      // Descripción (si la usas)
+      const descEl = document.getElementById('modal-description');
+      if (descEl) descEl.textContent = ext.description || '';
 
-    // Rellenar "Programa"
-    const programEl = document.getElementById('modal-program');
-    if (programEl) programEl.textContent = programaName;
+      // Programa = nombre del magíster (puede venir como string u objeto)
+      const programaName =
+        ext.programa ||
+        (typeof ext.magister === 'string' ? ext.magister : (ext.magister?.name || 'No especificado'));
 
-    // Si aún existe el span "modal-magister-view", también le ponemos el programa
-    const magisterEl = document.getElementById('modal-magister-view');
-    if (magisterEl) magisterEl.textContent = programaName;
+      // Rellenar "Programa"
+      if (programEl) programEl.textContent = programaName;
 
-    // Modalidad (badge)
-    const modEl = document.getElementById('modal-modality');
-    if (modEl) modEl.innerHTML = modalityBadge(ext.modality);
+      // Si aún existe el span "modal-magister-view", también le ponemos el programa
+      if (magisterEl) magisterEl.textContent = programaName;
 
-    // Profesor
-    const profEl = document.getElementById('modal-teacher');
-    if (profEl) profEl.textContent = ext.profesor || ext.teacher || '—';
+      // Modalidad (badge)
+      if (modEl) modEl.innerHTML = modalityBadge(ext.modality);
 
-    // Horas solo HH:mm
-    document.getElementById('modal-start').textContent = fmtTime(info.event.start);
-    document.getElementById('modal-end').textContent = fmtTime(info.event.end);
+      // Profesor
+      if (profEl) profEl.textContent = ext.profesor || ext.teacher || '—';
 
-    // Sala
-    document.getElementById('modal-room').textContent = ext.room?.name || '—';
+      // Horas solo HH:mm
+      document.getElementById('modal-start').textContent = fmtTime(info.event.start);
+      document.getElementById('modal-end').textContent = fmtTime(info.event.end);
 
-    // Grabación de YouTube
-    const grabacionContainer = document.getElementById('modal-grabacion-container');
-    const grabacionLink = document.getElementById('modal-grabacion-link');
-    if (grabacionContainer && grabacionLink) {
-      if (ext.url_grabacion) {
-        grabacionLink.href = ext.url_grabacion;
-        grabacionContainer.classList.remove('hidden');
-      } else {
-        grabacionContainer.classList.add('hidden');
-        grabacionLink.removeAttribute('href');
+      // Sala
+      document.getElementById('modal-room').textContent = ext.room?.name || '—';
+
+      // Grabación de YouTube - MOSTRAR si existe
+      const grabacionContainer = document.getElementById('modal-grabacion-container');
+      const grabacionLink = document.getElementById('modal-grabacion-link');
+      if (grabacionContainer && grabacionLink) {
+        if (ext.url_grabacion) {
+          grabacionLink.href = ext.url_grabacion;
+          grabacionContainer.classList.remove('hidden');
+        } else {
+          grabacionContainer.classList.add('hidden');
+          grabacionLink.removeAttribute('href');
+        }
       }
-    }
 
-    // Lupa: solo para clases
-    const viewLink = document.getElementById('view-class-link');
-    if (viewLink) {
-      const claseId = getClaseIdFromEventId(info.event.id);
-      if (showBase && claseId && (ext.type === 'clase')) {
-        viewLink.href = `${showBase}/${claseId}`;
-        viewLink.classList.remove('hidden');
-      } else {
-        viewLink.classList.add('hidden');
-        viewLink.removeAttribute('href');
+      // Lupa: solo para clases - MOSTRAR
+      const viewLink = document.getElementById('view-class-link');
+      if (viewLink) {
+        // Usar la función helper que obtiene clase_id del ID o de extendedProps
+        const claseId = getClaseIdFromEvent(info.event);
+        if (showBase && claseId && (ext.type === 'clase')) {
+          viewLink.href = `${showBase}/${claseId}`;
+          viewLink.classList.remove('hidden');
+        } else {
+          viewLink.classList.add('hidden');
+          viewLink.removeAttribute('href');
+        }
       }
     }
 

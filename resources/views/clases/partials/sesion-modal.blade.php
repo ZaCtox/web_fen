@@ -7,7 +7,48 @@
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0"
      class="fixed inset-0 z-50 overflow-y-auto"
-     style="display: none;">
+     style="display: none;"
+     x-data="{
+         bloques: [],
+         usarBloques: false,
+         agregarBloque(tipo) {
+             this.bloques.push({
+                 tipo: tipo,
+                 inicio: '',
+                 fin: '',
+                 nombre: ''
+             });
+         },
+         eliminarBloque(index) {
+             this.bloques.splice(index, 1);
+         },
+         obtenerIconoBloque(tipo) {
+             if (tipo === 'clase') return '📚';
+             if (tipo === 'coffee_break') return '☕';
+             if (tipo === 'lunch_break') return '🍽️';
+             return '⏰';
+         },
+         obtenerNombreBloque(tipo) {
+             if (tipo === 'clase') return 'Clase';
+             if (tipo === 'coffee_break') return 'Coffee Break';
+             if (tipo === 'lunch_break') return 'Lunch Break';
+             return 'Otro';
+         },
+         bloquesJSON() {
+             return JSON.stringify(this.bloques);
+         },
+         cargarBloquesTemplate() {
+             // Template para sábados (09:00 - 16:30)
+             this.bloques = [
+                 { tipo: 'clase', inicio: '09:00', fin: '10:30', nombre: '' },
+                 { tipo: 'coffee_break', inicio: '10:30', fin: '11:00', nombre: '' },
+                 { tipo: 'clase', inicio: '11:00', fin: '13:30', nombre: '' },
+                 { tipo: 'lunch_break', inicio: '13:30', fin: '14:30', nombre: '' },
+                 { tipo: 'clase', inicio: '14:30', fin: '15:30', nombre: '' },
+                 { tipo: 'clase', inicio: '15:30', fin: '16:30', nombre: '' }
+             ];
+         }
+     }">
     
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         {{-- Overlay --}}
@@ -57,7 +98,7 @@
                         </template>
 
                         <template x-if="modalMode === 'add'">
-                            <form method="POST" action="{{ route('clases.sesiones.store', $clase) }}" class="space-y-4">
+                            <form method="POST" action="{{ route('clases.sesiones.store', $clase) }}" class="space-y-4" @submit="if(usarBloques && bloques.length > 0) { $event.target.querySelector('input[name=bloques_horarios]').value = bloquesJSON(); }">
                                 @csrf
                                 
                                 <div>
@@ -68,6 +109,79 @@
                                            name="fecha" 
                                            required 
                                            class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:border-[#4d82bc] focus:ring focus:ring-[#4d82bc]/50">
+                                </div>
+
+                                {{-- Toggle para usar bloques horarios --}}
+                                <div class="border-t border-b border-gray-200 dark:border-gray-600 py-3">
+                                    <label class="flex items-center gap-3 cursor-pointer">
+                                        <input type="checkbox" 
+                                               x-model="usarBloques" 
+                                               class="w-5 h-5 text-[#4d82bc] rounded focus:ring-[#4d82bc]">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            ⏰ Usar bloques horarios (con breaks)
+                                        </span>
+                                    </label>
+                                </div>
+
+                                {{-- Sección de bloques horarios --}}
+                                <div x-show="usarBloques" x-transition class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">Define bloques de clase y breaks</p>
+                                        <button type="button" 
+                                                @click="cargarBloquesTemplate()"
+                                                class="text-xs px-3 py-1 bg-purple-100 hover:bg-purple-200 text-purple-700 rounded transition">
+                                            🎯 Template Sábado
+                                        </button>
+                                    </div>
+
+                                    {{-- Lista de bloques --}}
+                                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                                        <template x-for="(bloque, index) in bloques" :key="index">
+                                            <div class="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                                <span x-text="obtenerIconoBloque(bloque.tipo)" class="text-xl"></span>
+                                                <select x-model="bloque.tipo" class="text-sm rounded border-gray-300 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                                    <option value="clase">Clase</option>
+                                                    <option value="coffee_break">Coffee Break</option>
+                                                    <option value="lunch_break">Lunch Break</option>
+                                                </select>
+                                                <input type="time" 
+                                                       x-model="bloque.inicio" 
+                                                       placeholder="Inicio"
+                                                       class="text-sm rounded border-gray-300 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                                <span class="text-gray-500">-</span>
+                                                <input type="time" 
+                                                       x-model="bloque.fin" 
+                                                       placeholder="Fin"
+                                                       class="text-sm rounded border-gray-300 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                                <button type="button" 
+                                                        @click="eliminarBloque(index)"
+                                                        class="p-1 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition">
+                                                    ❌
+                                                </button>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    {{-- Botones para agregar bloques --}}
+                                    <div class="flex gap-2 flex-wrap">
+                                        <button type="button" 
+                                                @click="agregarBloque('clase')"
+                                                class="text-xs px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded transition">
+                                            📚 + Clase
+                                        </button>
+                                        <button type="button" 
+                                                @click="agregarBloque('coffee_break')"
+                                                class="text-xs px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded transition">
+                                            ☕ + Coffee Break
+                                        </button>
+                                        <button type="button" 
+                                                @click="agregarBloque('lunch_break')"
+                                                class="text-xs px-3 py-1 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded transition">
+                                            🍽️ + Lunch Break
+                                        </button>
+                                    </div>
+
+                                    <input type="hidden" name="bloques_horarios" value="">
                                 </div>
 
                                 <div>
@@ -110,7 +224,7 @@
                                         Crear Sesión
                                     </button>
                                     <button type="button" 
-                                            @click="showModal = false"
+                                            @click="showModal = false; usarBloques = false; bloques = []"
                                             class="px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium rounded-lg transition-all duration-200">
                                         Cancelar
                                     </button>
@@ -126,6 +240,11 @@
                                           action="{{ route('sesiones.update', $sesion) }}" 
                                           class="space-y-4" 
                                           x-show="editingSesion === {{ $sesion->id }}"
+                                          x-data="{
+                                              bloques{{ $sesion->id }}: {{ json_encode($sesion->bloques_horarios ?? []) }},
+                                              usarBloques{{ $sesion->id }}: {{ $sesion->tiene_bloques ? 'true' : 'false' }}
+                                          }"
+                                          @submit="if(usarBloques{{ $sesion->id }} && bloques{{ $sesion->id }}.length > 0) { $event.target.querySelector('input[name=bloques_horarios]').value = JSON.stringify(bloques{{ $sesion->id }}); }"
                                           style="display: none;">
                                         @csrf
                                         @method('PUT')
@@ -139,6 +258,48 @@
                                                    value="{{ $sesion->fecha->format('Y-m-d') }}"
                                                    required 
                                                    class="w-full rounded-lg border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:border-[#4d82bc] focus:ring focus:ring-[#4d82bc]/50">
+                                        </div>
+
+                                        {{-- Toggle para bloques horarios --}}
+                                        <div class="border-t border-b border-gray-200 dark:border-gray-600 py-3">
+                                            <label class="flex items-center gap-3 cursor-pointer">
+                                                <input type="checkbox" 
+                                                       x-model="usarBloques{{ $sesion->id }}" 
+                                                       class="w-5 h-5 text-[#4d82bc] rounded focus:ring-[#4d82bc]">
+                                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    ⏰ Usar bloques horarios (con breaks)
+                                                </span>
+                                            </label>
+                                        </div>
+
+                                        {{-- Sección bloques --}}
+                                        <div x-show="usarBloques{{ $sesion->id }}" x-transition class="space-y-3">
+                                            <p class="text-sm text-gray-600 dark:text-gray-400">Editar bloques de clase y breaks</p>
+                                            
+                                            <div class="space-y-2 max-h-64 overflow-y-auto">
+                                                <template x-for="(bloque, index) in bloques{{ $sesion->id }}" :key="index">
+                                                    <div class="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                                        <span x-text="obtenerIconoBloque(bloque.tipo)" class="text-xl"></span>
+                                                        <select x-model="bloque.tipo" class="text-sm rounded border-gray-300 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                                            <option value="clase">Clase</option>
+                                                            <option value="coffee_break">Coffee Break</option>
+                                                            <option value="lunch_break">Lunch Break</option>
+                                                        </select>
+                                                        <input type="time" x-model="bloque.inicio" class="text-sm rounded border-gray-300 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                                        <span class="text-gray-500">-</span>
+                                                        <input type="time" x-model="bloque.fin" class="text-sm rounded border-gray-300 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                                        <button type="button" @click="bloques{{ $sesion->id }}.splice(index, 1)" class="p-1 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition">❌</button>
+                                                    </div>
+                                                </template>
+                                            </div>
+
+                                            <div class="flex gap-2 flex-wrap">
+                                                <button type="button" @click="bloques{{ $sesion->id }}.push({tipo: 'clase', inicio: '', fin: '', nombre: ''})" class="text-xs px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded transition">📚 + Clase</button>
+                                                <button type="button" @click="bloques{{ $sesion->id }}.push({tipo: 'coffee_break', inicio: '', fin: '', nombre: ''})" class="text-xs px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-700 rounded transition">☕ + Coffee Break</button>
+                                                <button type="button" @click="bloques{{ $sesion->id }}.push({tipo: 'lunch_break', inicio: '', fin: '', nombre: ''})" class="text-xs px-3 py-1 bg-orange-100 hover:bg-orange-200 text-orange-700 rounded transition">🍽️ + Lunch Break</button>
+                                            </div>
+
+                                            <input type="hidden" name="bloques_horarios" value="">
                                         </div>
 
                                         <div>

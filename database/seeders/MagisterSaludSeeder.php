@@ -560,26 +560,44 @@ class MagisterSaludSeeder extends Seeder
                 $diaEspanol = $dia === 'Friday' ? 'Viernes' : 'Sábado';
                 
                 $observaciones = $sesion['modalidad'] === 'online' 
-                    ? "Clase online vía Zoom ({$sesion['hora_inicio']}-{$sesion['hora_fin']})\n{$zoomInfo}" 
-                    : "Clase híbrida: Presencial en FEN 1 + transmisión online ({$sesion['hora_inicio']}-{$sesion['hora_fin']})\n{$zoomInfo}";
+                    ? "Clase online vía Zoom\n{$zoomInfo}" 
+                    : "Clase híbrida: Presencial en FEN 1 + transmisión online\n{$zoomInfo}";
+                
+                $dataSesion = [
+                    'dia' => $diaEspanol,
+                    'hora_inicio' => $sesion['hora_inicio'],
+                    'hora_fin' => $sesion['hora_fin'],
+                    'modalidad' => $sesion['modalidad'],
+                    'room_id' => $sesion['modalidad'] !== 'online' ? $salaFEN1->id : null,
+                    'url_zoom' => $sesion['modalidad'] !== 'presencial' ? $zoomUrl : null,
+                    'estado' => 'pendiente',
+                    'url_grabacion' => null,
+                    'observaciones' => $observaciones,
+                    'numero_sesion' => $index + 1,
+                ];
+
+                // ⏰ Agregar horarios de breaks para SÁBADOS (mucho más simple!)
+                if ($diaEspanol === 'Sábado') {
+                    // Sábado completo (09:00 - 16:30) con coffee break y lunch break
+                    if ($sesion['hora_inicio'] === '09:00:00' && $sesion['hora_fin'] === '16:30:00') {
+                        $dataSesion['coffee_break_inicio'] = '10:30:00';
+                        $dataSesion['coffee_break_fin'] = '11:00:00';
+                        $dataSesion['lunch_break_inicio'] = '13:30:00';
+                        $dataSesion['lunch_break_fin'] = '14:30:00';
+                    }
+                    // Sábado medio día (09:00 - 13:30) con solo coffee break
+                    elseif ($sesion['hora_inicio'] === '09:00:00' && $sesion['hora_fin'] === '13:30:00') {
+                        $dataSesion['coffee_break_inicio'] = '10:30:00';
+                        $dataSesion['coffee_break_fin'] = '11:00:00';
+                    }
+                }
                 
                 ClaseSesion::firstOrCreate(
                     [
                         'clase_id' => $clase->id,
                         'fecha' => $sesion['fecha'],
                     ],
-                    [
-                        'dia' => $diaEspanol,
-                        'hora_inicio' => $sesion['hora_inicio'],
-                        'hora_fin' => $sesion['hora_fin'],
-                        'modalidad' => $sesion['modalidad'],
-                        'room_id' => $sesion['modalidad'] !== 'online' ? $salaFEN1->id : null,
-                        'url_zoom' => $sesion['modalidad'] !== 'presencial' ? $zoomUrl : null,
-                        'estado' => 'pendiente',
-                        'url_grabacion' => null, // Se agregará después de la clase
-                        'observaciones' => $observaciones,
-                        'numero_sesion' => $index + 1,
-                    ]
+                    $dataSesion
                 );
                 $totalSesiones++;
             }

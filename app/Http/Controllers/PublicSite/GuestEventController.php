@@ -17,6 +17,8 @@ class GuestEventController extends Controller
             'magister_id' => $request->get('magister_id'),
             'room_id' => $request->get('room_id'),
             'anio_ingreso' => $request->get('anio_ingreso'),
+            'anio' => $request->get('anio'),
+            'trimestre' => $request->get('trimestre'),
             'start' => $request->get('start'),
             'end' => $request->get('end'),
         ]);
@@ -25,6 +27,8 @@ class GuestEventController extends Controller
             $magisterId = is_numeric($request->get('magister_id')) ? (int) $request->get('magister_id') : null;
             $roomId = is_numeric($request->get('room_id')) ? (int) $request->get('room_id') : null;
             $anioIngreso = $request->get('anio_ingreso');
+            $anio = $request->get('anio');
+            $trimestre = $request->get('trimestre');
 
             $rangeStart = $request->query('start') ? Carbon::parse($request->query('start'), 'America/Santiago') : null;
             $rangeEnd = $request->query('end') ? Carbon::parse($request->query('end'), 'America/Santiago') : null;
@@ -48,6 +52,8 @@ class GuestEventController extends Controller
                 ->when($magisterId, fn($q) => $q->whereHas('course', fn($qq) => $qq->where('magister_id', $magisterId)))
                 ->when($roomId, fn($q) => $q->where('room_id', $roomId))
                 ->when($anioIngreso, fn($q) => $q->whereHas('period', fn($qq) => $qq->where('anio_ingreso', $anioIngreso)))
+                ->when($anio, fn($q) => $q->whereHas('period', fn($qq) => $qq->where('anio', $anio)))
+                ->when($trimestre, fn($q) => $q->whereHas('period', fn($qq) => $qq->where('numero', $trimestre)))
                 ->when($rangeStart && $rangeEnd, function ($q) use ($rangeStart, $rangeEnd) {
                     $q->whereHas('period', function ($qq) use ($rangeStart, $rangeEnd) {
                         $qq->whereDate('fecha_fin', '>=', $rangeStart->toDateString())
@@ -81,37 +87,156 @@ class GuestEventController extends Controller
                         continue;
                     }
 
-                    $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_inicio);
-                    $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_fin);
+                    // Si la sesión tiene campos de breaks simples (nueva forma)
+                    if ($sesion->coffee_break_inicio || $sesion->lunch_break_inicio) {
+                        $modality = $sesion->modalidad ?? 'presencial';
+                        $online = $modality === 'online';
+                        $hibrida = $modality === 'hibrida';
 
-                    $modality = $sesion->modalidad ?? 'presencial';
-                    $online = $modality === 'online';
-                    $hibrida = $modality === 'hibrida';
+                        $tituloBase = $clase->course->nombre;
+                        if ($online)
+                            $tituloBase .= ' [ONLINE]';
+                        elseif ($hibrida)
+                            $tituloBase .= ' [HÍBRIDA]';
 
-                    $titulo = $clase->course->nombre;
-                    if ($online) $titulo .= ' [ONLINE]';
-                    elseif ($hibrida) $titulo .= ' [HÍBRIDA]';
+                        $descripcion = 'Magíster: ' . $magisterNombre;
 
-                    $classEvents->push([
-                        'id' => 'clase-' . $clase->id . '-sesion-' . $sesion->id,
-                        'title' => $titulo,
-                        'description' => 'Magíster: ' . $magisterNombre,
-                        'start' => $start->toDateTimeString(),
-                        'end' => $end->toDateTimeString(),
-                        'room_id' => $sesion->room_id,
-                        'room' => $sesion->room ? ['name' => $sesion->room->name] : null,
-                        'editable' => false,
-                        'backgroundColor' => $magisterColor,
-                        'borderColor' => $magisterColor,
-                        'type' => 'clase',
-                        'magister' => $magisterNombre,
-                        'modality' => $modality,
-                        'url_zoom' => $sesion->url_zoom,
-                        'profesor' => $clase->encargado ?? null,
-                        'url_grabacion' => $sesion->url_grabacion,
-                        'clase_id' => $clase->id,
-                        'sesion_id' => $sesion->id,
-                    ]);
+                        // Crear bloques de tiempo en orden cronológico
+                        $bloques = [];
+                        
+                        // 1. Primera parte de la clase (hasta coffee break)
+                        if ($sesion->coffee_break_inicio) {
+                            $bloques[] = [
+                                'start' => $sesion->hora_inicio,
+                                'end' => $sesion->coffee_break_inicio,
+                                'title' => $tituloBase,
+                                'type' => 'clase'
+                            ];
+                        }
+                        
+                        // 2. Coffee Break
+                        if ($sesion->coffee_break_inicio && $sesion->coffee_break_fin) {
+                            $bloques[] = [
+                                'start' => $sesion->coffee_break_inicio,
+                                'end' => $sesion->coffee_break_fin,
+                                'title' => '☕ COFFEE BREAK',
+                                'type' => 'coffee_break'
+                            ];
+                        }
+                        
+                        // 3. Segunda parte de la clase (después de coffee break hasta lunch break)
+                        if ($sesion->coffee_break_fin && $sesion->lunch_break_inicio) {
+                            $bloques[] = [
+                                'start' => $sesion->coffee_break_fin,
+                                'end' => $sesion->lunch_break_inicio,
+                                'title' => $tituloBase,
+                                'type' => 'clase'
+                            ];
+                        }
+                        
+                        // 4. Lunch Break
+                        if ($sesion->lunch_break_inicio && $sesion->lunch_break_fin) {
+                            $bloques[] = [
+                                'start' => $sesion->lunch_break_inicio,
+                                'end' => $sesion->lunch_break_fin,
+                                'title' => '🍽️ LUNCH BREAK',
+                                'type' => 'lunch_break'
+                            ];
+                        }
+                        
+                        // 5. Tercera parte de la clase (después de lunch break)
+                        if ($sesion->lunch_break_fin) {
+                            $bloques[] = [
+                                'start' => $sesion->lunch_break_fin,
+                                'end' => $sesion->hora_fin,
+                                'title' => $tituloBase,
+                                'type' => 'clase'
+                            ];
+                        }
+                        
+                        // Si no hay breaks, crear un solo bloque de clase
+                        if (empty($bloques)) {
+                            $bloques[] = [
+                                'start' => $sesion->hora_inicio,
+                                'end' => $sesion->hora_fin,
+                                'title' => $tituloBase,
+                                'type' => 'clase'
+                            ];
+                        }
+
+                        // Crear eventos para cada bloque
+                        foreach ($bloques as $index => $bloque) {
+                            $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['start']);
+                            $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($bloque['end']);
+                            
+                            $backgroundColor = $magisterColor;
+                            $borderColor = $magisterColor;
+                            $textColor = '#ffffff';
+                            
+                            if ($bloque['type'] === 'coffee_break') {
+                                $backgroundColor = '#f97316';
+                                $borderColor = '#ea580c';
+                            } elseif ($bloque['type'] === 'lunch_break') {
+                                $backgroundColor = '#dc2626';
+                                $borderColor = '#b91c1c';
+                            }
+                            
+                            $classEvents->push([
+                                'id' => 'bloque-' . $sesion->id . '-' . $index,
+                                'title' => $bloque['title'],
+                                'description' => $bloque['type'] === 'clase' ? $descripcion : '⏰ ' . ($bloque['type'] === 'coffee_break' ? 'Descanso de 30 minutos' : 'Almuerzo de 1 hora'),
+                                'start' => $start->toDateTimeString(),
+                                'end' => $end->toDateTimeString(),
+                                'room_id' => $sesion->room_id,
+                                'room' => $sesion->room ? ['name' => $sesion->room->name] : null,
+                                'editable' => false,
+                                'backgroundColor' => $backgroundColor,
+                                'borderColor' => $borderColor,
+                                'textColor' => $textColor,
+                                'type' => $bloque['type'] === 'clase' ? 'clase' : 'break',
+                                'magister' => $magisterNombre,
+                                'modality' => $modality,
+                                'url_zoom' => $sesion->url_zoom,
+                                'profesor' => $clase->encargado ?? null,
+                                'url_grabacion' => $sesion->url_grabacion,
+                                'clase_id' => $clase->id,
+                                'sesion_id' => $sesion->id,
+                            ]);
+                        }
+                    } else {
+                        // Modo tradicional sin breaks
+                        $start = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_inicio);
+                        $end = Carbon::parse($sesion->fecha)->setTimeFromTimeString($sesion->hora_fin);
+
+                        $modality = $sesion->modalidad ?? 'presencial';
+                        $online = $modality === 'online';
+                        $hibrida = $modality === 'hibrida';
+
+                        $titulo = $clase->course->nombre;
+                        if ($online) $titulo .= ' [ONLINE]';
+                        elseif ($hibrida) $titulo .= ' [HÍBRIDA]';
+
+                        $classEvents->push([
+                            'id' => 'clase-' . $clase->id . '-sesion-' . $sesion->id,
+                            'title' => $titulo,
+                            'description' => 'Magíster: ' . $magisterNombre,
+                            'start' => $start->toDateTimeString(),
+                            'end' => $end->toDateTimeString(),
+                            'room_id' => $sesion->room_id,
+                            'room' => $sesion->room ? ['name' => $sesion->room->name] : null,
+                            'editable' => false,
+                            'backgroundColor' => $magisterColor,
+                            'borderColor' => $magisterColor,
+                            'type' => 'clase',
+                            'magister' => $magisterNombre,
+                            'modality' => $modality,
+                            'url_zoom' => $sesion->url_zoom,
+                            'profesor' => $clase->encargado ?? null,
+                            'url_grabacion' => $sesion->url_grabacion,
+                            'clase_id' => $clase->id,
+                            'sesion_id' => $sesion->id,
+                        ]);
+                    }
                 }
             }
 

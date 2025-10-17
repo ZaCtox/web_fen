@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CGufb9xv.css",
+    "file": "assets/app-4RuUlKyR.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -32,13 +32,13 @@
     "isEntry": true
   },
   "resources/js/calendar-admin.js": {
-    "file": "assets/calendar-admin-BTK8zXyC.js",
+    "file": "assets/calendar-admin-BetbQybz.js",
     "name": "calendar-admin",
     "src": "resources/js/calendar-admin.js",
     "isEntry": true
   },
   "resources/js/calendar-public.js": {
-    "file": "assets/calendar-public-BLm8zkse.js",
+    "file": "assets/calendar-public-Dq8BuZKz.js",
     "name": "calendar-public",
     "src": "resources/js/calendar-public.js",
     "isEntry": true

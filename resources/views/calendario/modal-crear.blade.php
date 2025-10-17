@@ -1,5 +1,6 @@
-<div id="modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-[#fcffff] dark:bg-gray-900 rounded-xl shadow-lg p-6 w-full max-w-md border border-[#c4dafa] dark:border-gray-700 transition">
+<div id="modal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex justify-center items-center">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 w-full max-w-lg border-2 border-[#c4dafa] dark:border-gray-700 
+                transform transition-all duration-300 hover:scale-[1.01]">
         <h3 id="modal-header" class="text-lg font-semibold text-[#005187] dark:text-[#84b6f4] mb-4">
             Crear Evento
         </h3>
@@ -73,15 +74,23 @@
                     class="w-full rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white px-4 py-2 shadow-sm focus:border-blue-400 focus:ring focus:ring-blue-200 dark:focus:ring-blue-600 transition">
             </div>
 
-            {{-- Botones --}}
-            <div class="mt-2 flex justify-between items-center">
+            {{-- Botones con mejor estilo --}}
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
                 <button type="button" id="cancel"
-                    class="inline-flex items-center justify-center px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-md shadow-md transition transform hover:scale-105">
-                    <img src="{{ asset('icons/back.svg') }}" alt="back" class="w-5 h-5">
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg shadow-md 
+                           transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancelar
                 </button>
                 <button type="submit"
-                    class="inline-flex items-center justify-center px-4 py-2 bg-[#005187] hover:bg-[#4d82bc] text-white rounded-md shadow-md transition transform hover:scale-105">
-                    <img src="{{ asset('icons/save.svg') }}" alt="Guardar" class="w-5 h-5">
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#3ba55d] hover:bg-[#2d864a] text-white font-medium rounded-lg shadow-md 
+                           transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#3ba55d] focus:ring-offset-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Guardar
                 </button>
             </div>
         </form>

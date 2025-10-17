@@ -148,6 +148,7 @@
     right: 1px;
 }
 
+
 /* ====================================
  * FORMATO DE HORAS CONCISO
  * ==================================== */
@@ -159,4 +160,104 @@
     color: #374151 !important;
     text-align: center !important;
 }
+
+/* ====================================
+ * CENTRAR TEXTO DE EVENTOS
+ * ==================================== */
+
+/* Centrar el título de todos los eventos */
+.fc-event-title,
+.fc-event-title-container {
+    text-align: center !important;
+    justify-content: center !important;
+    align-items: center !important;
+    display: flex !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+}
+
+/* Centrar el contenido completo del evento */
+.fc-event-main {
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    width: 100% !important;
+}
+
+/* Limitar el texto largo con puntos suspensivos */
+.fc-event-title-content {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+}
+
+/* Evitar que los eventos se extiendan más allá de su columna */
+.fc-timegrid-event-harness {
+    max-width: 100% !important;
+    overflow: hidden !important;
+}
+
+.fc-timegrid-event {
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* En vista de lista también centrar */
+.fc-list-event-title {
+    text-align: center !important;
+}
+
+/* Estilos específicos para vista de mes */
+.fc-daygrid-event {
+    font-size: 11px !important;
+    padding: 2px 4px !important;
+}
+
+.fc-daygrid-event-title {
+    font-size: 11px !important;
+    line-height: 1.1 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* Estilos específicos para vista de semana */
+.fc-timegrid-event {
+    font-size: 12px !important;
+    padding: 3px 6px !important;
+}
+
+.fc-timegrid-event-title {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* Asegurar que el texto se centre en todas las vistas */
+.fc-event-title-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* En vista de mes también centrar */
+.fc-daygrid-event-harness {
+    text-align: center !important;
+}
+
 
