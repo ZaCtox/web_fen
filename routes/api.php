@@ -107,6 +107,7 @@ Route::name('api.')->group(function () {
         Route::get('informes', [InformeController::class, 'publicIndex']);
         Route::get('informes/{id}', [InformeController::class, 'publicShow']);
         Route::get('informes/{id}/download', [InformeController::class, 'publicDownload']);
+        Route::get('/emergencies/active', [EmergencyController::class, 'active'])->name('emergencies.active');
     });
 
     // �� AUTENTICACIÓN
@@ -273,7 +274,6 @@ Route::name('api.')->group(function () {
         Route::put('/emergencies/{id}', [EmergencyController::class, 'update'])->name('emergencies.update');
         Route::delete('/emergencies/{id}', [EmergencyController::class, 'destroy'])->name('emergencies.destroy');
         Route::patch('/emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])->name('emergencies.deactivate');
-        Route::get('/emergencies/active', [EmergencyController::class, 'active'])->name('emergencies.active');
     });
 
 });
