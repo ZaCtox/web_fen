@@ -38,9 +38,27 @@ class MagisterController extends Controller
         return response()->json($magisters, 200);
     }
 
-    public function show(Magister $magister)
+    /**
+     * Obtener un magíster específico con sus cursos.
+     * Si se proporciona 'anio_ingreso', filtra solo los cursos de ese año.
+     */
+    public function show(Request $request, Magister $magister)
     {
-        $magister->load(['courses.period']);
+        $anioIngreso = $request->get('anio_ingreso');
+
+        // Si hay filtro de año, cargar solo los cursos de ese año
+        if ($anioIngreso) {
+            $magister->load([
+                'courses' => function($query) use ($anioIngreso) {
+                    $query->whereHas('period', function($periodQuery) use ($anioIngreso) {
+                        $periodQuery->where('anio_ingreso', $anioIngreso);
+                    })->with('period');
+                }
+            ]);
+        } else {
+            // Sin filtro, cargar todos los cursos
+            $magister->load(['courses.period']);
+        }
 
         return response()->json($magister, 200);
     }
@@ -170,3 +188,4 @@ class MagisterController extends Controller
         }
     }
 }
+
