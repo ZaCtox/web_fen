@@ -71,7 +71,8 @@ class PeriodController extends Controller
             'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after:fecha_inicio',
-            'anio_ingreso' => 'nullable|integer|min:2020|max:2030'
+            'anio_ingreso' => 'nullable|integer|min:2020|max:2030',
+            'magister_id' => 'nullable|integer|exists:magisters,id'  // ✅ AGREGADO
         ]);
 
         $period = Period::create($validated);
@@ -100,7 +101,8 @@ class PeriodController extends Controller
             'numero' => 'required|integer|between:1,6',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after:fecha_inicio',
-            'anio_ingreso' => 'nullable|integer|min:2020|max:2030'
+            'anio_ingreso' => 'nullable|integer|min:2020|max:2030',
+            'magister_id' => 'nullable|integer|exists:magisters,id'  // ✅ AGREGADO
         ]);
 
         $period->update($validated);
