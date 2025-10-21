@@ -480,61 +480,63 @@ class CourseController extends Controller
     }
 
     public function publicMagistersWithCourses(Request $request)
-    {
-        try {
-            $anioIngreso = $request->get('anio_ingreso');
-            
-            $magisters = Magister::with(['courses' => function($query) use ($anioIngreso) {
-                    if ($anioIngreso) {
-                        $query->whereHas('period', function($q) use ($anioIngreso) {
-                            $q->where('anio_ingreso', $anioIngreso);
-                        });
-                    }
-                }, 'courses.period'])
-                ->orderBy('orden')
-                ->get();
+{
+    try {
+        $anioIngreso = $request->get('anio_ingreso');
+        
+        // ✅ CORREGIDO: Incluir sct y requisitos en el select
+        $magisters = Magister::with(['courses' => function($query) use ($anioIngreso) {
+                if ($anioIngreso) {
+                    $query->whereHas('period', function($q) use ($anioIngreso) {
+                        $q->where('anio_ingreso', $anioIngreso);
+                    });
+                }
+            }, 'courses.period'])
+            ->orderBy('orden')
+            ->get();
 
-            $formattedMagisters = $magisters->map(function ($magister) {
-                return [
-                    'id' => $magister->id,
-                    'nombre' => $magister->nombre,
-                    'color' => $magister->color,
-                    'encargado' => $magister->encargado,
-                    'telefono' => $magister->telefono,
-                    'correo' => $magister->correo,
-                    'courses' => $magister->courses->map(function ($course) {
-                        return [
-                            'id' => $course->id,
-                            'nombre' => $course->nombre,
-                            'magister_id' => $course->magister_id,
-                            'period_id' => $course->period_id,
-                            'sct' => $course->sct,
-                            'requisitos' => $course->requisitos,
-                            'period' => $course->period ? [
-                                'id' => $course->period->id,
-                                'anio' => $course->period->anio,
-                                'numero' => $course->period->numero,
-                                'anio_ingreso' => $course->period->anio_ingreso,
-                            ] : null,
-                        ];
-                    }),
-                ];
-            });
+        // Formatear la respuesta para Android
+        $formattedMagisters = $magisters->map(function ($magister) {
+            return [
+                'id' => $magister->id,
+                'nombre' => $magister->nombre,
+                'color' => $magister->color,
+                'encargado' => $magister->encargado,
+                'telefono' => $magister->telefono,
+                'correo' => $magister->correo,
+                'courses' => $magister->courses->map(function ($course) {
+                    return [
+                        'id' => $course->id,
+                        'nombre' => $course->nombre,
+                        'magister_id' => $course->magister_id,
+                        'period_id' => $course->period_id,
+                        'sct' => $course->sct,           // ✅ AHORA SÍ SE INCLUYE
+                        'requisitos' => $course->requisitos, // ✅ AHORA SÍ SE INCLUYE
+                        'period' => $course->period ? [
+                            'id' => $course->period->id,
+                            'anio' => $course->period->anio,
+                            'numero' => $course->period->numero,
+                            'anio_ingreso' => $course->period->anio_ingreso,
+                        ] : null,
+                    ];
+                }),
+            ];
+        });
 
-            return response()->json([
-                'status' => 'success',
-                'data' => $formattedMagisters,
-            ]);
+        return response()->json([
+            'status' => 'success',
+            'data' => $formattedMagisters,
+        ]);
 
-        } catch (\Exception $e) {
-            \Log::error('Error en publicMagistersWithCourses: '.$e->getMessage());
+    } catch (\Exception $e) {
+        \Log::error('Error en publicMagistersWithCourses: '.$e->getMessage());
 
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Error al obtener magísteres: '.$e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error al obtener magísteres: '.$e->getMessage(),
+        ], 500);
     }
+}
 
     /**
      * Obtener años de ingreso disponibles
