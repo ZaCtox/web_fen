@@ -19,10 +19,10 @@ class UserController extends Controller
 
         // Filtros opcionales
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%')
-                  ->orWhere('rol', 'like', '%' . $request->search . '%');
+                    ->orWhere('email', 'like', '%' . $request->search . '%')
+                    ->orWhere('rol', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -31,7 +31,9 @@ class UserController extends Controller
         }
 
         $perPage = $request->get('per_page', 15);
-        $users = $query->orderBy('name')->paginate($perPage);
+        $users = $query->select('id', 'name', 'email', 'rol', 'foto', 'avatar_color', 'created_at', 'last_login_at')
+            ->orderBy('name')
+            ->paginate($perPage);
 
         return response()->json([
             'success' => true,
@@ -70,7 +72,8 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'rol' => 'required|string|in:administrador,docente,administrativo,estudiante',
+            'rol' => 'required|string|in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado',
+            'avatar_color' => 'nullable|string|max:6',
         ]);
 
         $user = User::create([
@@ -78,6 +81,7 @@ class UserController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'rol' => $validated['rol'],
+            'avatar_color' => $validated['avatar_color'] ?? null,
         ]);
 
         return response()->json([
@@ -92,7 +96,16 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         $user = User::find($id);
+
+        // No permitir editar el propio usuario
+        if ($user->id === Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes editar tu propio usuario'
+            ], 400);
+        }
 
         if (!$user) {
             return response()->json([
@@ -111,7 +124,8 @@ class UserController extends Controller
                 Rule::unique('users')->ignore($user->id)
             ],
             'password' => 'sometimes|nullable|string|min:8|confirmed',
-            'rol' => 'sometimes|required|string|in:administrador,docente,administrativo,estudiante',
+            'rol' => 'sometimes|required|string|in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado',
+            'avatar_color' => 'sometimes|nullable|string|max:6',
         ]);
 
         // Solo actualizar password si se proporciona
@@ -136,6 +150,14 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::find($id);
+
+        // No permitir eliminar el propio usuario
+        if ($user->id === Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No puedes eliminar tu propio usuario'
+            ], 400);
+        }
 
         if (!$user) {
             return response()->json([
