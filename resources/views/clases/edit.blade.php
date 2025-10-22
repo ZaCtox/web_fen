@@ -24,6 +24,7 @@
         ])
         <script>
             window.AGRUPADOS = @json($agrupados);
+            window.ROOMS = @json($rooms);
         </script>
     </div>
 </x-app-layout>

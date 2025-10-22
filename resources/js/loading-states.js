@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
+            // No mostrar loading para formularios de eliminación (se maneja en alerts.js)
+            if (form.classList.contains('form-eliminar')) {
+                return;
+            }
+            
             const submitButton = form.querySelector('button[type="submit"]');
             
             if (submitButton && !submitButton.classList.contains('btn-loading')) {

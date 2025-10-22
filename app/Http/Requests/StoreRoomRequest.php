@@ -26,6 +26,17 @@ class StoreRoomRequest extends FormRequest
             'location' => 'nullable|string|max:255',
             'capacity' => 'nullable|integer|min:1',
             'description' => 'nullable|string',
+            // Campos booleanos de equipamiento
+            'calefaccion' => 'nullable|boolean',
+            'energia_electrica' => 'nullable|boolean',
+            'existe_aseo' => 'nullable|boolean',
+            'plumones' => 'nullable|boolean',
+            'borrador' => 'nullable|boolean',
+            'pizarra_limpia' => 'nullable|boolean',
+            'computador_funcional' => 'nullable|boolean',
+            'cables_computador' => 'nullable|boolean',
+            'control_remoto_camara' => 'nullable|boolean',
+            'televisor_funcional' => 'nullable|boolean',
         ];
     }
 

@@ -4,7 +4,7 @@
         <h3 id="modal-header" class="text-lg font-semibold text-[#005187] dark:text-[#84b6f4] mb-4">
             Crear Evento
         </h3>
-        <form id="event-form" class="space-y-4">
+        <form id="event-form" class="space-y-4 no-loading">
             @csrf
             <input type="hidden" id="event_id">
 

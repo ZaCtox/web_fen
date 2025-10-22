@@ -293,8 +293,6 @@ function renderizarSesiones(fechas) {
     const container = document.getElementById('sesiones-container');
     if (!container) return;
 
-    const roomIdGlobal = document.getElementById('room_id')?.value || '';
-    const urlZoomGlobal = document.getElementById('url_zoom')?.value || '';
     const periodId = document.getElementById('period_id')?.value || '';
 
     container.innerHTML = fechas.map((sesion, index) => `
@@ -351,10 +349,10 @@ function renderizarSesiones(fechas) {
                     </label>
                     <select name="sesiones[${index}][room_id]" id="sesiones_${index}_room_id" 
                             class="hci-select sesion-room-select">
-                        <option value="">-- Usar sala principal --</option>
-                        ${getRoomsOptions(roomIdGlobal)}
+                        <option value="">-- Seleccionar sala --</option>
+                        ${getRoomsOptions('')}
                     </select>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Dejar vacío para usar la sala principal</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Selecciona una sala para esta sesión</p>
                 </div>
                 
                 <div class="hci-field md:col-span-2">
@@ -362,9 +360,8 @@ function renderizarSesiones(fechas) {
                         URL Zoom ${sesion.dia === 'Viernes' ? '<span class="text-red-500">*</span>' : ''}
                     </label>
                     <input type="url" name="sesiones[${index}][url_zoom]" id="sesiones_${index}_url_zoom" 
-                           class="hci-input sesion-zoom-input" placeholder="https://zoom.us/j/..."
-                           value="${urlZoomGlobal}">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Dejar vacío para usar el Zoom principal</p>
+                           class="hci-input sesion-zoom-input" placeholder="https://zoom.us/j/...">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Solo para sesiones online o híbridas</p>
                 </div>
                 
                 <div class="hci-field md:col-span-3">
@@ -377,7 +374,7 @@ function renderizarSesiones(fechas) {
                 </div>
             </div>
             
-            {{-- Botones para ver horarios y salas disponibles --}}
+            <!-- Botones para ver horarios y salas disponibles -->
             <div class="mt-4 flex gap-2">
                 <button type="button" 
                         class="btn-ver-horarios px-3 py-2 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors flex items-center gap-2"
@@ -399,7 +396,7 @@ function renderizarSesiones(fechas) {
                 </button>
             </div>
             
-            {{-- Slots de horarios disponibles --}}
+            <!-- Slots de horarios disponibles -->
             <div id="horarios_${index}" class="mt-3 hidden">
                 <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                     <h5 class="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
@@ -412,7 +409,7 @@ function renderizarSesiones(fechas) {
                 </div>
             </div>
             
-            {{-- Salas disponibles --}}
+            <!-- Salas disponibles -->
             <div id="salas_${index}" class="mt-3 hidden">
                 <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
                     <h5 class="text-sm font-semibold text-purple-900 dark:text-purple-100 mb-3 flex items-center gap-2">
@@ -425,7 +422,7 @@ function renderizarSesiones(fechas) {
                 </div>
             </div>
             
-            {{-- Indicador de disponibilidad --}}
+            <!-- Indicador de disponibilidad -->
             <div id="disponibilidad_${index}" class="mt-4 hidden">
                 <div class="flex items-center gap-2 p-3 rounded-lg disponibilidad-loading hidden">
                     <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -473,13 +470,13 @@ function renderizarSesiones(fechas) {
         const horaFin = document.getElementById(`sesiones_${index}_hora_fin`);
         const sala = document.getElementById(`sesiones_${index}_room_id`);
         
-        if (horaInicio) horaInicio.addEventListener('change', () => verificarDisponibilidadSesion(index, periodId, roomIdGlobal));
-        if (horaFin) horaFin.addEventListener('change', () => verificarDisponibilidadSesion(index, periodId, roomIdGlobal));
-        if (sala) sala.addEventListener('change', () => verificarDisponibilidadSesion(index, periodId, roomIdGlobal));
+        if (horaInicio) horaInicio.addEventListener('change', () => verificarDisponibilidadSesion(index, periodId, ''));
+        if (horaFin) horaFin.addEventListener('change', () => verificarDisponibilidadSesion(index, periodId, ''));
+        if (sala) sala.addEventListener('change', () => verificarDisponibilidadSesion(index, periodId, ''));
         
         // Inicializar
         toggleSalaZoomPorModalidad(index);
-        verificarDisponibilidadSesion(index, periodId, roomIdGlobal);
+        verificarDisponibilidadSesion(index, periodId, '');
     });
 
     // Event listeners para botones de ver horarios y salas disponibles
@@ -493,19 +490,29 @@ function renderizarSesiones(fechas) {
     container.querySelectorAll('.btn-ver-salas').forEach(btn => {
         btn.addEventListener('click', () => {
             const index = parseInt(btn.dataset.index);
-            mostrarSalasDisponibles(index, periodId, roomIdGlobal);
+            mostrarSalasDisponibles(index, periodId, '');
         });
     });
 }
 
 function getRoomsOptions(selectedId) {
-    const roomSelect = document.getElementById('room_id');
-    if (!roomSelect) return '';
+    // Usar las salas pasadas desde el controlador
+    if (window.ROOMS && Array.isArray(window.ROOMS)) {
+        return window.ROOMS
+            .map(room => `<option value="${room.id}" ${room.id == selectedId ? 'selected' : ''}>${room.name}</option>`)
+            .join('');
+    }
     
-    return Array.from(roomSelect.options)
-        .filter(opt => opt.value !== '')
-        .map(opt => `<option value="${opt.value}" ${opt.value === selectedId ? 'selected' : ''}>${opt.text}</option>`)
-        .join('');
+    // Fallback: buscar en algún select oculto o crear opciones básicas
+    const roomSelect = document.querySelector('select[name*="room"]');
+    if (roomSelect) {
+        return Array.from(roomSelect.options)
+            .filter(opt => opt.value !== '')
+            .map(opt => `<option value="${opt.value}" ${opt.value === selectedId ? 'selected' : ''}>${opt.text}</option>`)
+            .join('');
+    }
+    
+    return '<option value="">No hay salas disponibles</option>';
 }
 
 function toggleSalaZoomPorModalidad(index) {
@@ -586,8 +593,8 @@ function updateSummary() {
     const trimestre = document.getElementById('trimestre')?.value || '';
     const periodo = anio && trimestre ? `${anio} - Trimestre ${trimestre}` : '—';
     const encargado = document.getElementById('encargado')?.value || '';
-    const salaPrincipal = getSelText(document.getElementById('room_id')) || 'Sin sala asignada';
-    const zoomPrincipal = document.getElementById('url_zoom')?.value || 'No asignado';
+    const salaPrincipal = 'Se configuran por sesión';
+    const zoomPrincipal = 'Se configuran por sesión';
     
     // Actualizar resumen general
     const byId = id => document.getElementById(id);

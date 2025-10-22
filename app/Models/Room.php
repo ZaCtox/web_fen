@@ -41,11 +41,6 @@ class Room extends Model
         return $this->hasMany(Event::class);
     }
 
-    public function bitacoras()
-    {
-        return $this->hasMany(Bitacora::class);
-    }
-
     public function reportEntries()
     {
         return $this->hasMany(ReportEntry::class);

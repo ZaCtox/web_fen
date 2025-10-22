@@ -10,7 +10,7 @@
     {{-- Breadcrumb --}}
     <x-hci-breadcrumb :items="[
         ['label' => 'Inicio', 'url' => route('dashboard')],
-        ['label' => 'Períodos', 'url' => '#']
+        ['label' => 'Periodos', 'url' => '#']
     ]" />
 
     <div class="p-6 max-w-6xl mx-auto">
@@ -101,7 +101,7 @@
                                 <select name="magister_id" 
                                         id="magister-select"
                                         onchange="document.getElementById('filtros-form').submit()"
-                                        class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
+                                        class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium text-base hci-input-focus">
                                     @foreach($magisters as $magister)
                                         <option value="{{ $magister->id }}" {{ $magister->id == $magisterSeleccionado ? 'selected' : '' }}>
                                             {{ $magister->nombre }}
@@ -118,7 +118,7 @@
                                 <select name="anio_ingreso" 
                                         id="anio-ingreso-select"
                                         onchange="document.getElementById('filtros-form').submit()"
-                                        class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium hci-input-focus">
+                                        class="w-full sm:w-40 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium text-base hci-input-focus">
                                     @foreach($aniosIngreso as $anio)
                                         <option value="{{ $anio }}" {{ $anio == $anioIngresoSeleccionado ? 'selected' : '' }}>
                                             {{ $anio }}

@@ -63,8 +63,37 @@ document.addEventListener('DOMContentLoaded', () => {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
+                // Cerrar el SweetAlert de confirmación
+                Swal.close();
+                
+                // Mostrar el overlay de loading bonito
+                if (!document.getElementById('form-loading-overlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.id = 'form-loading-overlay';
+                    overlay.className = 'loading-overlay';
+                    overlay.innerHTML = `
+                        <div class="loading-overlay-content">
+                            <div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div>
+                            <p class="text-gray-700 dark:text-gray-300 font-medium">Procesando...</p>
+                        </div>
+                    `;
+                    document.body.appendChild(overlay);
+                }
+                
                 form.dataset.submitting = 'true';
                 form.submit();
+            } else {
+                // Si cancela, remover cualquier estado de loading que se haya activado
+                const overlay = document.getElementById('form-loading-overlay');
+                if (overlay) overlay.remove();
+                
+                const submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.classList.remove('btn-loading');
+                    submitButton.disabled = false;
+                }
+                
+                form.classList.remove('form-submitting');
             }
         });
     }, true);

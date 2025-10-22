@@ -54,7 +54,7 @@
             <label for="room-filter" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
                 Sala:
             </label>
-            <select id="room-filter" name="room_id" class="w-full rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-3 py-2 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition">
+            <select id="room-filter" name="room_id" class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-2.5 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium text-base">
                 <option value="">Todas</option>
                 @foreach(\App\Models\Room::orderBy('name')->get() as $room)
                     <option value="{{ $room->id }}">{{ $room->name }}</option>

@@ -38,7 +38,7 @@
                 name="nombre"
                 label="Nombre del Módulo"
                 placeholder="Ej: Economía Aplicada"
-                value="{{ old('nombre', $course->nombre ?? '') }}"
+                value="{{ old('nombre', $editing ? $course->nombre : '') }}"
                 :required="true"
                 icon=""
                 help="Nombre descriptivo del módulo académico"
@@ -50,7 +50,7 @@
                 type="number"
                 label="Créditos SCT"
                 placeholder="Ej: 3"
-                value="{{ old('sct', $course->sct ?? '') }}"
+                value="{{ old('sct', $editing ? $course->sct : '') }}"
                 :required="false"
                 icon=""
                 help="Sistema de Créditos Transferibles (1-20)"
@@ -71,7 +71,7 @@
             {{-- Contenedor de chips seleccionados --}}
             <div id="requisitos-selected" class="flex flex-wrap gap-2 mb-3 min-h-[50px] p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                 @php
-                    $requisitosSeleccionados = old('requisitos', $course->requisitos ? explode(',', $course->requisitos) : []);
+                    $requisitosSeleccionados = old('requisitos', ($editing && $course->requisitos) ? explode(',', $course->requisitos) : []);
                 @endphp
                 @foreach($requisitosSeleccionados as $req)
                     @if($req == 'ingreso')
@@ -156,7 +156,7 @@
         >
             <option value="">-- Selecciona un Programa --</option>
             @foreach($magisters as $magister)
-                <option value="{{ $magister->id }}" {{ old('magister_id', $course->magister_id ?? $selectedMagisterId ?? '') == $magister->id ? 'selected' : '' }}>
+                <option value="{{ $magister->id }}" {{ old('magister_id', $editing ? $course->magister_id : ($selectedMagisterId ?? '')) == $magister->id ? 'selected' : '' }}>
                     {{ $magister->nombre }}
                 </option>
             @endforeach
@@ -173,8 +173,8 @@
                 id="anio"
             >
                 <option value="">-- Selecciona un Año --</option>
-                <option value="1" {{ old('anio', $course->period->anio ?? '') == '1' ? 'selected' : '' }}>Año 1</option>
-                <option value="2" {{ old('anio', $course->period->anio ?? '') == '2' ? 'selected' : '' }}>Año 2</option>
+                <option value="1" {{ old('anio', $editing && $course->period ? $course->period->anio : '') == '1' ? 'selected' : '' }}>Año 1</option>
+                <option value="2" {{ old('anio', $editing && $course->period ? $course->period->anio : '') == '2' ? 'selected' : '' }}>Año 2</option>
             </x-hci-field>
 
             <x-hci-field 
@@ -191,7 +191,7 @@
         </div>
 
         {{-- Campo oculto para period_id --}}
-        <input type="hidden" name="period_id" id="period_id" value="{{ old('period_id', $course->period_id ?? '') }}">
+        <input type="hidden" name="period_id" id="period_id" value="{{ old('period_id', $editing ? $course->period_id : '') }}">
     </x-hci-form-section>
 
 
@@ -226,7 +226,7 @@
                         <span class="text-lg">📚</span>
                         <h4 class="font-medium text-gray-700 dark:text-gray-300">Nombre del Módulo</h4>
                     </div>
-                    <p id="resumen-nombre" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('nombre', $course->nombre ?? '') }}</p>
+                    <p id="resumen-nombre" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('nombre', $editing ? $course->nombre : '') }}</p>
                 </div>
 
                 <!-- Créditos SCT -->
@@ -236,8 +236,8 @@
                         <h4 class="font-medium text-gray-700 dark:text-gray-300">Créditos SCT</h4>
                     </div>
                     <p id="resumen-sct" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">
-                        @if(old('sct', $course->sct ?? ''))
-                            {{ old('sct', $course->sct ?? '') }} créditos
+                        @if(old('sct', $editing ? $course->sct : ''))
+                            {{ old('sct', $editing ? $course->sct : '') }} créditos
                         @else
                             <span class="text-gray-400">No especificado</span>
                         @endif
@@ -252,7 +252,7 @@
                     </div>
                     <div id="resumen-requisitos" class="flex flex-wrap gap-2">
                         @php
-                            $requisitosDisplay = old('requisitos', $course->requisitos ? explode(',', $course->requisitos) : []);
+                            $requisitosDisplay = old('requisitos', ($editing && $course->requisitos) ? explode(',', $course->requisitos) : []);
                         @endphp
                         @if(count($requisitosDisplay) > 0)
                             @foreach($requisitosDisplay as $req)
@@ -283,7 +283,7 @@
                         <span class="text-lg">🎓</span>
                         <h4 class="font-medium text-gray-700 dark:text-gray-300">Programa</h4>
                     </div>
-                    <p id="resumen-programa" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('magister_id', $course->magister_id ?? '') }}</p>
+                    <p id="resumen-programa" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('magister_id', $editing ? $course->magister_id : '') }}</p>
                 </div>
 
                 <!-- Año -->
@@ -292,7 +292,7 @@
                         <span class="text-lg">📊</span>
                         <h4 class="font-medium text-gray-700 dark:text-gray-300">Año</h4>
                     </div>
-                    <p id="resumen-anio" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('anio', $course->period->anio ?? '') }}</p>
+                    <p id="resumen-anio" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('anio', $editing && $course->period ? $course->period->anio : '') }}</p>
                 </div>
 
                 <!-- Trimestre -->
@@ -301,7 +301,7 @@
                         <span class="text-lg">🔢</span>
                         <h4 class="font-medium text-gray-700 dark:text-gray-300">Trimestre</h4>
                     </div>
-                    <p id="resumen-trimestre" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('trimestre', $course->period->numero ?? '') }}</p>
+                    <p id="resumen-trimestre" class="text-lg font-bold text-[#005187] dark:text-[#84b6f4]">{{ old('trimestre', $editing && $course->period ? $course->period->numero : '') }}</p>
                 </div>
             </div>
         </div>

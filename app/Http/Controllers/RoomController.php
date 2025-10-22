@@ -174,7 +174,6 @@ class RoomController extends Controller
             $cantidadClases = $room->clases()->count();
             $cantidadIncidencias = $room->incidents()->count();
             $cantidadEventos = $room->events()->count();
-            $cantidadBitacoras = $room->bitacoras()->count();
             $cantidadReportEntries = $room->reportEntries()->count();
 
             // Verificar si tiene registros asociados que NO pueden ser NULL
@@ -193,9 +192,6 @@ class RoomController extends Controller
             if ($cantidadEventos > 0) {
                 $detalles[] = "$cantidadEventos evento(s)";
             }
-            if ($cantidadBitacoras > 0) {
-                $detalles[] = "$cantidadBitacoras bitácora(s)";
-            }
             if ($cantidadReportEntries > 0) {
                 $detalles[] = "$cantidadReportEntries entrada(s) de reporte diario";
             }
@@ -205,7 +201,6 @@ class RoomController extends Controller
             Log::info('Sala eliminada', [
                 'nombre' => $nombre,
                 'eventos_actualizados' => $cantidadEventos,
-                'bitacoras_actualizadas' => $cantidadBitacoras,
                 'report_entries_actualizadas' => $cantidadReportEntries
             ]);
 

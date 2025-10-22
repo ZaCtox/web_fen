@@ -80,16 +80,24 @@ function updateSummary() {
     
     // Fecha de inicio
     const summaryFechaInicio = document.getElementById('summary-fecha-inicio');
-    if (summaryFechaInicio && fechaInicio) {
-        summaryFechaInicio.textContent = fechaInicio.value ? 
-            new Date(fechaInicio.value).toLocaleDateString('es-CL') : '--';
+    if (summaryFechaInicio && fechaInicio && fechaInicio.value) {
+        // Formatear fecha sin problemas de zona horaria
+        const [year, month, day] = fechaInicio.value.split('-');
+        const fecha = new Date(year, month - 1, day);
+        summaryFechaInicio.textContent = fecha.toLocaleDateString('es-CL');
+    } else if (summaryFechaInicio) {
+        summaryFechaInicio.textContent = '--';
     }
     
     // Fecha de término
     const summaryFechaFin = document.getElementById('summary-fecha-fin');
-    if (summaryFechaFin && fechaFin) {
-        summaryFechaFin.textContent = fechaFin.value ? 
-            new Date(fechaFin.value).toLocaleDateString('es-CL') : '--';
+    if (summaryFechaFin && fechaFin && fechaFin.value) {
+        // Formatear fecha sin problemas de zona horaria
+        const [year, month, day] = fechaFin.value.split('-');
+        const fecha = new Date(year, month - 1, day);
+        summaryFechaFin.textContent = fecha.toLocaleDateString('es-CL');
+    } else if (summaryFechaFin) {
+        summaryFechaFin.textContent = '--';
     }
 }
 

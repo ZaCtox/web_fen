@@ -485,6 +485,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('event-form').addEventListener('submit', saveEvent);
     function saveEvent(e) {
         e.preventDefault();
+        e.stopPropagation();
         console.log('🚀 Iniciando guardado de evento...');
 
         const eventId = (document.getElementById('event_id').value || '').trim();
@@ -515,6 +516,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         console.log('📤 Enviando petición fetch...');
         
+        // Mostrar loading manual
+        Swal.fire({
+            title: 'Guardando evento...',
+            html: '<div class="flex justify-center"><div class="inline-block w-12 h-12 animate-spin rounded-full border-4 border-solid border-[#4d82bc] border-r-transparent"></div></div>',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false
+        });
+        
         fetch(endpoint, {
             method,
             headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
@@ -542,21 +552,30 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('🎉 Evento guardado exitosamente:', data);
                 console.log('🔄 Cerrando modal y actualizando calendario...');
                 
-                // Cerrar cualquier SweetAlert pendiente
-                Swal.close();
-                
+                // Cerrar modal y actualizar calendario
                 calendar.unselect();
                 calendar.refetchEvents();
                 window.closeModal();
-                Swal.fire({ icon: 'success', title: 'Evento guardado', timer: 1500, showConfirmButton: false });
+                
+                // Mostrar mensaje de éxito
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'Evento guardado', 
+                    timer: 1500, 
+                    showConfirmButton: false 
+                });
                 
                 console.log('✅ Proceso completado exitosamente');
             })
             .catch((err) => {
                 console.error('💥 Error en el proceso de guardado:', err);
-                // Cerrar cualquier SweetAlert pendiente
-                Swal.close();
-                Swal.fire({ icon: 'error', title: 'Error al guardar el evento', text: (err && err.message) ? err.message : 'Revisa los datos ingresados' });
+                
+                // Mostrar mensaje de error
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Error al guardar el evento', 
+                    text: (err && err.message) ? err.message : 'Revisa los datos ingresados' 
+                });
             });
     }
 

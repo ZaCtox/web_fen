@@ -68,15 +68,20 @@
 
         <x-hci-field name="encargado" label="Encargado (Profesor)" :required="true" id="encargado" icon="" placeholder="Ej: Margarita Pereira" value="{{ old('encargado', $clase->encargado ?? '') }}" help="Profesor responsable de la clase" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <x-hci-field name="room_id" type="select" label="Sala Principal (opcional)" id="room_id" icon="" help="Sala por defecto para las sesiones presenciales">
-                <option value="">-- Sin sala asignada --</option>
-                @foreach(($rooms ?? []) as $r)
-                    <option value="{{ $r->id }}" {{ old('room_id', $clase->room_id ?? '') == $r->id ? 'selected' : '' }}>{{ $r->name }}</option>
-                @endforeach
-            </x-hci-field>
-
-            <x-hci-field name="url_zoom" type="url" label="URL Zoom Principal (opcional)" id="url_zoom" icon="" placeholder="https://zoom.us/j/..." value="{{ old('url_zoom', $clase->url_zoom ?? '') }}" help="Enlace por defecto para sesiones online" />
+        <div class="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded">
+            <div class="flex items-start">
+                <svg class="w-5 h-5 text-blue-500 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <div>
+                    <p class="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                        Las salas y enlaces de Zoom se configurarán individualmente para cada sesión
+                    </p>
+                    <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">
+                        En el paso de configuración de sesiones podrás asignar sala y Zoom específicos
+                    </p>
+                </div>
+            </div>
         </div>
     </x-hci-form-section>
 
@@ -198,20 +203,6 @@
                             <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Encargado</h4>
                         </div>
                         <p class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]" id="resumen-encargado">—</p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-lg">🏫</span>
-                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sala Principal</h4>
-                        </div>
-                        <p class="text-sm font-bold text-[#005187] dark:text-[#84b6f4]" id="resumen-sala-principal">—</p>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-lg">💻</span>
-                            <h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">URL Zoom</h4>
-                        </div>
-                        <p class="text-xs font-bold text-[#005187] dark:text-[#84b6f4] break-all" id="resumen-zoom-principal">—</p>
                     </div>
                 </div>
             </div>

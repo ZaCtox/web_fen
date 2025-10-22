@@ -12,7 +12,12 @@
     ]" />
 
     <div class="p-6 max-w-full mx-auto">
-        @include('courses.form-wizard', ['course' => $course])
+        @include('courses.form-wizard', [
+            'course' => $course,
+            'magisters' => $magisters,
+            'periods' => $periods,
+            'allCourses' => $allCourses
+        ])
     </div>
 </x-app-layout>
 
