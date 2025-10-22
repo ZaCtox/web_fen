@@ -20,6 +20,11 @@ class UserController extends Controller
 
     public function edit(User $usuario)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar usuarios.');
+        }
+        
         if ($usuario->id === Auth::id()) {
             return redirect()->route('usuarios.index')
                 ->withErrors(['No puedes editar tu propio usuario.']);
@@ -30,6 +35,11 @@ class UserController extends Controller
 
     public function update(Request $request, User $usuario)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar usuarios.');
+        }
+        
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
@@ -82,6 +92,11 @@ class UserController extends Controller
 
     public function destroy(User $usuario)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar usuarios.');
+        }
+        
         if ($usuario->id === Auth::id()) {
             return redirect()->back()->withErrors(['No puedes eliminar tu propio usuario.']);
         }

@@ -78,6 +78,11 @@ class ClaseController extends Controller
 
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear clases.');
+        }
+        
         [$agrupados, $courses, $rooms, $periods] = $this->referencias();
 
         return view('clases.create', [
@@ -89,6 +94,11 @@ class ClaseController extends Controller
 
     public function store(StoreClaseRequest $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear clases.');
+        }
+        
         $validated = $request->validated();
         
         // Crear la clase (módulo)
@@ -123,6 +133,11 @@ class ClaseController extends Controller
 
     public function edit(Clase $clase)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar clases.');
+        }
+        
         [$agrupados, $courses, $rooms, $periods] = $this->referencias();
 
         return view('clases.edit', [
@@ -136,6 +151,11 @@ class ClaseController extends Controller
 
     public function update(UpdateClaseRequest $request, Clase $clase)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar clases.');
+        }
+        
         $validated = $request->validated();
         
         // Actualizar solo los datos generales de la clase (módulo)
@@ -147,6 +167,11 @@ class ClaseController extends Controller
 
     public function destroy(Clase $clase)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar clases.');
+        }
+        
         $clase->delete();
         return redirect()->route('clases.index')->with('success', 'Clase eliminada correctamente.');
     }

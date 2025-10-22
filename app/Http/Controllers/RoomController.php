@@ -58,6 +58,11 @@ class RoomController extends Controller
      */
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear salas.');
+        }
+        
         try {
             $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
             $cursos = Course::with('magister')->orderBy('magister_id')->orderBy('nombre')->get();
@@ -75,6 +80,11 @@ class RoomController extends Controller
      */
     public function store(StoreRoomRequest $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear salas.');
+        }
+        
         try {
             $data = $request->validated();
 
@@ -111,6 +121,11 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar salas.');
+        }
+        
         try {
             $room->loadCount('clases');
             return view('rooms.edit', compact('room'));
@@ -126,6 +141,11 @@ class RoomController extends Controller
      */
     public function update(StoreRoomRequest $request, Room $room)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar salas.');
+        }
+        
         try {
             $data = $request->validated();
 
@@ -169,6 +189,11 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar salas.');
+        }
+        
         try {
             $nombre = $room->name;
             $cantidadClases = $room->clases()->count();

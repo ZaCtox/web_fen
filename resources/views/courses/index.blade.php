@@ -70,12 +70,14 @@
                         </h3>
                         <div class="flex items-center gap-3">
                             {{-- Botón añadir módulo --}}
+                            @if(!tieneRol('visor'))
                             <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
                                 class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
                                 title="Agregar módulo a este programa">
                                 <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-4 h-4">
                                 <span>Agregar Módulo</span>
                             </a>
+                            @endif
                             <span class="text-sm text-[#4d82bc] flex items-center">
                                 <svg class="ml-2 w-5 h-5 transition-transform" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -166,6 +168,7 @@
                                                         </td>
                                                         <td class="px-3 py-2 text-right">
                                                             <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                                                @if(!tieneRol('visor'))
                                                                 {{-- Botón Editar --}}
                                                                 <x-action-button 
                                                                     variant="edit" 
@@ -181,6 +184,7 @@
                                                                     formMethod="DELETE" 
                                                                     class="form-eliminar"
                                                                     tooltip="Eliminar módulo" />
+                                                                @endif
                                                             </div>
                                                         </td>
                                                     </tr>

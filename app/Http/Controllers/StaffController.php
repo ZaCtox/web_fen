@@ -63,6 +63,11 @@ class StaffController extends Controller
      */
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear personal.');
+        }
+        
         try {
             return view('staff.create');
         } catch (Exception $e) {
@@ -76,6 +81,11 @@ class StaffController extends Controller
      */
     public function store(StaffRequest $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear personal.');
+        }
+        
         try {
             $validated = $request->validated();
             
@@ -132,6 +142,11 @@ class StaffController extends Controller
      */
     public function edit(Staff $staff)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar personal.');
+        }
+        
         try {
             return view('staff.edit', compact('staff'));
         } catch (Exception $e) {
@@ -145,6 +160,11 @@ class StaffController extends Controller
      */
     public function update(StaffRequest $request, Staff $staff)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar personal.');
+        }
+        
         try {
             $validated = $request->validated();
             
@@ -218,6 +238,11 @@ class StaffController extends Controller
      */
     public function destroy(Staff $staff)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar personal.');
+        }
+        
         try {
             $nombre = $staff->nombre;
             
@@ -250,6 +275,11 @@ class StaffController extends Controller
      */
     public function deleteFoto(Staff $staff)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar fotos.');
+        }
+        
         try {
             // Eliminar foto de Cloudinary si existe
             if ($staff->public_id) {

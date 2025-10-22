@@ -14,12 +14,14 @@
     <div class="p-6">
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            @if(!tieneRol('visor'))
             <a href="{{ route('daily-reports.create') }}"
                 class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                 aria-label="Agregar nuevo reporte diario">
                 <img src="{{ asset('icons/agregar.svg') }}" alt="Agregar" class="w-5 h-5">
                 Nuevo Reporte
             </a>
+            @endif
             
             <div class="flex gap-3 items-center w-full sm:w-auto">
                 <div class="relative flex-1 sm:flex-initial">
@@ -136,11 +138,13 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2" onclick="event.stopPropagation()">
+                                            @if(!tieneRol('visor'))
                                             <a href="{{ route('daily-reports.edit', $report) }}" 
                                                class="inline-flex items-center justify-center p-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                                title="Editar reporte">
                                                 <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
                                             </a>
+                                            @endif
                                             @if($report->tiene_pdf)
                                             <a href="{{ route('daily-reports.download', $report) }}" 
                                                class="inline-flex items-center justify-center p-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
@@ -148,6 +152,7 @@
                                                 <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-5 h-5">
                                             </a>
                                             @endif
+                                            @if(!tieneRol('visor'))
                                             <form action="{{ route('daily-reports.destroy', $report) }}" method="POST" class="form-eliminar inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -157,6 +162,7 @@
                                                     <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
                                                 </button>
                                             </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

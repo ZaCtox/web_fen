@@ -20,12 +20,22 @@ class InformeController extends Controller
 
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear informes.');
+        }
+        
         $magisters = Magister::all();
         return view('informes.create', compact('magisters'));
     }
 
     public function store(InformeRequest $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear informes.');
+        }
+        
         $data = $request->validated();
         
         $file = $request->file('archivo');
@@ -45,6 +55,11 @@ class InformeController extends Controller
 
     public function edit($id)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar informes.');
+        }
+        
         $informe = Informe::findOrFail($id);
         $magisters = Magister::all();
         return view('informes.edit', compact('informe', 'magisters'));
@@ -52,6 +67,11 @@ class InformeController extends Controller
 
     public function update(InformeRequest $request, $id)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar informes.');
+        }
+        
         $informe = Informe::findOrFail($id);
         $data = $request->validated();
 
@@ -90,6 +110,11 @@ class InformeController extends Controller
 
     public function destroy($id)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar informes.');
+        }
+        
         $informe = Informe::findOrFail($id);
 
         if (Storage::disk('public')->exists($informe->archivo)) {

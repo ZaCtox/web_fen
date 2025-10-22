@@ -38,6 +38,11 @@ class CourseController extends Controller
 
     public function create(Request $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear módulos.');
+        }
+        
         $magisters = Magister::orderBy('orden')->get();
         $selectedMagisterId = $request->magister_id;
         $periods = Period::orderBy('anio_ingreso', 'desc')->orderBy('anio')->orderBy('numero')->get();
@@ -50,6 +55,11 @@ class CourseController extends Controller
 
     public function store(CourseRequest $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear módulos.');
+        }
+        
         $data = $request->only('nombre', 'sct', 'requisitos', 'magister_id', 'period_id');
         
         // Manejar requisitos: si viene vacío, asignar null
@@ -64,6 +74,11 @@ class CourseController extends Controller
 
     public function edit(Course $course)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar módulos.');
+        }
+        
         $magisters = Magister::orderBy('orden')->get();
         $periods = Period::orderBy('anio_ingreso', 'desc')->orderBy('anio')->orderBy('numero')->get();
 
@@ -75,6 +90,11 @@ class CourseController extends Controller
 
     public function update(CourseRequest $request, Course $course)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar módulos.');
+        }
+        
         $data = $request->only('nombre', 'sct', 'requisitos', 'magister_id', 'period_id');
         
         // Manejar requisitos: si viene vacío, asignar null
@@ -89,6 +109,11 @@ class CourseController extends Controller
 
     public function destroy(Course $course)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar módulos.');
+        }
+        
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Curso eliminado.');

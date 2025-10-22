@@ -70,6 +70,11 @@ class MagisterController extends Controller
      */
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear programas.');
+        }
+        
         try {
             return view('magisters.create');
         } catch (Exception $e) {
@@ -83,6 +88,11 @@ class MagisterController extends Controller
      */
     public function store(StoreMagisterRequest $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear programas.');
+        }
+        
         try {
             $validated = $request->validate([
                 'nombre' => 'required|string|max:255|unique:magisters,nombre',
@@ -128,6 +138,11 @@ class MagisterController extends Controller
      */
     public function edit(Magister $magister)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar programas.');
+        }
+        
         try {
             $magister->loadCount('courses');
             return view('magisters.edit', compact('magister'));
@@ -142,6 +157,11 @@ class MagisterController extends Controller
      */
     public function update(UpdateMagisterRequest $request, Magister $magister)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar programas.');
+        }
+        
         try {
             $validated = $request->validate([
                 'nombre' => 'required|string|max:255|unique:magisters,nombre,' . $magister->id,
@@ -186,6 +206,11 @@ class MagisterController extends Controller
      */
     public function destroy(Magister $magister)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar programas.');
+        }
+        
         try {
             $nombre = $magister->nombre;
             $cantidadCursos = $magister->courses()->count();

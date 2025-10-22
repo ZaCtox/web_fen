@@ -24,6 +24,7 @@
                 </a>
 
                 {{-- Botones de acción --}}
+                @if(!tieneRol('visor'))
                 <div class="flex flex-wrap gap-2">
                     {{-- Editar --}}
                     <a href="{{ route('emergencies.edit', $emergency) }}"
@@ -64,6 +65,7 @@
                         </button>
                     </form>
                 </div>
+                @endif
             </div>
         </div>
 

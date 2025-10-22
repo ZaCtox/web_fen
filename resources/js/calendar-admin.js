@@ -1,3 +1,21 @@
+// Definir closeModal globalmente ANTES del DOMContentLoaded
+window.closeModal = function () {
+    console.log('🚪 Cerrando modal...');
+    const modal = document.getElementById('modal');
+    const eventModal = document.getElementById('eventModal');
+    if (modal) modal.classList.add('hidden');
+    if (eventModal) eventModal.classList.add('hidden');
+    
+    // Resetear formulario si existe
+    const form = document.getElementById('event-form');
+    if (form) {
+        form.reset();
+        const eventId = document.getElementById('event_id');
+        if (eventId) eventId.value = '';
+    }
+    console.log('✅ Modal cerrado y formulario reseteado');
+};
+
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
 
@@ -6,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const storeUrl = document.querySelector('meta[name="store-url"]')?.content || '';
     const showBase = document.querySelector('meta[name="clases-show-base"]')?.content || '/clases';
     const userId = document.querySelector('meta[name="user-id"]')?.content || null;
+    const esVisor = document.querySelector('meta[name="es-visor"]')?.content === '1';
 
     const magisterFilter = document.getElementById('magister-filter');
     const roomFilter = document.getElementById('room-filter');
@@ -170,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
         allDaySlot: false,
         expandRows: true,
         editable: false,
-        selectable: true,   // 👈 habilitar selección
+        selectable: !esVisor,   // 👈 habilitar selección solo si no es visor
         select: onSelect,   // 👈 función de selección
         eventClick: onEventClick,
         events: {
@@ -420,6 +439,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Crear (select en calendario)
     function onSelect(info) {
+        // Si es visor, no permitir crear eventos
+        if (esVisor) {
+            calendar.unselect();
+            return;
+        }
+        
         resetForm();
 
         const magSel = document.getElementById('magister_id');
@@ -445,7 +470,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const deleteBtn = document.getElementById('delete-btn');
         const editBtn = document.getElementById('edit-btn');
 
-        if (info.event.extendedProps.type === 'manual') {
+        // Si es visor, ocultar siempre los botones de editar/eliminar
+        if (esVisor) {
+            deleteBtn.classList.add('hidden');
+            editBtn.classList.add('hidden');
+        } else if (info.event.extendedProps.type === 'manual') {
             deleteBtn.classList.remove('hidden');
             deleteBtn.setAttribute('data-id', info.event.id.replace('event-', ''));
             editBtn.classList.remove('hidden');
@@ -627,21 +656,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Cerrar modales global
-    window.closeModal = function () {
-        console.log('🚪 Cerrando modal...');
-        document.getElementById('modal').classList.add('hidden');
-        document.getElementById('eventModal').classList.add('hidden');
-        resetForm();
-        console.log('✅ Modal cerrado y formulario reseteado');
-    };
-
+    // resetForm local dentro del DOMContentLoaded
     function resetForm() {
         console.log('🔄 Reseteando formulario...');
-        document.getElementById('event_id').value = '';
-        document.getElementById('event-form').reset();
-        document.getElementById('start_time').value = '';
-        document.getElementById('end_time').value = '';
+        const eventId = document.getElementById('event_id');
+        const form = document.getElementById('event-form');
+        const startTime = document.getElementById('start_time');
+        const endTime = document.getElementById('end_time');
+        
+        if (eventId) eventId.value = '';
+        if (form) form.reset();
+        if (startTime) startTime.value = '';
+        if (endTime) endTime.value = '';
         console.log('✅ Formulario reseteado');
     }
 });

@@ -42,6 +42,11 @@ class DailyReportController extends Controller
 
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear reportes diarios.');
+        }
+        
         $rooms = Room::orderBy('name')->get();
         $magisters = \App\Models\Magister::orderBy('nombre')->get();
         $today = now()->format('Y-m-d');
@@ -52,6 +57,11 @@ class DailyReportController extends Controller
 
     public function store(Request $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear reportes diarios.');
+        }
+        
         \Log::info('DailyReportController@store - Iniciando', [
             'request_data' => $request->all(),
             'user_id' => Auth::id(),
@@ -211,6 +221,11 @@ class DailyReportController extends Controller
 
     public function edit(DailyReport $dailyReport)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar reportes diarios.');
+        }
+        
         $rooms = Room::orderBy('name')->get();
         $magisters = \App\Models\Magister::orderBy('nombre')->get();
         $dailyReport->load(['entries.room']);
@@ -219,6 +234,11 @@ class DailyReportController extends Controller
 
     public function update(Request $request, DailyReport $dailyReport)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar reportes diarios.');
+        }
+        
         $request->validate([
             'title' => 'required|string|max:255',
             'report_date' => 'required|date',
@@ -284,6 +304,11 @@ class DailyReportController extends Controller
 
     public function destroy(DailyReport $dailyReport)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar reportes diarios.');
+        }
+        
         // Eliminar PDF del storage
         if ($dailyReport->pdf_path && Storage::disk('public')->exists($dailyReport->pdf_path)) {
             Storage::disk('public')->delete($dailyReport->pdf_path);

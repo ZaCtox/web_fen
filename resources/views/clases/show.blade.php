@@ -23,6 +23,7 @@
                     </a>
 
                     {{-- Acciones: Editar + Eliminar --}}
+                    @if(!tieneRol('visor'))
                     <div class="flex gap-3">
                         {{-- Editar --}}
                         <a href="{{ route('clases.edit', $clase) }}"
@@ -44,6 +45,7 @@
                             </button>
                         </form>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -418,6 +420,7 @@
                                             </button>
                                         @endif
                                     </div>
+                                    @if(!tieneRol('visor'))
                                     <div class="flex gap-2 ml-4">
                                         <button @click="showModal = true; modalMode = 'edit'; editingSesion = {{ $sesion->id }}"
                                                 class="p-2  bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
@@ -435,6 +438,7 @@
                                             </button>
                                         </form>
                                     </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>

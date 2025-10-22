@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 
 // 🏠 Dashboard principal
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified', 'role:administrador,director_administrativo,docente,administrativo,asistente_postgrado'])
+    ->middleware(['auth', 'verified', 'role:administrador,director_administrativo,docente,administrativo,asistente_postgrado,visor'])
     ->name('dashboard');
 
 // 🧠 Demo de Principios HCI (DEV)
@@ -42,22 +42,22 @@ Route::middleware(['auth'])->group(function () {
 
     // 📚 Clases
     Route::get('/clases/exportar', [ClaseController::class, 'exportar'])
-        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado,visor')
         ->name('clases.exportar');
 
     Route::resource('clases', ClaseController::class)
-        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado');
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado,visor');
 
     Route::get('/salas/disponibilidad', [ClaseController::class, 'disponibilidad'])
-        ->middleware('role:administrador,asistente_programa,director_administrativo')
+        ->middleware('role:administrador,asistente_programa,director_administrativo,visor')
         ->name('salas.disponibilidad');
 
     Route::get('/salas/horarios', [ClaseController::class, 'horariosDisponibles'])
-        ->middleware('role:administrador,asistente_programa,director_administrativo')
+        ->middleware('role:administrador,asistente_programa,director_administrativo,visor')
         ->name('salas.horarios');
 
     Route::get('/salas/disponibles', [ClaseController::class, 'salasDisponibles'])
-        ->middleware('role:administrador,asistente_programa,director_administrativo')
+        ->middleware('role:administrador,asistente_programa,director_administrativo,visor')
         ->name('salas.disponibles');
 
     // 📝 Sesiones de Clase
@@ -83,12 +83,12 @@ Route::middleware(['auth'])->group(function () {
 
     // 📅 Calendario
     Route::get('/calendario', [EventController::class, 'calendario'])
-        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,director_administrativo,asistente_postgrado,visor')
         ->name('calendario');
 
     // 🎉 Eventos
     Route::get('/events', [EventController::class, 'index'])
-        ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado,visor')
         ->name('events.index');
     Route::post('/events', [EventController::class, 'store'])
         ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
@@ -102,15 +102,15 @@ Route::middleware(['auth'])->group(function () {
 
     // 🗂️ Incidencias
     Route::get('/incidencias/estadisticas', [IncidentController::class, 'estadisticas'])
-        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado,visor')
         ->name('incidencias.estadisticas');
 
     Route::get('/incidencias/exportar-pdf', [IncidentController::class, 'exportarPDF'])
-        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado,visor')
         ->name('incidencias.exportar.pdf');
 
     Route::resource('incidencias', IncidentController::class)
-        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado')
+        ->middleware('role:administrador,director_programa,asistente_programa,técnico,auxiliar,asistente_postgrado,visor')
         ->except(['update']);
     
     // Ruta específica para actualización con middleware de permisos
@@ -120,16 +120,16 @@ Route::middleware(['auth'])->group(function () {
 
     // 📊 Estadísticas Generales (Analytics)
     Route::get('/analytics', [AnalyticsController::class, 'index'])
-        ->middleware('role:administrador,director_administrativo,director_programa,asistente_postgrado')
+        ->middleware('role:administrador,director_administrativo,director_programa,asistente_postgrado,visor')
         ->name('analytics.index');
     
     Route::get('/analytics/api', [AnalyticsController::class, 'api'])
-        ->middleware('role:administrador,director_administrativo,director_programa,asistente_postgrado')
+        ->middleware('role:administrador,director_administrativo,director_programa,asistente_postgrado,visor')
         ->name('analytics.api');
 
     // 🏛️ Salas
     Route::resource('rooms', RoomController::class)
-        ->middleware('role:administrador,asistente_programa');
+        ->middleware('role:administrador,asistente_programa,visor');
 
     // 👤 Perfil (todos los logueados pueden acceder a su perfil)
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -151,18 +151,18 @@ Route::middleware(['auth'])->group(function () {
 
     // 👥 Usuarios (solo administrador)
     Route::resource('usuarios', UserController::class)
-        ->middleware('role:administrador');
+        ->middleware('role:administrador,visor');
 
     // 📆 Periodos
     Route::resource('periods', PeriodController::class)
-        ->middleware('role:administrador');
+        ->middleware('role:administrador,visor');
     Route::post('/periods/actualizar-proximo-anio', [PeriodController::class, 'actualizarAlProximoAnio'])
         ->middleware('role:administrador')
         ->name('periods.actualizarProximoAnio');
 
     // 🎓 Cursos
     Route::resource('courses', CourseController::class)
-        ->middleware('role:administrador,director_programa,asistente_programa');
+        ->middleware('role:administrador,director_programa,asistente_programa,visor');
     Route::delete('/courses/programa/{programa}', [CourseController::class, 'destroyPrograma'])
         ->middleware('role:administrador,director_programa,asistente_programa')
         ->name('courses.destroy-programa');
@@ -170,7 +170,7 @@ Route::middleware(['auth'])->group(function () {
     // 📘 Magísteres
     Route::resource('magisters', MagisterController::class)
         ->except(['show'])
-        ->middleware('role:administrador,director_programa,asistente_programa');
+        ->middleware('role:administrador,director_programa,asistente_programa,visor');
 
     // 👨‍🏫 Equipo
     Route::resource('equipo', StaffController::class)
@@ -184,7 +184,7 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'staff.update',
             'destroy' => 'staff.destroy'
         ])
-        ->middleware('role:administrador');
+        ->middleware('role:administrador,visor');
     
     Route::delete('/equipo/{staff}/foto', [StaffController::class, 'deleteFoto'])
         ->name('staff.delete-foto')
@@ -197,7 +197,7 @@ Route::middleware(['auth'])->group(function () {
     
     Route::resource('novedades', NovedadController::class, [
         'parameters' => ['novedades' => 'novedad']
-    ])->middleware('role:administrador,director_administrativo,asistente_postgrado');
+    ])->middleware('role:administrador,director_administrativo,asistente_postgrado,visor');
 
     // 🚨 Emergencias
     Route::post('/emergency', [EmergencyController::class, 'store'])
@@ -205,7 +205,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('emergency.store');
 
     Route::resource('emergencies', EmergencyController::class)
-        ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado');
+        ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado,visor');
 
     Route::patch('emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])
         ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
@@ -215,17 +215,17 @@ Route::middleware(['auth'])->group(function () {
         ->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado')
         ->name('emergencies.toggleActive');
 
-    Route::resource('informes', InformeController::class)->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado');
+    Route::resource('informes', InformeController::class)->middleware('role:administrador,director_programa,asistente_programa,asistente_postgrado,visor');
 
     Route::get('informes/download/{id}', [InformeController::class, 'download'])->name('informes.download');
 
     
     // Reportes Diarios (nuevo sistema)
     Route::resource('daily-reports', App\Http\Controllers\DailyReportController::class)
-        ->middleware('role:asistente_postgrado');
+        ->middleware('role:asistente_postgrado,visor');
     Route::get('daily-reports/download/{dailyReport}', [App\Http\Controllers\DailyReportController::class, 'download'])
         ->name('daily-reports.download')
-        ->middleware('role:asistente_postgrado');
+        ->middleware('role:asistente_postgrado,visor');
 
 });
 

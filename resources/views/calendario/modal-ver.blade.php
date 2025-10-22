@@ -1,5 +1,4 @@
-<div id="eventModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex justify-center items-center" 
-     @click.self="closeModal()">
+<div id="eventModal" class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex justify-center items-center">
   <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-lg border-2 border-[#c4dafa] dark:border-gray-700 
               transform transition-all duration-300 hover:scale-[1.01]">
     
@@ -24,7 +23,7 @@
         </svg>
         Eliminar
       </button>
-      <button onclick="closeModal()" 
+      <button type="button" onclick="window.closeModal()" 
               class="inline-flex items-center gap-2 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-lg shadow-md 
                      transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

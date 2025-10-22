@@ -94,12 +94,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             {{-- Botones de acción (Izquierda) --}}
             <div class="flex gap-3">
+                @if(!tieneRol('visor'))
                 <a href="{{ route('incidencias.create') }}"
                     class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                     aria-label="Agregar nueva incidencia">
                     <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
                     Agregar Incidencia
                 </a>
+                @endif
 
                 <a href="{{ route('incidencias.estadisticas') }}"
                     class="inline-flex items-center justify-center gap-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2 hci-button-ripple hci-glow"

@@ -26,6 +26,7 @@
 
                 {{-- Botones de acción --}}
                 <div class="flex flex-wrap gap-2">                    
+                    @if(!tieneRol('visor'))
                     {{-- Editar --}}
                     <a href="{{ route('daily-reports.edit', $dailyReport) }}"
                         class="inline-flex items-center justify-center px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
@@ -33,6 +34,7 @@
                         aria-label="Editar reporte">
                         <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5 flex-shrink-0">
                     </a>
+                    @endif
                     
                     @if($dailyReport->tiene_pdf)
                     <a href="{{ route('daily-reports.download', $dailyReport) }}"

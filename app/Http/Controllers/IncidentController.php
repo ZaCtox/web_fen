@@ -132,6 +132,11 @@ class IncidentController extends Controller
 
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear incidencias.');
+        }
+        
         $salas = Room::orderBy('name')->get();
         $magisters = Magister::orderBy('orden')->get();
 
@@ -140,6 +145,11 @@ class IncidentController extends Controller
 
     public function store(Request $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear incidencias.');
+        }
+        
         $validated = $request->validate([
             'titulo' => 'required|string|max:255',
             'descripcion' => 'required|string',
@@ -406,6 +416,11 @@ class IncidentController extends Controller
 
     public function destroy(Incident $incidencia)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar incidencias.');
+        }
+        
         // Verificar permisos de eliminación
         $user = Auth::user();
         $rolesQueVenTodas = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];

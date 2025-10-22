@@ -15,6 +15,7 @@
 
     <div class="p-6" x-data="{
             search: '',
+            esVisor: {{ tieneRol('visor') ? 'true' : 'false' }},
             salas: @js($rooms->items()),
             get filtradas() {
                 return this.salas.filter(s =>
@@ -27,12 +28,14 @@
         {{-- Header acciones --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             {{-- Botón Agregar (Izquierda) --}}
+            @if(!tieneRol('visor'))
             <a href="{{ route('rooms.create') }}"
                 class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                 aria-label="Agregar nueva sala">
                 <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
                 Agregar Sala
             </a>
+            @endif
 
             {{-- Filtros (Derecha) --}}
             <div class="flex gap-3 items-center w-full sm:w-auto">
@@ -99,7 +102,7 @@
                                     </a>
                                 </td>
                                 <td class="px-4 py-2" @click.stop>
-                                    <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                    <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2" x-show="!esVisor">
                                         {{-- Botón Editar --}}
                                         <a :href="`/rooms/${room.id}/edit`" 
                                            class="inline-flex items-center justify-center p-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"

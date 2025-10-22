@@ -13,6 +13,11 @@ class ClaseSesionController extends Controller
      */
     public function store(Request $request, Clase $clase)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear sesiones.');
+        }
+        
         $validated = $request->validate([
             'fecha' => 'required|date',
             'url_grabacion' => 'nullable|url',
@@ -33,6 +38,11 @@ class ClaseSesionController extends Controller
      */
     public function update(Request $request, ClaseSesion $sesion)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar sesiones.');
+        }
+        
         $validated = $request->validate([
             'fecha' => 'required|date',
             'url_grabacion' => 'nullable|url',
@@ -51,6 +61,11 @@ class ClaseSesionController extends Controller
      */
     public function updateGrabacion(Request $request, ClaseSesion $sesion)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar grabaciones.');
+        }
+        
         $validated = $request->validate([
             'url_grabacion' => 'required|url'
         ]);
@@ -69,6 +84,11 @@ class ClaseSesionController extends Controller
      */
     public function destroy(ClaseSesion $sesion)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar sesiones.');
+        }
+        
         $clase = $sesion->clase;
         $sesion->delete();
 
@@ -81,6 +101,11 @@ class ClaseSesionController extends Controller
      */
     public function generarSesiones(Request $request, Clase $clase)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para generar sesiones.');
+        }
+        
         // Cargar el período si no está cargado
         if (!$clase->relationLoaded('period')) {
             $clase->load('period');

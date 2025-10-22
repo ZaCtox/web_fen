@@ -26,7 +26,7 @@
                 </a>
 
                 {{-- Botón Eliminar (solo si no está resuelta o no_resuelta) --}}
-                @if ($incidencia->estado !== 'resuelta' && $incidencia->estado !== 'no_resuelta')
+                @if ($incidencia->estado !== 'resuelta' && $incidencia->estado !== 'no_resuelta' && !tieneRol('visor'))
                     <form action="{{ route('incidencias.destroy', $incidencia) }}" method="POST"
                           class="form-eliminar"
                           data-confirm="¿Estás seguro de que quieres eliminar esta incidencia? Esta acción no se puede deshacer.">

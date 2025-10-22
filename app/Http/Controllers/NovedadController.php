@@ -78,6 +78,11 @@ class NovedadController extends Controller
      */
     public function create()
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear novedades.');
+        }
+        
         try {
             $magisters = Magister::orderBy('nombre')->get();
             
@@ -117,6 +122,11 @@ class NovedadController extends Controller
      */
     public function store(Request $request)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para crear novedades.');
+        }
+        
         try {
             $validated = $request->validate([
                 'titulo' => 'required|string|max:255',
@@ -182,6 +192,11 @@ class NovedadController extends Controller
      */
     public function edit(Novedad $novedad)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para editar novedades.');
+        }
+        
         try {
             $magisters = Magister::orderBy('nombre')->get();
             
@@ -221,6 +236,11 @@ class NovedadController extends Controller
      */
     public function update(Request $request, Novedad $novedad)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para actualizar novedades.');
+        }
+        
         try {
             $validated = $request->validate([
                 'titulo' => 'required|string|max:255',
@@ -270,6 +290,11 @@ class NovedadController extends Controller
      */
     public function destroy($id)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para eliminar novedades.');
+        }
+        
         try {
             // Buscar la novedad directamente por ID
             $novedad = Novedad::findOrFail($id);
@@ -304,6 +329,11 @@ class NovedadController extends Controller
      */
     public function duplicate(Novedad $novedad)
     {
+        // Bloquear acceso al visor
+        if (auth()->user()->rol === 'visor') {
+            abort(403, 'Los visores no tienen permisos para duplicar novedades.');
+        }
+        
         try {
             $nueva = $novedad->replicate();
             $nueva->titulo = $novedad->titulo . ' (Copia)';
