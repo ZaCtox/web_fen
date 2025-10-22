@@ -16,12 +16,12 @@ class IncidentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Incident::with(['room', 'user']);
+        $query = Incident::with(['room', 'user', 'magister']);
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('titulo', 'like', '%' . $request->search . '%')
-                  ->orWhere('descripcion', 'like', '%' . $request->search . '%');
+                    ->orWhere('descripcion', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -54,6 +54,20 @@ class IncidentController extends Controller
             });
         }
 
+        // ⬅️ AGREGAR ESTO
+        if ($request->filled('magister_id')) {
+            $query->where('magister_id', $request->magister_id);
+        }
+
+        // ⬅️ AGREGAR ESTO (para filtro histórico)
+        if ($request->filled('historico')) {
+            $query->whereNotExists(function ($subquery) {
+                $subquery->select(\DB::raw(1))
+                    ->from('periods')
+                    ->whereRaw('incidents.created_at BETWEEN periods.fecha_inicio AND periods.fecha_fin');
+            });
+        }
+
         $incidencias = $query->latest()->paginate(10);
 
         return response()->json([
@@ -65,18 +79,19 @@ class IncidentController extends Controller
 
     public function show(Incident $incident)
     {
-        $incident->load(['room', 'user', 'logs.user']);
+        $incident->load(['room', 'user', 'magister', 'logs.user']);
         return response()->json($incident, 200);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'titulo'       => 'required|string|max:255',
-            'descripcion'  => 'required|string',
-            'room_id'      => 'required|exists:rooms,id',
-            'imagen'       => 'nullable|image|max:2048',
-            'nro_ticket'   => 'nullable|string|max:255|unique:incidents,nro_ticket',
+            'titulo' => 'required|string|max:255',
+            'descripcion' => 'required|string',
+            'room_id' => 'required|exists:rooms,id',
+            'magister_id' => 'nullable|exists:magisters,id',
+            'imagen' => 'nullable|image|max:2048',
+            'nro_ticket' => 'nullable|string|max:255|unique:incidents,nro_ticket',
         ]);
 
         if ($request->hasFile('imagen')) {
@@ -109,7 +124,7 @@ class IncidentController extends Controller
         }
 
         $validated = $request->validate([
-            'estado'     => 'required|in:pendiente,en_revision,resuelta,no_resuelta',
+            'estado' => 'required|in:pendiente,en_revision,resuelta,no_resuelta',
             'nro_ticket' => 'nullable|string|max:255',
             'comentario' => 'nullable|string|max:1000',
         ]);
@@ -123,9 +138,9 @@ class IncidentController extends Controller
 
         IncidentLog::create([
             'incident_id' => $incident->id,
-            'user_id'     => Auth::id(),
-            'estado'      => $validated['estado'],
-            'comentario'  => $validated['comentario'] ?? null,
+            'user_id' => Auth::id(),
+            'estado' => $validated['estado'],
+            'comentario' => $validated['comentario'] ?? null,
         ]);
 
         return response()->json([
@@ -161,6 +176,37 @@ class IncidentController extends Controller
             $query->where('room_id', $request->room_id);
         }
 
+        // ⬅️ AGREGAR ESTOS FILTROS
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
+        if ($request->filled('magister_id')) {
+            $query->where('magister_id', $request->magister_id);
+        }
+
+        if ($request->filled('trimestre')) {
+            $periodos = Period::where('numero', $request->trimestre);
+            if ($request->filled('anio_ingreso')) {
+                $periodos->where('anio_ingreso', $request->anio_ingreso);
+            }
+            $rangos = $periodos->get()->map(fn($p) => [$p->fecha_inicio, $p->fecha_fin]);
+
+            $query->where(function ($q) use ($rangos) {
+                foreach ($rangos as [$inicio, $fin]) {
+                    $q->orWhereBetween('created_at', [$inicio, $fin]);
+                }
+            });
+        }
+
+        if ($request->filled('historico')) {
+            $query->whereNotExists(function ($subquery) {
+                $subquery->select(\DB::raw(1))
+                    ->from('periods')
+                    ->whereRaw('incidents.created_at BETWEEN periods.fecha_inicio AND periods.fecha_fin');
+            });
+        }
+
         $incidencias = $query->get();
 
         $porSala = $incidencias->groupBy(fn($i) => $i->room->name ?? 'Sin Sala')->map->count();
@@ -178,8 +224,8 @@ class IncidentController extends Controller
         }
 
         return response()->json([
-            'porSala'      => $porSala,
-            'porEstado'    => $porEstado,
+            'porSala' => $porSala,
+            'porEstado' => $porEstado,
             'porTrimestre' => $porTrimestre->sortKeys(),
         ], 200);
     }
