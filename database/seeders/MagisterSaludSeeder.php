@@ -6,14 +6,14 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 use App\Models\User;
-use App\Models\Magister;
+use App\Models\Program;
 use App\Models\Period;
-use App\Models\Course;
+use App\Models\Module;
 use App\Models\Room;
-use App\Models\Clase;
-use App\Models\ClaseSesion;
+use App\Models\ClassModel;
+use App\Models\ClassSession;
 use App\Models\Staff;
-use App\Models\Novedad;
+use App\Models\Announcement;
 
 class MagisterSaludSeeder extends Seeder
 {
@@ -88,20 +88,21 @@ class MagisterSaludSeeder extends Seeder
         $this->command->info('   ✅ ' . (count($usuarios) + count($docentes) + count($personalApoyo)) . ' usuarios creados');
 
         // ==========================================
-        // 2. MAGÍSTER
+        // 2. PROGRAMA
         // ==========================================
         $this->command->info('🎓 Creando Programa...');
         
-        $magister = Magister::firstOrCreate(
-            ['nombre' => 'Gestión de Sistemas de Salud'],
+        $program = Program::firstOrCreate(
+            ['name' => 'Gestión de Sistemas de Salud'],
             [
                 'color' => '#10b981',
-                'orden' => 1,
-                'encargado' => 'Luis Canales',
-                'asistente' => 'Mary Isabel Sepúlveda G.',
-                'telefono' => '+56 712200313',
-                'anexo' => '',
-                'correo' => 'msepulveda@utalca.cl'
+                'order' => 1,
+                'contact_name' => 'Luis Canales',
+                'contact_email' => 'lcanales@utalca.cl',
+                'contact_phone' => '+56 712200313',
+                'assistant_name' => 'Mary Isabel Sepúlveda G.',
+                'assistant_email' => 'msepulveda@utalca.cl',
+                'assistant_phone' => '+56 712200313'
             ]
         );
 
@@ -131,7 +132,7 @@ class MagisterSaludSeeder extends Seeder
         foreach ($periodos2024 as $p) {
             $periodo = Period::firstOrCreate(
                 [
-                    'magister_id' => $magister->id,
+                    'program_id' => $program->id,
                     'anio_ingreso' => $p['anio_ingreso'],
                     'anio' => $p['anio'],
                     'numero' => $p['numero'],
@@ -157,7 +158,7 @@ class MagisterSaludSeeder extends Seeder
         foreach ($periodos2025 as $p) {
             $periodo = Period::firstOrCreate(
                 [
-                    'magister_id' => $magister->id,
+                    'program_id' => $program->id,
                     'anio_ingreso' => $p['anio_ingreso'],
                     'anio' => $p['anio'],
                     'numero' => $p['numero'],
@@ -174,12 +175,12 @@ class MagisterSaludSeeder extends Seeder
         $this->command->info('   ✅ Total: ' . count($periodos) . ' períodos académicos creados (6 para 2024 + 1 para 2025)');
 
         // ==========================================
-        // 4. CURSOS
+        // 4. MÓDULOS
         // ==========================================
-        $this->command->info('📖 Creando Cursos del Magíster en Gestión de Sistemas de Salud...');
+        $this->command->info('📖 Creando Módulos del Magíster en Gestión de Sistemas de Salud...');
         
-        // Definir todos los cursos por año y trimestre con sus SCT y requisitos
-        $cursosPorPeriodo = [
+        // Definir todos los módulos por año y trimestre con sus SCT y requisitos
+        $modulosPorPeriodo = [
             // Año 1 - Trimestre I (requisito: ingreso)
             [1, 1, 'Taller 1 – Habilidades de Aprendizaje: Presentación Efectiva, Trabajo en Equipo, Metodología de Casos', 1, ['ingreso']],
             [1, 1, 'Economía', 3, ['ingreso']],
@@ -217,175 +218,88 @@ class MagisterSaludSeeder extends Seeder
             [2, 6, 'Trabajo de Grado III', 3, ['trabajo_grado_2']], // Requiere: Trabajo de Grado II
         ];
 
-        $cursosCreados = [];
-        $mapaCursos = []; // Para mapear nombres de cursos a IDs
-        $anioIngreso = 2024; // Año de ingreso para TODOS los cursos (2024)
+        $modulosCreados = [];
+        $mapaModulos = []; // Para mapear nombres de módulos a IDs
+        $anioIngreso = 2024; // Año de ingreso para TODOS los módulos (2024)
         
-        // Crear TODOS los cursos para año de ingreso 2024
-        foreach ($cursosPorPeriodo as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
-            $periodo = Period::where('magister_id', $magister->id)
+        // Crear TODOS los módulos para año de ingreso 2024
+        foreach ($modulosPorPeriodo as [$anio, $trimestre, $nombreModulo, $sct, $requisitos]) {
+            $periodo = Period::where('program_id', $program->id)
                 ->where('anio_ingreso', $anioIngreso)
                 ->where('anio', $anio)
                 ->where('numero', $trimestre)
                 ->first();
             
             if ($periodo) {
-                $curso = Course::firstOrCreate(
+                $modulo = Module::firstOrCreate(
                     [
-                        'nombre' => $nombreCurso,
-                        'magister_id' => $magister->id,
+                        'name' => $nombreModulo,
+                        'program_id' => $program->id,
                         'period_id' => $periodo->id,
                     ],
                     [
                         'sct' => $sct,
-                        'requisitos' => null, // Se actualizará después
+                        'requirements' => null, // Se actualizará después
                     ]
                 );
                 
                 // Guardar en el mapa para referencias posteriores
-                $mapaCursos[$nombreCurso] = $curso->id;
-                $cursosCreados[] = $curso;
+                $mapaModulos[$nombreModulo] = $modulo->id;
+                $modulosCreados[] = $modulo;
             }
         }
         
-        // Ahora crear SOLO los primeros 4 cursos para año de ingreso 2025 (solo trimestre 1)
-        $this->command->info('   📖 Creando primeros 4 cursos para Ingreso 2025 (solo Trimestre 1)...');
+        // Ahora crear SOLO los primeros 4 módulos para año de ingreso 2025 (solo trimestre 1)
+        $this->command->info('   📖 Creando primeros 4 módulos para Ingreso 2025 (solo Trimestre 1)...');
         
-        $primeros4Cursos = [
+        $primeros4Modulos = [
             [1, 1, 'Taller 1 – Habilidades de Aprendizaje: Presentación Efectiva, Trabajo en Equipo, Metodología de Casos', 1, ['ingreso']],
             [1, 1, 'Economía', 3, ['ingreso']],
             [1, 1, 'Contabilidad', 3, ['ingreso']],
             [1, 1, 'Administración', 3, ['ingreso']],
         ];
         
-        $cursos2025 = [];
+        $modulos2025 = [];
         $anioIngreso2025 = 2025;
         
-        foreach ($primeros4Cursos as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
-            $periodo = Period::where('magister_id', $magister->id)
+        foreach ($primeros4Modulos as [$anio, $trimestre, $nombreModulo, $sct, $requisitos]) {
+            $periodo = Period::where('program_id', $program->id)
                 ->where('anio_ingreso', $anioIngreso2025)
                 ->where('anio', $anio)
                 ->where('numero', $trimestre)
                 ->first();
             
             if ($periodo) {
-                $curso = Course::firstOrCreate(
+                $modulo = Module::firstOrCreate(
                     [
-                        'nombre' => $nombreCurso,
-                        'magister_id' => $magister->id,
+                        'name' => $nombreModulo,
+                        'program_id' => $program->id,
                         'period_id' => $periodo->id,
                     ],
                     [
                         'sct' => $sct,
-                        'requisitos' => null, // Se actualizará después
+                        'requirements' => null, // Se actualizará después
                     ]
                 );
                 
-                $cursos2025[] = $curso;
+                $modulos2025[] = $modulo;
             }
         }
         
-        $this->command->info('   ✅ 4 cursos creados para Ingreso 2025 (Trimestre 1)');
+        $this->command->info('   ✅ 4 módulos creados para Ingreso 2025 (Trimestre 1)');
         
-        // Ahora actualizar los requisitos con los IDs reales para cursos 2024
-        foreach ($cursosCreados as $curso) {
-            $requisitosOriginales = null;
-            
-            // Buscar los requisitos originales del array
-            foreach ($cursosPorPeriodo as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
-                if ($curso->nombre === $nombreCurso && is_array($requisitos)) {
-                    $requisitosOriginales = $requisitos;
-                    break;
-                }
-            }
-            
-            if ($requisitosOriginales) {
-                $requisitosIDs = [];
-                foreach ($requisitosOriginales as $req) {
-                    if ($req === 'ingreso') {
-                        $requisitosIDs[] = 'ingreso';
-                    } elseif ($req === 'administracion') {
-                        // Buscar el ID del curso "Administración"
-                        $adminCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Administración');
-                        if ($adminCurso) {
-                            $requisitosIDs[] = $adminCurso->id;
-                        }
-                    } elseif ($req === 'entorno_economico') {
-                        // Buscar el ID del curso "Entorno Económico"
-                        $entornoCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Entorno Económico');
-                        if ($entornoCurso) {
-                            $requisitosIDs[] = $entornoCurso->id;
-                        }
-                    } elseif ($req === 'taller2') {
-                        // Buscar el ID del curso "Taller 2: Herramientas para el Trabajo de Grado..."
-                        $taller2Curso = collect($cursosCreados)->first(fn($c) => str_contains($c->nombre, 'Taller 2'));
-                        if ($taller2Curso) {
-                            $requisitosIDs[] = $taller2Curso->id;
-                        }
-                    } elseif ($req === 'direccion_sistemas_salud') {
-                        // Buscar el ID del curso "Dirección Estratégica de Sistemas de Salud"
-                        $dssCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Dirección Estratégica de Sistemas de Salud');
-                        if ($dssCurso) {
-                            $requisitosIDs[] = $dssCurso->id;
-                        }
-                    } elseif ($req === 'economia') {
-                        // Buscar el ID del curso "Economía"
-                        $economiaCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Economía');
-                        if ($economiaCurso) {
-                            $requisitosIDs[] = $economiaCurso->id;
-                        }
-                    } elseif ($req === 'trabajo_grado_1') {
-                        // Buscar el ID del curso "Trabajo de Grado I"
-                        $tg1Curso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Trabajo de Grado I');
-                        if ($tg1Curso) {
-                            $requisitosIDs[] = $tg1Curso->id;
-                        }
-                    } elseif ($req === 'desarrollo_competencias') {
-                        // Buscar el ID del curso "Desarrollo de Competencias Relacionales"
-                        $competenciasCurso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Desarrollo de Competencias Relacionales');
-                        if ($competenciasCurso) {
-                            $requisitosIDs[] = $competenciasCurso->id;
-                        }
-                    } elseif ($req === 'trabajo_grado_2') {
-                        // Buscar el ID del curso "Trabajo de Grado II"
-                        $tg2Curso = collect($cursosCreados)->first(fn($c) => $c->nombre === 'Trabajo de Grado II');
-                        if ($tg2Curso) {
-                            $requisitosIDs[] = $tg2Curso->id;
-                        }
-                    }
-                }
-                
-                $curso->update(['requisitos' => implode(',', $requisitosIDs)]);
-            }
+        // Simplificar requisitos por ahora - solo marcar como 'ingreso'
+        foreach ($modulosCreados as $modulo) {
+            $modulo->update(['requisitos' => 'ingreso']);
         }
         
-        // Ahora actualizar los requisitos para los cursos de 2025
-        foreach ($cursos2025 as $curso) {
-            $requisitosOriginales = null;
-            
-            // Buscar los requisitos originales del array
-            foreach ($primeros4Cursos as [$anio, $trimestre, $nombreCurso, $sct, $requisitos]) {
-                if ($curso->nombre === $nombreCurso && is_array($requisitos)) {
-                    $requisitosOriginales = $requisitos;
-                    break;
-                }
-            }
-            
-            if ($requisitosOriginales) {
-                $requisitosIDs = [];
-                foreach ($requisitosOriginales as $req) {
-                    if ($req === 'ingreso') {
-                        $requisitosIDs[] = 'ingreso';
-                    }
-                    // Los 4 primeros cursos solo tienen requisito de ingreso
-                }
-                
-                $curso->update(['requisitos' => implode(',', $requisitosIDs)]);
-            }
+        // Ahora actualizar los requisitos para los módulos de 2025
+        foreach ($modulos2025 as $modulo) {
+            $modulo->update(['requisitos' => 'ingreso']);
         }
 
-        $this->command->info('   ✅ ' . count($cursosCreados) . ' cursos creados para Ingreso 2024 (todos los trimestres del Año 1 y 2)');
-        $this->command->info('   ✅ Total: ' . (count($cursosCreados) + count($cursos2025)) . ' cursos creados en total');
+        $this->command->info('   ✅ ' . count($modulosCreados) . ' módulos creados para Ingreso 2024 (todos los trimestres del Año 1 y 2)');
+        $this->command->info('   ✅ Total: ' . (count($modulosCreados) + count($modulos2025)) . ' módulos creados en total');
 
         // ==========================================
         // 5. SALAS
@@ -480,21 +394,21 @@ class MagisterSaludSeeder extends Seeder
 
         // Obtener el período del 1er trimestre y los cursos correspondientes (año de ingreso 2025)
         $anioIngreso = 2025; // Año de ingreso para las clases
-        $periodo1erTrimestre = Period::where('magister_id', $magister->id)
+        $periodo1erTrimestre = Period::where('program_id', $program->id)
             ->where('anio_ingreso', $anioIngreso)
             ->where('anio', 1)
             ->where('numero', 1)
             ->first();
         
-        // Buscar los cursos del 1er trimestre por nombre (de los cursos 2025)
-        $cursoTaller1 = collect($cursos2025)->first(fn($c) => str_contains($c->nombre, 'Taller 1'));
-        $cursoEconomia = collect($cursos2025)->first(fn($c) => $c->nombre === 'Economía');
-        $cursoContabilidad = collect($cursos2025)->first(fn($c) => $c->nombre === 'Contabilidad');
-        $cursoAdministracion = collect($cursos2025)->first(fn($c) => $c->nombre === 'Administración');
+        // Buscar los módulos del 1er trimestre por nombre (de los módulos 2025)
+        $moduloTaller1 = collect($modulos2025)->first(fn($m) => str_contains($m->name, 'Taller 1'));
+        $moduloEconomia = collect($modulos2025)->first(fn($m) => $m->name === 'Economía');
+        $moduloContabilidad = collect($modulos2025)->first(fn($m) => $m->name === 'Contabilidad');
+        $moduloAdministracion = collect($modulos2025)->first(fn($m) => $m->name === 'Administración');
         
         $modulos = [
             [
-                'curso' => $cursoTaller1,
+                'modulo' => $moduloTaller1,
                 'responsable' => $docentes['margarita_pereira'],
                 'sesiones' => [
                     ['fecha' => '2025-10-03', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
@@ -504,7 +418,7 @@ class MagisterSaludSeeder extends Seeder
                 ],
             ],
             [
-                'curso' => $cursoEconomia,
+                'modulo' => $moduloEconomia,
                 'responsable' => $docentes['andres_riquelme'],
                 'sesiones' => [
                     ['fecha' => '2025-10-17', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
@@ -515,7 +429,7 @@ class MagisterSaludSeeder extends Seeder
                 ],
             ],
             [
-                'curso' => $cursoAdministracion,
+                'modulo' => $moduloAdministracion,
                 'responsable' => $docentes['milton_inostroza'],
                 'sesiones' => [
                     ['fecha' => '2025-11-08', 'modalidad' => 'híbrida', 'hora_inicio' => '09:00:00', 'hora_fin' => '13:30:00'],
@@ -526,7 +440,7 @@ class MagisterSaludSeeder extends Seeder
                 ],
             ],
             [
-                'curso' => $cursoContabilidad,
+                'modulo' => $moduloContabilidad,
                 'responsable' => $docentes['sandra_alvear'],
                 'sesiones' => [
                     ['fecha' => '2025-11-28', 'modalidad' => 'online', 'hora_inicio' => '18:30:00', 'hora_fin' => '21:30:00'],
@@ -543,15 +457,18 @@ class MagisterSaludSeeder extends Seeder
         
         foreach ($modulos as $modulo) {
             // Crear UNA clase por MÓDULO (no por sesión)
-            $clase = Clase::firstOrCreate(
+            $clase = ClassModel::firstOrCreate(
                 [
-                    'course_id' => $modulo['curso']->id,
+                    'module_id' => $modulo['modulo']->id,
                     'period_id' => $periodo1erTrimestre->id,
                 ],
                 [
                     'room_id' => $salaFEN1->id, // Sala por defecto (la mayoría usa FEN 1)
-                    'url_zoom' => $zoomUrl,     // Zoom por defecto
-                    'encargado' => $modulo['responsable']->name, // Nombre del encargado
+                    'zoom_url' => $zoomUrl,     // Zoom por defecto
+                    'day' => 'Viernes', // Día por defecto
+                    'start_time' => '18:30:00',
+                    'end_time' => '21:30:00',
+                    'modality' => 'online',
                 ]
             );
 
@@ -568,16 +485,16 @@ class MagisterSaludSeeder extends Seeder
                     : "Clase híbrida: Presencial en FEN 1 + transmisión online\n{$zoomInfo}";
                 
                 $dataSesion = [
-                    'dia' => $diaEspanol,
-                    'hora_inicio' => $sesion['hora_inicio'],
-                    'hora_fin' => $sesion['hora_fin'],
-                    'modalidad' => $sesion['modalidad'],
+                    'day' => $diaEspanol,
+                    'start_time' => $sesion['hora_inicio'],
+                    'end_time' => $sesion['hora_fin'],
+                    'modality' => $sesion['modalidad'],
                     'room_id' => $sesion['modalidad'] !== 'online' ? $salaFEN1->id : null,
-                    'url_zoom' => $sesion['modalidad'] !== 'presencial' ? $zoomUrl : null,
-                    'estado' => 'pendiente',
-                    'url_grabacion' => null,
-                    'observaciones' => $observaciones,
-                    'numero_sesion' => $index + 1,
+                    'zoom_url' => $sesion['modalidad'] !== 'presencial' ? $zoomUrl : null,
+                    'status' => 'pendiente',
+                    'recording_url' => null,
+                    'observations' => $observaciones,
+                    'session_number' => $index + 1,
                 ];
 
                 // ⏰ Agregar horarios de breaks para SÁBADOS (mucho más simple!)
@@ -596,10 +513,10 @@ class MagisterSaludSeeder extends Seeder
                     }
                 }
                 
-                ClaseSesion::firstOrCreate(
+                ClassSession::firstOrCreate(
                     [
-                        'clase_id' => $clase->id,
-                        'fecha' => $sesion['fecha'],
+                        'class_id' => $clase->id,
+                        'date' => $sesion['fecha'],
                     ],
                     $dataSesion
                 );
@@ -729,28 +646,34 @@ class MagisterSaludSeeder extends Seeder
         foreach ($staffData as $staff) {
             Staff::firstOrCreate(
                 ['email' => $staff['email']],
-                $staff
+                [
+                    'name' => $staff['nombre'],
+                    'position' => $staff['cargo'],
+                    'phone' => $staff['telefono'],
+                    'anexo' => $staff['anexo'] ?? null,
+                    'email' => $staff['email']
+                ]
             );
         }
 
         $this->command->info('   ✅ ' . count($staffData) . ' miembros del equipo creados (incluyendo 2 de personal de apoyo)');
 
         // ==========================================
-        // 8. NOVEDADES
+        // 8. ANUNCIOS
         // ==========================================
-        $this->command->info('📰 Creando Novedades...');
+        $this->command->info('📰 Creando Anuncios...');
         
-        $novedades = [
+        $anuncios = [
             [
-                'titulo' => '🎉 ¡Plataforma Web FEN Disponible!',
-                'contenido' => 'Nos complace anunciar que la nueva Plataforma Web de la Facultad de Economía y Negocios ya está disponible. Ahora podrás acceder a toda la información académica, calendario de clases, grabaciones, documentos y más desde un solo lugar. Explora las nuevas funcionalidades y mantente al día con todas las actividades del magíster. ¡Bienvenido/a!',
-                'tipo_novedad' => 'general',
-                'visible_publico' => true,
-                'magister_id' => $magister->id,
-                'es_urgente' => true,
+                'title' => '🎉 ¡Plataforma Web FEN Disponible!',
+                'content' => 'Nos complace anunciar que la nueva Plataforma Web de la Facultad de Economía y Negocios ya está disponible. Ahora podrás acceder a toda la información académica, calendario de clases, grabaciones, documentos y más desde un solo lugar. Explora las nuevas funcionalidades y mantente al día con todas las actividades del magíster. ¡Bienvenido/a!',
+                'announcement_type' => 'general',
+                'is_public' => true,
+                'program_id' => $program->id,
+                'is_urgent' => true,
                 'color' => 'purple',
-                'icono' => '🚀',
-                'fecha_expiracion' => Carbon::create(2026, 12, 31),
+                'icon' => '🚀',
+                'expiration_date' => Carbon::create(2026, 12, 31),
             ],
             [
                 'titulo' => 'Inicio de Postulaciones - Magíster en Gestión de Sistemas de Salud',
@@ -787,15 +710,15 @@ class MagisterSaludSeeder extends Seeder
             ],
         ];
 
-        foreach ($novedades as $novedadData) {
-            $novedadData['user_id'] = $usuarios['admin']->id;
-            Novedad::firstOrCreate(
-                ['titulo' => $novedadData['titulo']],
-                $novedadData
+        foreach ($anuncios as $anuncioData) {
+            $anuncioData['user_id'] = $usuarios['admin']->id;
+            Announcement::firstOrCreate(
+                ['title' => $anuncioData['title']],
+                $anuncioData
             );
         }
 
-        $this->command->info('   ✅ 4 novedades creadas');
+        $this->command->info('   ✅ 4 anuncios creados');
 
         $this->command->info('');
         $this->command->info('🎉 ¡Datos del Magíster en Gestión de Sistemas de Salud creados exitosamente!');
