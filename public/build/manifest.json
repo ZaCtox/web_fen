@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-BCN8a7CE.css",
+    "file": "assets/app-CberwgtG.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
@@ -12,11 +12,6 @@
   "resources/css/microinteractions.css": {
     "file": "assets/microinteractions-Cy9LVgz9.css",
     "src": "resources/css/microinteractions.css",
-    "isEntry": true
-  },
-  "resources/css/navigation-animations.css": {
-    "file": "assets/navigation-animations-d1hbvORQ.css",
-    "src": "resources/css/navigation-animations.css",
     "isEntry": true
   },
   "resources/js/alerts.js": {
@@ -32,13 +27,13 @@
     "isEntry": true
   },
   "resources/js/calendar-admin.js": {
-    "file": "assets/calendar-admin-B3rh4s2v.js",
+    "file": "assets/calendar-admin-BmAYjsHW.js",
     "name": "calendar-admin",
     "src": "resources/js/calendar-admin.js",
     "isEntry": true
   },
   "resources/js/calendar-public.js": {
-    "file": "assets/calendar-public-Dq8BuZKz.js",
+    "file": "assets/calendar-public-w-j600W2.js",
     "name": "calendar-public",
     "src": "resources/js/calendar-public.js",
     "isEntry": true

@@ -133,7 +133,7 @@
                             </h3>
                             <div class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
                                 @if ($magister->encargado)
-                                    <p><strong class="text-[#005187] dark:text-[#84b6f4]">Encargado:</strong>
+                                    <p><strong class="text-[#005187] dark:text-[#84b6f4]">Directo de programa:</strong>
                                         {{ $magister->encargado }}</p>
                                 @endif
                                 @if ($magister->asistente)

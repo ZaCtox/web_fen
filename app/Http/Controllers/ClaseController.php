@@ -178,22 +178,38 @@ class ClaseController extends Controller
 
     public function exportar(Request $request)
     {
-        $filters = $request->only('magister', 'sala', 'dia');
-        $clases = Clase::with(['course.magister', 'period', 'room'])
-            ->filtrar($filters)
-            ->orderBy('period_id')
-            ->orderByRaw("FIELD(dia, 'Viernes','Sábado')")
-            ->orderBy('hora_inicio')
-            ->get();
+        try {
+            $filters = $request->only('magister', 'sala', 'anio_ingreso');
+            
+            // Consulta optimizada con límite para evitar sobrecarga
+            $clases = Clase::with(['course.magister', 'period', 'room'])
+                ->filtrar($filters)
+                ->orderBy('period_id')
+                ->orderBy('course_id')
+                ->limit(1000) // Límite para evitar consultas muy pesadas
+                ->get();
 
-        if ($clases->isEmpty()) {
-            return back()->with('warning', 'No se encontraron clases con los filtros aplicados.');
+            if ($clases->isEmpty()) {
+                return back()->with('warning', 'No se encontraron clases con los filtros aplicados.');
+            }
+
+            $nombreArchivo = 'clases_academicas_'.now()->format('Y-m-d_H-i').'.pdf';
+            
+            // Generar PDF de forma más eficiente
+            $pdf = Pdf::loadView('clases.export', compact('clases', 'filters'))
+                ->setPaper('a4', 'landscape')
+                ->setOptions([
+                    'isHtml5ParserEnabled' => true,
+                    'isRemoteEnabled' => false,
+                    'dpi' => 150
+                ]);
+
+            return $pdf->download($nombreArchivo);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error generando PDF: ' . $e->getMessage());
+            return back()->with('error', 'Error al generar el PDF. Intenta nuevamente.');
         }
-
-        $nombreArchivo = 'clases_academicas_'.now()->format('Y-m-d_H-i').'.pdf';
-        $pdf = Pdf::loadView('clases.export', compact('clases'))->setPaper('a4', 'landscape');
-
-        return $pdf->download($nombreArchivo);
     }
 
     public function show(Clase $clase)

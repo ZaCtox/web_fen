@@ -1,15 +1,37 @@
 {{-- Dashboard de Postgrado FEN --}}
-@section('title', 'Inicio')
+@section('title', 'FEN Postgrados - Plataforma Académica')
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#4d82bc]">
-            Bienvenido a Postgrado FEN!
+            Inicio
         </h2>
     </x-slot>
 
     @php
         $emergency = app(\App\Http\Controllers\EmergencyController::class)->active();
     @endphp
+
+    {{-- Mensaje de Bienvenida Inclusivo --}}
+    <div class="py-6 max-w-6xl mx-auto px-6">
+        <div class="bg-gradient-to-r from-[#005187] to-[#4d82bc] dark:from-gray-800 dark:to-gray-700 shadow-lg rounded-lg p-8 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                        <h3 class="text-3xl font-bold mb-2">¡Bienvenid@s a la Escuela de Postgrados FEN!</h3>
+                    <p class="text-lg opacity-90">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-white/20 backdrop-blur-sm">
+                            🌟 Plataforma Académica
+                        </span>
+                    </p>
+                    <p class="mt-3 text-sm opacity-75">
+                        {{ now()->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+                    </p>
+                </div>
+                <div class="hidden md:block text-6xl">
+                    👋
+                </div>
+            </div>
+        </div>
+    </div>
 
     @if($emergency)
         <script>

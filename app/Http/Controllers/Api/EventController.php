@@ -89,6 +89,7 @@ class EventController extends Controller
                     'borderColor' => $color,
                     'editable' => Auth::check(),
                     'type' => 'manual',
+                    'profesor' => null, // Los eventos manuales no tienen profesor asignado
                 ];
             });
 
@@ -106,6 +107,20 @@ class EventController extends Controller
         }
 
         \Log::info('📤 Enviando eventos al calendario admin: ' . $allEvents->count());
+        
+        // 🔍 LOG DETALLADO PARA DEBUGGING
+        foreach ($allEvents as $event) {
+            if (isset($event['type']) && $event['type'] === 'clase') {
+                \Log::info('🔍 Evento de clase:', [
+                    'id' => $event['id'] ?? 'N/A',
+                    'title' => $event['title'] ?? 'N/A',
+                    'profesor' => $event['profesor'] ?? 'N/A',
+                    'magister_name' => $event['magister']['name'] ?? 'N/A',
+                    'clase_id' => $event['clase_id'] ?? 'N/A',
+                    'sesion_id' => $event['sesion_id'] ?? 'N/A'
+                ]);
+            }
+        }
 
         // FullCalendar espera un array directo, no un objeto con 'data'
         return response()->json($allEvents);
@@ -222,6 +237,12 @@ class EventController extends Controller
                 ->whereDate('fecha_inicio', '<=', $rangeEnd->toDateString()));
 
         $clases = $q->get();
+        \Log::info('🔍 MÉTODO generarEventosDesdeClasesOptimizado EJECUTÁNDOSE', [
+            'clases_encontradas' => $clases->count(),
+            'magister_id' => $magisterId,
+            'room_id' => $roomId
+        ]);
+        
         $eventos = collect();
         $eventCount = 0;
 
@@ -274,6 +295,14 @@ class EventController extends Controller
                 if (!empty($clase->url_zoom)) {
                     $descripcion .= "\n🔗 " . $clase->url_zoom;
                 }
+
+                // 🔍 LOG PARA DEBUGGING
+                \Log::info('🔍 Creando evento desde clase optimizada:', [
+                    'clase_id' => $clase->id,
+                    'clase_encargado' => $clase->encargado ?? 'NULL',
+                    'magister_nombre' => $magister ? $magister->nombre : 'NULL',
+                    'titulo' => $titulo
+                ]);
 
                 $eventos->push([
                     'id' => 'clase-' . $clase->id . '-' . $start->format('Ymd'),
@@ -465,7 +494,7 @@ class EventController extends Controller
                             'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
                             'modality' => $modality,
                             'url_zoom' => $sesion->url_zoom,
-                            'profesor' => $magister->nombre ?? null,
+                            'profesor' => $clase->encargado ?? null,
                             'url_grabacion' => $sesion->url_grabacion,
                             'clase_id' => $clase->id,
                             'sesion_id' => $sesion->id,
@@ -531,7 +560,7 @@ class EventController extends Controller
                             'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
                             'modality' => $modality,
                             'url_zoom' => $sesion->url_zoom,
-                            'profesor' => $magister->nombre ?? null,
+                            'profesor' => $clase->encargado ?? null,
                             'url_grabacion' => $sesion->url_grabacion,
                             'clase_id' => $clase->id,
                             'sesion_id' => $sesion->id,
@@ -574,7 +603,7 @@ class EventController extends Controller
                         'magister' => $magister ? ['id' => $magister->id, 'name' => $magister->nombre] : null,
                         'modality' => $modality,
                         'url_zoom' => $sesion->url_zoom,
-                        'profesor' => $magister->nombre ?? null,
+                        'profesor' => $clase->encargado ?? null,
                         'url_grabacion' => $sesion->url_grabacion,
                         'clase_id' => $clase->id,
                         'sesion_id' => $sesion->id,
@@ -649,6 +678,7 @@ class EventController extends Controller
                     'borderColor' => $color,
                     'editable' => Auth::check(),
                     'type' => 'manual',
+                    'profesor' => null, // Los eventos manuales no tienen profesor asignado
                 ];
             });
 
@@ -718,6 +748,7 @@ class EventController extends Controller
                     'borderColor' => $color,
                     'editable' => false,
                     'type' => 'manual',
+                    'profesor' => null, // Los eventos manuales no tienen profesor asignado
                 ];
             });
 
@@ -742,7 +773,7 @@ class EventController extends Controller
             return collect();
         }
 
-        \Log::info('🔍 Buscando sesiones de clase', [
+        \Log::info('🔍 MÉTODO generarEventosDesdeSesiones EJECUTÁNDOSE', [
             'magister_id' => $magisterId,
             'room_id' => $roomId,
             'anio_ingreso' => $anioIngreso,
@@ -794,6 +825,15 @@ class EventController extends Controller
                 if (!empty($sesion->url_zoom)) {
                     $descripcion .= "\n🔗 " . $sesion->url_zoom;
                 }
+
+                // 🔍 LOG PARA DEBUGGING
+                \Log::info('🔍 Creando evento desde sesión:', [
+                    'sesion_id' => $sesion->id,
+                    'clase_id' => $clase->id,
+                    'clase_encargado' => $clase->encargado ?? 'NULL',
+                    'magister_nombre' => $magister ? $magister->nombre : 'NULL',
+                    'titulo' => $titulo
+                ]);
 
                 $eventos[] = [
                     'id' => 'sesion-' . $sesion->id,

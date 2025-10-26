@@ -12,8 +12,8 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// 🟢 SOLO usuarios autenticados con rol administrador pueden registrar nuevos usuarios
-Route::middleware(['auth', 'role:administrador'])->group(function () {
+// 🟢 SOLO usuarios autenticados con rol administrador o director administrativo pueden registrar nuevos usuarios
+Route::middleware(['auth', 'role:administrador,director_administrativo'])->group(function () {
     Route::get('/register', [RegisteredUserController::class, 'create'])
         ->name('register');
     

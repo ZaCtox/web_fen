@@ -35,7 +35,7 @@
                     <a href="{{ route('public.Equipo-FEN.index') }}" class="hover:underline">👥 Nuestro equipo</a>
                 </li>
                 <li>
-                    <a href="https://fen.utalca.cl" target="_blank" class="hover:underline">🌐 Sitio oficial FEN</a>
+                    <a href="https://fen.utalca.cl" target="_blank" class="hover:underline">🌐 www.fen.utalca.cl</a>
                 </li>
                 <li>
                     <a href="{{ url('/') }}" class="hover:underline">🏠 Inicio Plataforma</a>

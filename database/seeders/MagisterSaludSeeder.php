@@ -29,7 +29,7 @@ class MagisterSaludSeeder extends Seeder
         $usuarios = [
             'admin' => User::firstOrCreate(
                 ['email' => 'acerda@utalca.cl'],
-                ['name' => 'Arcadio Cerda', 'password' => Hash::make('admin123'), 'rol' => 'administrador']
+                ['name' => 'Arcadio Cerda', 'password' => Hash::make('admin123'), 'rol' => 'decano']
             ),
             'director_admin' => User::firstOrCreate(
                 ['email' => 'jcastillo@utalca.cl'],
@@ -100,7 +100,7 @@ class MagisterSaludSeeder extends Seeder
                 'encargado' => 'Luis Canales',
                 'asistente' => 'Mary Isabel Sepúlveda G.',
                 'telefono' => '+56 712200313',
-                'anexo' => '',
+                'anexo' => '0313',
                 'correo' => 'msepulveda@utalca.cl'
             ]
         );
@@ -451,7 +451,7 @@ class MagisterSaludSeeder extends Seeder
 
         $sala119 = Room::firstOrCreate(
             ['name' => 'Sala 119'],
-                        [
+            [
                 'location' => 'Facultad de Economía y Negocios',
                 'capacity' => 20,
                 'description' => '',
@@ -551,7 +551,7 @@ class MagisterSaludSeeder extends Seeder
                 [
                     'room_id' => $salaFEN1->id, // Sala por defecto (la mayoría usa FEN 1)
                     'url_zoom' => $zoomUrl,     // Zoom por defecto
-                    'encargado' => $modulo['responsable']->name, // Nombre del encargado
+                    'encargado' => $modulo['responsable']->name, // Nombre del docente encargado
                 ]
             );
 

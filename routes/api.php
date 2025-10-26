@@ -130,8 +130,8 @@ Route::name('api.')->group(function () {
         Route::get('/profile', [AuthController::class, 'user'])->name('user.profile');
 
         // ADMIN
-        // ADMIN - Solo administradores
-        Route::middleware('role.api:administrador')->group(function () {
+        // ADMIN - Solo administradores y directores administrativos
+        Route::middleware('role.api:administrador,director_administrativo')->group(function () {
             Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
             // Gestión de usuarios (solo administradores)

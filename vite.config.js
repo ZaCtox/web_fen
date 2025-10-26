@@ -7,7 +7,6 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/hci-principles.css',
-                'resources/css/navigation-animations.css',
                 'resources/css/microinteractions.css',
                 'resources/js/app.js',
                 'resources/js/calendar-public.js',

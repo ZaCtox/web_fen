@@ -144,7 +144,7 @@
                     </div>
 
                     <div class="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                        <span class="text-2xl" role="img" aria-label="Profesor">👨‍🏫</span>
+                        <span class="text-2xl" role="img" aria-label="Encargado">👨‍🏫</span>
                         <div>
                             <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Encargado</p>
                             <p class="text-base font-semibold text-gray-900 dark:text-white">{{ $clase->encargado ?? '—' }}</p>

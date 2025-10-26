@@ -79,12 +79,8 @@
                 <th>Programa</th>
                 <th>Asignatura</th>
                 <th>Tipo</th>
-                <th>Día</th>
-                <th>Horario</th>
                 <th>Trimestre</th>
                 <th>Año</th>
-                <th>Modalidad</th>
-                <th>Sala</th>
                 <th>Encargado</th>
                 <th>Enlace Zoom</th>
             </tr>
@@ -95,14 +91,8 @@
                     <td>{{ $clase->course->magister->nombre ?? 'N/A' }}</td>
                     <td>{{ $clase->course->nombre }}</td>
                     <td>{{ $clase->tipo ? ucfirst($clase->tipo) : '—' }}</td>
-                    <td>{{ $clase->dia ?? '—' }}</td>
-                    <td class="nowrap">{{ $clase->hora_inicio }} - {{ $clase->hora_fin }}</td>
                     <td class="nowrap" style="text-align:center">{{ $clase->period->numero ?? '—' }}</td>
                     <td class="nowrap" style="text-align:center">{{ $clase->period->anio ?? '—' }}</td>
-                    <td>
-                        {{ $clase->modality ? ucfirst($clase->modality) : '—' }}
-                    </td>
-                    <td>{{ $clase->room->name ?? 'Sin sala' }}</td>
                     <td>{{ $clase->encargado ?? '—' }}</td>
                     <td>
                         @if(!empty($clase->url_zoom))
@@ -114,7 +104,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="11" style="text-align:center; padding: 10px;">No hay clases registradas.</td>
+                    <td colspan="7" style="text-align:center; padding: 10px;">No hay clases registradas.</td>
                 </tr>
             @endforelse
         </tbody>

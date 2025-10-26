@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
         $validated = $request->validate([
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'rol'   => ['required', 'in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado'],
+            'rol'   => ['required', 'in:administrador,director_administrativo,decano,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado'],
             'foto'  => ['nullable', 'image', 'max:2048'],
             'avatar_color' => ['nullable', 'string', 'max:6'],
         ], [

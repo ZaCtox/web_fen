@@ -18,6 +18,12 @@ window.closeModal = function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
+    
+    // Verificar que el calendario existe
+    if (!calendarEl) {
+        console.error('❌ Elemento calendar no encontrado');
+        // No hacer return aquí para permitir que se ejecuten otros event listeners
+    }
 
     // Metas/refs
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
@@ -100,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const claseId = isClase ? getClaseIdFromEvent(ev) : null;
         const magister = ev.extendedProps.magister?.name || '—';
         const modalidad = ev.extendedProps.modality || '—';
-        const profesor = ev.extendedProps.profesor || ev.extendedProps.teacher || '—';
+        const profesor = ev.extendedProps.profesor || '—';
         const sala = ev.extendedProps.room?.name || 'Sin sala';
         const zoom = ev.extendedProps.url_zoom || null;
         const grabacion = ev.extendedProps.url_grabacion || null;
@@ -145,9 +151,9 @@ document.addEventListener('DOMContentLoaded', function () {
       ${descBlock}
       ${grabacionBlock}
       <div class="mt-3 space-y-1 text-sm">
-        <div><span class="font-medium">Programa:</span> ${magister}</div>
+        <div><span class="font-medium">Programa:</span> Magíster en ${magister}</div>
         <div><span class="font-medium">Modalidad:</span> ${modalityBadge(modalidad)}</div>
-        <div><span class="font-medium">Profesor:</span> ${profesor}</div>
+        <div><span class="font-medium">Encargado:</span> ${profesor}</div>
         <div><span class="font-medium">Inicio:</span> ${start}</div>
         <div><span class="font-medium">Fin:</span> ${end}</div>
         <div><span class="font-medium">Sala:</span> ${sala}</div>
@@ -511,11 +517,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Guardar
-    document.getElementById('event-form').addEventListener('submit', saveEvent);
+    const eventForm = document.getElementById('event-form');
+    if (eventForm) {
+        eventForm.addEventListener('submit', saveEvent);
+    }
     function saveEvent(e) {
         e.preventDefault();
         e.stopPropagation();
-        console.log('🚀 Iniciando guardado de evento...');
 
         const eventId = (document.getElementById('event_id').value || '').trim();
         const data = {
@@ -529,21 +537,13 @@ document.addEventListener('DOMContentLoaded', function () {
             created_by: userId
         };
 
-        console.log('📦 Data a enviar:', data);
-
         const endpoint = eventId ? `/events/${eventId}` : storeUrl;
         const method = eventId ? 'PUT' : 'POST';
 
-        console.log('🔗 Endpoint:', endpoint);
-        console.log('📡 Method:', method);
-
         if (!endpoint) {
-            console.error('❌ Falta meta[name="store-url"] o endpoint vacío');
             Swal.fire({ icon: 'error', title: 'Configuración faltante', text: 'No se encontró la URL para guardar eventos.' });
             return;
         }
-
-        console.log('📤 Enviando petición fetch...');
         
         // Mostrar loading manual
         Swal.fire({
@@ -560,27 +560,19 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(data)
         })
             .then(async (res) => {
-                console.log('📥 Respuesta recibida:', res.status, res.statusText);
-                
                 if (!res.ok) {
                     let errJson = null;
                     try { 
                         errJson = await res.json(); 
-                        console.log('❌ Error JSON del servidor:', errJson);
                     } catch (e) {
-                        console.log('❌ Error parseando JSON:', e);
+                        // Error parseando JSON
                     }
                     throw errJson || { message: 'Error al guardar' };
                 }
                 
-                const responseData = await res.json();
-                console.log('✅ Respuesta exitosa del servidor:', responseData);
-                return responseData;
+                return await res.json();
             })
             .then((data) => {
-                console.log('🎉 Evento guardado exitosamente:', data);
-                console.log('🔄 Cerrando modal y actualizando calendario...');
-                
                 // Cerrar modal y actualizar calendario
                 calendar.unselect();
                 calendar.refetchEvents();
@@ -593,12 +585,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     timer: 1500, 
                     showConfirmButton: false 
                 });
-                
-                console.log('✅ Proceso completado exitosamente');
             })
             .catch((err) => {
-                console.error('💥 Error en el proceso de guardado:', err);
-                
                 // Mostrar mensaje de error
                 Swal.fire({ 
                     icon: 'error', 
@@ -609,7 +597,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Eliminar
-    document.getElementById('delete-btn').addEventListener('click', deleteEvent);
+    const deleteBtn = document.getElementById('delete-btn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', deleteEvent);
+    }
     function deleteEvent() {
         const id = this.getAttribute('data-id');
         if (!confirm("¿Estás seguro de eliminar este evento?")) return;
@@ -633,14 +624,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const programa =
             ext.programa ||
             (typeof ext.magister === 'string' ? ext.magister : (ext.magister?.name || 'Sin programa'));
-        const teacher = ext.profesor || ext.teacher || 'Sin encargado';
+        const teacher = ext.profesor || 'Sin encargado';
         const sala = ext.room?.name || 'Sin sala';
         const start = fmtTime(info.event.start);
         const end = fmtTime(info.event.end);
         
         // Agregar indicador de evento manual al tooltip
         const tipoEvento = ext.type === 'manual' ? '🚩 Evento Manual' : 'Clase';
-        const tooltip = `${info.event.title}\n📌 ${tipoEvento}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
+        const tooltip = `${info.event.title}\n📌 ${tipoEvento}\n👨‍🏫 ${teacher}\n🏛️ Magíster en ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
         info.el.setAttribute('title', tooltip.trim());
 
         // Marcar eventos manuales con clase especial
@@ -658,7 +649,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // resetForm local dentro del DOMContentLoaded
     function resetForm() {
-        console.log('🔄 Reseteando formulario...');
         const eventId = document.getElementById('event_id');
         const form = document.getElementById('event-form');
         const startTime = document.getElementById('start_time');
@@ -668,7 +658,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (form) form.reset();
         if (startTime) startTime.value = '';
         if (endTime) endTime.value = '';
-        console.log('✅ Formulario reseteado');
     }
 });
 

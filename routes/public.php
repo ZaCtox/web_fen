@@ -33,7 +33,7 @@ Route::get('/Equipo-FEN', [PublicStaffController::class, 'index'])->name('public
 Route::get('/Salas-FEN', [PublicRoomController::class, 'index'])->name('public.rooms.index');
 
 // Cursos por Magíster
-Route::get('/Cursos-FEN', [PublicCourseController::class, 'index'])->name('public.courses.index');
+Route::get('/Módulos-FEN', [PublicCourseController::class, 'index'])->name('public.courses.index');
 
 Route::get('/public/clases/{clase}', [PublicClaseController::class, 'show'])
     ->name('public.clases.show');

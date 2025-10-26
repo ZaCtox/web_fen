@@ -59,7 +59,7 @@
                     </p>
 
                     <p class="text-gray-500 dark:text-gray-400">
-                        <span class="font-medium">Profesor:</span>
+                        <span class="font-medium">Encargado:</span>
                         <span id="modal-teacher" class="text-gray-900 dark:text-gray-100">—</span>
                     </p>
 

@@ -1,61 +1,227 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎓 Plataforma de Gestión Académica - Escuela de Postgrados FEN
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema integral de gestión académica desarrollado para la Facultad de Economía y Negocios, diseñado para administrar programas de postgrado, clases, salas, eventos e incidencias.
 
-## About Laravel
+## 🚀 Características Principales
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 📚 Gestión Académica
+- **Clases**: Administración completa de sesiones de clase
+- **Módulos**: Gestión de cursos y programas de postgrado
+- **Periodos**: Control de períodos académicos
+- **Salas**: Administración de espacios físicos y virtuales
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 📅 Calendario y Eventos
+- Calendario académico integrado
+- Gestión de eventos y actividades
+- Visualización pública de calendarios
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🔧 Soporte y Mantenimiento
+- **Incidencias**: Sistema de reportes y seguimiento
+- **Informes**: Generación de reportes académicos
+- **Emergencias**: Gestión de situaciones de emergencia
+- **Novedades**: Comunicaciones institucionales
 
-## Learning Laravel
+### 📊 Analytics y Reportes
+- Estadísticas de uso de salas
+- Reportes de incidencias
+- Analytics de clases y eventos
+- Dashboard administrativo
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Tecnologías Utilizadas
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Backend**: Laravel 12.x
+- **Frontend**: Blade Templates + Alpine.js
+- **Base de Datos**: MySQL
+- **Estilos**: Tailwind CSS
+- **PDF**: DomPDF
+- **Cloud**: Cloudinary (para archivos)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📋 Requisitos del Sistema
 
-## Laravel Sponsors
+- PHP 8.2+
+- Composer
+- MySQL 8.0+
+- Node.js & NPM
+- Servidor web (Apache/Nginx)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## ⚙️ Instalación
 
-### Premium Partners
+### 1. Clonar el repositorio
+```bash
+git clone [URL_DEL_REPOSITORIO]
+cd Web_FEN
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 2. Instalar dependencias
+```bash
+composer install
+npm install
+```
 
-## Contributing
+### 3. Configurar entorno
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Configurar base de datos
+Editar `.env` con tus credenciales:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=fen_platform
+DB_USERNAME=tu_usuario
+DB_PASSWORD=tu_password
+```
 
-## Code of Conduct
+### 5. Ejecutar migraciones y seeders
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 6. Compilar assets
+```bash
+npm run build
+# o para desarrollo:
+npm run dev
+```
 
-## Security Vulnerabilities
+### 7. Configurar permisos de storage
+```bash
+php artisan storage:link
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 👥 Sistema de Roles y Permisos
 
-## License
+### 🔐 Roles Disponibles
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Rol | Descripción | Permisos |
+|-----|-------------|----------|
+| **Administrador** | Acceso completo al sistema | ✅ Todos los módulos |
+| **Director Administrativo** | Gestión administrativa | ✅ Mismos permisos que Administrador |
+| **Decano** | Supervisión académica | 👁️ Solo lectura en todos los módulos |
+| **Director Programa** | Gestión de programa específico | ✅ Clases, módulos, incidencias |
+| **Asistente Programa** | Apoyo administrativo | ✅ Clases, salas, incidencias |
+| **Docente** | Profesor del programa | ✅ Sus clases y materiales |
+| **Técnico** | Soporte técnico | ✅ Incidencias técnicas |
+| **Auxiliar** | Apoyo operativo | ✅ Incidencias básicas |
+| **Asistente Postgrado** | Apoyo académico | ✅ Clases, eventos, informes |
+| **Visor** | Solo consulta | 👁️ Solo lectura en todos los módulos |
+
+## 🧪 Usuarios de Prueba
+
+El sistema incluye usuarios de prueba para diferentes roles:
+
+### Credenciales de Acceso
+```
+Administrador:
+- Email: admin@institucion.cl
+- Contraseña: admin123
+
+Decano:
+- Email: decano@institucion.cl  
+- Contraseña: decano123
+
+Visor:
+- Email: visor@institucion.cl
+- Contraseña: visor123
+```
+
+## 📱 Módulos Principales
+
+### 🏠 Dashboard
+- Resumen general del sistema
+- Estadísticas en tiempo real
+- Accesos rápidos a módulos
+
+### 📚 Gestión Académica
+- **Clases**: Crear, editar y gestionar sesiones
+- **Módulos**: Administrar cursos y programas
+- **Periodos**: Control de períodos académicos
+- **Salas**: Gestión de espacios físicos/virtuales
+
+### 📅 Calendario
+- Vista mensual/semanal de actividades
+- Integración con clases y eventos
+- Exportación de calendarios
+
+### 🔧 Soporte
+- **Incidencias**: Reportar y seguir problemas
+- **Informes**: Generar reportes académicos
+- **Emergencias**: Gestión de situaciones críticas
+
+### 👥 Administración
+- **Usuarios**: Gestión de cuentas y permisos
+- **Equipo**: Información del personal
+- **Novedades**: Comunicaciones institucionales
+
+## 🔧 Comandos Útiles
+
+### Desarrollo
+```bash
+# Servidor de desarrollo
+php artisan serve
+
+# Compilar assets en tiempo real
+npm run dev
+
+# Limpiar cache
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+```
+
+### Base de Datos
+```bash
+# Resetear base de datos
+php artisan migrate:fresh --seed
+
+# Crear migración
+php artisan make:migration nombre_migracion
+
+# Crear seeder
+php artisan make:seeder NombreSeeder
+```
+
+### Testing
+```bash
+# Ejecutar tests
+php artisan test
+
+# Tests específicos
+php artisan test --filter NombreTest
+```
+
+## 📧 Sistema de Notificaciones
+
+El sistema incluye:
+- **Emails de bienvenida** personalizados
+- **Notificaciones** de incidencias
+- **Recordatorios** de clases y eventos
+- **Alertas** de emergencias
+
+## 🔒 Seguridad
+
+- Autenticación robusta con Laravel Breeze
+- Sistema de roles y permisos granular
+- Validación de datos en frontend y backend
+- Protección CSRF en todas las rutas
+- Sanitización de inputs
+
+## 📞 Soporte
+
+Para soporte técnico o consultas sobre el sistema:
+
+- **Email**: soporte@institucion.cl
+- **Documentación**: Ver carpeta `docs/`
+- **Issues**: Reportar en el repositorio del proyecto
+
+## 📄 Licencia
+
+Este proyecto es propiedad de la Facultad de Economía y Negocios y está destinado para uso institucional.
+
+---
+
+**Desarrollado con ❤️ para la gestión académica moderna**

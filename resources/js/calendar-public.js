@@ -345,16 +345,16 @@ document.addEventListener('DOMContentLoaded', function () {
         (typeof ext.magister === 'string' ? ext.magister : (ext.magister?.name || 'No especificado'));
 
       // Rellenar "Programa"
-      if (programEl) programEl.textContent = programaName;
+      if (programEl) programEl.textContent = `Magíster en ${programaName}`;
 
       // Si aún existe el span "modal-magister-view", también le ponemos el programa
-      if (magisterEl) magisterEl.textContent = programaName;
+      if (magisterEl) magisterEl.textContent = `Magíster en ${programaName}`;
 
       // Modalidad (badge)
       if (modEl) modEl.innerHTML = modalityBadge(ext.modality);
 
-      // Profesor
-      if (profEl) profEl.textContent = ext.profesor || ext.teacher || '—';
+      // Encargado
+      if (profEl) profEl.textContent = ext.profesor || '—';
 
       // Horas solo HH:mm
       document.getElementById('modal-start').textContent = fmtTime(info.event.start);
@@ -400,14 +400,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const programa =
       ext.programa ||
       (typeof ext.magister === 'string' ? ext.magister : (ext.magister?.name || 'Sin programa'));
-    const teacher = ext.profesor || ext.teacher || 'Sin encargado';
+    const teacher = ext.profesor || 'Sin encargado';
     const sala = ext.room?.name || 'Sin sala';
     const start = fmtTime(info.event.start);
     const end = fmtTime(info.event.end);
     
     // Agregar indicador de evento manual al tooltip
     const tipoEvento = ext.type === 'manual' ? '🚩 Evento Especial' : 'Clase';
-    const tooltip = `${info.event.title}\n📌 ${tipoEvento}\n👨‍🏫 ${teacher}\n🏛️ ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
+    const tooltip = `${info.event.title}\n📌 ${tipoEvento}\n👨‍🏫 ${teacher}\n🏛️ Magíster en ${programa}\n🏫 ${sala}\n🕒 ${start} - ${end}`;
     info.el.setAttribute('title', tooltip.trim());
 
     // Marcar eventos manuales con clase especial
