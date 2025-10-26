@@ -250,14 +250,6 @@
     </div>
 </div>
 
-{{-- FAB para ayuda (Ley de Fitts) --}}
-<x-hci-button 
-    fab="true" 
-    icon="❓"
-    href="#"
-    aria-label="Ayuda con el formulario de programas"
-/>
-
 {{-- Incluir JavaScript del wizard --}}
 @push('scripts')
     @vite('resources/js/magisters-form-wizard.js')

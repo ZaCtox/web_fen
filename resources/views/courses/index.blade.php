@@ -63,21 +63,24 @@
                 <div class="mb-6 border border-[#c4dafa] rounded-lg shadow-sm bg-[#fcffff] dark:bg-gray-800">
                     {{-- Header clickable con affordance --}}
                     <div
-                        class="flex justify-between items-center cursor-pointer magister-header 
-                                                    bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition">
-                        <h3 class="text-lg font-semibold text-[#005187] dark:text-[#84b6f4]">
+                        class="flex flex-col sm:flex-row sm:justify-between sm:items-center cursor-pointer magister-header 
+                                                    bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition gap-3">
+                        <h3 class="text-base sm:text-lg font-semibold text-[#005187] dark:text-[#84b6f4]">
                             Magíster en {{ $magister->nombre }}
                         </h3>
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center justify-between sm:justify-end gap-3">
                             {{-- Botón añadir módulo --}}
                             @if(!tieneRol('visor'))
                             <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
-                                class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                                class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-3 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-xs sm:text-sm font-medium"
                                 title="Agregar módulo a este programa">
                                 <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-4 h-4">
-                                <span>Agregar Módulo</span>
+                                <span class="hidden sm:inline">Agregar Módulo</span>
+                                <span class="sm:hidden">Agregar Módulo</span>
                             </a>
                             @endif
+                            
+                            {{-- Flecha de despliegue --}}
                             <span class="text-sm text-[#4d82bc] flex items-center">
                                 <svg class="ml-2 w-5 h-5 transition-transform" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
@@ -107,6 +110,7 @@
                                             Trimestre {{ $romanos[$trimestre] ?? $trimestre }}
                                         </h5>
 
+                                        <div class="overflow-x-auto">
                                         <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
@@ -122,7 +126,7 @@
                                                                                    hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
                                                                                    hover:border-l-4 hover:border-l-[#4d82bc]
                                                                                    hover:-translate-y-0.5 hover:shadow-md
-                                                                                   transition-all duration-200 group cursor-pointer">
+                                                                                   transition-all duration-200 group">
                                                         <td class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
                                                             {{ $course->nombre }}
                                                         </td>
@@ -167,7 +171,7 @@
                                                             @endif
                                                         </td>
                                                         <td class="px-3 py-2 text-right">
-                                                            <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                                            <div class="flex justify-end items-center gap-2">
                                                                 @if(!tieneRol('visor'))
                                                                 {{-- Botón Editar --}}
                                                                 <x-action-button 
@@ -200,7 +204,7 @@
                                                 @endforelse
                                             </tbody>
                                         </table>
-                                    </div>
+                                        </div>
                                 @endforeach
                             </div>
                         @empty

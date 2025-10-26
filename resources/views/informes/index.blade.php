@@ -11,7 +11,7 @@
         ['label' => 'Registros', 'url' => '#']
     ]" />
 
-    <div class="py-6 max-w-7xl mx-auto px-4" x-data="{
+    <div class="py-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{
         search: '',
         selectedMagister: '',
         selectedUser: '',
@@ -44,7 +44,7 @@
             </a>
             @endif
             
-            <div class="flex gap-3 items-center w-full sm:w-auto">
+            <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full sm:w-auto">
                 <div class="relative flex-1 sm:flex-initial">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <img src="{{ asset('icons/filtro.svg') }}" alt="" class="h-5 w-5 opacity-60">
@@ -54,11 +54,11 @@
                            role="search"
                            aria-label="Buscar informes por nombre"
                            placeholder="Buscar por nombre"
-                           class="w-full sm:w-[250px] pl-10 pr-4 py-3 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
+                           class="w-full sm:w-[250px] pl-10 pr-4 py-4 text-base sm:text-sm rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
                 </div>
                 
                 <select x-model="selectedMagister" 
-                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[180px] hci-focus-ring"
+                        class="w-full sm:w-auto px-4 py-4 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-base sm:text-sm font-medium sm:min-w-[180px] hci-focus-ring"
                         aria-label="Filtrar por programa">
                     <option value="">Todos los programas</option>
                     <template x-for="m in magisters" :key="m.id">
@@ -67,7 +67,7 @@
                 </select>
 
                 <select x-model="selectedUser" 
-                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        class="w-full sm:w-auto px-4 py-4 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-base sm:text-sm font-medium sm:min-w-[160px] hci-focus-ring"
                         aria-label="Filtrar por autor">
                     <option value="">Todos los autores</option>
                     <template x-for="u in users" :key="u.id">
@@ -76,7 +76,7 @@
                 </select>
 
                 <select x-model="selectedTipo" 
-                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        class="w-full sm:w-auto px-4 py-4 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-base sm:text-sm font-medium sm:min-w-[160px] hci-focus-ring"
                         aria-label="Filtrar por tipo">
                     <option value="">Todos los tipos</option>
                     <template x-for="tipo in tipos" :key="tipo">
@@ -86,7 +86,7 @@
                 
                 <button type="button" 
                         @click="search=''; selectedMagister=''; selectedUser=''; selectedTipo=''"
-                        class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
+                        class="p-3 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] hover:text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
                         title="Limpiar búsqueda y filtros"
                         aria-label="Limpiar búsqueda y filtros">
                     <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
@@ -111,15 +111,15 @@
 
         {{-- Tabla de informes --}}
         <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow rounded-lg" x-show="filtrados.length > 0">
-            <table class="min-w-full table-auto text-sm text-[#005187] dark:text-[#fcffff]">
+            <table class="min-w-full table-auto text-sm sm:text-base text-[#005187] dark:text-[#fcffff] min-w-[800px]">
                 <thead class="bg-[#c4dafa]/50 dark:bg-gray-700">
                     <tr>
-                        <th class="px-4 py-2 text-left">Nombre</th>
-                        <th class="px-4 py-2 text-left">Tipo</th>
-                        <th class="px-4 py-2 text-left">Dirigido a</th>
-                        <th class="px-4 py-2 text-left">Subido por</th>
-                        <th class="px-4 py-2 text-left">Fecha</th>
-                        <th class="px-4 py-2 text-center">Acciones</th>
+                        <th class="px-4 py-3 text-left">Nombre</th>
+                        <th class="px-4 py-3 text-left">Tipo</th>
+                        <th class="px-4 py-3 text-left">Dirigido a</th>
+                        <th class="px-4 py-3 text-left">Subido por</th>
+                        <th class="px-4 py-3 text-left">Fecha</th>
+                        <th class="px-4 py-3 text-center sticky right-0 bg-[#c4dafa]/50 dark:bg-gray-700 z-10">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -130,8 +130,8 @@
                                    hover:border-l-4 hover:border-l-[#4d82bc]
                                    hover:-translate-y-0.5 hover:shadow-md
                                    transition-all duration-200 group cursor-pointer">
-                            <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200" x-text="informe.nombre"></td>
-                            <td class="px-4 py-2">
+                            <td class="px-4 py-3 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200 max-w-xs truncate" :title="informe.nombre" x-text="informe.nombre"></td>
+                            <td class="px-4 py-3">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                                       :class="{
                                           'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300': informe.tipo === 'calendario',
@@ -142,13 +142,13 @@
                                       x-text="informe.tipo ? informe.tipo.charAt(0).toUpperCase() + informe.tipo.slice(1) : 'General'">
                                 </span>
                             </td>
-                            <td class="px-4 py-2" x-text="informe.magister ? informe.magister.nombre : 'Todos'"></td>
-                            <td class="px-4 py-2" x-text="informe.user ? informe.user.name : '—'"></td>
-                            <td class="px-4 py-2"
+                            <td class="px-4 py-3 max-w-xs truncate" :title="informe.magister ? informe.magister.nombre : 'Todos'" x-text="informe.magister ? informe.magister.nombre : 'Todos'"></td>
+                            <td class="px-4 py-3 max-w-xs truncate" :title="informe.user ? informe.user.name : '—'" x-text="informe.user ? informe.user.name : '—'"></td>
+                            <td class="px-4 py-3 whitespace-nowrap"
                                 x-text="new Date(informe.created_at).toLocaleString('es-CL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })">
                             </td>
-                            <td class="px-4 py-2">
-                                <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                            <td class="px-4 py-3 sticky right-0 bg-white dark:bg-gray-800 z-10">
+                                <div class="flex justify-center items-center gap-2">
                                     {{-- Descargar --}}
                                     <a :href="'{{ url('informes/download') }}/' + informe.id"
                                         class="inline-flex items-center justify-center w-12 px-4 py-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg text-xs font-medium transition focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"

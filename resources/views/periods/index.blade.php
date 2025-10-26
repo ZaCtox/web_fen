@@ -183,7 +183,7 @@
                                             class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200">
                                             {{ $period->fecha_fin->format('d/m/Y') }}</td>
                                         <td class="px-4 py-2" onclick="event.stopPropagation()">
-                                            <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
+                                            <div class="flex justify-end items-center gap-2">
                                                 @if(!tieneRol('visor'))
                                                 {{-- Botón Editar --}}
                                                 <a href="{{ route('periods.edit', $period) }}"

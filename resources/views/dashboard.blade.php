@@ -6,7 +6,7 @@
         </h2>
     </x-slot>
     <div class="py-6">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             {{-- Bienvenida --}}
             <div class="bg-gradient-to-r from-[#005187] to-[#4d82bc] dark:from-gray-800 dark:to-gray-700 shadow-lg rounded-lg p-8 text-white">
@@ -156,7 +156,7 @@
                     @foreach($proximasClases as $clase)
                     <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-[#4d82bc] dark:hover:border-[#84b6f4] transition-all duration-200">
                         <div class="flex-1">
-                            <h4 class="font-semibold text-gray-900 dark:text-white">{{ $clase->course->name ?? 'Curso' }}</h4>
+                            <h4 class="font-semibold text-gray-900 dark:text-white">{{ $clase->course->name ?? 'Módulo' }}</h4>
                             <div class="flex items-center mt-2 space-x-4 text-sm text-gray-600 dark:text-gray-400">
                                 <span class="flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

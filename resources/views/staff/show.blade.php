@@ -24,7 +24,7 @@
     <!-- Header sticky con acciones -->
     <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm mb-6">
         <div class="p-4 max-w-5xl mx-auto">
-            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <div class="flex items-center justify-between gap-3">
                 <!-- Navegación -->
                 <a href="{{ route('staff.index') }}" 
                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"

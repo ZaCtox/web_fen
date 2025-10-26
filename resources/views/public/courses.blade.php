@@ -7,7 +7,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-6 max-w-7xl mx-auto px-4" x-data="{
+    <div class="py-6 max-w-7xl mx-auto px-6 sm:px-6 lg:px-8" x-data="{
         expandedMagisters: {}
     }">
         {{-- Selector de Año de Ingreso --}}
@@ -21,7 +21,7 @@
                         <select name="anio_ingreso" 
                                 id="anio_ingreso"
                                 onchange="this.form.submit()"
-                                class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
+                                class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-4 text-lg focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium">
                             @foreach($aniosIngreso as $anio)
                                 <option value="{{ $anio }}" {{ $anioIngresoSeleccionado == $anio ? 'selected' : '' }}>
                                     {{ $anio }}
@@ -54,27 +54,27 @@
                     {{-- Header clickable con affordance --}}
                     <button @click="expandedMagisters[{{ $magister->id }}] = !expandedMagisters[{{ $magister->id }}]"
                             class="w-full flex justify-between items-center cursor-pointer
-                                   bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition
+                                   bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-4 rounded-t-lg transition
                                    focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                             :aria-expanded="expandedMagisters[{{ $magister->id }}]"
                             aria-label="Expandir/colapsar cursos del Magíster en {{ $magister->nombre }}">
-                        <h3 class="text-lg font-semibold text-[#005187] dark:text-[#84b6f4]">
+                        <h3 class="text-base sm:text-lg font-semibold text-[#005187] dark:text-[#84b6f4] flex-1 mr-3">
                             Magíster en {{ $magister->nombre }}
                         </h3>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2">
                             @php
                                 $totalSct = $magister->courses->sum('sct');
                             @endphp
                             @if($totalSct > 0)
-                                <div class="flex items-center gap-1 bg-[#4d82bc]/10 px-2 py-1 rounded-full">
-                                    <span class="text-xs text-[#4d82bc] font-medium">Total SCT:</span>
-                                    <span class="inline-flex items-center justify-center w-6 h-6 bg-[#4d82bc] text-white text-xs font-bold rounded-full">
+                                <div class="flex items-center gap-2 bg-[#4d82bc]/10 px-3 py-2 rounded-full">
+                                    <span class="text-xs sm:text-sm text-[#4d82bc] font-medium whitespace-nowrap">Total SCT:</span>
+                                    <span class="inline-flex items-center justify-center w-8 h-8 bg-[#4d82bc] text-white text-sm font-bold rounded-full">
                                         {{ $totalSct }}
                                     </span>
                                 </div>
                             @endif
-                            <span class="text-sm text-[#4d82bc] flex items-center">
-                                <svg class="ml-2 w-5 h-5 transition-transform duration-200" 
+                            <span class="text-[#4d82bc] flex items-center">
+                                <svg class="w-6 h-6 transition-transform duration-200" 
                                      :class="{ 'rotate-180': expandedMagisters[{{ $magister->id }}] }"
                                      fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                      aria-hidden="true">
@@ -111,7 +111,8 @@
                                             Trimestre {{ $romanos[$trimestre] ?? $trimestre }}
                                         </h5>
 
-                                        <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
+                                        <div class="overflow-x-auto">
+                                        <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm min-w-full">
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
                                                     <th class="px-4 py-2 text-left">Módulo</th>
@@ -173,6 +174,7 @@
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>

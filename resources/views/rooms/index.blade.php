@@ -72,7 +72,7 @@
                             <th class="px-4 py-2 text-left">Ubicación</th>
                             <th class="px-4 py-2 text-left">Ficha Técnica</th>
                             <th class="px-4 py-2 text-left">Clases Asignadas</th>
-                            <th class="px-4 py-2 text-right w-40">Acciones</th>
+                            <th class="px-4 py-2 text-right w-48">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,7 +85,8 @@
                                 @click="window.location=`/rooms/${room.id}`">
                                 <td class="px-4 py-2 font-medium group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200"
                                     x-text="room.name"></td>
-                                <td class="px-4 py-2 group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200"
+                                <td class="px-4 py-2 max-w-xs truncate group-hover:text-[#005187] dark:group-hover:text-[#84b6f4] transition-colors duration-200"
+                                    :title="room.location"
                                     x-text="room.location"></td>
                                 <td class="px-4 py-2" @click.stop>
                                     <a :href="`/rooms/${room.id}#ficha`"
@@ -102,22 +103,22 @@
                                     </a>
                                 </td>
                                 <td class="px-4 py-2" @click.stop>
-                                    <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2" x-show="!esVisor">
+                                    <div class="flex justify-end items-center gap-2" x-show="!esVisor">
                                         {{-- Botón Editar --}}
                                         <a :href="`/rooms/${room.id}/edit`" 
-                                           class="inline-flex items-center justify-center p-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
+                                           class="inline-flex items-center justify-center w-10 h-10 sm:p-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"
                                            title="Editar sala">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5">
+                                            <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-6 h-6 sm:w-5 sm:h-5">
                                         </a>
 
                                         {{-- Botón Eliminar --}}
-                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar inline">
+                                        <form :action="`/rooms/${room.id}`" method="POST" class="form-eliminar inline-flex items-center">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
-                                                    class="inline-flex items-center justify-center p-2.5 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
+                                                    class="inline-flex items-center justify-center w-10 h-10 sm:p-2.5 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                                                     title="Eliminar sala">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-5 h-5">
+                                                <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-6 h-6 sm:w-5 sm:h-5">
                                             </button>
                                         </form>
                                     </div>

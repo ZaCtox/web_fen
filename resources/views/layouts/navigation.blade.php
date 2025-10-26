@@ -477,62 +477,216 @@
 
                 <!-- Gestión Académica -->
                 @if($showAcademica)
-                <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Gestión Académica</div>
-                    @if($canClases)
-                        <x-responsive-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.index')">Clases</x-responsive-nav-link>
-                    @endif
-                    @if($canCourses)
-                        <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.index')">Módulos</x-responsive-nav-link>
-                    @endif
-                    @if($canPeriods)
-                        <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.index')">Periodos</x-responsive-nav-link>
-                    @endif
-                    @if($canRooms)
-                        <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.index')">Salas</x-responsive-nav-link>
-                    @endif
+                <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2" x-data="{ open: false }">
+                    <button @click="open = !open" 
+                            class="w-full flex items-center justify-between px-3 py-3 text-sm font-medium rounded-lg
+                                   text-gray-700 dark:text-gray-300
+                                   hover:bg-blue-50 dark:hover:bg-blue-900/20 
+                                   hover:text-blue-700 dark:hover:text-blue-300
+                                   transition-all duration-300 ease-in-out
+                                   {{ request()->routeIs(['clases.*', 'courses.*', 'periods.*', 'rooms.*']) ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' : '' }}">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span>Gestión Académica</span>
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-300 ease-in-out" 
+                             :class="{'rotate-180': open}"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                         x-transition:leave-end="opacity-0 transform -translate-y-2"
+                         class="ml-4 mt-2 space-y-1">
+                        @if($canClases)
+                            <x-responsive-nav-link :href="route('clases.index')" :active="request()->routeIs('clases.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                Clases
+                            </x-responsive-nav-link>
+                        @endif
+                        @if($canCourses)
+                            <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                Módulos
+                            </x-responsive-nav-link>
+                        @endif
+                        @if($canPeriods)
+                            <x-responsive-nav-link :href="route('periods.index')" :active="request()->routeIs('periods.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                Periodos
+                            </x-responsive-nav-link>
+                        @endif
+                        @if($canRooms)
+                            <x-responsive-nav-link :href="route('rooms.index')" :active="request()->routeIs('rooms.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                Salas
+                            </x-responsive-nav-link>
+                        @endif
+                    </div>
                 </div>
                 @endif
 
                 <!-- Soporte -->
                 @if($showSoporte)
-                <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Soporte</div>
-                    @if($canIncidencias)
-                        <div class="flex items-center justify-between px-3 py-2">
-                            <x-responsive-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.index')">Incidencias</x-responsive-nav-link>
-                            @php $pendingCount = \App\Models\Incident::whereNotIn('estado', ['resuelta','no_resuelta'])->count(); @endphp
-                            @if($pendingCount > 0)
-                                <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full">{{ $pendingCount }}</span>
-                            @endif
+                <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2" x-data="{ open: false }">
+                    <button @click="open = !open" 
+                            class="w-full flex items-center justify-between px-3 py-3 text-sm font-medium rounded-lg
+                                   text-gray-700 dark:text-gray-300
+                                   hover:bg-orange-50 dark:hover:bg-orange-900/20 
+                                   hover:text-orange-700 dark:hover:text-orange-300
+                                   transition-all duration-300 ease-in-out
+                                   {{ request()->routeIs(['incidencias.*', 'informes.*', 'emergencies.*', 'daily-reports.*']) ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300' : '' }}">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z" />
+                            </svg>
+                            <span>Soporte</span>
                         </div>
-                    @endif
-                    @if($canInformes)
-                        <x-responsive-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.index')">Registros</x-responsive-nav-link>
-                    @endif
-                    @if($canEmergencias)
-                        <x-responsive-nav-link :href="route('emergencies.index')" :active="request()->routeIs('emergencies.index')">Emergencias</x-responsive-nav-link>
-                    @endif
-                    @if($canBitacoras)
-                        <x-responsive-nav-link :href="route('daily-reports.index')" :active="request()->routeIs('daily-reports.*')">Reportes Diarios</x-responsive-nav-link>
-                    @endif
+                        <svg class="w-4 h-4 transition-transform duration-300 ease-in-out" 
+                             :class="{'rotate-180': open}"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                         x-transition:leave-end="opacity-0 transform -translate-y-2"
+                         class="ml-4 mt-2 space-y-1">
+                        @if($canIncidencias)
+                            <div class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all duration-200">
+                                <x-responsive-nav-link :href="route('incidencias.index')" :active="request()->routeIs('incidencias.*')" class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                    </svg>
+                                    Incidencias
+                                </x-responsive-nav-link>
+                                @php $pendingCount = \App\Models\Incident::whereNotIn('estado', ['resuelta','no_resuelta'])->count(); @endphp
+                                @if($pendingCount > 0)
+                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full animate-pulse">{{ $pendingCount }}</span>
+                                @endif
+                            </div>
+                        @endif
+                        @if($canInformes)
+                            <x-responsive-nav-link :href="route('informes.index')" :active="request()->routeIs('informes.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Registros
+                            </x-responsive-nav-link>
+                        @endif
+                        @if($canEmergencias)
+                            <x-responsive-nav-link :href="route('emergencies.index')" :active="request()->routeIs('emergencies.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                </svg>
+                                Emergencias
+                            </x-responsive-nav-link>
+                        @endif
+                        @if($canBitacoras)
+                            <x-responsive-nav-link :href="route('daily-reports.index')" :active="request()->routeIs('daily-reports.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                Reportes Diarios
+                            </x-responsive-nav-link>
+                        @endif
+                    </div>
                 </div>
                 @endif
 
                 <!-- Administración -->
                 @if(tieneRol(['administrador','director_administrativo','decano','asistente_postgrado','visor']))
-                <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
-                    <div class="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Administración</div>
-                    @if(tieneRol(['administrador','director_administrativo','decano','visor']))
-                        <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.index')">Nuestro Equipo</x-responsive-nav-link>
-                        <x-responsive-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.index')">Usuarios</x-responsive-nav-link>
-                    @endif
-                    @if(tieneRol(['administrador','director_administrativo','decano','asistente_postgrado','visor']))
-                        <x-responsive-nav-link :href="route('novedades.index')" :active="request()->routeIs('novedades.index')">Novedades</x-responsive-nav-link>
-                    @endif
-                    @if(tieneRol(['administrador','director_administrativo','decano','director_programa','asistente_postgrado','visor']))
-                        <x-responsive-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.index')">Estadísticas</x-responsive-nav-link>
-                    @endif
+                <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2" x-data="{ open: false }">
+                    <button @click="open = !open" 
+                            class="w-full flex items-center justify-between px-3 py-3 text-sm font-medium rounded-lg
+                                   text-gray-700 dark:text-gray-300
+                                   hover:bg-green-50 dark:hover:bg-green-900/20 
+                                   hover:text-green-700 dark:hover:text-green-300
+                                   transition-all duration-300 ease-in-out
+                                   {{ request()->routeIs(['staff.*', 'usuarios.*', 'novedades.*', 'analytics.*']) ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : '' }}">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>Administración</span>
+                        </div>
+                        <svg class="w-4 h-4 transition-transform duration-300 ease-in-out" 
+                             :class="{'rotate-180': open}"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div x-show="open" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                         x-transition:leave-end="opacity-0 transform -translate-y-2"
+                         class="ml-4 mt-2 space-y-1">
+                        @if(tieneRol(['administrador','director_administrativo','decano','visor']))
+                            <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                Nuestro Equipo
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                </svg>
+                                Usuarios
+                            </x-responsive-nav-link>
+                        @endif
+                        @if(tieneRol(['administrador','director_administrativo','decano','asistente_postgrado','visor']))
+                            <div class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200">
+                                <x-responsive-nav-link :href="route('novedades.index')" :active="request()->routeIs('novedades.*')" class="flex items-center gap-2">
+                                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V9.75a9 9 0 00-9 9 9 9 0 009 9v3.882M13 5.882V9.75a9 9 0 019 9 9 9 0 00-9 9v3.882" />
+                                    </svg>
+                                    Novedades
+                                </x-responsive-nav-link>
+                                @php 
+                                    $urgentNews = \App\Models\Novedad::where('es_urgente', true)
+                                        ->where(function($q) {
+                                            $q->whereNull('fecha_expiracion')
+                                              ->orWhere('fecha_expiracion', '>', now());
+                                        })->count(); 
+                                @endphp
+                                @if($urgentNews > 0)
+                                    <span class="inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold text-white bg-red-600 rounded-full animate-pulse">{{ $urgentNews }}</span>
+                                @endif
+                            </div>
+                        @endif
+                        @if(tieneRol(['administrador','director_administrativo','decano','director_programa','asistente_postgrado','visor']))
+                            <x-responsive-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                Estadísticas
+                            </x-responsive-nav-link>
+                        @endif
+                    </div>
                 </div>
                 @endif
             @else
@@ -579,13 +733,12 @@
                 <x-responsive-nav-link :href="route('public.calendario.index')" :active="request()->routeIs('public.calendario.index')">Calendario</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.Equipo-FEN.index')" :active="request()->routeIs('public.Equipo-FEN.index')">Nuestro Equipo</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.rooms.index')" :active="request()->routeIs('public.rooms.index')">Salas</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Cursos</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('public.courses.index')" :active="request()->routeIs('public.courses.index')">Módulos</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('public.informes.index')" :active="request()->routeIs('public.informes.index')">Registros</x-responsive-nav-link>
                 
                 <a href="{{ route('login') }}" 
                    class="mt-4 inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                    title="Acceder al sistema">
-                    <img src="{{ asset('icons/check.svg') }}" alt="Iniciar" class="w-5 h-5">
                     Iniciar Sesión
                 </a>
             @endif

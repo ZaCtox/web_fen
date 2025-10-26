@@ -14,7 +14,7 @@
     @unless(!empty($public) && $public === true)
         <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 py-4 mb-6 border-b border-gray-200 dark:border-gray-700 shadow-sm">
             <div class="max-w-5xl mx-auto px-6">
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex items-center justify-between gap-3">
                     {{-- Botón Volver --}}
                     <a href="{{ route('clases.index') }}"
                         class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
@@ -24,13 +24,12 @@
 
                     {{-- Acciones: Editar + Eliminar --}}
                     @if(!tieneRol('visor'))
-                    <div class="flex gap-3">
+                    <div class="flex gap-2">
                         {{-- Editar --}}
                         <a href="{{ route('clases.edit', $clase) }}"
-                            class="inline-flex items-center gap-2 px-4 py-2  bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                            class="p-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                             aria-label="Editar clase">
                             <img src="{{ asset('icons/editw.svg') }}" alt="" class="w-5 h-5">
-                            <span class="hidden sm:inline">Editar</span>
                         </a>
 
                         {{-- Eliminar --}}
@@ -38,10 +37,9 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 text-sm font-medium"
+                                class="p-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
                                 aria-label="Eliminar clase">
                                 <img src="{{ asset('icons/trashw.svg') }}" alt="" class="w-5 h-5">
-                                <span class="hidden sm:inline">Eliminar</span>
                             </button>
                         </form>
                     </div>
@@ -307,8 +305,8 @@
                     @if($clase->sesiones->count() > 0)
                         <div class="space-y-3">
                             @foreach($clase->sesiones as $sesion)
-                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200">
-                                    <div class="flex items-center gap-4 flex-1">
+                                <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200">
+                                    <div class="flex items-center gap-4">
                                         <div class="flex-shrink-0 w-16 h-16 rounded-lg flex flex-col items-center justify-center text-xs font-bold
                                                     {{ $sesion->es_hoy ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300' }}">
                                             <span class="text-2xl">{{ $sesion->fecha->format('d') }}</span>
@@ -404,41 +402,50 @@
                                                 {!! $sesion->estado_badge !!}
                                             </div>
                                         </div>
+                                    </div>
+                                    
+                                    {{-- Botones debajo de la información --}}
+                                    <div class="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                                        {{-- Botón de grabación a la izquierda --}}
                                         @if($sesion->tiene_grabacion)
                                             <a href="{{ $sesion->url_grabacion }}" target="_blank"
-                                               class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                               class="inline-flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
                                                title="Ver grabación en YouTube">
-                                                <img src="{{ asset('icons/play.svg') }}" alt="Ver" class="w-5 h-5">
-                                                Ver Grabación
+                                                <img src="{{ asset('icons/play.svg') }}" alt="Ver" class="w-4 h-4">
+                                                <span class="hidden sm:inline">Ver Grabación</span>
                                             </a>
                                         @elseif($sesion->es_pasada)
                                             <button @click="showModal = true; modalMode = 'grabacion'; editingSesion = {{ $sesion->id }}"
-                                                    class="inline-flex items-center gap-2 px-4 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                                                    class="inline-flex items-center gap-2 px-3 py-2 bg-[#4d82bc] hover:bg-[#005187] text-white text-sm font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
                                                     title="Agregar grabación">
-                                                <img src="{{ asset('icons/agregar.svg') }}" alt="Subir" class="w-5 h-5">
-                                                Agregar Grabación
+                                                <img src="{{ asset('icons/agregar.svg') }}" alt="Subir" class="w-4 h-4">
+                                                <span class="hidden sm:inline">Agregar Grabación</span>
                                             </button>
+                                        @else
+                                            <div></div>
+                                        @endif
+                                        
+                                        {{-- Botones de acción a la derecha --}}
+                                        @if(!tieneRol('visor'))
+                                            <div class="flex gap-2">
+                                                <button @click="showModal = true; modalMode = 'edit'; editingSesion = {{ $sesion->id }}"
+                                                        class="p-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                                                        title="Editar sesión">
+                                                    <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
+                                                </button>
+                                                <form action="{{ route('sesiones.destroy', $sesion) }}" method="POST" class="inline-flex form-eliminar"
+                                                      data-confirm="¿Estás seguro de que quieres eliminar esta sesión?">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="p-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                                            title="Eliminar sesión">
+                                                        <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
+                                                    </button>
+                                                </form>
+                                            </div>
                                         @endif
                                     </div>
-                                    @if(!tieneRol('visor'))
-                                    <div class="flex gap-2 ml-4">
-                                        <button @click="showModal = true; modalMode = 'edit'; editingSesion = {{ $sesion->id }}"
-                                                class="p-2  bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
-                                                title="Editar sesión">
-                                            <img src="{{ asset('icons/editw.svg') }}" alt="Editar" class="w-5 h-5">
-                                        </button>
-                                        <form action="{{ route('sesiones.destroy', $sesion) }}" method="POST" class="inline-flex form-eliminar"
-                                              data-confirm="¿Estás seguro de que quieres eliminar esta sesión?">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="p-2 bg-[#e57373] hover:bg-[#d32f2f] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                                                    title="Eliminar sesión">
-                                                <img src="{{ asset('icons/trashw.svg') }}" alt="Eliminar" class="w-5 h-5">
-                                            </button>
-                                        </form>
-                                    </div>
-                                    @endif
                                 </div>
                             @endforeach
                         </div>

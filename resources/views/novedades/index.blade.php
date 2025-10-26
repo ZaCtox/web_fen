@@ -40,7 +40,7 @@
             </a>
             @endif
             
-            <div class="flex gap-3 items-center w-full sm:w-auto">
+            <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center w-full sm:w-auto">
                 <div class="relative flex-1 sm:flex-initial">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <img src="{{ asset('icons/filtro.svg') }}" alt="" class="h-5 w-5 opacity-60">
@@ -51,12 +51,12 @@
                            role="search"
                            aria-label="Buscar novedades por título o contenido"
                            placeholder="Buscar por título o contenido"
-                           class="w-full sm:w-[350px] pl-10 pr-4 py-3 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
+                           class="w-full sm:w-[350px] pl-10 pr-4 py-4 text-base sm:text-sm rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition hci-input-focus">
                 </div>
                 
                 <select x-model="tipo" 
                         @change="actualizarURL()"
-                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        class="w-full sm:w-auto px-4 py-4 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-base sm:text-sm font-medium sm:min-w-[160px] hci-focus-ring"
                         aria-label="Filtrar por tipo de novedad">
                     <option value="">Todos los tipos</option>
                     <option value="academica">Académica</option>
@@ -69,7 +69,7 @@
 
                 <select x-model="estado" 
                         @change="actualizarURL()"
-                        class="px-4 py-3 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-sm font-medium min-w-[160px] hci-focus-ring"
+                        class="w-full sm:w-auto px-4 py-4 pr-10 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-800 dark:text-gray-100 focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition text-base sm:text-sm font-medium sm:min-w-[160px] hci-focus-ring"
                         aria-label="Filtrar por estado">
                     <option value="">Todos los estados</option>
                     <option value="activas">Activas</option>
@@ -79,10 +79,10 @@
                 
                 <button type="button" 
                         @click="limpiarFiltros()"
-                        class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
+                        class="p-4 sm:p-3 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] hover:text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
                         title="Limpiar búsqueda y filtros"
                         aria-label="Limpiar búsqueda y filtros">
-                    <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-5 h-5">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="" class="w-6 h-6 sm:w-5 sm:h-5">
                 </button>
             </div>
         </div>
