@@ -75,7 +75,7 @@
             <a href="{{ route('register') }}"
                 class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                 aria-label="Agregar nuevo usuario">
-                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
+                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-4 h-4">
                 Agregar Usuario
             </a>
             
@@ -83,7 +83,7 @@
                 <div class="relative flex-1 sm:flex-initial">
                     <label for="search-usuarios" class="sr-only">Buscar usuarios</label>
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <img src="{{ asset('icons/filtro.svg') }}" alt="" class="h-5 w-5 opacity-60">
+                        <img src="{{ asset('icons/searchw.svg') }}" alt="" class="h-4 w-4 opacity-60">
                     </div>
                     <input id="search-usuarios"
                            x-model="search" 
@@ -110,7 +110,7 @@
                         class="p-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hover:scale-105 hci-button-ripple hci-glow"
                         title="Limpiar búsqueda y ordenamiento"
                         aria-label="Limpiar búsqueda y ordenamiento">
-                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-5 h-5">
+                    <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar" class="w-4 h-4">
                 </button>
             </div>
         </div>
