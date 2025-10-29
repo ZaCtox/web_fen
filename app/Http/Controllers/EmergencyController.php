@@ -17,22 +17,12 @@ class EmergencyController extends Controller
 
     public function create()
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear emergencias.');
-        }
-        
-        return view('emergencies.create');
+                return view('emergencies.create');
     }
 
     public function store(Request $request)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear emergencias.');
-        }
-        
-        $request->validate([
+                $request->validate([
             'title' => 'required|string|max:100',
             'message' => 'required|string',
         ]);
@@ -59,23 +49,13 @@ class EmergencyController extends Controller
 
     public function edit($id)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para editar emergencias.');
-        }
-        
-        $emergency = Emergency::findOrFail($id);
+                $emergency = Emergency::findOrFail($id);
         return view('emergencies.edit', compact('emergency'));
     }
 
     public function update(Request $request, $id)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para actualizar emergencias.');
-        }
-        
-        $request->validate([
+                $request->validate([
             'title' => 'required|string|max:100',
             'message' => 'required|string',
         ]);
@@ -88,12 +68,7 @@ class EmergencyController extends Controller
 
     public function deactivate($id)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para desactivar emergencias.');
-        }
-        
-        $emergency = Emergency::findOrFail($id);
+                $emergency = Emergency::findOrFail($id);
         $emergency->update(['active' => false]);
 
         return redirect()->route('emergencies.index')->with('success', 'Emergencia desactivada manualmente.');
@@ -101,12 +76,7 @@ class EmergencyController extends Controller
 
     public function toggleActive($id)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para activar/desactivar emergencias.');
-        }
-        
-        $emergency = Emergency::findOrFail($id);
+                $emergency = Emergency::findOrFail($id);
         
         if ($emergency->active) {
             // Desactivar
@@ -124,12 +94,7 @@ class EmergencyController extends Controller
 
     public function destroy($id)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para eliminar emergencias.');
-        }
-        
-        Emergency::findOrFail($id)->delete();
+                Emergency::findOrFail($id)->delete();
         return redirect()->route('emergencies.index')->with('success', 'Emergencia eliminada.');
     }
 
@@ -145,3 +110,4 @@ class EmergencyController extends Controller
     }
 
 }
+

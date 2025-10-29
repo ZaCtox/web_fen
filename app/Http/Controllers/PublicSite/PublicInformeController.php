@@ -76,3 +76,4 @@ class PublicInformeController extends Controller
         ]);
     }
 }
+

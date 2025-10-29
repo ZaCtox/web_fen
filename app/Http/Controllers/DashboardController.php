@@ -75,7 +75,7 @@ class DashboardController extends Controller
     private function getAccesosRapidos($rol)
     {
         $accesos = [
-            'administrador' => [
+            'director_administrativo' => [
                 ['titulo' => 'Gestionar Usuarios', 'descripcion' => 'Crear, editar y eliminar usuarios', 'icono' => '👥', 'ruta' => 'usuarios.index', 'color' => 'blue'],
                 ['titulo' => 'Ver Incidencias', 'descripcion' => 'Revisar y gestionar incidencias', 'icono' => '📋', 'ruta' => 'incidencias.index', 'color' => 'yellow'],
                 ['titulo' => 'Gestionar Salas', 'descripcion' => 'Administrar salas y espacios', 'icono' => '🏫', 'ruta' => 'rooms.index', 'color' => 'purple'],
@@ -378,3 +378,4 @@ class DashboardController extends Controller
         return $novedades;
     }
 }
+

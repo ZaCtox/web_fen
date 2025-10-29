@@ -14,7 +14,7 @@
     <div class="p-6">
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-            @if(!tieneRol('visor'))
+            @if(false)
             <a href="{{ route('daily-reports.create') }}"
                 class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                 aria-label="Agregar nuevo reporte diario">
@@ -138,7 +138,7 @@
                                     </td>
                                     <td class="px-4 py-3">
                                         <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2" onclick="event.stopPropagation()">
-                                            @if(!tieneRol('visor'))
+                                            @if(false)
                                             <a href="{{ route('daily-reports.edit', $report) }}" 
                                                class="inline-flex items-center justify-center p-2.5 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-1"
                                                title="Editar reporte">
@@ -152,7 +152,7 @@
                                                 <img src="{{ asset('icons/download.svg') }}" alt="Descargar" class="w-5 h-5">
                                             </a>
                                             @endif
-                                            @if(!tieneRol('visor'))
+                                            @if(false)
                                             <form action="{{ route('daily-reports.destroy', $report) }}" method="POST" class="form-eliminar inline">
                                                 @csrf
                                                 @method('DELETE')

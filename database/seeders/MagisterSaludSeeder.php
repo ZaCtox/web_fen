@@ -47,10 +47,6 @@ class MagisterSaludSeeder extends Seeder
                 ['email' => 'maria.castillob@utalca.cl'],
                 ['name' => 'María Castillo', 'password' => Hash::make('maria123'), 'rol' => 'asistente_postgrado']
             ),
-            'visor' => User::firstOrCreate(
-                ['email' => 'visor@utalca.cl'],
-                ['name' => 'Usuario Visor', 'password' => Hash::make('visor123'), 'rol' => 'visor']
-            ),
         ];
 
         // Docentes

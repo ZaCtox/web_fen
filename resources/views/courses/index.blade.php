@@ -70,7 +70,7 @@
                         </h3>
                         <div class="flex items-center justify-between sm:justify-end gap-3">
                             {{-- Botón añadir módulo --}}
-                            @if(!tieneRol('visor'))
+                            @if(false)
                             <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
                                 class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-3 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-xs sm:text-sm font-medium"
                                 title="Agregar módulo a este programa">
@@ -172,7 +172,7 @@
                                                         </td>
                                                         <td class="px-3 py-2 text-right">
                                                             <div class="flex justify-end items-center gap-2">
-                                                                @if(!tieneRol('visor'))
+                                                                @if(false)
                                                                 {{-- Botón Editar --}}
                                                                 <x-action-button 
                                                                     variant="edit" 

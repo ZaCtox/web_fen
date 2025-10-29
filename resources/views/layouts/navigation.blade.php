@@ -12,22 +12,22 @@
             @if(Auth::check())
                 <div class="hidden items-center gap-4 lg:-my-px lg:ms-10 lg:flex">
                     @php
-                        $esVisor = tieneRol('visor');
-                        $canClases = tieneRol(['administrador','director_programa','asistente_programa','director_administrativo','decano','asistente_postgrado','visor']);
-                        $canCourses = tieneRol(['administrador','director_programa','asistente_programa','decano','visor']);
-                        $canPeriods = tieneRol(['administrador','decano','visor']);
-                        $canRooms = tieneRol(['administrador','asistente_programa','decano','visor']);
+                        $esVisor = false;
+                        $canClases = tieneRol(['director_administrativo','director_programa','asistente_programa','decano','asistente_postgrado','docente']);
+                        $canCourses = tieneRol(['director_administrativo','director_programa','asistente_programa','decano']);
+                        $canPeriods = tieneRol(['director_administrativo','decano']);
+                        $canRooms = tieneRol(['director_administrativo','asistente_programa','decano']);
                         $showAcademica = $canClases || $canCourses || $canPeriods || $canRooms;
 
-                        $canIncidencias = tieneRol(['administrador','director_programa','asistente_programa','técnico','auxiliar','decano','asistente_postgrado','visor']);
-                        $canInformes = tieneRol(['administrador','director_programa','asistente_programa','decano','asistente_postgrado','visor']);
-                        $canEmergencias = tieneRol(['administrador','director_programa','asistente_programa','decano','asistente_postgrado','visor']);
-                        $canBitacoras = tieneRol(['asistente_postgrado','decano','visor']);
+                        $canIncidencias = tieneRol(['director_administrativo','director_programa','asistente_programa','técnico','auxiliar','decano','asistente_postgrado']);
+                        $canInformes = tieneRol(['director_administrativo','director_programa','asistente_programa','decano','asistente_postgrado']);
+                        $canEmergencias = tieneRol(['director_administrativo','director_programa','asistente_programa','decano','asistente_postgrado']);
+                        $canBitacoras = tieneRol(['asistente_postgrado','decano']);
                         $showSoporte = $canIncidencias || $canInformes || $canEmergencias || $canBitacoras;
                     @endphp
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-nav-link>
 
-                @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'director_administrativo', 'decano', 'asistente_postgrado', 'visor']))
+                @if(tieneRol(['director_administrativo', 'director_programa', 'asistente_programa', 'decano', 'asistente_postgrado', 'docente']))
                     <x-nav-link :href="route('calendario')" :active="request()->routeIs('calendario')">Calendario</x-nav-link>
                 @endif
 
@@ -136,7 +136,7 @@
                     @endif
 
                     <!-- Administración -->
-                    @if(tieneRol(['administrador', 'director_administrativo', 'decano', 'asistente_postgrado', 'visor']))
+                    @if(tieneRol(['director_administrativo', 'decano', 'asistente_postgrado']))
                     <div class="relative" x-data="{open:false}" @mouseenter="open=true" @mouseleave="open=false">
                         <button @click="open=!open" 
                                 class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-md 
@@ -161,7 +161,7 @@
                              x-transition:leave-end="opacity-0"
                              class="absolute z-40 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                             <div class="py-1">
-                                @if(tieneRol(['administrador', 'director_administrativo', 'decano', 'asistente_postgrado', 'visor']))
+                                @if(tieneRol(['director_administrativo', 'decano', 'asistente_postgrado']))
                                     <a href="{{ route('novedades.index') }}" class="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                         <span>Novedades</span>
                                         @php 
@@ -176,11 +176,13 @@
                                         @endif
                                     </a>
                                 @endif
-                                @if(tieneRol(['administrador','director_administrativo','decano','visor']))
+                                @if(tieneRol(['director_administrativo','decano']) || tieneRol('director_programa'))
                                     <a href="{{ route('staff.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Nuestro Equipo</a>
+                                @endif
+                                @if(tieneRol(['director_administrativo','decano']))
                                     <a href="{{ route('usuarios.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Usuarios</a>
                                 @endif
-                                @if(tieneRol(['administrador', 'director_administrativo', 'decano', 'director_programa', 'asistente_postgrado', 'visor']))
+                                @if(tieneRol(['director_administrativo', 'decano', 'director_programa', 'asistente_postgrado']))
                                     <a href="{{ route('analytics.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">Estadísticas</a>
                                 @endif
                             </div>
@@ -454,24 +456,24 @@
         <div class="pt-5 pb-3 flex flex-col space-y-1 px-4">
             @if(Auth::check())
                 @php
-                    $esVisor = tieneRol('visor');
-                    $canClases = tieneRol(['administrador','director_programa','asistente_programa','director_administrativo','decano','asistente_postgrado','visor']);
-                    $canCourses = tieneRol(['administrador','director_programa','asistente_programa','decano','visor']);
-                    $canPeriods = tieneRol(['administrador','decano','visor']);
-                    $canRooms = tieneRol(['administrador','asistente_programa','decano','visor']);
+                    $esVisor = false;
+                    $canClases = tieneRol(['director_administrativo','director_programa','asistente_programa','decano','asistente_postgrado','docente']);
+                    $canCourses = tieneRol(['director_administrativo','director_programa','asistente_programa','decano']);
+                    $canPeriods = tieneRol(['director_administrativo','decano']);
+                    $canRooms = tieneRol(['director_administrativo','asistente_programa','decano']);
                     $showAcademica = $canClases || $canCourses || $canPeriods || $canRooms;
 
-                    $canIncidencias = tieneRol(['administrador','director_programa','asistente_programa','técnico','auxiliar','decano','asistente_postgrado','visor']);
-                    $canInformes = tieneRol(['administrador','director_programa','asistente_programa','decano','asistente_postgrado','visor']);
-                    $canEmergencias = tieneRol(['administrador','director_programa','asistente_programa','decano','asistente_postgrado','visor']);
-                    $canBitacoras = tieneRol(['asistente_postgrado','decano','visor']);
+                    $canIncidencias = tieneRol(['director_administrativo','director_programa','asistente_programa','técnico','auxiliar','decano','asistente_postgrado']);
+                    $canInformes = tieneRol(['director_administrativo','director_programa','asistente_programa','decano','asistente_postgrado']);
+                    $canEmergencias = tieneRol(['director_administrativo','director_programa','asistente_programa','decano','asistente_postgrado']);
+                    $canBitacoras = tieneRol(['asistente_postgrado','decano']);
                     $showSoporte = $canIncidencias || $canInformes || $canEmergencias || $canBitacoras;
                 @endphp
 
                 <!-- Enlaces principales -->
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Inicio</x-responsive-nav-link>
                 
-                @if(tieneRol(['administrador', 'director_programa', 'asistente_programa', 'director_administrativo', 'decano', 'asistente_postgrado', 'visor']))
+                @if(tieneRol(['director_administrativo', 'director_programa', 'asistente_programa', 'decano', 'asistente_postgrado', 'docente']))
                     <x-responsive-nav-link :href="route('calendario')" :active="request()->routeIs('calendario')">Calendario</x-responsive-nav-link>
                 @endif
 
@@ -614,7 +616,7 @@
                 @endif
 
                 <!-- Administración -->
-                @if(tieneRol(['administrador','director_administrativo','decano','asistente_postgrado','visor']))
+                @if(tieneRol(['director_administrativo','decano','asistente_postgrado']))
                 <div class="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2" x-data="{ open: false }">
                     <button @click="open = !open" 
                             class="w-full flex items-center justify-between px-3 py-3 text-sm font-medium rounded-lg
@@ -644,13 +646,15 @@
                          x-transition:leave-start="opacity-100 transform translate-y-0"
                          x-transition:leave-end="opacity-0 transform -translate-y-2"
                          class="ml-4 mt-2 space-y-1">
-                        @if(tieneRol(['administrador','director_administrativo','decano','visor']))
+                        @if(tieneRol(['director_administrativo','decano']) || tieneRol('director_programa'))
                             <x-responsive-nav-link :href="route('staff.index')" :active="request()->routeIs('staff.*')" class="flex items-center gap-2">
                                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                                 Nuestro Equipo
                             </x-responsive-nav-link>
+                        @endif
+                        @if(tieneRol(['director_administrativo','decano']))
                             <x-responsive-nav-link :href="route('usuarios.index')" :active="request()->routeIs('usuarios.*')" class="flex items-center gap-2">
                                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -658,7 +662,7 @@
                                 Usuarios
                             </x-responsive-nav-link>
                         @endif
-                        @if(tieneRol(['administrador','director_administrativo','decano','asistente_postgrado','visor']))
+                        @if(tieneRol(['director_administrativo','decano','asistente_postgrado']))
                             <div class="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200">
                                 <x-responsive-nav-link :href="route('novedades.index')" :active="request()->routeIs('novedades.*')" class="flex items-center gap-2">
                                     <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -678,7 +682,7 @@
                                 @endif
                             </div>
                         @endif
-                        @if(tieneRol(['administrador','director_administrativo','decano','director_programa','asistente_postgrado','visor']))
+                        @if(tieneRol(['director_administrativo','decano','director_programa','asistente_postgrado']))
                             <x-responsive-nav-link :href="route('analytics.index')" :active="request()->routeIs('analytics.*')" class="flex items-center gap-2">
                                 <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />

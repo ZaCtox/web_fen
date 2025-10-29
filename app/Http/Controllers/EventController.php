@@ -129,12 +129,7 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear eventos.');
-        }
-        
-        try {
+                try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string|max:1000',
@@ -199,12 +194,7 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para actualizar eventos.');
-        }
-        
-        try {
+                try {
             $validated = $request->validate([
                 'title' => 'sometimes|required|string|max:255',
                 'description' => 'nullable|string|max:1000',
@@ -268,12 +258,7 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para eliminar eventos.');
-        }
-        
-        try {
+                try {
             $titulo = $event->title;
             $event->delete();
 
@@ -574,6 +559,7 @@ class EventController extends Controller
     }
 
 }
+
 
 
 

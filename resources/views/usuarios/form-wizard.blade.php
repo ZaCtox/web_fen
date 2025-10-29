@@ -58,7 +58,6 @@
                         help="{{ $editing ? 'El rol actual del usuario' : 'Selecciona el rol que tendrá el usuario en el sistema' }}"
                     >
                         <option value="">-- Selecciona un rol --</option>
-                        <option value="administrador" {{ old('rol', $usuario->rol ?? '') == 'administrador' ? 'selected' : '' }}>Administrador</option>
                         <option value="director_administrativo" {{ old('rol', $usuario->rol ?? '') == 'director_administrativo' ? 'selected' : '' }}>Director Administrativo</option>
                         <option value="decano" {{ old('rol', $usuario->rol ?? '') == 'decano' ? 'selected' : '' }}>Decano</option>
                         <option value="director_programa" {{ old('rol', $usuario->rol ?? '') == 'director_programa' ? 'selected' : '' }}>Director de Programa</option>

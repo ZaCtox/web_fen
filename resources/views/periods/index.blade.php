@@ -40,7 +40,7 @@
         {{-- Botones superiores --}}
         <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
             {{-- Lado izquierdo: Botón Agregar --}}
-            @if(!tieneRol('visor'))
+            @if(false)
             <div class="flex flex-col sm:flex-row gap-3">
                 @if ($periods->count() < 6)
                     <a href="{{ route('periods.create') }}"
@@ -184,7 +184,7 @@
                                             {{ $period->fecha_fin->format('d/m/Y') }}</td>
                                         <td class="px-4 py-2" onclick="event.stopPropagation()">
                                             <div class="flex justify-end items-center gap-2">
-                                                @if(!tieneRol('visor'))
+                                                @if(false)
                                                 {{-- Botón Editar --}}
                                                 <a href="{{ route('periods.edit', $period) }}"
                                                     class="inline-flex items-center justify-center p-2.5 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-1"

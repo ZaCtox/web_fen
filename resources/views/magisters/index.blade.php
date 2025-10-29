@@ -75,7 +75,7 @@
                 </a>
 
                 {{-- Botón Agregar (Al lado del Volver) --}}
-                @if(!tieneRol('visor'))
+                @if(false)
                 <a href="{{ route('magisters.create') }}"
                     class="inline-flex items-center gap-2 px-6 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow">
                     <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-5 h-5">
@@ -168,7 +168,7 @@
 
                         {{-- Acciones --}}
                         <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
-                            @if(!tieneRol('visor'))
+                            @if(false)
                             <div class="flex gap-3">
                                 {{-- Botón Editar --}}
                                 <a href="{{ route('magisters.edit', $magister) }}"

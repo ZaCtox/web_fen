@@ -44,12 +44,7 @@ class PeriodController extends Controller
 
     public function create(Request $request)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear períodos.');
-        }
-        
-        $anioIngreso = $request->get('anio_ingreso', null);
+                $anioIngreso = $request->get('anio_ingreso', null);
         $magisterId = $request->get('magister_id', null);
         $magisters = \App\Models\Magister::orderBy('orden')->get();
         
@@ -58,12 +53,7 @@ class PeriodController extends Controller
 
     public function store(PeriodRequest $request)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear períodos.');
-        }
-        
-        $data = $request->validated();
+                $data = $request->validated();
         $data['activo'] = true; // Siempre activo al crear
         
         Period::create($data);
@@ -73,12 +63,7 @@ class PeriodController extends Controller
 
     public function edit(Period $period)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para editar períodos.');
-        }
-        
-        $magisters = \App\Models\Magister::orderBy('orden')->get();
+                $magisters = \App\Models\Magister::orderBy('orden')->get();
         
         return view('periods.edit', [
             'period' => $period,
@@ -88,12 +73,7 @@ class PeriodController extends Controller
 
     public function update(PeriodRequest $request, Period $period)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para actualizar períodos.');
-        }
-        
-        $data = $request->validated();
+                $data = $request->validated();
         $data['activo'] = true; // Siempre activo al actualizar
         
         $period->update($data);
@@ -103,12 +83,7 @@ class PeriodController extends Controller
 
     public function destroy(Period $period)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para eliminar períodos.');
-        }
-        
-        $period->delete();
+                $period->delete();
 
         return redirect()->route('periods.index')->with('success', 'Periodo eliminado.');
     }
@@ -175,6 +150,7 @@ class PeriodController extends Controller
     }
 
 }
+
 
 
 

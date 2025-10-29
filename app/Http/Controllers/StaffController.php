@@ -63,9 +63,9 @@ class StaffController extends Controller
      */
     public function create()
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear personal.');
+        // Bloquear acceso al director_programa
+        if (in_array(auth()->user()->rol, ['director_programa'])) {
+            abort(403, 'No tienes permisos para crear personal.');
         }
         
         try {
@@ -81,9 +81,9 @@ class StaffController extends Controller
      */
     public function store(StaffRequest $request)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear personal.');
+        // Bloquear acceso al director_programa
+        if (in_array(auth()->user()->rol, ['director_programa'])) {
+            abort(403, 'No tienes permisos para crear personal.');
         }
         
         try {
@@ -142,9 +142,9 @@ class StaffController extends Controller
      */
     public function edit(Staff $staff)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para editar personal.');
+        // Bloquear acceso al director_programa
+        if (in_array(auth()->user()->rol, ['director_programa'])) {
+            abort(403, 'No tienes permisos para editar personal.');
         }
         
         try {
@@ -160,9 +160,9 @@ class StaffController extends Controller
      */
     public function update(StaffRequest $request, Staff $staff)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para actualizar personal.');
+        // Bloquear acceso al director_programa
+        if (in_array(auth()->user()->rol, ['director_programa'])) {
+            abort(403, 'No tienes permisos para actualizar personal.');
         }
         
         try {
@@ -238,9 +238,9 @@ class StaffController extends Controller
      */
     public function destroy(Staff $staff)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para eliminar personal.');
+        // Bloquear acceso al director_programa
+        if (in_array(auth()->user()->rol, ['director_programa'])) {
+            abort(403, 'No tienes permisos para eliminar personal.');
         }
         
         try {
@@ -275,9 +275,9 @@ class StaffController extends Controller
      */
     public function deleteFoto(Staff $staff)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para eliminar fotos.');
+        // Bloquear acceso al director_programa
+        if (in_array(auth()->user()->rol, ['director_programa'])) {
+            abort(403, 'No tienes permisos para eliminar fotos.');
         }
         
         try {
@@ -305,3 +305,4 @@ class StaffController extends Controller
         }
     }
 }
+

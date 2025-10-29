@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const storeUrl = document.querySelector('meta[name="store-url"]')?.content || '';
     const showBase = document.querySelector('meta[name="clases-show-base"]')?.content || '/clases';
     const userId = document.querySelector('meta[name="user-id"]')?.content || null;
-    const esVisor = document.querySelector('meta[name="es-visor"]')?.content === '1';
+    const esVisor = false;
 
     const magisterFilter = document.getElementById('magister-filter');
     const roomFilter = document.getElementById('room-filter');

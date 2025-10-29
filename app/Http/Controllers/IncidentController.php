@@ -36,7 +36,7 @@ class IncidentController extends Controller
         
         // Filtrar por rol del usuario
         $user = Auth::user();
-        $rolesQueVenTodas = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+        $rolesQueVenTodas = ['director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
         
         if (!in_array($user->rol, $rolesQueVenTodas)) {
             // Los usuarios normales solo ven las incidencias que ellos crearon
@@ -132,10 +132,6 @@ class IncidentController extends Controller
 
     public function create()
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear incidencias.');
-        }
         
         $salas = Room::orderBy('name')->get();
         $magisters = Magister::orderBy('orden')->get();
@@ -145,10 +141,6 @@ class IncidentController extends Controller
 
     public function store(Request $request)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear incidencias.');
-        }
         
         $validated = $request->validate([
             'titulo' => 'required|string|max:255',
@@ -229,7 +221,7 @@ class IncidentController extends Controller
     {
         // Verificar permisos de acceso
         $user = Auth::user();
-        $rolesQueVenTodas = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+        $rolesQueVenTodas = ['director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
         
         if (!in_array($user->rol, $rolesQueVenTodas) && $incidencia->user_id !== $user->id) {
             abort(403, 'No tienes permisos para ver esta incidencia.');
@@ -416,14 +408,10 @@ class IncidentController extends Controller
 
     public function destroy(Incident $incidencia)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para eliminar incidencias.');
-        }
         
         // Verificar permisos de eliminación
         $user = Auth::user();
-        $rolesQueVenTodas = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+        $rolesQueVenTodas = ['director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
         
         if (!in_array($user->rol, $rolesQueVenTodas) && $incidencia->user_id !== $user->id) {
             abort(403, 'No tienes permisos para eliminar esta incidencia.');
@@ -442,6 +430,7 @@ class IncidentController extends Controller
         return redirect()->route('incidencias.index')->with('success', 'Incidencia eliminada correctamente.');
     }
 }
+
 
 
 

@@ -35,3 +35,4 @@ class PublicCourseController extends Controller
         return view('public.courses', compact('magisters', 'aniosIngreso', 'anioIngresoSeleccionado'));
     }
 }
+

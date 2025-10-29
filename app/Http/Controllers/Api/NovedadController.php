@@ -327,3 +327,4 @@ class NovedadController extends Controller
     }
 }
 
+

@@ -53,7 +53,7 @@
         {{-- Botones superiores --}}
         <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
             {{-- Lado izquierdo: Botón Agregar --}}
-            @if(!tieneRol('visor'))
+            @if(false)
             <a href="{{ route('clases.create') }}"
                class="inline-flex items-center gap-2 px-6 py-3 bg-[#4d82bc] hover:bg-[#005187] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium hci-button-ripple hci-glow"
                title="Crear nueva clase">
@@ -242,7 +242,7 @@
                                 tooltip="Ver clase"
                                 onclick="event.stopPropagation()" />
 
-                            @if(!tieneRol('visor'))
+                            @if(false)
                             {{-- Botón Editar --}}
                             <x-action-button 
                                 variant="edit" 

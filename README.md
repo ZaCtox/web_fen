@@ -123,10 +123,6 @@ Administrador:
 Decano:
 - Email: decano@institucion.cl  
 - Contraseña: decano123
-
-Visor:
-- Email: visor@institucion.cl
-- Contraseña: visor123
 ```
 
 ## 📱 Módulos Principales

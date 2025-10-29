@@ -10,7 +10,7 @@
         ['label' => 'Detalle de Clase', 'url' => '#']
     ]" />
 
-    {{-- 🎯 Sticky Header con Botones de Acción (solo modo administrador) --}}
+    {{-- 🎯 Sticky Header con Botones de Acción (solo modo director administrativo) --}}
     @unless(!empty($public) && $public === true)
         <div class="sticky top-0 z-10 bg-white dark:bg-gray-900 py-4 mb-6 border-b border-gray-200 dark:border-gray-700 shadow-sm">
             <div class="max-w-5xl mx-auto px-6">
@@ -23,7 +23,7 @@
                     </a>
 
                     {{-- Acciones: Editar + Eliminar --}}
-                    @if(!tieneRol('visor'))
+                    @if(false)
                     <div class="flex gap-2">
                         {{-- Editar --}}
                         <a href="{{ route('clases.edit', $clase) }}"
@@ -426,7 +426,7 @@
                                         @endif
                                         
                                         {{-- Botones de acción a la derecha --}}
-                                        @if(!tieneRol('visor'))
+                                        @if(false)
                                             <div class="flex gap-2">
                                                 <button @click="showModal = true; modalMode = 'edit'; editingSesion = {{ $sesion->id }}"
                                                         class="p-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"

@@ -7,7 +7,7 @@
         <meta name="store-url" content="{{ route('events.store') }}">
         <meta name="clases-show-base" content="{{ url('/clases') }}">
         <meta name="user-id" content="{{ auth()->id() }}">
-        <meta name="es-visor" content="{{ tieneRol('visor') ? '1' : '0' }}">
+        <meta name="es-visor" content="0">
         <h2 class="text-xl font-semibold text-[#005187] dark:text-[#84b6f4]">Calendario Académico</h2>
     </x-slot>
 
@@ -27,7 +27,7 @@
     </div>
 
     {{-- Modales --}}
-    @if(!tieneRol('visor'))
+    @if(false)
     @include('calendario.modal-crear')
     @endif
     @include('calendario.modal-ver')

@@ -24,7 +24,7 @@ class IncidentModificationMiddleware
         }
 
         // Roles que pueden modificar el estado de las incidencias
-        $rolesPermitidos = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+        $rolesPermitidos = ['director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
         
         if (!in_array($user->rol, $rolesPermitidos)) {
             return redirect()->back()->with('error', 'No tienes permisos para cambiar el estado de las incidencias.');

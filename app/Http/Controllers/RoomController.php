@@ -58,12 +58,7 @@ class RoomController extends Controller
      */
     public function create()
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear salas.');
-        }
-        
-        try {
+                try {
             $periodos = Period::orderByDesc('anio')->orderBy('numero')->get();
             $cursos = Course::with('magister')->orderBy('magister_id')->orderBy('nombre')->get();
 
@@ -80,12 +75,7 @@ class RoomController extends Controller
      */
     public function store(StoreRoomRequest $request)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para crear salas.');
-        }
-        
-        try {
+                try {
             $data = $request->validated();
 
             // Verificar si ya existe una sala con el mismo nombre
@@ -121,12 +111,7 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para editar salas.');
-        }
-        
-        try {
+                try {
             $room->loadCount('clases');
             return view('rooms.edit', compact('room'));
 
@@ -141,12 +126,7 @@ class RoomController extends Controller
      */
     public function update(StoreRoomRequest $request, Room $room)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para actualizar salas.');
-        }
-        
-        try {
+                try {
             $data = $request->validated();
 
             // Verificar si el nombre ya existe en otra sala
@@ -189,12 +169,7 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
-        // Bloquear acceso al visor
-        if (auth()->user()->rol === 'visor') {
-            abort(403, 'Los visores no tienen permisos para eliminar salas.');
-        }
-        
-        try {
+                try {
             $nombre = $room->name;
             $cantidadClases = $room->clases()->count();
             $cantidadIncidencias = $room->incidents()->count();
@@ -303,3 +278,4 @@ class RoomController extends Controller
         ];
     }
 }
+

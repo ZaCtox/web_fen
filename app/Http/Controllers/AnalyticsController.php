@@ -272,3 +272,4 @@ class AnalyticsController extends Controller
             ->get();
     }
 }
+

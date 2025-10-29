@@ -15,7 +15,7 @@
 
     <div class="p-6" x-data="{
             search: '',
-            esVisor: {{ tieneRol('visor') ? 'true' : 'false' }},
+            esVisor: false,
             salas: @js($rooms->items()),
             get filtradas() {
                 return this.salas.filter(s =>
@@ -28,7 +28,7 @@
         {{-- Header acciones --}}
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
             {{-- Botón Agregar (Izquierda) --}}
-            @if(!tieneRol('visor'))
+            @if(false)
             <a href="{{ route('rooms.create') }}"
                 class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                 aria-label="Agregar nueva sala">

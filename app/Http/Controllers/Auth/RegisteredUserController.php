@@ -29,7 +29,7 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Registrar nuevo usuario (solo para administradores)
+     * Registrar nuevo usuario (solo para directores administrativos)
      */
     public function store(Request $request): RedirectResponse
     {
@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
         $validated = $request->validate([
             'name'  => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'rol'   => ['required', 'in:administrador,director_administrativo,decano,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado'],
+            'rol'   => ['required', 'in:director_administrativo,decano,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado'],
             'foto'  => ['nullable', 'image', 'max:2048'],
             'avatar_color' => ['nullable', 'string', 'max:6'],
         ], [
@@ -112,3 +112,4 @@ class RegisteredUserController extends Controller
             ->with('success', "Usuario '{$user->name}' creado exitosamente. Se ha enviado un correo con las credenciales de acceso.");
     }
 }
+
