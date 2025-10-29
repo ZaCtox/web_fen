@@ -1,6 +1,17 @@
-# 🧪 CÓMO TESTEAR LA API - GUÍA PASO A PASO
+# 🧪 CÓMO TESTEAR LA API - GUÍA PASO A PASO (ACTUALIZADA)
+
+## 📅 Diciembre 2024 - Roles y Endpoints Actualizados
 
 ## 📋 Guía Completa para Verificar que TODO Funciona
+
+---
+
+## ⚠️ **CAMBIOS IMPORTANTES**
+- ❌ **Rol `administrador` eliminado** - Ya no existe
+- ❌ **Rol `visor` eliminado** - Completamente removido
+- ✅ **Nuevos roles**: `director_administrativo`, `decano`, `director_programa`, `asistente_programa`, `asistente_postgrado`, `docente`, `técnico`, `auxiliar`
+- ✅ **Nuevo endpoint**: `/api/analytics` para estadísticas
+- ✅ **Filtros mejorados** en todos los controladores
 
 ---
 
@@ -356,32 +367,146 @@ http://localhost:8000/api/public/courses?anio_ingreso=2024
 
 ---
 
+## 🔐 **PASO 3: Testing de Roles Actualizados**
+
+### **Test 1: Registro con Rol Válido**
+```bash
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Test Docente",
+    "email": "docente@test.com",
+    "password": "password123",
+    "password_confirmation": "password123",
+    "rol": "docente"
+  }'
+```
+
+### **Test 2: Registro con Rol Inválido (debería fallar)**
+```bash
+curl -X POST http://localhost:8000/api/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Test Admin",
+    "email": "admin@test.com",
+    "password": "password123",
+    "password_confirmation": "password123",
+    "rol": "administrador"
+  }'
+```
+
+### **Test 3: Login y Obtener Token**
+```bash
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "docente@test.com",
+    "password": "password123"
+  }'
+```
+
+### **Test 4: Intentar Crear Staff sin Permisos (debería fallar)**
+```bash
+curl -X POST http://localhost:8000/api/staff \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nombre": "Test Staff",
+    "email": "staff@test.com",
+    "cargo": "Test Cargo"
+  }'
+```
+
+---
+
+## 📊 **PASO 4: Testing de Analytics (Nuevo Endpoint)**
+
+### **Test 1: Estadísticas Generales**
+```bash
+curl -X GET http://localhost:8000/api/analytics \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+### **Test 2: Estadísticas por Período**
+```bash
+curl -X GET "http://localhost:8000/api/analytics/period-stats?anio_ingreso=2024&anio=1&trimestre=1" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+### **Respuesta Esperada:**
+```json
+{
+  "status": "success",
+  "data": {
+    "usuarios": { "total": 10, "por_rol": {...} },
+    "incidencias": { "total": 5, "por_estado": {...} },
+    "cursos": { "total": 20, "por_magister": {...} },
+    "clases": { "total": 15, "por_modalidad": {...} },
+    "reportes_diarios": { "total": 3, "este_mes": 1 },
+    "novedades": { "total": 4, "urgentes": 2 },
+    "emergencias": { "total": 1, "activas": 0 },
+    "staff": { "total": 12, "por_cargo": {...} }
+  }
+}
+```
+
+---
+
+## 🔍 **PASO 5: Testing de Filtros Mejorados**
+
+### **Cursos con Filtros Combinados**
+```bash
+curl -X GET "http://localhost:8000/api/courses?search=economia&anio_ingreso=2024&anio=1&trimestre=1" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+### **Incidencias con Filtros**
+```bash
+curl -X GET "http://localhost:8000/api/incidents?estado=pendiente&anio=2024&trimestre=1" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+### **Clases con Filtros**
+```bash
+curl -X GET "http://localhost:8000/api/clases?anio_ingreso=2024&anio=1&room_id=1" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+```
+
+---
+
 ## ✅ **SI TODO FUNCIONA**
 
 Verás:
-- ✅ Status 200
+- ✅ Status 200 para endpoints públicos
+- ✅ Status 401/403 para endpoints sin permisos
 - ✅ JSON bien formateado
-- ✅ Datos correctos
-- ✅ Filtros aplicados en meta
+- ✅ Filtros aplicados correctamente
+- ✅ Roles validados correctamente
+- ✅ Analytics funcionando
 
 ---
 
-## 💡 **TIPS**
+## 💡 **TIPS ACTUALIZADOS**
 
-1. **Usa extensiones de navegador:**
-   - JSON Viewer para Chrome
-   - JSONView para Firefox
+1. **Roles válidos para testing:**
+   - `director_administrativo` - Máximo acceso
+   - `decano` - Solo lectura
+   - `docente` - Solo calendario y clases
+   - `asistente_postgrado` - Acceso a reportes diarios
 
-2. **Usa Postman:**
-   - Más fácil para tests con token
-   - Guarda colecciones de requests
+2. **Endpoints que requieren permisos específicos:**
+   - `/api/staff` - Solo director_administrativo, decano
+   - `/api/daily-reports` - Solo asistente_postgrado, decano
+   - `/api/analytics` - Solo director_administrativo, decano, director_programa, asistente_postgrado
 
-3. **Revisa los logs:**
-   ```bash
-   php artisan tail
-   ```
+3. **Usa Postman para testing avanzado:**
+   - Guarda tokens automáticamente
+   - Prueba diferentes roles fácilmente
+   - Ve respuestas completas
 
 ---
 
-**¡Prueba estos endpoints y me dices si funcionan!** 🚀
+**¡Prueba estos endpoints actualizados y me dices si funcionan!** 🚀
+
+**Documentación completa:** `docs/API_ACTUALIZACION_COMPLETA.md`
 

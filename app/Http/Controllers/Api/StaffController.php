@@ -52,6 +52,13 @@ class StaffController extends Controller
     // Crear nuevo miembro
     public function store(StaffRequest $request)
     {
+        // Verificar permisos: solo director_administrativo y decano pueden crear
+        if (!in_array(auth()->user()->rol, ['director_administrativo', 'decano'])) {
+            return response()->json([
+                'message' => 'No tienes permisos para crear miembros del equipo',
+            ], 403);
+        }
+
         $staff = Staff::create($request->validated());
 
         return response()->json([
@@ -67,6 +74,13 @@ class StaffController extends Controller
 
         if (!$staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
+        }
+
+        // Verificar permisos: solo director_administrativo y decano pueden actualizar
+        if (!in_array(auth()->user()->rol, ['director_administrativo', 'decano'])) {
+            return response()->json([
+                'message' => 'No tienes permisos para actualizar miembros del equipo',
+            ], 403);
         }
 
         // Validación manual excluyendo el ID actual
@@ -92,6 +106,13 @@ class StaffController extends Controller
 
         if (!$staff) {
             return response()->json(['message' => 'Miembro no encontrado'], 404);
+        }
+
+        // Verificar permisos: solo director_administrativo y decano pueden eliminar
+        if (!in_array(auth()->user()->rol, ['director_administrativo', 'decano'])) {
+            return response()->json([
+                'message' => 'No tienes permisos para eliminar miembros del equipo',
+            ], 403);
         }
 
         $staff->delete();

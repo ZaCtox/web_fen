@@ -16,7 +16,8 @@
 
 ### 🔧 **Documentación Técnica Principal**
 - [`PLATAFORMA_WEB_COMPLETA.md`](./PLATAFORMA_WEB_COMPLETA.md) - Documentación completa de la plataforma web
-- [`API_PUBLICA_COMPLETA.md`](./API_PUBLICA_COMPLETA.md) - Documentación completa de la API pública
+- [`API_DOCUMENTACION_COMPLETA.md`](./API_DOCUMENTACION_COMPLETA.md) - **📚 DOCUMENTACIÓN COMPLETA DE LA API** (Actualizada Diciembre 2024)
+- [`API_PUBLICA_COMPLETA.md`](./API_PUBLICA_COMPLETA.md) - Documentación de endpoints públicos
 - [`SISTEMA_ANALYTICS.md`](./SISTEMA_ANALYTICS.md) - Sistema de analytics y estadísticas
 
 ### 🚀 **Instalación y Despliegue**
@@ -24,10 +25,8 @@
 
 ### 🧪 **Testing y Desarrollo**
 - [`GUIA_TESTING_COMPLETA.md`](./GUIA_TESTING_COMPLETA.md) - Guía completa de testing
-- [`GUIA_TESTING_API.md`](./GUIA_TESTING_API.md) - Guía específica para testing de API
-- [`COMO_TESTEAR_LA_API.md`](./COMO_TESTEAR_LA_API.md) - Instrucciones paso a paso
-- [`TESTING_MANUAL_RAPIDO.md`](./TESTING_MANUAL_RAPIDO.md) - Testing manual rápido
-- [`GUIA_LOGIN_API.md`](./GUIA_LOGIN_API.md) - Guía de autenticación API
+- [`GUIA_TESTING_API.md`](./GUIA_TESTING_API.md) - Guía específica para testing de API (Actualizada)
+- [`COMO_TESTEAR_LA_API.md`](./COMO_TESTEAR_LA_API.md) - Instrucciones paso a paso (Actualizada)
 
 ### ⚡ **Features Principales**
 - [`features/IMPLEMENTACION_HCI_COMPLETA.md`](./features/IMPLEMENTACION_HCI_COMPLETA.md) - Implementación de principios HCI

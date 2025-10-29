@@ -1,6 +1,14 @@
-# 🌐 API Pública Completa - Web FEN
+# 🌐 API Completa - Web FEN (Actualizada)
 
-## 📅 Fecha: 15 de Octubre 2025
+## 📅 Fecha: Diciembre 2024
+## 🔄 Última actualización: Cambios de roles y nuevos endpoints
+
+## ⚠️ **CAMBIOS IMPORTANTES**
+- ❌ **Rol `administrador` eliminado** - Ya no existe
+- ❌ **Rol `visor` eliminado** - Completamente removido
+- ✅ **Nuevos roles**: `director_administrativo`, `decano`, `director_programa`, `asistente_programa`, `asistente_postgrado`, `docente`, `técnico`, `auxiliar`
+- ✅ **Nuevo endpoint**: `/api/analytics` para estadísticas
+- ✅ **Filtros mejorados** en todos los controladores
 
 ## ✅ RUTAS PÚBLICAS (Sin Autenticación)
 
@@ -403,4 +411,162 @@ api.getAdminDashboard()
 **Rutas públicas:** 14 endpoints
 **Informes públicos:** ✅ Sí (listar, ver, descargar)
 **Novedades públicas:** ✅ Sí (activas, detalle)
+
+---
+
+## 🔐 **ENDPOINTS PROTEGIDOS (Con Autenticación)**
+
+### **Autenticación**
+```http
+POST /api/register
+POST /api/login
+GET  /api/user
+POST /api/logout
+```
+
+### **Usuarios** (Solo director_administrativo, decano)
+```http
+GET    /api/users
+POST   /api/users
+GET    /api/users/{id}
+PUT    /api/users/{id}
+DELETE /api/users/{id}
+GET    /api/users-statistics
+```
+
+### **Staff** (CRUD: director_administrativo, decano | Ver: todos)
+```http
+GET    /api/staff
+POST   /api/staff
+GET    /api/staff/{id}
+PUT    /api/staff/{id}
+DELETE /api/staff/{id}
+```
+
+### **Cursos** (Con filtros mejorados)
+```http
+GET    /api/courses?search=nombre&magister_id=1&anio_ingreso=2024&anio=1&trimestre=1
+POST   /api/courses
+GET    /api/courses/{id}
+PUT    /api/courses/{id}
+DELETE /api/courses/{id}
+```
+
+### **Daily Reports** (Solo asistente_postgrado, decano)
+```http
+GET    /api/daily-reports
+POST   /api/daily-reports
+GET    /api/daily-reports/{id}
+PUT    /api/daily-reports/{id}
+DELETE /api/daily-reports/{id}
+GET    /api/daily-reports/{id}/download-pdf
+GET    /api/daily-reports-statistics
+GET    /api/daily-reports-resources
+```
+
+### **Novedades** (Solo director_administrativo, decano, asistente_postgrado)
+```http
+GET    /api/novedades
+POST   /api/novedades
+GET    /api/novedades/{id}
+PUT    /api/novedades/{id}
+DELETE /api/novedades/{id}
+GET    /api/novedades-statistics
+GET    /api/novedades-resources
+```
+
+### **Analytics** (Solo director_administrativo, decano, director_programa, asistente_postgrado)
+```http
+GET    /api/analytics
+GET    /api/analytics/period-stats?anio_ingreso=2024&anio=1&trimestre=1
+```
+
+### **Otros Endpoints Protegidos**
+```http
+# Incidencias
+GET    /api/incidents
+POST   /api/incidents
+GET    /api/incidents/{id}
+PUT    /api/incidents/{id}
+DELETE /api/incidents/{id}
+GET    /api/incidents-statistics
+
+# Clases
+GET    /api/clases
+POST   /api/clases
+GET    /api/clases/{id}
+PUT    /api/clases/{id}
+DELETE /api/clases/{id}
+
+# Salas
+GET    /api/rooms
+POST   /api/rooms
+GET    /api/rooms/{id}
+PUT    /api/rooms/{id}
+DELETE /api/rooms/{id}
+
+# Períodos
+GET    /api/periods
+POST   /api/periods
+GET    /api/periods/{id}
+PUT    /api/periods/{id}
+DELETE /api/periods/{id}
+
+# Emergencias
+GET    /api/emergencies
+POST   /api/emergencies
+PUT    /api/emergencies/{id}
+DELETE /api/emergencies/{id}
+PATCH  /api/emergencies/{id}/deactivate
+```
+
+---
+
+## 🎯 **ROLES Y PERMISOS**
+
+| **Rol** | **Descripción** | **Permisos Especiales** |
+|---------|----------------|-------------------------|
+| `director_administrativo` | Máximo nivel | Acceso total al sistema |
+| `decano` | Solo lectura | Acceso a reportes diarios |
+| `director_programa` | Gestión académica | Solo lectura en "Nuestro Equipo" |
+| `asistente_programa` | Apoyo académico | Gestión de salas y soporte |
+| `asistente_postgrado` | Soporte | Acceso exclusivo a reportes diarios |
+| `docente` | Enseñanza | Solo calendario y clases |
+| `técnico` | Soporte técnico | Solo incidencias |
+| `auxiliar` | Apoyo básico | Solo incidencias |
+
+---
+
+## 📊 **FILTROS DISPONIBLES**
+
+### **Cursos**
+- `search` - Búsqueda por nombre
+- `magister_id` - Filtrar por magíster
+- `period_id` - Filtrar por período
+- `anio_ingreso` - Filtrar por año de ingreso
+- `anio` - Filtrar por año del período
+- `trimestre` - Filtrar por trimestre
+
+### **Incidencias**
+- `search` - Búsqueda por título/descripción
+- `estado` - Filtrar por estado
+- `room_id` - Filtrar por sala
+- `anio` - Filtrar por año
+- `trimestre` - Filtrar por trimestre
+- `anio_ingreso` - Filtrar por año de ingreso
+
+### **Clases**
+- `anio_ingreso` - Filtrar por año de ingreso
+- `anio` - Filtrar por año del período
+- `trimestre` - Filtrar por trimestre
+- `magister` - Filtrar por magíster
+- `room_id` - Filtrar por sala
+
+---
+
+**Estado:** ✅ COMPLETADO Y ACTUALIZADO
+**Rutas públicas:** 14 endpoints
+**Rutas protegidas:** 50+ endpoints
+**Roles actualizados:** ✅ Sí
+**Filtros mejorados:** ✅ Sí
 

@@ -72,7 +72,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'rol' => 'required|string|in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado',
+            'rol' => 'required|string|in:director_administrativo,director_programa,asistente_programa,asistente_postgrado,docente,técnico,auxiliar,decano',
             'avatar_color' => 'nullable|string|max:6',
         ]);
 
@@ -124,7 +124,7 @@ class UserController extends Controller
                 Rule::unique('users')->ignore($user->id)
             ],
             'password' => 'sometimes|nullable|string|min:8|confirmed',
-            'rol' => 'sometimes|required|string|in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado',
+            'rol' => 'sometimes|required|string|in:director_administrativo,director_programa,asistente_programa,asistente_postgrado,docente,técnico,auxiliar,decano',
             'avatar_color' => 'sometimes|nullable|string|max:6',
         ]);
 
@@ -166,13 +166,13 @@ class UserController extends Controller
             ], 404);
         }
 
-        // No permitir eliminar el último administrador
-        if ($user->rol === 'administrador') {
-            $adminCount = User::where('rol', 'administrador')->count();
+        // No permitir eliminar el último director administrativo
+        if ($user->rol === 'director_administrativo') {
+            $adminCount = User::where('rol', 'director_administrativo')->count();
             if ($adminCount <= 1) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No se puede eliminar el último administrador del sistema'
+                    'message' => 'No se puede eliminar el último director administrativo del sistema'
                 ], 400);
             }
         }

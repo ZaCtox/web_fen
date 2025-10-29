@@ -16,10 +16,41 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         try {
-            $perPage = $request->get('per_page', 30);
+            $query = Course::with(['magister', 'period']);
+            
+            // Filtros opcionales
+            if ($request->filled('search')) {
+                $query->where('nombre', 'like', '%' . $request->search . '%');
+            }
+            
+            if ($request->filled('magister_id')) {
+                $query->where('magister_id', $request->magister_id);
+            }
+            
+            if ($request->filled('period_id')) {
+                $query->where('period_id', $request->period_id);
+            }
+            
+            if ($request->filled('anio_ingreso')) {
+                $query->whereHas('period', function($q) use ($request) {
+                    $q->where('anio_ingreso', $request->anio_ingreso);
+                });
+            }
+            
+            if ($request->filled('anio')) {
+                $query->whereHas('period', function($q) use ($request) {
+                    $q->where('anio', $request->anio);
+                });
+            }
+            
+            if ($request->filled('trimestre')) {
+                $query->whereHas('period', function($q) use ($request) {
+                    $q->where('numero', $request->trimestre);
+                });
+            }
 
-            $courses = Course::with(['magister', 'period'])
-                ->orderBy('magister_id')
+            $perPage = $request->get('per_page', 30);
+            $courses = $query->orderBy('magister_id')
                 ->orderBy('nombre')
                 ->paginate($perPage);
 

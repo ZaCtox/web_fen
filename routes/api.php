@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClaseController;
@@ -16,10 +17,6 @@ use App\Http\Controllers\Api\PeriodController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\StaffController;
-use App\Models\Period;
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Route;
 
 // 🌐 PREFIJO API + NOMBRE DE RUTAS
 Route::name('api.')->group(function () {
@@ -130,11 +127,11 @@ Route::name('api.')->group(function () {
         Route::get('/profile', [AuthController::class, 'user'])->name('user.profile');
 
         // ADMIN
-        // ADMIN - Solo administradores y directores administrativos
-        Route::middleware('role.api:administrador,director_administrativo')->group(function () {
+        // ADMIN - Solo directores administrativos y decanos
+        Route::middleware('role.api:director_administrativo,decano')->group(function () {
             Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
-            // Gestión de usuarios (solo administradores)
+            // Gestión de usuarios (solo directores administrativos y decanos)
             Route::apiResource('users', UserController::class)->names([
                 'index' => 'users.index',
                 'store' => 'users.store',
@@ -217,19 +214,21 @@ Route::name('api.')->group(function () {
             'destroy' => 'courses.destroy',
         ]);
 
-        // Daily Reports API
-        Route::apiResource('daily-reports', DailyReportController::class)->names([
-            'index' => 'daily-reports.index',
-            'store' => 'daily-reports.store',
-            'show' => 'daily-reports.show',
-            'update' => 'daily-reports.update',
-            'destroy' => 'daily-reports.destroy',
-        ]);
+        // Daily Reports API - Solo asistente_postgrado y decano
+        Route::middleware('role.api:asistente_postgrado,decano')->group(function () {
+            Route::apiResource('daily-reports', DailyReportController::class)->names([
+                'index' => 'daily-reports.index',
+                'store' => 'daily-reports.store',
+                'show' => 'daily-reports.show',
+                'update' => 'daily-reports.update',
+                'destroy' => 'daily-reports.destroy',
+            ]);
 
-        // Rutas adicionales para Daily Reports
-        Route::get('daily-reports/{dailyReport}/download-pdf', [DailyReportController::class, 'downloadPdf'])->name('daily-reports.download-pdf');
-        Route::get('daily-reports-statistics', [DailyReportController::class, 'statistics'])->name('daily-reports.statistics');
-        Route::get('daily-reports-resources', [DailyReportController::class, 'resources'])->name('daily-reports.resources');
+            // Rutas adicionales para Daily Reports
+            Route::get('daily-reports/{dailyReport}/download-pdf', [DailyReportController::class, 'downloadPdf'])->name('daily-reports.download-pdf');
+            Route::get('daily-reports-statistics', [DailyReportController::class, 'statistics'])->name('daily-reports.statistics');
+            Route::get('daily-reports-resources', [DailyReportController::class, 'resources'])->name('daily-reports.resources');
+        });
 
         // Informes/Archivos API
         Route::apiResource('informes', InformeController::class)->names([
@@ -245,18 +244,20 @@ Route::name('api.')->group(function () {
         Route::get('informes-statistics', [InformeController::class, 'statistics'])->name('informes.statistics');
         Route::get('informes-resources', [InformeController::class, 'resources'])->name('informes.resources');
 
-        // Novedades API
-        Route::apiResource('novedades', NovedadController::class)->names([
-            'index' => 'novedades.index',
-            'store' => 'novedades.store',
-            'show' => 'novedades.show',
-            'update' => 'novedades.update',
-            'destroy' => 'novedades.destroy',
-        ]);
+        // Novedades API - Solo director_administrativo, decano, asistente_postgrado
+        Route::middleware('role.api:director_administrativo,decano,asistente_postgrado')->group(function () {
+            Route::apiResource('novedades', NovedadController::class)->names([
+                'index' => 'novedades.index',
+                'store' => 'novedades.store',
+                'show' => 'novedades.show',
+                'update' => 'novedades.update',
+                'destroy' => 'novedades.destroy',
+            ]);
 
-        // Rutas adicionales para Novedades
-        Route::get('novedades-statistics', [NovedadController::class, 'statistics'])->name('novedades.statistics');
-        Route::get('novedades-resources', [NovedadController::class, 'resources'])->name('novedades.resources');
+            // Rutas adicionales para Novedades
+            Route::get('novedades-statistics', [NovedadController::class, 'statistics'])->name('novedades.statistics');
+            Route::get('novedades-resources', [NovedadController::class, 'resources'])->name('novedades.resources');
+        });
 
         Route::apiResource('clases', ClaseController::class)->names([
             'index' => 'clases.index',
@@ -278,6 +279,12 @@ Route::name('api.')->group(function () {
         Route::put('/emergencies/{id}', [EmergencyController::class, 'update'])->name('emergencies.update');
         Route::delete('/emergencies/{id}', [EmergencyController::class, 'destroy'])->name('emergencies.destroy');
         Route::patch('/emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])->name('emergencies.deactivate');
+
+        // 📊 ANALYTICS/ESTADÍSTICAS - Solo director_administrativo, decano, director_programa, asistente_postgrado
+        Route::middleware('role.api:director_administrativo,decano,director_programa,asistente_postgrado')->group(function () {
+            Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+            Route::get('/analytics/period-stats', [AnalyticsController::class, 'periodStats'])->name('analytics.period-stats');
+        });
     });
 
 });
