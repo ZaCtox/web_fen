@@ -67,9 +67,11 @@ class MagisterController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            'color' => 'nullable|string',
+            'color' => 'nullable|string|max:7',
             'encargado' => 'nullable|string|max:255',
-            'telefono' => 'nullable|string|max:20',
+            'asistente' => 'nullable|string|max:255',  // ← AÑADIDO
+            'telefono' => 'required|string|max:20',
+            'anexo' => 'nullable|string|max:50',       // ← AÑADIDO
             'correo' => 'nullable|email|max:255',
         ]);
 
@@ -91,9 +93,11 @@ class MagisterController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
-            'color' => 'nullable|string',
+            'color' => 'nullable|string|max:7',
             'encargado' => 'nullable|string|max:255',
+            'asistente' => 'nullable|string|max:255',  // ← AÑADIDO
             'telefono' => 'nullable|string|max:20',
+            'anexo' => 'nullable|string|max:50',       // ← AÑADIDO
             'correo' => 'nullable|email|max:255',
         ]);
 
@@ -188,5 +192,3 @@ class MagisterController extends Controller
         }
     }
 }
-
-
