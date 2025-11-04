@@ -1,22 +1,22 @@
 <?php
 
-use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClaseController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\DailyReportController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\InformeController;
-use App\Http\Controllers\Api\NovedadController;
 use App\Http\Controllers\Api\EmergencyController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\IncidentController;
+use App\Http\Controllers\Api\InformeController;
 use App\Http\Controllers\Api\MagisterController;
+use App\Http\Controllers\Api\NovedadController;
 use App\Http\Controllers\Api\PeriodController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\StaffController;
+use App\Http\Controllers\Api\UserController;
 
 // 🌐 PREFIJO API + NOMBRE DE RUTAS
 Route::name('api.')->group(function () {
@@ -73,12 +73,12 @@ Route::name('api.')->group(function () {
 
         $periodo = Period::where('anio', $anio)
             ->where('numero', $trimestre)
-            ->when($anioIngreso, fn($q) => $q->where('anio_ingreso', $anioIngreso))
+            ->when($anioIngreso, fn ($q) => $q->where('anio_ingreso', $anioIngreso))
             ->first();
 
         return response()->json([
             'fecha_inicio' => $periodo?->fecha_inicio?->toDateString(),
-            'periodo' => $periodo
+            'periodo' => $periodo,
         ]);
     })->name('periodo-fecha-inicio');
 
@@ -107,7 +107,7 @@ Route::name('api.')->group(function () {
         Route::get('informes/{id}/download', [InformeController::class, 'publicDownload']);
     });
 
-    //Emergencias
+    // Emergencias
     Route::get('/emergencies/active', [EmergencyController::class, 'active'])->name('emergencies.active');
 
     // �� AUTENTICACIÓN
@@ -266,6 +266,12 @@ Route::name('api.')->group(function () {
             'update' => 'clases.update',
             'destroy' => 'clases.destroy',
         ]);
+
+        // 🔹 RUTAS ADICIONALES PARA CLASES
+        Route::get('clases-resources', [ClaseController::class, 'resources'])->name('clases.resources');
+        Route::get('salas/disponibilidad', [ClaseController::class, 'disponibilidad'])->name('salas.disponibilidad');
+        Route::get('salas/horarios', [ClaseController::class, 'horarios'])->name('salas.horarios');
+        Route::get('salas/disponibles', [ClaseController::class, 'salasDisponibles'])->name('salas.disponibles');
 
         // 🔹 EVENTOS
         Route::get('/events', [EventController::class, 'index'])->name('events.index');
