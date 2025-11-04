@@ -23,7 +23,7 @@
                     </a>
 
                     {{-- Acciones: Editar + Eliminar --}}
-                    @if(false)
+                    @if(tieneRol('director_administrativo'))
                     <div class="flex gap-2">
                         {{-- Editar --}}
                         <a href="{{ route('clases.edit', $clase) }}"

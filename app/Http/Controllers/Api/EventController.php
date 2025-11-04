@@ -12,14 +12,6 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
-    private function authorizeAccess()
-    {
-        $user = auth()->user();
-        if (!$user || !in_array($user->rol, ['docente', 'administrativo', 'administrador'])) {
-            abort(403, 'Acceso no autorizado.');
-        }
-    }
-
     /**
      * Listar eventos (manuales y generados por clases) con paginación y límites.
      */
@@ -131,8 +123,6 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorizeAccess();
-
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -162,8 +152,6 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
-        $this->authorizeAccess();
-
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string',
@@ -196,8 +184,6 @@ class EventController extends Controller
      */
     public function destroy(Event $event)
     {
-        $this->authorizeAccess();
-
         $event->delete();
 
         return response()->json([

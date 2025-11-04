@@ -168,7 +168,8 @@
 
                         {{-- Acciones --}}
                         <div class="flex flex-col sm:flex-row sm:justify-end sm:items-center gap-2">
-                            @if(false)
+                            @if(tieneRol('director_administrativo'))
+                            @if(tieneRol('director_administrativo'))
                             <div class="flex gap-3">
                                 {{-- Botón Editar --}}
                                 <a href="{{ route('magisters.edit', $magister) }}"

@@ -205,7 +205,7 @@
                     <div class="hci-card-body px-6 py-4">
                         @php
                             $user = Auth::user();
-                            $rolesPermitidos = ['administrador', 'director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
+                            $rolesPermitidos = ['director_administrativo', 'técnico', 'auxiliar', 'asistente_postgrado'];
                             $puedeModificar = in_array($user->rol, $rolesPermitidos);
                         @endphp
                         

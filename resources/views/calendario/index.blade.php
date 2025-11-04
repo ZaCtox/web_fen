@@ -27,7 +27,7 @@
     </div>
 
     {{-- Modales --}}
-    @if(false)
+    @if(tieneRol('director_administrativo'))
     @include('calendario.modal-crear')
     @endif
     @include('calendario.modal-ver')

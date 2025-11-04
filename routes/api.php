@@ -110,7 +110,7 @@ Route::name('api.')->group(function () {
     // Emergencias
     Route::get('/emergencies/active', [EmergencyController::class, 'active'])->name('emergencies.active');
 
-    // �� AUTENTICACIÓN
+    // 🔐 AUTENTICACIÓN
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 
@@ -126,12 +126,11 @@ Route::name('api.')->group(function () {
 
         Route::get('/profile', [AuthController::class, 'user'])->name('user.profile');
 
-        // ADMIN
-        // ADMIN - Solo directores administrativos y decanos
+        // ===== ADMIN - Solo director_administrativo y decano =====
         Route::middleware('role.api:director_administrativo,decano')->group(function () {
             Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
-            // Gestión de usuarios (solo directores administrativos y decanos)
+            // Gestión de usuarios
             Route::apiResource('users', UserController::class)->names([
                 'index' => 'users.index',
                 'store' => 'users.store',
@@ -141,8 +140,6 @@ Route::name('api.')->group(function () {
             ]);
             Route::get('users-statistics', [UserController::class, 'statistics'])->name('users.statistics');
         });
-
-        // USUARIO
 
         // 🔹 RUTAS ESPECÍFICAS DE PERÍODOS (ANTES DEL APIRESOURCE)
         Route::put('/periods/update-to-next-year', [PeriodController::class, 'actualizarAlProximoAnio'])->name('periods.updateToNextYear');
@@ -161,58 +158,62 @@ Route::name('api.')->group(function () {
         Route::get('courses/magisters-list', [CourseController::class, 'magistersOnly']);
         Route::get('courses/magisters/{id}/courses', [CourseController::class, 'magisterCourses']);
 
-        // �� RECURSOS API CON NOMBRES ÚNICOS
-        Route::apiResource('staff', StaffController::class)->names([
-            'index' => 'staff.index',
-            'store' => 'staff.store',
-            'show' => 'staff.show',
-            'update' => 'staff.update',
-            'destroy' => 'staff.destroy',
-        ]);
+        // ===== RECURSOS API CON CONTROL DE ROLES =====
+        
+        // Staff/Nuestro Equipo - Todos ven, solo director_administrativo y decano pueden crear/editar/eliminar
+        Route::get('staff', [StaffController::class, 'index'])->name('staff.index');
+        Route::get('staff/{staff}', [StaffController::class, 'show'])->name('staff.show');
+        Route::middleware('role.api:director_administrativo,decano')->group(function () {
+            Route::post('staff', [StaffController::class, 'store'])->name('staff.store');
+            Route::put('staff/{staff}', [StaffController::class, 'update'])->name('staff.update');
+            Route::delete('staff/{staff}', [StaffController::class, 'destroy'])->name('staff.destroy');
+        });
 
-        Route::apiResource('rooms', RoomController::class)->names([
-            'index' => 'rooms.index',
-            'store' => 'rooms.store',
-            'show' => 'rooms.show',
-            'update' => 'rooms.update',
-            'destroy' => 'rooms.destroy',
-        ]);
+        // Rooms/Salas - Todos ven, solo director_administrativo, asistente_programa y decano pueden crear/editar/eliminar
+        Route::get('rooms', [RoomController::class, 'index'])->name('rooms.index');
+        Route::get('rooms/{room}', [RoomController::class, 'show'])->name('rooms.show');
+        Route::middleware('role.api:director_administrativo,asistente_programa,decano')->group(function () {
+            Route::post('rooms', [RoomController::class, 'store'])->name('rooms.store');
+            Route::put('rooms/{room}', [RoomController::class, 'update'])->name('rooms.update');
+            Route::delete('rooms/{room}', [RoomController::class, 'destroy'])->name('rooms.destroy');
+        });
 
-        // ⚠️ ESTA RUTA DEBE IR DESPUÉS DE LAS RUTAS ESPECÍFICAS
-        Route::apiResource('periods', PeriodController::class)->names([
-            'index' => 'periods.index',
-            'store' => 'periods.store',
-            'show' => 'periods.show',
-            'update' => 'periods.update',
-            'destroy' => 'periods.destroy',
-        ]);
+        // Periods/Períodos - Todos ven, solo director_administrativo y decano pueden crear/editar/eliminar
+        Route::get('periods', [PeriodController::class, 'index'])->name('periods.index');
+        Route::get('periods/{period}', [PeriodController::class, 'show'])->name('periods.show');
+        Route::middleware('role.api:director_administrativo,decano')->group(function () {
+            Route::post('periods', [PeriodController::class, 'store'])->name('periods.store');
+            Route::put('periods/{period}', [PeriodController::class, 'update'])->name('periods.update');
+            Route::delete('periods/{period}', [PeriodController::class, 'destroy'])->name('periods.destroy');
+        });
 
-        Route::apiResource('magisters', MagisterController::class)->names([
-            'index' => 'magisters.index',
-            'store' => 'magisters.store',
-            'show' => 'magisters.show',
-            'update' => 'magisters.update',
-            'destroy' => 'magisters.destroy',
-        ]);
+        // Magisters/Programas - Todos ven, solo director_administrativo y decano pueden crear/editar/eliminar
+        Route::get('magisters', [MagisterController::class, 'index'])->name('magisters.index');
+        Route::get('magisters/{magister}', [MagisterController::class, 'show'])->name('magisters.show');
+        Route::middleware('role.api:director_administrativo,decano')->group(function () {
+            Route::post('magisters', [MagisterController::class, 'store'])->name('magisters.store');
+            Route::put('magisters/{magister}', [MagisterController::class, 'update'])->name('magisters.update');
+            Route::delete('magisters/{magister}', [MagisterController::class, 'destroy'])->name('magisters.destroy');
+        });
 
-        Route::apiResource('incidents', IncidentController::class)->names([
-            'index' => 'incidents.index',
-            'store' => 'incidents.store',
-            'show' => 'incidents.show',
-            'update' => 'incidents.update',
-            'destroy' => 'incidents.destroy',
-        ]);
-
-        // Rutas adicionales para Incidents
+        // Incidents/Incidencias - Todos ven, varios roles pueden crear/modificar
+        Route::get('incidents', [IncidentController::class, 'index'])->name('incidents.index');
+        Route::get('incidents/{incident}', [IncidentController::class, 'show'])->name('incidents.show');
         Route::get('incidents-statistics', [IncidentController::class, 'estadisticas'])->name('incidents.statistics');
+        Route::middleware('role.api:director_administrativo,director_programa,asistente_programa,técnico,auxiliar,decano,asistente_postgrado')->group(function () {
+            Route::post('incidents', [IncidentController::class, 'store'])->name('incidents.store');
+            Route::put('incidents/{incident}', [IncidentController::class, 'update'])->name('incidents.update');
+            Route::delete('incidents/{incident}', [IncidentController::class, 'destroy'])->name('incidents.destroy');
+        });
 
-        Route::apiResource('courses', CourseController::class)->names([
-            'index' => 'courses.index',
-            'store' => 'courses.store',
-            'show' => 'courses.show',
-            'update' => 'courses.update',
-            'destroy' => 'courses.destroy',
-        ]);
+        // Courses/Módulos - Todos ven, solo director_administrativo, director_programa, asistente_programa y decano pueden crear/editar/eliminar
+        Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
+        Route::get('courses/{course}', [CourseController::class, 'show'])->name('courses.show');
+        Route::middleware('role.api:director_administrativo,director_programa,asistente_programa,decano')->group(function () {
+            Route::post('courses', [CourseController::class, 'store'])->name('courses.store');
+            Route::put('courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+            Route::delete('courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+        });
 
         // Daily Reports API - Solo asistente_postgrado y decano
         Route::middleware('role.api:asistente_postgrado,decano')->group(function () {
@@ -230,19 +231,17 @@ Route::name('api.')->group(function () {
             Route::get('daily-reports-resources', [DailyReportController::class, 'resources'])->name('daily-reports.resources');
         });
 
-        // Informes/Archivos API
-        Route::apiResource('informes', InformeController::class)->names([
-            'index' => 'informes.index',
-            'store' => 'informes.store',
-            'show' => 'informes.show',
-            'update' => 'informes.update',
-            'destroy' => 'informes.destroy',
-        ]);
-
-        // Rutas adicionales para Informes
+        // Informes/Archivos - Todos ven, solo director_administrativo, director_programa, asistente_programa, decano, asistente_postgrado pueden crear/editar/eliminar
+        Route::get('informes', [InformeController::class, 'index'])->name('informes.index');
+        Route::get('informes/{informe}', [InformeController::class, 'show'])->name('informes.show');
         Route::get('informes/{informe}/download', [InformeController::class, 'download'])->name('informes.download');
         Route::get('informes-statistics', [InformeController::class, 'statistics'])->name('informes.statistics');
         Route::get('informes-resources', [InformeController::class, 'resources'])->name('informes.resources');
+        Route::middleware('role.api:director_administrativo,director_programa,asistente_programa,decano,asistente_postgrado')->group(function () {
+            Route::post('informes', [InformeController::class, 'store'])->name('informes.store');
+            Route::put('informes/{informe}', [InformeController::class, 'update'])->name('informes.update');
+            Route::delete('informes/{informe}', [InformeController::class, 'destroy'])->name('informes.destroy');
+        });
 
         // Novedades API - Solo director_administrativo, decano, asistente_postgrado
         Route::middleware('role.api:director_administrativo,decano,asistente_postgrado')->group(function () {
@@ -259,32 +258,36 @@ Route::name('api.')->group(function () {
             Route::get('novedades-resources', [NovedadController::class, 'resources'])->name('novedades.resources');
         });
 
-        Route::apiResource('clases', ClaseController::class)->names([
-            'index' => 'clases.index',
-            'store' => 'clases.store',
-            'show' => 'clases.show',
-            'update' => 'clases.update',
-            'destroy' => 'clases.destroy',
-        ]);
-
-        // 🔹 RUTAS ADICIONALES PARA CLASES
+        // Clases - Todos ven, director_administrativo, director_programa, asistente_programa, decano, asistente_postgrado pueden crear/editar/eliminar
+        Route::get('clases', [ClaseController::class, 'index'])->name('clases.index');
+        Route::get('clases/{clase}', [ClaseController::class, 'show'])->name('clases.show');
         Route::get('clases-resources', [ClaseController::class, 'resources'])->name('clases.resources');
         Route::get('salas/disponibilidad', [ClaseController::class, 'disponibilidad'])->name('salas.disponibilidad');
         Route::get('salas/horarios', [ClaseController::class, 'horarios'])->name('salas.horarios');
         Route::get('salas/disponibles', [ClaseController::class, 'salasDisponibles'])->name('salas.disponibles');
+        Route::middleware('role.api:director_administrativo,director_programa,asistente_programa,decano,asistente_postgrado')->group(function () {
+            Route::post('clases', [ClaseController::class, 'store'])->name('clases.store');
+            Route::put('clases/{clase}', [ClaseController::class, 'update'])->name('clases.update');
+            Route::delete('clases/{clase}', [ClaseController::class, 'destroy'])->name('clases.destroy');
+        });
 
-        // 🔹 EVENTOS
+        // Events/Eventos - Todos ven, director_administrativo, director_programa, asistente_programa, decano, asistente_postgrado, docente pueden crear/editar/eliminar
         Route::get('/events', [EventController::class, 'index'])->name('events.index');
-        Route::post('/events', [EventController::class, 'store'])->name('events.store');
-        Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
-        Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
         Route::get('/calendario', [EventController::class, 'calendario'])->name('calendario.mobile');
-        // 🔹 EMERGENCIAS
+        Route::middleware('role.api:director_administrativo,director_programa,asistente_programa,decano,asistente_postgrado,docente')->group(function () {
+            Route::post('/events', [EventController::class, 'store'])->name('events.store');
+            Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+            Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+        });
+
+        // Emergencies/Emergencias - Todos ven, director_administrativo, director_programa, asistente_programa, decano, asistente_postgrado pueden crear/editar/eliminar
         Route::get('/emergencies', [EmergencyController::class, 'index'])->name('emergencies.index');
-        Route::post('/emergencies', [EmergencyController::class, 'store'])->name('emergencies.store');
-        Route::put('/emergencies/{id}', [EmergencyController::class, 'update'])->name('emergencies.update');
-        Route::delete('/emergencies/{id}', [EmergencyController::class, 'destroy'])->name('emergencies.destroy');
-        Route::patch('/emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])->name('emergencies.deactivate');
+        Route::middleware('role.api:director_administrativo,director_programa,asistente_programa,decano,asistente_postgrado')->group(function () {
+            Route::post('/emergencies', [EmergencyController::class, 'store'])->name('emergencies.store');
+            Route::put('/emergencies/{id}', [EmergencyController::class, 'update'])->name('emergencies.update');
+            Route::delete('/emergencies/{id}', [EmergencyController::class, 'destroy'])->name('emergencies.destroy');
+            Route::patch('/emergencies/{id}/deactivate', [EmergencyController::class, 'deactivate'])->name('emergencies.deactivate');
+        });
 
         // 📊 ANALYTICS/ESTADÍSTICAS - Solo director_administrativo, decano, director_programa, asistente_postgrado
         Route::middleware('role.api:director_administrativo,decano,director_programa,asistente_postgrado')->group(function () {

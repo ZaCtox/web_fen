@@ -45,7 +45,7 @@
 
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-            @if(!tieneRol(['director_programa']))
+            @if(tieneRol(['director_administrativo','decano']))
             <a href="{{ route('staff.create') }}"
                 class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                 aria-label="Agregar nuevo miembro del equipo">

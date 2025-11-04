@@ -31,7 +31,7 @@
 
         <!-- Controles -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-            @if(false)
+            @if(tieneRol(['director_administrativo','decano','asistente_postgrado']))
             <a href="{{ route('novedades.create') }}"
                 class="inline-flex items-center justify-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-6 py-3 rounded-lg shadow-md transition-all duration-200 font-semibold text-sm hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 hci-button-ripple hci-glow"
                 aria-label="Crear nueva novedad">
@@ -175,7 +175,7 @@
                             </div>
 
                             {{-- Botones de Administración --}}
-                            @if(false)
+                            @if(tieneRol(['director_administrativo','decano','asistente_postgrado']))
                             <div class="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700 mt-auto" onclick="event.stopPropagation()">
                                 {{-- Editar --}}
                                 <a href="{{ route('novedades.edit', $novedad) }}"

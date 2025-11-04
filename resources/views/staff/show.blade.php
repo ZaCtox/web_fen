@@ -33,7 +33,7 @@
                 </a>
                 
                 <!-- Acciones principales -->
-                @if(!tieneRol(['director_programa']))
+                @if(tieneRol(['director_administrativo','decano']))
                 <div class="flex gap-3">
                     <a href="{{ route('staff.edit', $staff) }}" 
                        class="inline-flex items-center gap-2 px-4 py-2 bg-[#84b6f4] hover:bg-[#4d82bc] text-white rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-semibold"
@@ -72,7 +72,7 @@
             </div>
 
             {{-- Botón para eliminar foto (solo si tiene foto) --}}
-            @if($staff->foto && !tieneRol(['director_programa']))
+            @if($staff->foto && tieneRol(['director_administrativo','decano']))
                 <div class="flex justify-center pb-4">
                     <form action="{{ route('staff.delete-foto', $staff) }}" method="POST" id="delete-foto-form-show">
                         @csrf
