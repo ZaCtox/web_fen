@@ -24,7 +24,7 @@
                 </a>
 
                 {{-- Botones de acción --}}
-                @if(tieneRol('director_administrativo'))
+                @if(tieneRol(['director_administrativo', 'director_programa', 'asistente_programa', 'decano', 'asistente_postgrado']))
                 <div class="flex flex-wrap gap-2">
                     {{-- Editar --}}
                     <a href="{{ route('emergencies.edit', $emergency) }}"

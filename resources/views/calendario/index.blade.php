@@ -27,7 +27,7 @@
     </div>
 
     {{-- Modales --}}
-    @if(tieneRol('director_administrativo'))
+    @if(tieneRol(['director_administrativo', 'director_programa', 'asistente_programa', 'decano', 'asistente_postgrado', 'docente']))
     @include('calendario.modal-crear')
     @endif
     @include('calendario.modal-ver')

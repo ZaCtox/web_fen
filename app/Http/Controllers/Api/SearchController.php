@@ -46,8 +46,10 @@ class SearchController extends Controller
             ], 401);
         }
 
-        $isAdmin = $user->rol === 'administrador';
-        $canViewContent = in_array($user->rol, ['administrador', 'docente', 'administrativo']);
+        // Roles con acceso administrativo completo
+        $isAdmin = in_array($user->rol, ['director_administrativo', 'decano']);
+        // Todos los usuarios autenticados pueden buscar contenido básico
+        $canViewContent = true;
 
         // Buscar en Salas
         if ($canViewContent) {
