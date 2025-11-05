@@ -212,29 +212,33 @@ class InformeController extends Controller
      * Obtener recursos para formularios (magisters, tipos, etc.)
      */
     public function resources()
-    {
-        $magisters = Magister::select('id', 'nombre', 'color')->orderBy('nombre')->get();
-        $users = User::select('id', 'name')->orderBy('name')->get();
+{
+    $magisters = Magister::select('id', 'nombre', 'color')
+        ->orderBy('nombre')
+        ->get()
+        ->map(function($m) {
+            return [
+                'id' => $m->id,
+                'name' => $m->nombre,  // ← IMPORTANTE: 'name', no 'nombre'
+                'color' => $m->color
+            ];
+        });
+    
+    $users = User::select('id', 'name')->orderBy('name')->get();
 
-        $tipos = [
-            'Informe Académico',
-            'Reglamento',
-            'Acta',
-            'Documento Administrativo',
-            'Presentación',
-            'Otro',
-        ];
+    $tipos = [
+        'calendario',
+        'academico',
+        'administrativo',
+        'general'
+    ];
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'magisters' => $magisters,
-                'users' => $users,
-                'tipos' => $tipos,
-            ],
-            'message' => 'Recursos obtenidos exitosamente',
-        ]);
-    }
+    return response()->json([
+        'magisters' => $magisters,
+        'users' => $users,
+        'tipos' => $tipos
+    ]);
+}
 
     /**
      * Estadísticas de informes
