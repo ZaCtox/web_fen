@@ -11,8 +11,10 @@ use App\Models\DailyReport;
 use App\Models\Novedad;
 use App\Models\Emergency;
 use App\Models\Staff;
+use App\Models\PageView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AnalyticsController extends Controller
 {
@@ -22,7 +24,12 @@ class AnalyticsController extends Controller
     public function index(Request $request)
     {
         try {
+            // Obtener mes y año de los parámetros (por defecto mes y año actual)
+            $mes = $request->get('mes', now()->month);
+            $anio = $request->get('anio', now()->year);
+
             $stats = [
+                // Estadísticas básicas
                 'usuarios' => $this->getUserStats(),
                 'incidencias' => $this->getIncidentStats(),
                 'cursos' => $this->getCourseStats(),
@@ -31,6 +38,12 @@ class AnalyticsController extends Controller
                 'novedades' => $this->getNovedadStats(),
                 'emergencias' => $this->getEmergencyStats(),
                 'staff' => $this->getStaffStats(),
+                
+                // Métricas KPI
+                'kpis' => $this->getKPIStats($mes, $anio),
+                
+                // Accesos y páginas vistas
+                'accesos' => $this->getAccessStats($mes, $anio),
             ];
 
             return response()->json([
@@ -152,21 +165,19 @@ class AnalyticsController extends Controller
      */
     private function getDailyReportStats()
     {
-        return [
-            'total' => DailyReport::count(),
-            'este_mes' => DailyReport::whereMonth('created_at', now()->month)->count(),
-            'esta_semana' => DailyReport::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
-            'por_magister' => DailyReport::with('magister')
-                ->select('magister_id', DB::raw('count(*) as count'))
-                ->groupBy('magister_id')
-                ->get()
-                ->map(function($item) {
-                    return [
-                        'magister' => $item->magister ? $item->magister->nombre : 'Sin magíster',
-                        'count' => $item->count
-                    ];
-                }),
-        ];
+        try {
+            return [
+                'total' => DailyReport::count(),
+                'este_mes' => DailyReport::whereMonth('created_at', now()->month)->count(),
+                'esta_semana' => DailyReport::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'total' => 0,
+                'este_mes' => 0,
+                'esta_semana' => 0,
+            ];
+        }
     }
 
     /**
@@ -201,10 +212,6 @@ class AnalyticsController extends Controller
                     $q->whereNull('expires_at')
                       ->orWhere('expires_at', '>', now());
                 })->count(),
-            'por_tipo' => Emergency::select('tipo', DB::raw('count(*) as count'))
-                ->groupBy('tipo')
-                ->get()
-                ->pluck('count', 'tipo'),
         ];
     }
 
@@ -219,6 +226,139 @@ class AnalyticsController extends Controller
                 ->groupBy('cargo')
                 ->get()
                 ->pluck('count', 'cargo'),
+        ];
+    }
+
+    /**
+     * KPI: Métricas clave de rendimiento
+     */
+    private function getKPIStats($mes, $anio)
+    {
+        // 1. Tiempo promedio de respuesta a incidencias (en horas)
+        $tiempoPromedio = Incident::whereIn('estado', ['resuelta', 'no_resuelta'])
+            ->whereNotNull('updated_at')
+            ->whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->get()
+            ->map(function($incident) {
+                return $incident->created_at->diffInHours($incident->updated_at);
+            })
+            ->average();
+
+        // 2. Porcentaje de utilización del calendario
+        $primerDia = Carbon::create($anio, $mes, 1);
+        $ultimoDia = $primerDia->copy()->endOfMonth();
+        
+        $totalDiasHabiles = 0;
+        $currentDay = $primerDia->copy();
+        while ($currentDay <= $ultimoDia) {
+            if ($currentDay->isWeekday()) {
+                $totalDiasHabiles++;
+            }
+            $currentDay->addDay();
+        }
+
+        $diasConClases = Clase::with('sesiones')
+            ->get()
+            ->flatMap(function($clase) {
+                return $clase->sesiones;
+            })
+            ->whereBetween('fecha', [$primerDia, $ultimoDia])
+            ->pluck('fecha')
+            ->unique()
+            ->count();
+
+        $porcentajeUtilizacion = $totalDiasHabiles > 0 
+            ? round(($diasConClases / $totalDiasHabiles) * 100, 1) 
+            : 0;
+
+        return [
+            'tiempo_promedio_respuesta' => round($tiempoPromedio ?? 0, 1),
+            'porcentaje_utilizacion_calendario' => $porcentajeUtilizacion,
+            'dias_con_clases' => $diasConClases,
+            'total_dias_habiles' => $totalDiasHabiles,
+        ];
+    }
+
+    /**
+     * Estadísticas de accesos y páginas vistas
+     */
+    private function getAccessStats($mes, $anio)
+    {
+        // Verificar si existe la tabla page_views
+        if (!DB::getSchemaBuilder()->hasTable('page_views')) {
+            return [
+                'accesos_mensuales' => 0,
+                'sesiones_unicas' => 0,
+                'calendario_publico' => 0,
+                'calendario_autenticado' => 0,
+                'registrados' => 0,
+                'anonimos' => 0,
+                'top_paginas' => [],
+                'accesos_por_mes' => array_fill(1, 12, 0),
+            ];
+        }
+
+        $accesosMensuales = PageView::whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->count();
+
+        $sesionesUnicas = PageView::whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->distinct('session_id')
+            ->count('session_id');
+
+        $calendarioPublico = PageView::where('page_type', 'calendario_publico')
+            ->whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->count();
+
+        $calendarioAutenticado = PageView::where('page_type', 'calendario')
+            ->whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->count();
+
+        $accesosRegistrados = PageView::whereNotNull('user_id')
+            ->whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->count();
+
+        $accesosAnonimos = PageView::whereNull('user_id')
+            ->whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->count();
+
+        $topPaginas = PageView::select('page_type', DB::raw('count(*) as total'))
+            ->whereMonth('created_at', $mes)
+            ->whereYear('created_at', $anio)
+            ->groupBy('page_type')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->get()
+            ->map(function($item) {
+                return [
+                    'pagina' => $item->page_type,
+                    'visitas' => $item->total,
+                ];
+            });
+
+        // Accesos por cada mes del año
+        $accesosPorMes = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $accesosPorMes[$i] = PageView::whereMonth('created_at', $i)
+                ->whereYear('created_at', $anio)
+                ->count();
+        }
+
+        return [
+            'accesos_mensuales' => $accesosMensuales,
+            'sesiones_unicas' => $sesionesUnicas,
+            'calendario_publico' => $calendarioPublico,
+            'calendario_autenticado' => $calendarioAutenticado,
+            'registrados' => $accesosRegistrados,
+            'anonimos' => $accesosAnonimos,
+            'top_paginas' => $topPaginas,
+            'accesos_por_mes' => $accesosPorMes,
         ];
     }
 
