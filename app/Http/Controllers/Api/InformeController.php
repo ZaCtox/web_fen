@@ -7,8 +7,8 @@ use App\Models\Informe;
 use App\Models\Magister;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class InformeController extends Controller
 {
@@ -22,8 +22,8 @@ class InformeController extends Controller
         // Filtros opcionales
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('nombre', 'like', '%' . $request->search . '%')
-                    ->orWhere('tipo', 'like', '%' . $request->search . '%');
+                $q->where('nombre', 'like', '%'.$request->search.'%')
+                    ->orWhere('tipo', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -45,7 +45,7 @@ class InformeController extends Controller
         return response()->json([
             'success' => true,
             'data' => $informes,
-            'message' => 'Informes obtenidos exitosamente'
+            'message' => 'Informes obtenidos exitosamente',
         ]);
     }
 
@@ -56,17 +56,17 @@ class InformeController extends Controller
     {
         $informe = Informe::with(['user', 'magister'])->find($id);
 
-        if (!$informe) {
+        if (! $informe) {
             return response()->json([
                 'success' => false,
-                'message' => 'Informe no encontrado'
+                'message' => 'Informe no encontrado',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
             'data' => $informe,
-            'message' => 'Informe obtenido exitosamente'
+            'message' => 'Informe obtenido exitosamente',
         ]);
     }
 
@@ -104,7 +104,7 @@ class InformeController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Informe creado correctamente.',
-            'data' => $informe->load(['user', 'magister'])
+            'data' => $informe->load(['user', 'magister']),
         ], 201);
     }
 
@@ -115,10 +115,10 @@ class InformeController extends Controller
     {
         $informe = Informe::find($id);
 
-        if (!$informe) {
+        if (! $informe) {
             return response()->json([
                 'success' => false,
-                'message' => 'Informe no encontrado'
+                'message' => 'Informe no encontrado',
             ], 404);
         }
 
@@ -150,7 +150,7 @@ class InformeController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Informe actualizado correctamente.',
-            'data' => $informe->load(['user', 'magister'])
+            'data' => $informe->load(['user', 'magister']),
         ]);
     }
 
@@ -161,10 +161,10 @@ class InformeController extends Controller
     {
         $informe = Informe::find($id);
 
-        if (!$informe) {
+        if (! $informe) {
             return response()->json([
                 'success' => false,
-                'message' => 'Informe no encontrado'
+                'message' => 'Informe no encontrado',
             ], 404);
         }
 
@@ -177,7 +177,7 @@ class InformeController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Informe eliminado correctamente.'
+            'message' => 'Informe eliminado correctamente.',
         ]);
     }
 
@@ -188,23 +188,23 @@ class InformeController extends Controller
     {
         $informe = Informe::find($id);
 
-        if (!$informe) {
+        if (! $informe) {
             return response()->json([
                 'success' => false,
-                'message' => 'Informe no encontrado'
+                'message' => 'Informe no encontrado',
             ], 404);
         }
 
-        if (!Storage::disk('public')->exists($informe->archivo)) {
+        if (! Storage::disk('public')->exists($informe->archivo)) {
             return response()->json([
                 'success' => false,
-                'message' => 'El archivo no existe en el servidor'
+                'message' => 'El archivo no existe en el servidor',
             ], 404);
         }
 
         return response()->download(
-            storage_path('app/public/' . $informe->archivo),
-            $informe->nombre . '.' . pathinfo($informe->archivo, PATHINFO_EXTENSION)
+            storage_path('app/public/'.$informe->archivo),
+            $informe->nombre.'.'.pathinfo($informe->archivo, PATHINFO_EXTENSION)
         );
     }
 
@@ -222,7 +222,7 @@ class InformeController extends Controller
             'Acta',
             'Documento Administrativo',
             'Presentación',
-            'Otro'
+            'Otro',
         ];
 
         return response()->json([
@@ -230,9 +230,9 @@ class InformeController extends Controller
             'data' => [
                 'magisters' => $magisters,
                 'users' => $users,
-                'tipos' => $tipos
+                'tipos' => $tipos,
             ],
-            'message' => 'Recursos obtenidos exitosamente'
+            'message' => 'Recursos obtenidos exitosamente',
         ]);
     }
 
@@ -255,7 +255,7 @@ class InformeController extends Controller
                 ->map(function ($item) {
                     return [
                         'magister' => $item->magister->nombre ?? 'N/A',
-                        'count' => $item->count
+                        'count' => $item->count,
                     ];
                 }),
             'recent' => Informe::with(['user:id,name', 'magister:id,nombre'])
@@ -263,13 +263,13 @@ class InformeController extends Controller
                 ->limit(5)
                 ->get(['id', 'nombre', 'tipo', 'user_id', 'magister_id', 'created_at']),
             'this_month' => Informe::whereMonth('created_at', now()->month)->count(),
-            'this_week' => Informe::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count()
+            'this_week' => Informe::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count(),
         ];
 
         return response()->json([
             'success' => true,
             'data' => $stats,
-            'message' => 'Estadísticas de informes obtenidas exitosamente'
+            'message' => 'Estadísticas de informes obtenidas exitosamente',
         ]);
     }
 
@@ -285,9 +285,9 @@ class InformeController extends Controller
             // Filtro por búsqueda de texto
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('nombre', 'like', "%{$search}%")
-                      ->orWhere('descripcion', 'like', "%{$search}%");
+                        ->orWhere('descripcion', 'like', "%{$search}%");
                 });
             }
 
@@ -343,13 +343,13 @@ class InformeController extends Controller
                     'to' => $informes->lastItem(),
                     'total' => $informes->total(),
                 ],
-                'message' => 'Informes públicos obtenidos exitosamente'
+                'message' => 'Informes públicos obtenidos exitosamente',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al cargar los informes: ' . $e->getMessage()
+                'message' => 'Error al cargar los informes: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -362,10 +362,10 @@ class InformeController extends Controller
         try {
             $informe = Informe::with(['user:id,name', 'magister:id,nombre'])->find($id);
 
-            if (!$informe) {
+            if (! $informe) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Informe no encontrado'
+                    'message' => 'Informe no encontrado',
                 ], 404);
             }
 
@@ -384,13 +384,13 @@ class InformeController extends Controller
             return response()->json([
                 'status' => 'success',
                 'data' => $formattedInforme,
-                'message' => 'Informe obtenido exitosamente'
+                'message' => 'Informe obtenido exitosamente',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al cargar el informe: ' . $e->getMessage()
+                'message' => 'Error al cargar el informe: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -403,33 +403,31 @@ class InformeController extends Controller
         try {
             $informe = Informe::find($id);
 
-            if (!$informe) {
+            if (! $informe) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Informe no encontrado'
+                    'message' => 'Informe no encontrado',
                 ], 404);
             }
 
-            if (!Storage::disk('public')->exists($informe->archivo)) {
+            if (! Storage::disk('public')->exists($informe->archivo)) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'El archivo no existe en el servidor'
+                    'message' => 'El archivo no existe en el servidor',
                 ], 404);
             }
 
             // Retornar el archivo para descarga
             return Storage::disk('public')->download(
                 $informe->archivo,
-                $informe->nombre . '.' . pathinfo($informe->archivo, PATHINFO_EXTENSION)
+                $informe->nombre.'.'.pathinfo($informe->archivo, PATHINFO_EXTENSION)
             );
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Error al descargar el informe: ' . $e->getMessage()
+                'message' => 'Error al descargar el informe: '.$e->getMessage(),
             ], 500);
         }
     }
 }
-
-
