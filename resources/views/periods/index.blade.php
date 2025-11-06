@@ -3,7 +3,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-2xl font-bold text-[#005187] dark:text-[#c4dafa]">
-            Períodos Académicos
+            Periodos Académicos
         </h2>
     </x-slot>
 
@@ -70,18 +70,89 @@
                 <form id="form-anadir-anio-ingreso" method="POST" action="{{ route('periods.actualizarProximoAnio') }}"
                     class="hidden">
                     @csrf
+                    <input type="hidden" name="magister_id" value="{{ $magisterSeleccionado }}">
+                    <input type="hidden" name="anio_ingreso" id="hidden-anio-ingreso">
+                    <input type="hidden" name="fecha_inicio" id="hidden-fecha-inicio">
+                    <input type="hidden" name="fecha_fin" id="hidden-fecha-fin">
                 </form>
                 <button type="button" onclick="
+                    const anioSugerido = {{ now()->year + 1 }};
                     Swal.fire({
-                        title:'¿Añadir nuevo año de ingreso?',
-                        text:'Se abrirá el formulario para crear el primer período del año de ingreso {{ now()->year + 1 }}. Primero selecciona el programa (magister) y luego crea los trimestres uno por uno.',
-                        icon:'info',
+                        title:'Añadir nuevo año de ingreso',
+                        html:`
+                            <div class='text-left space-y-4'>
+                                <p class='text-sm text-gray-600 mb-4'>Se creará automáticamente el <strong>Año 1 - Trimestre 1</strong>. Define el año de ingreso y las fechas del período:</p>
+                                <div>
+                                    <label class='block text-sm font-medium text-gray-700 mb-2'>Año de Ingreso:</label>
+                                    <input type='number' id='swal-anio-ingreso' class='swal2-input w-full' style='margin:0;' value='${anioSugerido}' min='2020' max='2035' required>
+                                    <p class='text-xs text-gray-500 mt-1'>Año en que ingresan los estudiantes de esta cohorte</p>
+                                </div>
+                                <div>
+                                    <label class='block text-sm font-medium text-gray-700 mb-2'>Fecha de Inicio (Trimestre 1):</label>
+                                    <input type='date' id='swal-fecha-inicio' class='swal2-input w-full' style='margin:0;' value='${anioSugerido}-03-01' required>
+                                </div>
+                                <div>
+                                    <label class='block text-sm font-medium text-gray-700 mb-2'>Fecha de Término (Trimestre 1):</label>
+                                    <input type='date' id='swal-fecha-fin' class='swal2-input w-full' style='margin:0;' value='${anioSugerido}-05-31' required>
+                                </div>
+                            </div>
+                        `,
+                        didOpen: () => {
+                            // Actualizar fechas cuando cambia el año de ingreso
+                            const anioInput = document.getElementById('swal-anio-ingreso');
+                            const fechaInicioInput = document.getElementById('swal-fecha-inicio');
+                            const fechaFinInput = document.getElementById('swal-fecha-fin');
+                            
+                            anioInput.addEventListener('input', function() {
+                                const anio = this.value;
+                                if (anio) {
+                                    fechaInicioInput.value = anio + '-03-01';
+                                    fechaFinInput.value = anio + '-05-31';
+                                }
+                            });
+                        },
+                        icon:'question',
                         showCancelButton:true,
                         confirmButtonColor:'#4d82bc',
                         cancelButtonColor:'#6b7280',
-                        confirmButtonText:'Sí, continuar',
-                        cancelButtonText:'Cancelar'
-                    }).then((r)=>{ if(r.isConfirmed) document.getElementById('form-anadir-anio-ingreso').submit(); });
+                        confirmButtonText:'Crear Período',
+                        cancelButtonText:'Cancelar',
+                        width: '600px',
+                        preConfirm: () => {
+                            const anioIngreso = document.getElementById('swal-anio-ingreso').value;
+                            const fechaInicio = document.getElementById('swal-fecha-inicio').value;
+                            const fechaFin = document.getElementById('swal-fecha-fin').value;
+                            
+                            if (!anioIngreso) {
+                                Swal.showValidationMessage('El año de ingreso es requerido');
+                                return false;
+                            }
+                            
+                            if (anioIngreso < 2020 || anioIngreso > 2035) {
+                                Swal.showValidationMessage('El año de ingreso debe estar entre 2020 y 2035');
+                                return false;
+                            }
+                            
+                            if (!fechaInicio || !fechaFin) {
+                                Swal.showValidationMessage('Por favor completa ambas fechas');
+                                return false;
+                            }
+                            
+                            if (fechaInicio >= fechaFin) {
+                                Swal.showValidationMessage('La fecha de término debe ser posterior a la fecha de inicio');
+                                return false;
+                            }
+                            
+                            return { anioIngreso, fechaInicio, fechaFin };
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value) {
+                            document.getElementById('hidden-anio-ingreso').value = result.value.anioIngreso;
+                            document.getElementById('hidden-fecha-inicio').value = result.value.fechaInicio;
+                            document.getElementById('hidden-fecha-fin').value = result.value.fechaFin;
+                            document.getElementById('form-anadir-anio-ingreso').submit();
+                        }
+                    });
                 "
                     class="inline-flex items-center gap-2 px-4 py-3 bg-[#84b6f4] hover:bg-[#4d82bc] text-white font-medium rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#84b6f4] focus:ring-offset-2 text-sm hci-button-ripple hci-glow">
                     <img src="{{ asset('icons/actualizar.svg') }}" alt="" class="w-5 h-5">

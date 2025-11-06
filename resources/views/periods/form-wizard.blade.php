@@ -83,12 +83,32 @@
             @php
                 $anioIngresoSeleccionado = old('anio_ingreso', isset($period) ? $period->anio_ingreso : ($anioIngreso ?? ''));
                 $anioActual = now()->year;
-                $anioAnterior = $anioActual - 1;
-                $anioSiguiente = $anioActual + 1;
+                
+                // Crear lista de años: existentes + algunos adicionales
+                $todosLosAnios = collect($aniosIngresoExistentes ?? [])->push($anioActual - 1, $anioActual, $anioActual + 1)
+                    ->unique()
+                    ->sort()
+                    ->reverse()
+                    ->values();
             @endphp
-            <option value="{{ $anioActual }}" {{ $anioIngresoSeleccionado == $anioActual ? 'selected' : '' }}>{{ $anioActual }} (Actual)</option>
-            <option value="{{ $anioAnterior }}" {{ $anioIngresoSeleccionado == $anioAnterior ? 'selected' : '' }}>{{ $anioAnterior }} (Pasado)</option>
-            <option value="{{ $anioSiguiente }}" {{ $anioIngresoSeleccionado == $anioSiguiente ? 'selected' : '' }}>{{ $anioSiguiente }} (Futuro)</option>
+            @foreach($todosLosAnios as $anio)
+                @php
+                    $etiqueta = '';
+                    if ($anio == $anioActual) {
+                        $etiqueta = ' (Actual)';
+                    } elseif ($anio < $anioActual) {
+                        $etiqueta = ' (Pasado)';
+                    } elseif ($anio > $anioActual) {
+                        $etiqueta = ' (Futuro)';
+                    }
+                    
+                    // Verificar si ya existe en la BD
+                    $enBD = in_array($anio, ($aniosIngresoExistentes ?? [])->toArray());
+                @endphp
+                <option value="{{ $anio }}" {{ $anioIngresoSeleccionado == $anio ? 'selected' : '' }}>
+                    {{ $anio }}{{ $etiqueta }}{{ $enBD ? ' ✓' : '' }}
+                </option>
+            @endforeach
         </x-hci-field>
 
         <x-hci-field 

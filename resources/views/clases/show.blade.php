@@ -411,7 +411,6 @@
                                             <a href="{{ $sesion->url_grabacion }}" target="_blank"
                                                class="inline-flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
                                                title="Ver grabación en YouTube">
-                                                <img src="{{ asset('icons/play.svg') }}" alt="Ver" class="w-4 h-4">
                                                 <span class="hidden sm:inline">Ver Grabación</span>
                                             </a>
                                         @elseif($sesion->es_pasada)

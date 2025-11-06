@@ -55,7 +55,8 @@
         </h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             @foreach($novedadesUrgentes as $novedad)
-            <div class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-lg p-5 shadow-lg hover:shadow-xl transition-shadow">
+            <a href="{{ route('public.novedades.show', $novedad) }}" 
+               class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-lg p-5 shadow-lg hover:shadow-xl transition-all hover:scale-105 cursor-pointer block">
                 <div class="flex items-start">
                     <span class="text-4xl mr-3">{{ $novedad->icono ?? '📢' }}</span>
                     <div class="flex-1">
@@ -70,9 +71,12 @@
                             ⏰ Hasta: {{ $novedad->fecha_expiracion->format('d/m/Y') }}
                         </p>
                         @endif
+                        <p class="text-xs text-red-600 dark:text-red-400 font-semibold mt-2">
+                            Ver detalle →
+                        </p>
                     </div>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
     </div>
@@ -89,7 +93,8 @@
         {{-- Grid de Novedades --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
             @foreach($novedades as $novedad)
-            <div class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition-all duration-300 border border-gray-200 dark:border-gray-600">
+            <a href="{{ route('public.novedades.show', $novedad) }}" 
+               class="bg-white dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden hover:scale-105 transform transition-all duration-300 border border-gray-200 dark:border-gray-600 hover:shadow-2xl cursor-pointer block">
                 {{-- Header con icono y tipo --}}
                 <div class="p-4 text-center" style="background-color: {{ $novedad->color ?? '#4d82bc' }}22;">
                     <span class="text-5xl">{{ $novedad->icono ?? '📰' }}</span>
@@ -129,8 +134,15 @@
                             <span>{{ $novedad->created_at->diffForHumans() }}</span>
                         </div>
                     </div>
+
+                    {{-- Indicador de "Ver más" --}}
+                    <div class="mt-4 text-center">
+                        <span class="text-xs text-[#4d82bc] dark:text-[#84b6f4] font-semibold">
+                            Ver detalle →
+                        </span>
+                    </div>
                 </div>
-            </div>
+            </a>
             @endforeach
         </div>
 

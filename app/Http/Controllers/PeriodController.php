@@ -44,11 +44,18 @@ class PeriodController extends Controller
 
     public function create(Request $request)
     {
-                $anioIngreso = $request->get('anio_ingreso', null);
+        $anioIngreso = $request->get('anio_ingreso', null);
         $magisterId = $request->get('magister_id', null);
         $magisters = \App\Models\Magister::orderBy('orden')->get();
         
-        return view('periods.create', compact('anioIngreso', 'magisterId', 'magisters'));
+        // Obtener años de ingreso existentes en la BD
+        $aniosIngresoExistentes = Period::select('anio_ingreso')
+            ->distinct()
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
+        
+        return view('periods.create', compact('anioIngreso', 'magisterId', 'magisters', 'aniosIngresoExistentes'));
     }
 
     public function store(PeriodRequest $request)
@@ -63,11 +70,19 @@ class PeriodController extends Controller
 
     public function edit(Period $period)
     {
-                $magisters = \App\Models\Magister::orderBy('orden')->get();
+        $magisters = \App\Models\Magister::orderBy('orden')->get();
+        
+        // Obtener años de ingreso existentes en la BD
+        $aniosIngresoExistentes = Period::select('anio_ingreso')
+            ->distinct()
+            ->whereNotNull('anio_ingreso')
+            ->orderBy('anio_ingreso', 'desc')
+            ->pluck('anio_ingreso');
         
         return view('periods.edit', [
             'period' => $period,
-            'magisters' => $magisters
+            'magisters' => $magisters,
+            'aniosIngresoExistentes' => $aniosIngresoExistentes
         ]);
     }
 
@@ -88,14 +103,79 @@ class PeriodController extends Controller
         return redirect()->route('periods.index')->with('success', 'Periodo eliminado.');
     }
 
-    public function actualizarAlProximoAnio()
+    public function actualizarAlProximoAnio(Request $request)
     {
-        // Obtener todos los magisters
-        $magisters = \App\Models\Magister::orderBy('orden')->get();
-        
-        // Redirigir al formulario de crear período con el año de ingreso pre-seleccionado
-        return redirect()->route('periods.create', ['anio_ingreso' => now()->year + 1])
-            ->with('success', "Selecciona el programa y crea el primer período para el año de ingreso " . (now()->year + 1) . ".");
+        try {
+            // Obtener año de ingreso del request o usar el siguiente año
+            $nuevoAnioIngreso = $request->get('anio_ingreso') ?: (now()->year + 1);
+            
+            // Validar año de ingreso
+            if ($nuevoAnioIngreso < 2020 || $nuevoAnioIngreso > 2035) {
+                return redirect()->route('periods.index')
+                    ->with('error', 'El año de ingreso debe estar entre 2020 y 2035.');
+            }
+            
+            // Obtener el magister seleccionado o el primero disponible
+            $magisterId = $request->get('magister_id');
+            if (!$magisterId) {
+                $primerMagister = \App\Models\Magister::orderBy('orden')->first();
+                if (!$primerMagister) {
+                    return redirect()->route('periods.index')
+                        ->with('error', 'No hay programas de magíster registrados. Primero crea un programa.');
+                }
+                $magisterId = $primerMagister->id;
+            }
+            
+            // Verificar si ya existe el primer período para este año de ingreso y magister
+            $periodoExistente = Period::where('magister_id', $magisterId)
+                ->where('anio_ingreso', $nuevoAnioIngreso)
+                ->where('anio', 1)
+                ->where('numero', 1)
+                ->first();
+            
+            if ($periodoExistente) {
+                return redirect()->route('periods.index', ['magister_id' => $magisterId, 'anio_ingreso' => $nuevoAnioIngreso])
+                    ->with('info', "El Año 1 - Trimestre 1 ya existe para el año de ingreso $nuevoAnioIngreso. Ahora puedes crear los siguientes trimestres.");
+            }
+            
+            // Obtener fechas del request o usar fechas por defecto
+            $fechaInicio = $request->get('fecha_inicio');
+            $fechaFin = $request->get('fecha_fin');
+            
+            // Validar que las fechas vengan del request
+            if (!$fechaInicio || !$fechaFin) {
+                return redirect()->route('periods.index')
+                    ->with('error', 'Las fechas de inicio y término son requeridas.');
+            }
+            
+            // Validar que fecha_fin sea posterior a fecha_inicio
+            $fechaInicioCarbon = Carbon::parse($fechaInicio);
+            $fechaFinCarbon = Carbon::parse($fechaFin);
+            
+            if ($fechaFinCarbon->lte($fechaInicioCarbon)) {
+                return redirect()->route('periods.index')
+                    ->with('error', 'La fecha de término debe ser posterior a la fecha de inicio.');
+            }
+            
+            // Crear el primer período automáticamente
+            Period::create([
+                'magister_id' => $magisterId,
+                'anio' => 1,
+                'numero' => 1,
+                'anio_ingreso' => $nuevoAnioIngreso,
+                'fecha_inicio' => $fechaInicioCarbon,
+                'fecha_fin' => $fechaFinCarbon,
+                'activo' => true
+            ]);
+            
+            return redirect()->route('periods.index', ['magister_id' => $magisterId, 'anio_ingreso' => $nuevoAnioIngreso])
+                ->with('success', "Año 1 - Trimestre 1 creado para el año de ingreso $nuevoAnioIngreso. Ahora puedes crear los siguientes trimestres.");
+                
+        } catch (\Exception $e) {
+            \Log::error('Error al crear año de ingreso: ' . $e->getMessage());
+            return redirect()->route('periods.index')
+                ->with('error', 'Error al crear el año de ingreso. ' . $e->getMessage());
+        }
     }
 
     public function trimestreSiguiente(Request $request)

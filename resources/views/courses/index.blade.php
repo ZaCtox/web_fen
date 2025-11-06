@@ -13,7 +13,9 @@
         ['label' => 'Módulos', 'url' => '#']
     ]" />
 
-    <div class="py-6 max-w-7xl mx-auto px-4">
+    <div class="py-6 max-w-7xl mx-auto px-4" x-data="{
+        expandedMagisters: {}
+    }">
         {{-- Botones superiores --}}
         <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6">
             {{-- Lado izquierdo: Botón Ver Programas --}}
@@ -55,44 +57,57 @@
         @endif
 
         <div class="bg-[#fcffff] dark:bg-gray-800 rounded-lg shadow p-6 border border-[#c4dafa]">
+
             @php
                 $romanos = [1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV', 5 => 'V', 6 => 'VI'];
             @endphp
 
             @forelse ($magisters as $magister)
                 <div class="mb-6 border border-[#c4dafa] rounded-lg shadow-sm bg-[#fcffff] dark:bg-gray-800">
+
                     {{-- Header clickable con affordance --}}
-                    <div
-                        class="flex flex-col sm:flex-row sm:justify-between sm:items-center cursor-pointer magister-header 
-                                                    bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-3 rounded-t-lg transition gap-3">
+                    <button @click="expandedMagisters[{{ $magister->id }}] = !expandedMagisters[{{ $magister->id }}]"
+                            class="w-full flex justify-between items-center cursor-pointer
+                                   bg-[#c4dafa]/30 hover:bg-[#84b6f4]/30 px-4 py-4 rounded-t-lg transition
+                                   focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2"
+                            :aria-expanded="expandedMagisters[{{ $magister->id }}]"
+                            aria-label="Expandir/colapsar cursos del Magíster en {{ $magister->nombre }}">
                         <h3 class="text-base sm:text-lg font-semibold text-[#005187] dark:text-[#84b6f4]">
                             Magíster en {{ $magister->nombre }}
                         </h3>
-                        <div class="flex items-center justify-between sm:justify-end gap-3">
+                        <div class="flex items-center gap-3">
                             {{-- Botón añadir módulo --}}
                             @if(tieneRol(['director_administrativo', 'director_programa', 'asistente_programa', 'decano']))
-                            <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
-                                class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-3 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-xs sm:text-sm font-medium"
-                                title="Agregar módulo a este programa">
-                                <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-4 h-4">
-                                <span class="hidden sm:inline">Agregar Módulo</span>
-                                <span class="sm:hidden">Agregar Módulo</span>
-                            </a>
+                                <a href="{{ route('courses.create', ['magister_id' => $magister->id]) }}"
+                                   @click.stop
+                                   class="inline-flex items-center gap-2 bg-[#4d82bc] hover:bg-[#005187] text-white px-4 py-2 rounded-lg shadow-md transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#4d82bc] focus:ring-offset-2 text-sm font-medium"
+                                   title="Agregar módulo a este programa">
+                                    <img src="{{ asset('icons/agregar.svg') }}" alt="" class="w-4 h-4">
+                                    <span>Agregar Módulo</span>
+                                </a>
                             @endif
                             
-                            {{-- Flecha de despliegue --}}
-                            <span class="text-sm text-[#4d82bc] flex items-center">
-                                <svg class="ml-2 w-5 h-5 transition-transform" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                            <span class="text-[#4d82bc] flex items-center">
+                                <svg class="w-6 h-6 transition-transform duration-200" 
+                                     :class="{ 'rotate-180': expandedMagisters[{{ $magister->id }}] }"
+                                     fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                     aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 9l-7 7-7-7" />
                                 </svg>
                             </span>
                         </div>
-                    </div>
+                    </button>
 
                     {{-- Contenido oculto inicialmente --}}
-                    <div class="magister-content hidden p-4 space-y-4">
+                    <div x-show="expandedMagisters[{{ $magister->id }}]" 
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 transform -translate-y-2"
+                         x-transition:enter-end="opacity-100 transform translate-y-0"
+                         x-transition:leave="transition ease-in duration-150"
+                         x-transition:leave-start="opacity-100 transform translate-y-0"
+                         x-transition:leave-end="opacity-0 transform -translate-y-2"
+                         class="p-4 space-y-4">
                         @php
                             $agrupados = $magister->courses->groupBy([
                                 fn($curso) => $curso->period->anio ?? 'Sin año',
@@ -111,22 +126,22 @@
                                         </h5>
 
                                         <div class="overflow-x-auto">
-                                        <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm">
+                                        <table class="w-full table-auto text-sm rounded overflow-hidden shadow-sm min-w-full">
                                             <thead class="bg-[#c4dafa]/40 dark:bg-gray-700 text-[#005187] dark:text-white">
                                                 <tr>
                                                     <th class="px-4 py-2 text-left">Módulo</th>
                                                     <th class="px-4 py-2 text-center w-20">SCT</th>
-                                                    <th class="px-4 py-2 text-center w-32">Requisitos</th>
+                                                    <th class="px-4 py-2 text-center w-40">Requisitos</th>
                                                     <th class="px-4 py-2 text-right w-32">Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse ($cursos as $course)
+                                                @foreach ($cursos as $course)
                                                     <tr class="border-b border-gray-200 dark:border-gray-600 
-                                                                                   hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
-                                                                                   hover:border-l-4 hover:border-l-[#4d82bc]
-                                                                                   hover:-translate-y-0.5 hover:shadow-md
-                                                                                   transition-all duration-200 group">
+                                                                 hover:bg-[#e3f2fd] dark:hover:bg-gray-700 
+                                                                 hover:border-l-4 hover:border-l-[#4d82bc]
+                                                                 hover:-translate-y-0.5 hover:shadow-md
+                                                                 transition-all duration-200 group cursor-pointer">
                                                         <td class="px-4 py-2 text-[#005187] dark:text-gray-100 group-hover:text-[#4d82bc] dark:group-hover:text-[#84b6f4] transition-colors duration-200 font-medium">
                                                             {{ $course->nombre }}
                                                         </td>
@@ -170,7 +185,7 @@
                                                                 <span class="text-gray-400 dark:text-gray-500 text-xs">-</span>
                                                             @endif
                                                         </td>
-                                                        <td class="px-3 py-2 text-right">
+                                                        <td class="px-4 py-2 text-right">
                                                             <div class="flex justify-end items-center gap-2">
                                                                 @if(tieneRol(['director_administrativo', 'director_programa', 'asistente_programa', 'decano']))
                                                                 {{-- Botón Editar --}}
@@ -192,19 +207,11 @@
                                                             </div>
                                                         </td>
                                                     </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="4" class="px-4 py-8">
-                                                            <x-empty-state type="no-data" icon="📚" title="No hay módulos registrados"
-                                                                message="Crea tu primer módulo para comenzar a gestionar el contenido académico."
-                                                                actionText="Crear Módulo" actionUrl="{{ route('courses.create') }}"
-                                                                actionIcon="➕" />
-                                                        </td>
-                                                    </tr>
-                                                @endforelse
+                                                @endforeach
                                             </tbody>
                                         </table>
                                         </div>
+                                    </div>
                                 @endforeach
                             </div>
                         @empty
@@ -221,24 +228,4 @@
             @endforelse
         </div>
     </div>
-
-    {{-- Script para abrir/cerrar con rotación del ícono --}}
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".magister-header").forEach(function (header) {
-                header.addEventListener("click", function () {
-                    const content = header.nextElementSibling;
-                    const icon = header.querySelector("svg");
-
-                    content.classList.toggle("hidden");
-                    icon.classList.toggle("rotate-180");
-                });
-            });
-        });
-    </script>
 </x-app-layout>
-
-
-
-
-

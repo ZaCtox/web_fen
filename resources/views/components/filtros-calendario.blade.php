@@ -9,7 +9,7 @@
                     Programa:
                 </label>
                 <select id="magister-filter" name="magister"
-                    class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-4 text-lg focus:ring-[#4d82bc] focus:border-[#4d82bc] transition font-medium">
+                    class="w-full sm:w-80 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 text-base focus:ring-[#4d82bc] focus:border-[#4d82bc] transition font-medium">
                     <option value="">Todos</option>
                     @foreach(\App\Models\Magister::orderBy('orden')->get() as $m)
                         <option value="{{ $m->id }}" {{ $m->id == 1 ? 'selected' : '' }}>
@@ -24,7 +24,7 @@
                 </label>
                 <select id="anio-ingreso-filter" name="anio_ingreso" required
                     onchange="const params = new URLSearchParams(); params.set('anio_ingreso', this.value); window.location.search = params.toString();"
-                    class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-4 text-lg focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium"
+                    class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-white dark:bg-gray-700 text-[#005187] dark:text-[#84b6f4] px-4 py-2.5 text-base focus:ring-[#4d82bc] focus:border-[#4d82bc] font-medium"
                     aria-describedby="anio-ingreso-status"
                     aria-required="true">
                     @if(isset($aniosIngreso))
@@ -53,7 +53,7 @@
         <label for="room-filter" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
             Sala:
         </label>
-        <select id="room-filter" name="room_id" class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-4 text-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
+            <select id="room-filter" name="room_id" class="w-full sm:w-64 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-2.5 text-base focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
             <option value="">Todas</option>
             @foreach(\App\Models\Room::orderBy('name')->get() as $room)
                 <option value="{{ $room->id }}">{{ $room->name }}</option>
@@ -68,7 +68,7 @@
             <label for="anio-filter" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
                 Año:
             </label>
-            <select id="anio-filter" name="anio" class="w-full sm:w-32 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-4 text-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
+            <select id="anio-filter" name="anio" class="w-full sm:w-32 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-2.5 text-base focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
                 <option value="">Todos</option>
                 @foreach($periodos->pluck('anio')->unique()->sort()->values() as $anio)
                     <option value="{{ $anio }}">Año {{ $anio }}</option>
@@ -80,7 +80,7 @@
             <label for="trimestre-filter" class="block text-sm font-semibold text-[#005187] dark:text-[#84b6f4] mb-2">
                 Trimestre:
             </label>
-            <select id="trimestre-filter" name="trimestre" class="w-full sm:w-44 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-4 text-lg focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
+            <select id="trimestre-filter" name="trimestre" class="w-full sm:w-44 rounded-lg border border-[#84b6f4] bg-[#fcffff] dark:bg-gray-700 text-[#005187] dark:text-white px-4 py-2.5 text-base focus:ring-2 focus:ring-[#4d82bc] focus:border-transparent transition font-medium">
                 <option value="">Todos</option>
                 @foreach($periodos->pluck('numero')->unique()->sort()->values() as $trimestre)
                     <option value="{{ $trimestre }}">Trimestre {{ $trimestre }}</option>
@@ -93,9 +93,9 @@
                 &nbsp; <!-- Para alinear el botón con los selects -->
             </label>
             <button id="clear-filters" type="button"
-                class="mt-1 bg-[#84b6f4] hover:bg-[#005187] text-[#005187] px-6 py-4 rounded-lg shadow text-lg transition transform hover:scale-105"
+                class="mt-1 bg-[#84b6f4] hover:bg-[#005187] text-white px-4 py-2.5 rounded-lg shadow transition transform hover:scale-105"
                 title="Limpiar todos los filtros">
-                <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-6 h-6">
+                <img src="{{ asset('icons/filterw.svg') }}" alt="Limpiar filtros" class="w-5 h-5">
             </button>
         </div>
 

@@ -36,7 +36,7 @@ class UserController extends Controller
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255|unique:users,email,' . $usuario->id,
-                'rol' => 'required|in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado',
+                'rol' => 'required|in:administrador,director_administrativo,director_programa,asistente_programa,docente,técnico,auxiliar,asistente_postgrado,decano',
                 'foto' => 'sometimes|nullable|image|max:2048',
                 'avatar_color' => 'nullable|string|max:6',
             ]);
