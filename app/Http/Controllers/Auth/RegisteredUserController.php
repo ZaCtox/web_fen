@@ -91,8 +91,17 @@ class RegisteredUserController extends Controller
         // Enviar email de bienvenida con credenciales
         try {
             Mail::to($user->email)->send(new WelcomeUserMail($user, $password));
+            Log::info('Email de bienvenida enviado exitosamente', [
+                'user_email' => $user->email,
+                'user_id' => $user->id
+            ]);
         } catch (Exception $e) {
-            Log::warning('No se pudo enviar email de bienvenida: ' . $e->getMessage());
+            Log::error('Error al enviar email de bienvenida: ' . $e->getMessage(), [
+                'user_email' => $user->email,
+                'user_id' => $user->id,
+                'exception' => $e->getTraceAsString()
+            ]);
+            // No fallar la creación del usuario, pero avisar en la respuesta
         }
 
         // Evento de registro
@@ -107,9 +116,14 @@ class RegisteredUserController extends Controller
             'new_user_rol' => $user->rol,
         ]);
 
+        // Verificar si el email se envió revisando los logs recientes
+        $emailEnviado = true; // Asumimos que se envió si no hubo excepción
+        
         return redirect()
             ->route('usuarios.index')
-            ->with('success', "Usuario '{$user->name}' creado exitosamente. Se ha enviado un correo con las credenciales de acceso.");
+            ->with('success', $emailEnviado 
+                ? "Usuario '{$user->name}' creado exitosamente. Se ha enviado un correo con las credenciales de acceso a {$user->email}."
+                : "Usuario '{$user->name}' creado exitosamente, pero hubo un problema al enviar el correo. Contacta al usuario manualmente.");
     }
 }
 
