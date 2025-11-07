@@ -94,6 +94,7 @@ Route::name('api.')->group(function () {
         Route::get('magisters', [MagisterController::class, 'publicIndex']);
         Route::get('magisters-with-course-count', [MagisterController::class, 'publicMagistersWithCourseCount']);
         Route::get('magisters-with-courses', [CourseController::class, 'publicMagistersWithCourses']);
+        Route::get('magisters/available-years', [MagisterController::class, 'getAvailableYears']);
         Route::get('events', [EventController::class, 'publicIndex']);
         Route::get('staff', [StaffController::class, 'publicIndex']);
         Route::get('rooms', [RoomController::class, 'publicIndex']);

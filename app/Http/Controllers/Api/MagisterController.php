@@ -69,9 +69,9 @@ class MagisterController extends Controller
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string|max:7',
             'encargado' => 'nullable|string|max:255',
-            'asistente' => 'nullable|string|max:255',  // ← AÑADIDO
+            'asistente' => 'nullable|string|max:255',
             'telefono' => 'required|string|max:20',
-            'anexo' => 'nullable|string|max:50',       // ← AÑADIDO
+            'anexo' => 'nullable|string|max:50',
             'correo' => 'nullable|email|max:255',
         ]);
 
@@ -95,9 +95,9 @@ class MagisterController extends Controller
             'nombre' => 'required|string|max:255',
             'color' => 'nullable|string|max:7',
             'encargado' => 'nullable|string|max:255',
-            'asistente' => 'nullable|string|max:255',  // ← AÑADIDO
+            'asistente' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:20',
-            'anexo' => 'nullable|string|max:50',       // ← AÑADIDO
+            'anexo' => 'nullable|string|max:50',
             'correo' => 'nullable|email|max:255',
         ]);
 
@@ -136,11 +136,25 @@ class MagisterController extends Controller
         ]);
     }
 
+    /**
+     * Obtener magísteres con conteo de cursos (vista pública)
+     * Acepta filtro por año de ingreso
+     */
     public function publicMagistersWithCourseCount(Request $request)
     {
         try {
+            $anioIngreso = $request->get('anio_ingreso');
+
             $query = Magister::select('id', 'nombre', 'encargado', 'color')
-                ->withCount('courses')
+                ->withCount([
+                    'courses' => function($q) use ($anioIngreso) {
+                        if ($anioIngreso) {
+                            $q->whereHas('period', function($periodQuery) use ($anioIngreso) {
+                                $periodQuery->where('anio_ingreso', $anioIngreso);
+                            });
+                        }
+                    }
+                ])
                 ->orderBy('nombre');
 
             // Aplicar búsqueda si se proporciona
@@ -191,4 +205,40 @@ class MagisterController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Obtener años de ingreso disponibles desde los períodos
+     * PÚBLICO - No requiere autenticación
+     */
+    public function getAvailableYears()
+    {
+        try {
+            $years = DB::table('periods')
+                ->select('anio_ingreso')
+                ->whereNotNull('anio_ingreso')
+                ->distinct()
+                ->orderBy('anio_ingreso', 'asc')
+                ->pluck('anio_ingreso')
+                ->values();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $years,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error en getAvailableYears: ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener años disponibles',
+                'data' => [],
+            ], 500);
+        }
+    }
 }
+
+// ===== RUTA A AGREGAR EN routes/api.php =====
+// Route::get('public/magisters/available-years', [MagisterController::class, 'getAvailableYears']);
+
+
