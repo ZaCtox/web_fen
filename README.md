@@ -1,13 +1,13 @@
 # 🎓 Plataforma de Gestión Académica - Escuela de Postgrados FEN
 
-Sistema integral de gestión académica desarrollado para la Facultad de Economía y Negocios, diseñado para administrar programas de postgrado, clases, salas, eventos e incidencias.
+Sistema integral de gestión académica desarrollado para la Facultad de Economía y Negocios (FEN), diseñado para administrar programas de postgrado, clases, salas, eventos e incidencias de manera centralizada, segura y eficiente.
 
 ## 🚀 Características Principales
 
 ### 📚 Gestión Académica
-- **Clases**: Administración completa de sesiones de clase
+- **Clases**: Administración completa de sesiones (creación, edición y seguimiento)
 - **Módulos**: Gestión de cursos y programas de postgrado
-- **Periodos**: Control de períodos académicos
+- **Periodos Académicos**: Control y organización de períodos lectivos
 - **Salas**: Administración de espacios físicos y virtuales
 
 ### 📅 Calendario y Eventos
@@ -16,16 +16,16 @@ Sistema integral de gestión académica desarrollado para la Facultad de Econom�
 - Visualización pública de calendarios
 
 ### 🔧 Soporte y Mantenimiento
-- **Incidencias**: Sistema de reportes y seguimiento
-- **Informes**: Generación de reportes académicos
-- **Emergencias**: Gestión de situaciones de emergencia
-- **Novedades**: Comunicaciones institucionales
+- **Incidencias**: Sistema de reportes con seguimiento y gestión de estados
+- **Informes**: Generación de reportes académicos y administrativos
+- **Emergencias**: Gestión de situaciones críticas
+- **Novedades**: Comunicaciones institucionales centralizadas
 
 ### 📊 Analytics y Reportes
 - Estadísticas de uso de salas
 - Reportes de incidencias
-- Analytics de clases y eventos
-- Dashboard administrativo
+- Métricas de clases y eventos
+- Dashboard administrativo con indicadores clave
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -124,6 +124,7 @@ Decano:
 - Email: decano@institucion.cl  
 - Contraseña: decano123
 ```
+⚠️ Se recomienda cambiar estas credenciales en entorno de producción.
 
 ## 📱 Módulos Principales
 
@@ -210,7 +211,6 @@ El sistema incluye:
 
 Para soporte técnico o consultas sobre el sistema:
 
-- **Email**: soporte@institucion.cl
 - **Documentación**: Ver carpeta `docs/`
 - **Issues**: Reportar en el repositorio del proyecto
 
@@ -220,4 +220,4 @@ Este proyecto es propiedad de la Facultad de Economía y Negocios y está destin
 
 ---
 
-**Desarrollado con ❤️ para la gestión académica moderna**
+**Desarrollado como solución para optimizar la gestión académica mediante tecnologías modernas**
